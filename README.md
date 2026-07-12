@@ -8,6 +8,19 @@
 `index.html` をブラウザ(スマホ推奨)で開くだけです。
 データはブラウザの LocalStorage に保存されるので、閉じても消えません。
 
+## iPhone で使う(ホーム画面に追加)
+
+このアプリは PWA(プログレッシブ Web アプリ)対応です。GitHub Pages で公開した URL を
+iPhone の Safari で開き、**共有ボタン → 「ホーム画面に追加」** すると、
+普通のアプリのようにアイコンから全画面で起動でき、オフラインでも動作します。
+
+公開 URL(GitHub Pages 有効化後):
+`https://wsdgg266-lgtm.github.io/my-game/`
+
+GitHub Pages はこのリポジトリの `.github/workflows/deploy-pages.yml` により
+対象ブランチへの push で自動デプロイされます。初回のみリポジトリの
+**Settings → Pages → Source を「GitHub Actions」** に設定してください。
+
 ## 機能
 
 - **買い物リスト**: 品名とカテゴリ(食品・飲み物・日用品・その他)を指定して追加。カテゴリごとに整理して表示され、売り場を回りながらチェックしやすい

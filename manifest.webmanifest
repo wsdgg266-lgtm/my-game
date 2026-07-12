@@ -1,0 +1,25 @@
+{
+  "name": "かいわすれナシ！ - 買い忘れ防止アプリ",
+  "short_name": "かいわすれナシ",
+  "description": "買い物の買い忘れを防ぐシンプルな買い物リストアプリ",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f8f7",
+  "theme_color": "#2e7d5b",
+  "icons": [
+    {
+      "src": "icons/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
