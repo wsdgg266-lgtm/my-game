@@ -18,8 +18,14 @@ iPhone の Safari で開き、**共有ボタン → 「ホーム画面に追加�
 `https://wsdgg266-lgtm.github.io/my-game/`
 
 GitHub Pages はこのリポジトリの `.github/workflows/deploy-pages.yml` により
-対象ブランチへの push で自動デプロイされます。初回のみリポジトリの
-**Settings → Pages → Source を「GitHub Actions」** に設定してください。
+対象ブランチへの push で自動デプロイされます。初回のみ以下の設定が必要です。
+
+1. (プライベートリポジトリの場合)GitHub Pages は無料プランでは公開リポジトリのみ
+   対応のため、**Settings → General → Danger Zone → Change visibility** で
+   リポジトリを Public にする(または GitHub Pro 等の有料プランを利用)
+2. **Settings → Pages → Build and deployment → Source を「GitHub Actions」** に設定
+3. **Actions タブ → Deploy to GitHub Pages → Run workflow** で再実行
+   (以降は push のたびに自動でデプロイされます)
 
 ## 機能
 
