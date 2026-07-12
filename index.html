@@ -37,17 +37,76 @@
   header {
     background: var(--green);
     color: #fff;
-    padding: calc(18px + env(safe-area-inset-top)) 16px 14px;
+    padding: calc(14px + env(safe-area-inset-top)) 16px 10px;
     position: sticky;
     top: 0;
     z-index: 10;
     box-shadow: 0 2px 8px rgba(0,0,0,.12);
   }
   header h1 {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     display: flex;
     align-items: center;
     gap: 8px;
+  }
+  .store-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .store-tabs {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex: 1;
+  }
+  .store-tabs::-webkit-scrollbar { display: none; }
+  .store-tab {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: 99px;
+    border: 1.5px solid rgba(255,255,255,.4);
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    font-size: .88rem;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .store-tab.active {
+    background: #fff;
+    color: var(--green-dark);
+    border-color: #fff;
+    font-weight: 700;
+  }
+  .store-tab .badge {
+    background: var(--amber);
+    color: #4a3300;
+    font-size: .72rem;
+    font-weight: 700;
+    border-radius: 99px;
+    padding: 1px 7px;
+    min-width: 20px;
+    text-align: center;
+  }
+  .store-tab .gear { font-size: .85rem; opacity: .8; }
+  .store-add-btn {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(255,255,255,.6);
+    background: transparent;
+    color: #fff;
+    font-size: 1.15rem;
+    line-height: 1;
+    cursor: pointer;
   }
   .progress-wrap { margin-top: 10px; }
   .progress-label {
@@ -112,14 +171,11 @@
   .add-form button:active { background: var(--green-dark); }
 
   .quick-add { margin-bottom: 16px; }
-  .quick-add h2, .section-title {
+  .quick-add h2 {
     font-size: .8rem;
     color: var(--text-sub);
     font-weight: 700;
     margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
   }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip {
@@ -139,11 +195,6 @@
     border-color: var(--green);
     color: var(--green-dark);
     opacity: .6;
-  }
-  .chip .x {
-    margin-left: 6px;
-    color: var(--text-sub);
-    font-size: .8rem;
   }
 
   .cat-group { margin-bottom: 14px; }
@@ -226,6 +277,17 @@
     line-height: 1.8;
   }
   .empty .big { font-size: 2.5rem; display: block; margin-bottom: 8px; }
+  .empty button {
+    margin-top: 14px;
+    padding: 12px 26px;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--green);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
 
   .footer-bar {
     position: fixed;
@@ -257,7 +319,6 @@
     color: #4a3300;
   }
 
-  /* 買い忘れチェックモーダル */
   .overlay {
     position: fixed;
     inset: 0;
@@ -300,7 +361,18 @@
     line-height: 1.9;
   }
   .modal .all-done .big { font-size: 2.6rem; display: block; }
+  .modal input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 14px;
+  }
+  .modal input[type="text"]:focus { border-color: var(--green); }
   .modal-btns { display: flex; gap: 10px; }
+  .modal-btns.column { flex-direction: column; }
   .modal-btns button {
     flex: 1;
     padding: 12px;
@@ -316,6 +388,11 @@
     background: var(--green);
     border-color: var(--green);
     color: #fff;
+  }
+  .modal-btns button.danger {
+    background: #fdeaea;
+    border-color: #f0c0c0;
+    color: var(--danger);
   }
   .toast {
     position: fixed;
@@ -340,6 +417,10 @@
 
 <header>
   <h1>🛒 かいわすれナシ！</h1>
+  <div class="store-bar">
+    <div class="store-tabs" id="storeTabs"></div>
+    <button class="store-add-btn" id="storeAddBtn" aria-label="お店を追加">＋</button>
+  </div>
   <div class="progress-wrap">
     <div class="progress-label">
       <span id="progressText">リストは空です</span>
@@ -362,7 +443,7 @@
   </form>
 
   <section class="quick-add" id="quickAddSection" hidden>
-    <h2>⭐ よく買うもの(タップで追加・長押しで削除)</h2>
+    <h2>⭐ このお店でよく買うもの(タップで追加・長押しで削除)</h2>
     <div class="chips" id="quickChips"></div>
   </section>
 
@@ -374,6 +455,7 @@
   <button id="clearDoneBtn">✅ 購入済みを削除</button>
 </div>
 
+<!-- 買い忘れチェック -->
 <div class="overlay" id="checkOverlay">
   <div class="modal">
     <div id="modalContent"></div>
@@ -384,47 +466,102 @@
   </div>
 </div>
 
+<!-- お店の追加・編集 -->
+<div class="overlay" id="storeOverlay">
+  <div class="modal">
+    <h3 id="storeModalTitle">お店を追加</h3>
+    <p class="sub" id="storeModalSub">お店の名前を入力してください(例:〇〇スーパー、ドラッグストア)</p>
+    <input type="text" id="storeNameInput" placeholder="お店の名前" autocomplete="off" enterkeyhint="done">
+    <div class="modal-btns column">
+      <button id="storeSaveBtn" class="primary">追加する</button>
+      <button id="storeDeleteBtn" class="danger" hidden>このお店を削除</button>
+      <button id="storeCancelBtn">キャンセル</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'kaiwasure.items.v1';
-  var FREQ_KEY = 'kaiwasure.freq.v1';
+  var KEY_V2 = 'kaiwasure.v2';
+  var KEY_V1_ITEMS = 'kaiwasure.items.v1';
+  var KEY_V1_FREQ = 'kaiwasure.freq.v1';
   var CAT_ORDER = ['食品', '飲み物', '日用品', 'その他'];
   var CAT_ICON = { '食品': '🍎', '飲み物': '🧃', '日用品': '🧻', 'その他': '📦' };
 
-  /** @type {{id:string, name:string, cat:string, qty:number, done:boolean}[]} */
-  var items = load(STORAGE_KEY, []);
-  /** name -> {cat, count} 追加回数を記録して「よく買うもの」を出す */
-  var freq = load(FREQ_KEY, {});
+  /**
+   * state = {
+   *   stores: [{id, name}],
+   *   items: [{id, storeId, name, cat, qty, done}],
+   *   freq: { storeId: { name: {cat, count} } },  // 店ごとの追加回数
+   *   current: storeId | null
+   * }
+   */
+  var state = loadState();
 
-  function load(key, fallback) {
+  function loadState() {
     try {
-      var raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : fallback;
-    } catch (e) {
-      return fallback;
+      var raw = localStorage.getItem(KEY_V2);
+      if (raw) {
+        var s = JSON.parse(raw);
+        if (s && s.stores) return s;
+      }
+    } catch (e) { /* fall through */ }
+    return migrateV1();
+  }
+
+  // v1(店の概念なし)からの引き継ぎ:既存データは「いつものお店」に移す
+  function migrateV1() {
+    var s = { stores: [], items: [], freq: {}, current: null };
+    var oldItems = null, oldFreq = null;
+    try {
+      oldItems = JSON.parse(localStorage.getItem(KEY_V1_ITEMS) || 'null');
+      oldFreq = JSON.parse(localStorage.getItem(KEY_V1_FREQ) || 'null');
+    } catch (e) { /* 破損データは無視 */ }
+    if ((oldItems && oldItems.length) || (oldFreq && Object.keys(oldFreq).length)) {
+      var store = { id: uid(), name: 'いつものお店' };
+      s.stores.push(store);
+      s.current = store.id;
+      (oldItems || []).forEach(function (it) {
+        s.items.push({ id: it.id || uid(), storeId: store.id, name: it.name, cat: it.cat || 'その他', qty: it.qty || 1, done: !!it.done });
+      });
+      s.freq[store.id] = oldFreq || {};
+      try {
+        localStorage.removeItem(KEY_V1_ITEMS);
+        localStorage.removeItem(KEY_V1_FREQ);
+      } catch (e) { /* ignore */ }
+      saveState(s);
     }
+    return s;
   }
-  function save() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-      localStorage.setItem(FREQ_KEY, JSON.stringify(freq));
-    } catch (e) { /* プライベートモード等では保存不可 */ }
+
+  function saveState(s) {
+    try { localStorage.setItem(KEY_V2, JSON.stringify(s || state)); } catch (e) { /* プライベートモード等 */ }
   }
+  function save() { saveState(state); }
+
   function uid() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
   function esc(s) {
-    return s.replace(/[&<>"']/g, function (c) {
+    return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
+  function currentStore() {
+    for (var i = 0; i < state.stores.length; i++) {
+      if (state.stores[i].id === state.current) return state.stores[i];
+    }
+    return null;
+  }
+  function storeItems(storeId) {
+    return state.items.filter(function (it) { return it.storeId === storeId; });
+  }
 
   var $ = function (id) { return document.getElementById(id); };
-  var listSection = $('listSection');
   var toastEl = $('toast');
   var toastTimer = null;
 
@@ -435,40 +572,153 @@
     toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 1800);
   }
 
+  // ---- お店 ----
+  var storeModalMode = 'add'; // 'add' | 'edit'
+  var storeOverlay = $('storeOverlay');
+
+  function openStoreModal(mode) {
+    storeModalMode = mode;
+    var input = $('storeNameInput');
+    if (mode === 'add') {
+      $('storeModalTitle').textContent = 'お店を追加';
+      $('storeModalSub').textContent = 'お店の名前を入力してください(例:〇〇スーパー、ドラッグストア)';
+      $('storeSaveBtn').textContent = '追加する';
+      $('storeDeleteBtn').hidden = true;
+      input.value = '';
+    } else {
+      var st = currentStore();
+      if (!st) return;
+      $('storeModalTitle').textContent = 'お店の設定';
+      $('storeModalSub').textContent = '名前の変更、またはこのお店の削除ができます。';
+      $('storeSaveBtn').textContent = '名前を変更';
+      $('storeDeleteBtn').hidden = false;
+      input.value = st.name;
+    }
+    storeOverlay.classList.add('show');
+    setTimeout(function () { input.focus(); }, 100);
+  }
+  function closeStoreModal() { storeOverlay.classList.remove('show'); }
+
+  $('storeAddBtn').addEventListener('click', function () { openStoreModal('add'); });
+  $('storeCancelBtn').addEventListener('click', closeStoreModal);
+  storeOverlay.addEventListener('click', function (e) {
+    if (e.target === storeOverlay) closeStoreModal();
+  });
+
+  $('storeSaveBtn').addEventListener('click', function () {
+    var name = $('storeNameInput').value.trim();
+    if (!name) { showToast('お店の名前を入力してください'); return; }
+    var dup = state.stores.some(function (st) { return st.name === name && st.id !== (storeModalMode === 'edit' ? state.current : null); });
+    if (dup) { showToast('「' + name + '」はすでに登録されています'); return; }
+    if (storeModalMode === 'add') {
+      var store = { id: uid(), name: name };
+      state.stores.push(store);
+      state.current = store.id;
+      showToast('「' + name + '」を追加しました');
+    } else {
+      var st = currentStore();
+      if (st) st.name = name;
+    }
+    save();
+    closeStoreModal();
+    render();
+  });
+
+  $('storeNameInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); $('storeSaveBtn').click(); }
+  });
+
+  $('storeDeleteBtn').addEventListener('click', function () {
+    var st = currentStore();
+    if (!st) return;
+    var count = storeItems(st.id).length;
+    var msg = '「' + st.name + '」を削除しますか?' + (count ? '\nリストの ' + count + ' 点も一緒に削除されます。' : '');
+    if (!confirm(msg)) return;
+    state.stores = state.stores.filter(function (x) { return x.id !== st.id; });
+    state.items = state.items.filter(function (it) { return it.storeId !== st.id; });
+    delete state.freq[st.id];
+    state.current = state.stores.length ? state.stores[0].id : null;
+    save();
+    closeStoreModal();
+    render();
+    showToast('「' + st.name + '」を削除しました');
+  });
+
+  function renderStoreTabs() {
+    var tabs = $('storeTabs');
+    tabs.innerHTML = '';
+    state.stores.forEach(function (st) {
+      var remaining = storeItems(st.id).filter(function (it) { return !it.done; }).length;
+      var tab = document.createElement('button');
+      tab.type = 'button';
+      tab.className = 'store-tab' + (st.id === state.current ? ' active' : '');
+      tab.innerHTML = '🏪 ' + esc(st.name) +
+        (remaining ? ' <span class="badge">' + remaining + '</span>' : '') +
+        (st.id === state.current ? ' <span class="gear">⚙︎</span>' : '');
+      tab.addEventListener('click', function () {
+        if (st.id === state.current) {
+          openStoreModal('edit');
+        } else {
+          state.current = st.id;
+          save();
+          render();
+        }
+      });
+      tabs.appendChild(tab);
+    });
+    // 選択中タブを見える位置へ
+    var active = tabs.querySelector('.store-tab.active');
+    if (active && active.scrollIntoView) {
+      active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+  }
+
+  // ---- 商品 ----
   function addItem(name, cat) {
+    var st = currentStore();
+    if (!st) { showToast('先にお店を追加してください'); return; }
     name = name.trim();
     if (!name) return;
-    var exists = items.some(function (it) { return it.name === name && !it.done; });
+    var exists = storeItems(st.id).some(function (it) { return it.name === name && !it.done; });
     if (exists) {
       showToast('「' + name + '」はもうリストにあります');
       return;
     }
-    items.push({ id: uid(), name: name, cat: cat, qty: 1, done: false });
-    if (!freq[name]) freq[name] = { cat: cat, count: 0 };
-    freq[name].count += 1;
-    freq[name].cat = cat;
+    state.items.push({ id: uid(), storeId: st.id, name: name, cat: cat, qty: 1, done: false });
+    if (!state.freq[st.id]) state.freq[st.id] = {};
+    var f = state.freq[st.id];
+    if (!f[name]) f[name] = { cat: cat, count: 0 };
+    f[name].count += 1;
+    f[name].cat = cat;
     save();
     render();
   }
 
   function render() {
+    renderStoreTabs();
     renderProgress();
     renderQuickAdd();
     renderList();
   }
 
   function renderProgress() {
-    var total = items.length;
-    var done = items.filter(function (it) { return it.done; }).length;
+    var st = currentStore();
+    var list = st ? storeItems(st.id) : [];
+    var total = list.length;
+    var done = list.filter(function (it) { return it.done; }).length;
     var remaining = total - done;
-    if (total === 0) {
-      $('progressText').textContent = 'リストは空です';
+    if (!st) {
+      $('progressText').textContent = 'お店を追加してください';
+      $('progressPct').textContent = '';
+      $('progressFill').style.width = '0%';
+    } else if (total === 0) {
+      $('progressText').textContent = st.name + ':リストは空です';
       $('progressPct').textContent = '';
       $('progressFill').style.width = '0%';
     } else {
-      $('progressText').textContent = remaining === 0
+      $('progressText').textContent = st.name + ':' + (remaining === 0
         ? '全部そろいました！'
-        : 'あと ' + remaining + ' 点(全 ' + total + ' 点)';
+        : 'あと ' + remaining + ' 点(全 ' + total + ' 点)');
       var pct = Math.round(done / total * 100);
       $('progressPct').textContent = pct + '%';
       $('progressFill').style.width = pct + '%';
@@ -476,16 +726,18 @@
   }
 
   function renderQuickAdd() {
+    var st = currentStore();
+    var section = $('quickAddSection');
+    var freq = st ? (state.freq[st.id] || {}) : {};
     var names = Object.keys(freq)
       .sort(function (a, b) { return freq[b].count - freq[a].count; })
       .slice(0, 12);
-    var section = $('quickAddSection');
-    if (names.length === 0) { section.hidden = true; return; }
+    if (!st || names.length === 0) { section.hidden = true; return; }
     section.hidden = false;
     var chips = $('quickChips');
     chips.innerHTML = '';
     names.forEach(function (name) {
-      var inList = items.some(function (it) { return it.name === name && !it.done; });
+      var inList = storeItems(st.id).some(function (it) { return it.name === name && !it.done; });
       var chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'chip' + (inList ? ' in-list' : '');
@@ -521,15 +773,29 @@
   }
 
   function renderList() {
+    var listSection = $('listSection');
     listSection.innerHTML = '';
-    if (items.length === 0) {
+    var st = currentStore();
+    if (!st) {
+      var div = document.createElement('div');
+      div.className = 'empty';
+      div.innerHTML = '<span class="big">🏪</span>まずお店を登録しましょう。<br>お店ごとに買い物リストを分けて管理できます。';
+      var btn = document.createElement('button');
+      btn.textContent = '＋ お店を追加';
+      btn.addEventListener('click', function () { openStoreModal('add'); });
+      div.appendChild(btn);
+      listSection.appendChild(div);
+      return;
+    }
+    var list = storeItems(st.id);
+    if (list.length === 0) {
       listSection.innerHTML =
         '<div class="empty"><span class="big">📝</span>' +
-        '買うものを追加してください。<br>一度追加したものは「よく買うもの」から<br>ワンタップで再追加できます。</div>';
+        esc(st.name) + ' で買うものを追加してください。<br>一度追加したものは「よく買うもの」から<br>ワンタップで再追加できます。</div>';
       return;
     }
     CAT_ORDER.forEach(function (cat) {
-      var group = items.filter(function (it) { return it.cat === cat; });
+      var group = list.filter(function (it) { return it.cat === cat; });
       if (group.length === 0) return;
       // 未購入を上に
       group.sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0); });
@@ -576,29 +842,37 @@
       if (it.qty > 1) { it.qty -= 1; save(); render(); }
     });
     li.querySelector('[data-act="del"]').addEventListener('click', function () {
-      items = items.filter(function (x) { return x.id !== it.id; });
+      state.items = state.items.filter(function (x) { return x.id !== it.id; });
       save();
       render();
     });
     return li;
   }
 
-  // ---- 買い忘れチェック ----
+  // ---- 買い忘れチェック(選択中のお店のみ) ----
   var overlay = $('checkOverlay');
   var finishBtn = $('finishBtn');
 
   $('checkBtn').addEventListener('click', function () {
-    var remaining = items.filter(function (it) { return !it.done; });
+    var st = currentStore();
     var content = $('modalContent');
-    if (items.length === 0) {
-      content.innerHTML = '<div class="all-done"><span class="big">🤷</span>リストが空です。<br>まず買うものを追加しましょう。</div>';
+    if (!st) {
+      content.innerHTML = '<div class="all-done"><span class="big">🏪</span>まずお店を追加してください。</div>';
+      finishBtn.hidden = true;
+      overlay.classList.add('show');
+      return;
+    }
+    var list = storeItems(st.id);
+    var remaining = list.filter(function (it) { return !it.done; });
+    if (list.length === 0) {
+      content.innerHTML = '<div class="all-done"><span class="big">🤷</span>' + esc(st.name) + ' のリストが空です。<br>まず買うものを追加しましょう。</div>';
       finishBtn.hidden = true;
     } else if (remaining.length === 0) {
-      content.innerHTML = '<div class="all-done"><span class="big">🎉</span>買い忘れはありません!<br>全 ' + items.length + ' 点そろいました。</div>';
+      content.innerHTML = '<div class="all-done"><span class="big">🎉</span>' + esc(st.name) + ' での買い忘れはありません!<br>全 ' + list.length + ' 点そろいました。</div>';
       finishBtn.hidden = false;
     } else {
       content.innerHTML =
-        '<h3>⚠️ まだ買っていないものが ' + remaining.length + ' 点あります</h3>' +
+        '<h3>⚠️ ' + esc(st.name) + ' でまだ買っていないものが ' + remaining.length + ' 点あります</h3>' +
         '<p class="sub">レジに行く前にもう一度確認してください。</p>' +
         '<ul>' + remaining.map(function (it) {
           return '<li>' + (CAT_ICON[it.cat] || '') + ' ' + esc(it.name) +
@@ -610,8 +884,11 @@
   });
 
   finishBtn.addEventListener('click', function () {
-    items = [];
-    save();
+    var st = currentStore();
+    if (st) {
+      state.items = state.items.filter(function (it) { return it.storeId !== st.id; });
+      save();
+    }
     render();
     overlay.classList.remove('show');
     showToast('おつかれさまでした!リストをリセットしました');
@@ -625,12 +902,16 @@
   });
 
   $('clearDoneBtn').addEventListener('click', function () {
-    var doneCount = items.filter(function (it) { return it.done; }).length;
-    if (doneCount === 0) { showToast('購入済みのものはありません'); return; }
-    items = items.filter(function (it) { return !it.done; });
+    var st = currentStore();
+    if (!st) { showToast('先にお店を追加してください'); return; }
+    var doneItems = storeItems(st.id).filter(function (it) { return it.done; });
+    if (doneItems.length === 0) { showToast('購入済みのものはありません'); return; }
+    var doneIds = {};
+    doneItems.forEach(function (it) { doneIds[it.id] = true; });
+    state.items = state.items.filter(function (it) { return !doneIds[it.id]; });
     save();
     render();
-    showToast('購入済み ' + doneCount + ' 点を削除しました');
+    showToast('購入済み ' + doneItems.length + ' 点を削除しました');
   });
 
   $('addForm').addEventListener('submit', function (e) {
