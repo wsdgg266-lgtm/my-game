@@ -808,7 +808,9 @@
     var st = currentStore();
     var list = st ? storeItems(st.id) : [];
     var priced = list.filter(function (it) { return it.price !== null && it.price !== undefined; });
-    if (!st || priced.length === 0) { bar.hidden = true; return; }
+    var allDone = list.length > 0 && list.every(function (it) { return it.done; });
+    // 全部購入済みになったら合計表示をクリア
+    if (!st || priced.length === 0 || allDone) { bar.hidden = true; return; }
     bar.hidden = false;
     var total = 0, remaining = 0;
     priced.forEach(function (it) {
