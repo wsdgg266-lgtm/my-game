@@ -1,11 +1,13 @@
 /* かいわすれナシ！ Service Worker - オフライン対応 */
-var CACHE_NAME = 'kaiwasure-v4';
+var CACHE_NAME = 'kaiwasure-v5';
 var ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icons/icon-180.png',
-  './icons/icon-512.png'
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-maskable-512.png'
 ];
 
 self.addEventListener('install', function (e) {
