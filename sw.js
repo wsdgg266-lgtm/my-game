@@ -1,9 +1,10 @@
 /* かいわすれナシ！ Service Worker - オフライン対応 */
-var CACHE_NAME = 'kaiwasure-v5';
+var CACHE_NAME = 'kaiwasure-v6';
 var ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './vendor/zxing.min.js',
   './icons/icon-180.png',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -32,9 +33,12 @@ self.addEventListener('activate', function (e) {
   );
 });
 
-/* ネットワーク優先・失敗したらキャッシュ(更新を取り込みつつオフラインでも動く) */
+/* ネットワーク優先・失敗したらキャッシュ(更新を取り込みつつオフラインでも動く)
+   外部API(商品検索など)はキャッシュせず素通しする */
 self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET') return;
+  var sameOrigin = new URL(e.request.url).origin === self.location.origin;
+  if (!sameOrigin) return;
   e.respondWith(
     fetch(e.request).then(function (res) {
       var copy = res.clone();
