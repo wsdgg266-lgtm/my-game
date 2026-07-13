@@ -1,5 +1,5 @@
 /* かいわすれナシ！ Service Worker - オフライン対応 */
-var CACHE_NAME = 'kaiwasure-v2';
+var CACHE_NAME = 'kaiwasure-v3';
 var ASSETS = [
   './',
   './index.html',

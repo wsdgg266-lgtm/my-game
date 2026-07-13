@@ -131,22 +131,19 @@
   }
   main { max-width: 560px; margin: 0 auto; padding: 14px 14px 0; }
 
-  .add-form {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  .add-form input[type="text"] {
-    flex: 1;
+  .add-form { margin-bottom: 10px; }
+  .add-form .row-full {
+    width: 100%;
     padding: 12px 14px;
     border: 1.5px solid var(--line);
     border-radius: var(--radius);
     font-size: 1rem;
     background: var(--card);
     outline: none;
-    min-width: 0;
+    margin-bottom: 8px;
   }
-  .add-form input[type="text"]:focus { border-color: var(--green); }
+  .add-form .row-full:focus { border-color: var(--green); }
+  .add-row2 { display: flex; gap: 8px; }
   .add-form select {
     padding: 0 8px;
     border: 1.5px solid var(--line);
@@ -156,7 +153,20 @@
     color: var(--text);
     outline: none;
     max-width: 100px;
+    height: 44px;
   }
+  .add-form input[type="number"] {
+    flex: 1;
+    min-width: 0;
+    padding: 0 12px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    font-size: .95rem;
+    background: var(--card);
+    outline: none;
+    height: 44px;
+  }
+  .add-form input[type="number"]:focus { border-color: var(--green); }
   .add-form button {
     padding: 0 18px;
     border: none;
@@ -167,8 +177,23 @@
     font-weight: 700;
     cursor: pointer;
     flex-shrink: 0;
+    height: 44px;
   }
   .add-form button:active { background: var(--green-dark); }
+
+  .total-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    margin-bottom: 12px;
+  }
+  .total-main { font-size: 1rem; font-weight: 700; }
+  .total-sub { font-size: .78rem; color: var(--text-sub); text-align: right; }
 
   .quick-add { margin-bottom: 16px; }
   .quick-add h2 {
@@ -240,6 +265,18 @@
   li.item.done .checkbox { background: var(--green); border-color: var(--green); }
   .item-body { flex: 1; min-width: 0; cursor: pointer; }
   .name { font-size: 1rem; word-break: break-all; }
+  .price-tag {
+    display: inline-block;
+    margin-top: 3px;
+    padding: 2px 10px;
+    border: 1px solid var(--line);
+    border-radius: 99px;
+    background: var(--bg);
+    font-size: .78rem;
+    color: var(--text-sub);
+    cursor: pointer;
+  }
+  .price-tag.has-price { color: var(--green-dark); border-color: var(--green-light); background: var(--green-light); font-weight: 700; }
   .qty-ctrl {
     display: flex;
     align-items: center;
@@ -304,14 +341,15 @@
   .footer-bar button {
     flex: 1;
     max-width: 260px;
-    padding: 12px;
+    padding: 12px 6px;
     border-radius: var(--radius);
     border: 1.5px solid var(--line);
     background: var(--bg);
-    font-size: .9rem;
+    font-size: .82rem;
     font-weight: 700;
     color: var(--text);
     cursor: pointer;
+    white-space: nowrap;
   }
   .footer-bar button.primary {
     background: var(--amber);
@@ -394,6 +432,30 @@
     border-color: #f0c0c0;
     color: var(--danger);
   }
+  a.link-btn {
+    display: block;
+    padding: 13px 12px;
+    border-radius: 12px;
+    font-size: .92rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    border: 1.5px solid var(--line);
+    background: var(--bg);
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  a.link-btn.primary {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .flyer-note {
+    font-size: .76rem;
+    color: var(--text-sub);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
   .toast {
     position: fixed;
     left: 50%;
@@ -432,15 +494,23 @@
 
 <main>
   <form class="add-form" id="addForm">
-    <input type="text" id="itemInput" placeholder="買うものを入力…" autocomplete="off" enterkeyhint="done">
-    <select id="catSelect">
-      <option value="食品">食品</option>
-      <option value="日用品">日用品</option>
-      <option value="飲み物">飲み物</option>
-      <option value="その他" selected>その他</option>
-    </select>
-    <button type="submit">追加</button>
+    <input type="text" id="itemInput" class="row-full" placeholder="買うものを入力…" autocomplete="off" enterkeyhint="done">
+    <div class="add-row2">
+      <select id="catSelect">
+        <option value="食品">食品</option>
+        <option value="日用品">日用品</option>
+        <option value="飲み物">飲み物</option>
+        <option value="その他" selected>その他</option>
+      </select>
+      <input type="number" id="priceInput" placeholder="金額(任意)" inputmode="numeric" min="0">
+      <button type="submit">追加</button>
+    </div>
   </form>
+
+  <div class="total-bar" id="totalBar" hidden>
+    <span class="total-main" id="totalMain"></span>
+    <span class="total-sub" id="totalSub"></span>
+  </div>
 
   <section class="quick-add" id="quickAddSection" hidden>
     <h2>⭐ このお店でよく買うもの(タップで追加・長押しで削除)</h2>
@@ -451,8 +521,9 @@
 </main>
 
 <div class="footer-bar">
-  <button id="checkBtn" class="primary">🔍 買い忘れチェック</button>
-  <button id="clearDoneBtn">✅ 購入済みを削除</button>
+  <button id="checkBtn" class="primary">🔍 買い忘れ</button>
+  <button id="flyerBtn">📰 チラシ</button>
+  <button id="clearDoneBtn">✅ 購入済み削除</button>
 </div>
 
 <!-- 買い忘れチェック -->
@@ -480,6 +551,20 @@
   </div>
 </div>
 
+<!-- 近くのチラシ -->
+<div class="overlay" id="flyerOverlay">
+  <div class="modal">
+    <h3>📰 近くのチラシを探す</h3>
+    <p class="sub">住所を保存しておくと、検索に自動で含まれて近所の店舗が見つかりやすくなります。</p>
+    <input type="text" id="addressInput" placeholder="例:横浜市青葉区(任意)" autocomplete="off">
+    <div id="flyerLinks"></div>
+    <p class="flyer-note">※ チラシはトクバイ・Shufoo! などの外部サイトで表示されます。初回はサイト内で地域を設定すると、次回から近所のチラシがすぐ見られます。</p>
+    <div class="modal-btns">
+      <button id="flyerCloseBtn">閉じる</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -495,9 +580,10 @@
   /**
    * state = {
    *   stores: [{id, name}],
-   *   items: [{id, storeId, name, cat, qty, done}],
-   *   freq: { storeId: { name: {cat, count} } },  // 店ごとの追加回数
-   *   current: storeId | null
+   *   items: [{id, storeId, name, cat, qty, done, price}],  // price: 円(null = 未入力)
+   *   freq: { storeId: { name: {cat, count, price} } },  // 店ごとの追加回数と前回の金額
+   *   current: storeId | null,
+   *   address: string  // チラシ検索用の住所(任意)
    * }
    */
   var state = loadState();
@@ -507,7 +593,10 @@
       var raw = localStorage.getItem(KEY_V2);
       if (raw) {
         var s = JSON.parse(raw);
-        if (s && s.stores) return s;
+        if (s && s.stores) {
+          if (typeof s.address !== 'string') s.address = '';
+          return s;
+        }
       }
     } catch (e) { /* fall through */ }
     return migrateV1();
@@ -515,7 +604,7 @@
 
   // v1(店の概念なし)からの引き継ぎ:既存データは「いつものお店」に移す
   function migrateV1() {
-    var s = { stores: [], items: [], freq: {}, current: null };
+    var s = { stores: [], items: [], freq: {}, current: null, address: '' };
     var oldItems = null, oldFreq = null;
     try {
       oldItems = JSON.parse(localStorage.getItem(KEY_V1_ITEMS) || 'null');
@@ -526,7 +615,7 @@
       s.stores.push(store);
       s.current = store.id;
       (oldItems || []).forEach(function (it) {
-        s.items.push({ id: it.id || uid(), storeId: store.id, name: it.name, cat: it.cat || 'その他', qty: it.qty || 1, done: !!it.done });
+        s.items.push({ id: it.id || uid(), storeId: store.id, name: it.name, cat: it.cat || 'その他', qty: it.qty || 1, done: !!it.done, price: null });
       });
       s.freq[store.id] = oldFreq || {};
       try {
@@ -550,6 +639,17 @@
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
+  }
+  function yen(n) {
+    return '¥' + Number(n).toLocaleString('ja-JP');
+  }
+  // 入力文字列を金額に変換(空・不正はnull)
+  function parsePrice(v) {
+    if (v === null || v === undefined) return null;
+    v = String(v).trim();
+    if (v === '') return null;
+    var n = parseInt(v, 10);
+    return (isNaN(n) || n < 0) ? null : n;
   }
   function currentStore() {
     for (var i = 0; i < state.stores.length; i++) {
@@ -674,7 +774,7 @@
   }
 
   // ---- 商品 ----
-  function addItem(name, cat) {
+  function addItem(name, cat, price) {
     var st = currentStore();
     if (!st) { showToast('先にお店を追加してください'); return; }
     name = name.trim();
@@ -684,12 +784,13 @@
       showToast('「' + name + '」はもうリストにあります');
       return;
     }
-    state.items.push({ id: uid(), storeId: st.id, name: name, cat: cat, qty: 1, done: false });
+    state.items.push({ id: uid(), storeId: st.id, name: name, cat: cat, qty: 1, done: false, price: price === undefined ? null : price });
     if (!state.freq[st.id]) state.freq[st.id] = {};
     var f = state.freq[st.id];
-    if (!f[name]) f[name] = { cat: cat, count: 0 };
+    if (!f[name]) f[name] = { cat: cat, count: 0, price: null };
     f[name].count += 1;
     f[name].cat = cat;
+    if (price !== undefined && price !== null) f[name].price = price;
     save();
     render();
   }
@@ -697,8 +798,28 @@
   function render() {
     renderStoreTabs();
     renderProgress();
+    renderTotals();
     renderQuickAdd();
     renderList();
+  }
+
+  function renderTotals() {
+    var bar = $('totalBar');
+    var st = currentStore();
+    var list = st ? storeItems(st.id) : [];
+    var priced = list.filter(function (it) { return it.price !== null && it.price !== undefined; });
+    if (!st || priced.length === 0) { bar.hidden = true; return; }
+    bar.hidden = false;
+    var total = 0, remaining = 0;
+    priced.forEach(function (it) {
+      var sub = it.price * it.qty;
+      total += sub;
+      if (!it.done) remaining += sub;
+    });
+    var noPrice = list.length - priced.length;
+    $('totalMain').textContent = '🧾 合計 ' + yen(total);
+    $('totalSub').textContent = '残り ' + yen(remaining) +
+      (noPrice > 0 ? '(金額未入力 ' + noPrice + ' 点)' : '');
   }
 
   function renderProgress() {
@@ -765,7 +886,8 @@
       chip.addEventListener('click', function () {
         if (longPressed) return;
         if (inList) { showToast('すでにリストにあります'); return; }
-        addItem(name, freq[name] ? freq[name].cat : 'その他');
+        var f = freq[name] || {};
+        addItem(name, f.cat || 'その他', parsePrice(f.price));
         showToast('「' + name + '」を追加しました');
       });
       chips.appendChild(chip);
@@ -816,9 +938,15 @@
   function renderItem(it) {
     var li = document.createElement('li');
     li.className = 'item' + (it.done ? ' done' : '');
+    var hasPrice = it.price !== null && it.price !== undefined;
+    var priceLabel = hasPrice
+      ? yen(it.price) + (it.qty > 1 ? ' ×' + it.qty + ' = ' + yen(it.price * it.qty) : '')
+      : '¥ 金額を入力';
     li.innerHTML =
       '<div class="checkbox">' + (it.done ? '✓' : '') + '</div>' +
-      '<div class="item-body"><div class="name">' + esc(it.name) + '</div></div>' +
+      '<div class="item-body"><div class="name">' + esc(it.name) + '</div>' +
+        '<button type="button" class="price-tag' + (hasPrice ? ' has-price' : '') + '" data-act="price">' + priceLabel + '</button>' +
+      '</div>' +
       '<div class="qty-ctrl">' +
         '<button class="qty-btn" data-act="minus" aria-label="数量を減らす">−</button>' +
         '<span class="qty">' + it.qty + '</span>' +
@@ -833,6 +961,17 @@
     }
     li.querySelector('.checkbox').addEventListener('click', toggle);
     li.querySelector('.item-body').addEventListener('click', toggle);
+    li.querySelector('[data-act="price"]').addEventListener('click', function (e) {
+      e.stopPropagation();
+      var input = prompt('「' + it.name + '」の金額(円)を入力してください。\n空欄にすると金額を消せます。', hasPrice ? it.price : '');
+      if (input === null) return; // キャンセル
+      it.price = parsePrice(input);
+      // 次回のクイック追加にも同じ金額を使う
+      var f = state.freq[it.storeId];
+      if (f && f[it.name]) f[it.name].price = it.price;
+      save();
+      render();
+    });
     li.querySelector('[data-act="plus"]').addEventListener('click', function () {
       it.qty += 1;
       save();
@@ -871,12 +1010,19 @@
       content.innerHTML = '<div class="all-done"><span class="big">🎉</span>' + esc(st.name) + ' での買い忘れはありません!<br>全 ' + list.length + ' 点そろいました。</div>';
       finishBtn.hidden = false;
     } else {
+      var remainTotal = 0;
+      remaining.forEach(function (it) {
+        if (it.price !== null && it.price !== undefined) remainTotal += it.price * it.qty;
+      });
       content.innerHTML =
         '<h3>⚠️ ' + esc(st.name) + ' でまだ買っていないものが ' + remaining.length + ' 点あります</h3>' +
-        '<p class="sub">レジに行く前にもう一度確認してください。</p>' +
+        '<p class="sub">レジに行く前にもう一度確認してください。' +
+          (remainTotal > 0 ? '残りの合計は約 ' + yen(remainTotal) + ' です。' : '') + '</p>' +
         '<ul>' + remaining.map(function (it) {
+          var hasPrice = it.price !== null && it.price !== undefined;
           return '<li>' + (CAT_ICON[it.cat] || '') + ' ' + esc(it.name) +
-            (it.qty > 1 ? ' × ' + it.qty : '') + '</li>';
+            (it.qty > 1 ? ' × ' + it.qty : '') +
+            (hasPrice ? '(' + yen(it.price * it.qty) + ')' : '') + '</li>';
         }).join('') + '</ul>';
       finishBtn.hidden = true;
     }
@@ -917,9 +1063,43 @@
   $('addForm').addEventListener('submit', function (e) {
     e.preventDefault();
     var input = $('itemInput');
-    addItem(input.value, $('catSelect').value);
+    var priceInput = $('priceInput');
+    addItem(input.value, $('catSelect').value, parsePrice(priceInput.value));
     input.value = '';
+    priceInput.value = '';
     input.focus();
+  });
+
+  // ---- 近くのチラシ ----
+  var flyerOverlay = $('flyerOverlay');
+
+  function renderFlyerLinks() {
+    var st = currentStore();
+    var address = state.address.trim();
+    var keyword = (st ? st.name : 'スーパー') + (address ? ' ' + address : '') + ' チラシ';
+    var links = $('flyerLinks');
+    links.innerHTML =
+      '<a class="link-btn primary" target="_blank" rel="noopener" href="https://www.google.com/search?q=' + encodeURIComponent(keyword) + '">' +
+        '🔎 「' + esc(st ? st.name : 'スーパー') + ' のチラシ」を検索</a>' +
+      '<a class="link-btn" target="_blank" rel="noopener" href="https://tokubai.co.jp/">トクバイを開く(チラシ・特売情報)</a>' +
+      '<a class="link-btn" target="_blank" rel="noopener" href="https://www.shufoo.net/">Shufoo! を開く(電子チラシ)</a>';
+  }
+
+  $('flyerBtn').addEventListener('click', function () {
+    $('addressInput').value = state.address;
+    renderFlyerLinks();
+    flyerOverlay.classList.add('show');
+  });
+  $('addressInput').addEventListener('input', function () {
+    state.address = this.value;
+    save();
+    renderFlyerLinks();
+  });
+  $('flyerCloseBtn').addEventListener('click', function () {
+    flyerOverlay.classList.remove('show');
+  });
+  flyerOverlay.addEventListener('click', function (e) {
+    if (e.target === flyerOverlay) flyerOverlay.classList.remove('show');
   });
 
   render();
