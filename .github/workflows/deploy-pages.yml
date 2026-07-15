@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - claude/shopping-reminder-app-7xpyg5
+      - claude/sports-schedule-results-app-th4n6j
   workflow_dispatch:
 
 permissions:
