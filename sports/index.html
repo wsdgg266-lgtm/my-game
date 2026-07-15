@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#17335c">
+<meta name="theme-color" content="#0b101c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,79 +14,96 @@
 <title>スポカレ！ - 試合日程・結果・視聴ガイド</title>
 <style>
   :root {
-    --navy: #17335c;
-    --navy-dark: #0f2444;
-    --navy-light: #e8eef7;
-    --accent: #e8702d;
-    --bg: #f5f7fa;
-    --card: #ffffff;
-    --text: #22314a;
-    --text-sub: #74829a;
-    --line: #e2e8f1;
-    --win: #1a7f4b;
-    --live: #d03b3b;
-    --amber: #f0a840;
-    --radius: 14px;
+    --bg: #0b101c;
+    --card: #131b2e;
+    --card2: #17213c;
+    --text: #e9eef8;
+    --text-sub: #8b96ad;
+    --line: rgba(255,255,255,.08);
+    --line2: rgba(255,255,255,.14);
+    --cy: #3ee6ff;
+    --vi: #7b5bff;
+    --grad: linear-gradient(135deg, #3ee6ff, #7b5bff);
+    --ink-on-grad: #071322;
+    --win: #3ddc84;
+    --live: #ff4d6d;
+    --amber: #ffc24b;
+    --radius: 16px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body {
     font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
-    background: var(--bg);
+    background: radial-gradient(900px 480px at 50% -180px, #1c2a55 0%, var(--bg) 62%) fixed, var(--bg);
+    background-color: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    padding-bottom: 90px;
+    padding-bottom: 92px;
     overflow-x: hidden;
     max-width: 100vw;
   }
-  input, select, textarea { font-size: 16px !important; }
+  input, select, textarea {
+    font-size: 16px !important;
+    background: #0e1628; color: var(--text);
+    border: 1.5px solid var(--line2); border-radius: 10px;
+  }
+  textarea { line-height: 1.6; }
   button { font-family: inherit; }
+  a { color: var(--cy); }
 
   /* ---------- ヘッダー ---------- */
   header {
-    background: var(--navy);
-    color: #fff;
+    background: rgba(11,16,28,.82);
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
     padding: calc(12px + env(safe-area-inset-top)) 14px 0;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    position: sticky; top: 0; z-index: 10;
   }
   .head-row { display: flex; align-items: center; gap: 8px; }
-  header h1 { font-size: 1.08rem; display: flex; align-items: center; gap: 7px; flex: 1; }
-  .head-date { font-size: .78rem; opacity: .85; font-weight: normal; }
+  header h1 { display: flex; align-items: baseline; gap: 9px; flex: 1; font-size: 1rem; }
+  .logo {
+    font-size: 1.3rem; font-weight: 900; font-style: italic; letter-spacing: .04em;
+    background: var(--grad);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    padding-right: 3px;
+  }
+  .head-date { font-size: .74rem; color: var(--text-sub); font-weight: normal; font-style: normal; }
   #refreshBtn {
-    border: none; background: rgba(255,255,255,.14); color: #fff;
-    width: 38px; height: 38px; border-radius: 50%; font-size: 19px; cursor: pointer;
+    border: 1px solid var(--line2); background: rgba(255,255,255,.06); color: var(--text);
+    width: 38px; height: 38px; border-radius: 50%; font-size: 18px; cursor: pointer;
     flex-shrink: 0; line-height: 1;
   }
-  #refreshBtn.spin { animation: spin 1s linear infinite; }
+  #refreshBtn.spin { animation: spin 1s linear infinite; color: var(--cy); border-color: var(--cy); }
   @keyframes spin { to { transform: rotate(360deg); } }
   .chip-bar {
-    display: flex; gap: 7px; overflow-x: auto; -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; padding: 10px 0 12px;
+    display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; padding: 11px 0 13px;
   }
   .chip-bar::-webkit-scrollbar { display: none; }
   .sp-chip {
-    flex-shrink: 0; border: 1.5px solid rgba(255,255,255,.35); background: transparent;
-    color: #fff; border-radius: 999px; padding: 6px 13px; font-size: .88rem; cursor: pointer;
+    flex-shrink: 0; border: 1px solid var(--line2); background: rgba(255,255,255,.04);
+    color: var(--text); border-radius: 999px; padding: 7px 14px; font-size: .87rem; cursor: pointer;
     display: flex; align-items: center; gap: 5px;
   }
-  .sp-chip.on { background: #fff; color: var(--navy); border-color: #fff; font-weight: bold; }
+  .sp-chip.on {
+    background: var(--grad); color: var(--ink-on-grad); border-color: transparent; font-weight: 800;
+    box-shadow: 0 2px 14px rgba(62,180,255,.35);
+  }
   #focusBanner {
     display: none; align-items: center; gap: 8px;
-    background: var(--accent); color: #fff;
-    margin: 0 -14px; padding: 8px 14px; font-size: .9rem;
+    background: var(--grad); color: var(--ink-on-grad);
+    margin: 0 -14px; padding: 9px 14px; font-size: .9rem; font-weight: 600;
   }
   #focusBanner.show { display: flex; }
   #focusBanner b { flex: 1; }
   #focusBanner button {
-    border: none; background: rgba(255,255,255,.22); color: #fff;
-    border-radius: 999px; padding: 4px 12px; font-size: .85rem; cursor: pointer;
+    border: none; background: rgba(7,19,34,.25); color: var(--ink-on-grad);
+    border-radius: 999px; padding: 4px 13px; font-size: .85rem; cursor: pointer; font-weight: 700;
   }
   #netBanner {
-    display: none; background: #fff3d6; color: #4a3300; font-size: .82rem;
-    margin: 0 -14px; padding: 6px 14px; border-bottom: 1px solid var(--amber);
+    display: none; background: rgba(255,194,75,.1); color: #ffd47e; font-size: .82rem;
+    margin: 0 -14px; padding: 6px 14px; border-bottom: 1px solid rgba(255,194,75,.25);
   }
   #netBanner.show { display: block; }
 
@@ -95,152 +112,185 @@
   .tab-page { display: none; }
   .tab-page.on { display: block; }
   .sec-title {
-    font-size: .95rem; font-weight: bold; color: var(--navy);
-    margin: 18px 2px 8px; display: flex; align-items: center; gap: 6px;
+    font-size: .95rem; font-weight: 800; color: var(--text);
+    margin: 20px 2px 9px; display: flex; align-items: center; gap: 7px;
+    letter-spacing: .02em;
   }
+  .sec-title::before { content: ""; width: 4px; height: 15px; border-radius: 2px; background: var(--grad); }
   .sec-title:first-child { margin-top: 2px; }
-  .sec-title small { color: var(--text-sub); font-weight: normal; font-size: .78rem; }
+  .sec-title small { color: var(--text-sub); font-weight: normal; font-size: .76rem; }
   .date-head {
-    font-size: .88rem; font-weight: bold; color: var(--text-sub);
-    margin: 16px 2px 6px; display:flex; align-items:center; gap:6px;
+    font-size: .84rem; font-weight: 700; color: var(--text-sub);
+    margin: 18px 2px 7px; display: flex; align-items: center; gap: 6px;
+    text-transform: uppercase; letter-spacing: .06em;
   }
-  .date-head.today { color: var(--accent); }
+  .date-head.today { color: var(--cy); }
   .empty-note {
-    background: var(--card); border: 1px dashed var(--line); border-radius: var(--radius);
-    padding: 18px 14px; text-align: center; color: var(--text-sub); font-size: .9rem;
+    background: rgba(255,255,255,.02); border: 1px dashed var(--line2); border-radius: var(--radius);
+    padding: 20px 14px; text-align: center; color: var(--text-sub); font-size: .9rem;
     line-height: 1.7; margin-bottom: 10px;
   }
-  .empty-note a { color: var(--navy); }
+  .empty-note a { color: var(--cy); }
 
   /* ---------- 試合カード ---------- */
   .game {
-    background: var(--card); border-radius: var(--radius); border: 1px solid var(--line);
-    box-shadow: 0 1px 3px rgba(20,40,80,.05); padding: 10px 12px; margin-bottom: 9px;
+    background: linear-gradient(180deg, var(--card2), var(--card));
+    border-radius: var(--radius); border: 1px solid var(--line);
+    box-shadow: 0 10px 26px rgba(2,6,16,.45);
+    padding: 11px 13px; margin-bottom: 10px;
+    position: relative; overflow: hidden;
   }
-  .g-top { display: flex; align-items: center; gap: 8px; font-size: .76rem; color: var(--text-sub); }
-  .g-lg { display: inline-flex; align-items: center; gap: 3px; font-weight: bold; }
+  .game::before {
+    content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+    background: var(--grad); opacity: .9;
+  }
+  .g-top { display: flex; align-items: center; gap: 8px; font-size: .74rem; color: var(--text-sub); }
+  .g-lg { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; letter-spacing: .05em; color: #b9c6e4; }
   .g-status { margin-left: auto; }
-  .g-status .live { color: var(--live); font-weight: bold; }
-  .g-status .fin { color: var(--win); font-weight: bold; }
-  .g-status .ppd { color: var(--amber); font-weight: bold; }
+  .g-status .live { color: var(--live); font-weight: 800; animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .4; } }
+  .g-status .fin { color: var(--win); font-weight: 700; }
+  .g-status .ppd { color: var(--amber); font-weight: 700; }
   .g-main {
     display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-    gap: 6px; padding: 7px 0 5px;
+    gap: 8px; padding: 9px 0 6px;
   }
-  .g-team { font-size: 1.0rem; font-weight: bold; line-height: 1.35; }
+  .g-team { font-size: 1.02rem; font-weight: 800; line-height: 1.35; }
   .g-team.home { text-align: right; }
   .g-team.away { text-align: left; }
-  .g-team.win { color: var(--win); }
-  .g-center { text-align: center; min-width: 74px; }
-  .g-score { font-size: 1.25rem; font-weight: bold; letter-spacing: 1px; }
-  .g-time { font-size: 1.02rem; font-weight: bold; color: var(--navy); }
+  .g-team.win { color: var(--win); text-shadow: 0 0 18px rgba(61,220,132,.35); }
+  .g-center { text-align: center; min-width: 80px; }
+  .g-score {
+    font-size: 1.45rem; font-weight: 900; letter-spacing: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .g-time {
+    font-size: 1.05rem; font-weight: 900; letter-spacing: .04em;
+    color: var(--cy); text-shadow: 0 0 16px rgba(62,230,255,.4);
+    font-variant-numeric: tabular-nums;
+  }
   .g-venue { font-size: .72rem; color: var(--text-sub); }
   .g-bcast {
-    display: flex; align-items: flex-start; gap: 6px; font-size: .8rem; color: var(--text);
-    background: var(--navy-light); border-radius: 8px; padding: 6px 8px; margin-top: 4px;
-    line-height: 1.5;
+    display: flex; align-items: flex-start; gap: 6px; font-size: .8rem; color: #cfe4f2;
+    background: rgba(62,230,255,.06); border: 1px solid rgba(62,230,255,.14);
+    border-radius: 10px; padding: 7px 9px; margin-top: 5px; line-height: 1.5;
   }
   .g-bcast .txt { flex: 1; }
-  .g-bcast .memo { color: var(--accent); font-weight: bold; }
+  .g-bcast .memo { color: var(--amber); font-weight: 700; }
   .g-bcast button {
     border: none; background: none; font-size: 15px; cursor: pointer; padding: 0 2px;
     flex-shrink: 0;
   }
-  .g-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+  .g-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
   .g-links a {
-    font-size: .76rem; color: var(--navy); text-decoration: none;
-    border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px;
-    background: #fbfcfe;
+    font-size: .75rem; color: #b9c6e4; text-decoration: none;
+    border: 1px solid var(--line2); border-radius: 999px; padding: 4px 11px;
+    background: rgba(255,255,255,.04);
   }
-  .g-nores { font-size: .78rem; color: var(--text-sub); }
+  .g-nores { font-size: .76rem; color: var(--text-sub); }
 
   /* ---------- フォロー ---------- */
   .card-box {
-    background: var(--card); border-radius: var(--radius); border: 1px solid var(--line);
-    padding: 12px; margin-bottom: 12px;
+    background: linear-gradient(180deg, var(--card2), var(--card));
+    border-radius: var(--radius); border: 1px solid var(--line);
+    box-shadow: 0 10px 26px rgba(2,6,16,.45);
+    padding: 13px; margin-bottom: 12px;
   }
-  .team-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+  .team-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
   .t-chip {
-    border: 1.5px solid var(--line); background: #fbfcfe; color: var(--text);
-    border-radius: 999px; padding: 6px 12px; font-size: .86rem; cursor: pointer;
+    border: 1px solid var(--line2); background: rgba(255,255,255,.04); color: var(--text);
+    border-radius: 999px; padding: 7px 13px; font-size: .86rem; cursor: pointer;
   }
-  .t-chip.on { border-color: var(--accent); background: #fdeee4; color: #a34712; font-weight: bold; }
+  .t-chip.on {
+    border-color: rgba(62,230,255,.55); background: rgba(62,230,255,.12); color: var(--cy);
+    font-weight: 800; box-shadow: 0 0 12px rgba(62,230,255,.18);
+  }
   .player-row {
-    display: flex; align-items: center; gap: 8px; padding: 9px 2px;
+    display: flex; align-items: center; gap: 9px; padding: 10px 2px;
     border-bottom: 1px solid var(--line); cursor: pointer;
   }
   .player-row:last-child { border-bottom: none; }
-  .player-row .p-name { font-weight: bold; }
+  .player-row .p-name { font-weight: 800; }
   .player-row .p-sub { font-size: .78rem; color: var(--text-sub); }
   .player-row .p-del {
     margin-left: auto; border: none; background: none; color: var(--text-sub);
     font-size: 17px; cursor: pointer; padding: 4px 6px;
   }
-  .add-form { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-  .add-form input, .add-form select, .add-form textarea {
-    border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 10px; background: #fff;
-    width: 100%;
-  }
+  .add-form { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .add-form input, .add-form select, .add-form textarea { padding: 10px 11px; width: 100%; }
   .btn {
-    border: none; border-radius: 10px; padding: 11px 14px; font-size: .95rem;
-    background: var(--navy); color: #fff; cursor: pointer; font-weight: bold;
+    border: none; border-radius: 12px; padding: 12px 14px; font-size: .95rem;
+    background: var(--grad); color: var(--ink-on-grad); cursor: pointer; font-weight: 800;
+    letter-spacing: .02em;
   }
-  .btn.sub { background: var(--navy-light); color: var(--navy); }
-  .btn.warn { background: #fdecec; color: var(--live); }
+  .btn.sub { background: rgba(255,255,255,.08); color: var(--text); }
+  .btn.warn { background: rgba(255,77,109,.14); color: var(--live); }
   .btn:disabled { opacity: .5; }
-  .follow-mini { font-size: .8rem; color: var(--text-sub); margin-top: 4px; line-height: 1.6; }
+  .follow-mini { font-size: .8rem; color: var(--text-sub); margin-top: 4px; line-height: 1.7; }
+  .follow-mini b { color: var(--text); }
 
   /* ---------- 設定 ---------- */
-  .set-row { display: flex; align-items: center; gap: 10px; padding: 10px 2px; border-bottom: 1px solid var(--line); }
+  .set-row { display: flex; align-items: center; gap: 10px; padding: 11px 2px; border-bottom: 1px solid var(--line); }
   .set-row:last-child { border-bottom: none; }
   .set-row .grow { flex: 1; }
   .set-row .desc { font-size: .76rem; color: var(--text-sub); margin-top: 2px; line-height: 1.5; }
   .toggle { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
   .toggle input { opacity: 0; width: 0; height: 0; }
   .toggle .knob {
-    position: absolute; inset: 0; background: #cfd8e6; border-radius: 999px; cursor: pointer;
+    position: absolute; inset: 0; background: #2a3550; border-radius: 999px; cursor: pointer;
     transition: background .15s;
   }
   .toggle .knob::after {
     content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
-    background: #fff; border-radius: 50%; transition: left .15s; box-shadow: 0 1px 3px rgba(0,0,0,.25);
+    background: #fff; border-radius: 50%; transition: left .15s; box-shadow: 0 1px 3px rgba(0,0,0,.4);
   }
-  .toggle input:checked + .knob { background: var(--win); }
+  .toggle input:checked + .knob { background: linear-gradient(135deg, #23c9e6, #6a4df0); }
   .toggle input:checked + .knob::after { left: 23px; }
-  .diag { font-size: .78rem; color: var(--text-sub); line-height: 1.7; }
+  .diag { font-size: .78rem; color: var(--text-sub); line-height: 1.8; }
   .diag b { color: var(--text); }
-  .diag .ok { color: var(--win); font-weight: bold; }
-  .diag .ng { color: var(--live); font-weight: bold; }
+  .diag .ok { color: var(--win); font-weight: 700; }
+  .diag .ng { color: var(--live); font-weight: 700; }
 
   /* ---------- 下部ナビ ---------- */
   nav {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
-    background: var(--card); border-top: 1px solid var(--line);
+    background: rgba(12,17,30,.88);
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    border-top: 1px solid var(--line);
     display: flex; padding-bottom: env(safe-area-inset-bottom);
-    box-shadow: 0 -2px 10px rgba(20,40,80,.06);
   }
   nav button {
-    flex: 1; border: none; background: none; padding: 8px 0 7px; cursor: pointer;
-    font-size: .66rem; color: var(--text-sub); display: flex; flex-direction: column;
-    align-items: center; gap: 2px;
+    flex: 1; border: none; background: none; padding: 9px 0 8px; cursor: pointer;
+    font-size: .64rem; color: var(--text-sub); display: flex; flex-direction: column;
+    align-items: center; gap: 3px; letter-spacing: .04em; position: relative;
   }
-  nav button .ic { font-size: 21px; line-height: 1; }
-  nav button.on { color: var(--navy); font-weight: bold; }
+  nav button .ic { width: 22px; height: 22px; display: block; }
+  nav button .ic svg { width: 100%; height: 100%; }
+  nav button.on { color: var(--cy); font-weight: 700; }
+  nav button.on::before {
+    content: ""; position: absolute; top: 0; width: 26px; height: 3px;
+    border-radius: 0 0 3px 3px; background: var(--grad);
+  }
 
   /* ---------- モーダル ---------- */
   #modalWrap {
     display: none; position: fixed; inset: 0; z-index: 40;
-    background: rgba(15,30,55,.45); align-items: flex-end; justify-content: center;
+    background: rgba(4,8,16,.66); align-items: flex-end; justify-content: center;
   }
   #modalWrap.show { display: flex; }
   #modalBox {
-    background: var(--card); border-radius: 18px 18px 0 0; width: 100%; max-width: 640px;
-    padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+    background: var(--card2); border: 1px solid var(--line2); border-bottom: none;
+    border-radius: 20px 20px 0 0; width: 100%; max-width: 640px;
+    padding: 20px 16px calc(18px + env(safe-area-inset-bottom));
     max-height: 82vh; overflow-y: auto;
   }
-  #modalBox h3 { font-size: 1rem; color: var(--navy); margin-bottom: 4px; }
+  #modalBox::before {
+    content: ""; display: block; width: 42px; height: 4px; border-radius: 2px;
+    background: var(--line2); margin: -6px auto 14px;
+  }
+  #modalBox h3 { font-size: 1rem; color: var(--text); margin-bottom: 5px; }
   #modalBox .m-sub { font-size: .8rem; color: var(--text-sub); margin-bottom: 10px; line-height: 1.6; }
-  .m-btns { display: flex; gap: 8px; margin-top: 14px; }
+  .m-btns { display: flex; gap: 8px; margin-top: 15px; }
   .m-btns .btn { flex: 1; }
 
   .loading-note { text-align: center; color: var(--text-sub); font-size: .85rem; padding: 8px 0 4px; }
@@ -250,7 +300,7 @@
 
 <header>
   <div class="head-row">
-    <h1>🏟️ スポカレ！ <span class="head-date" id="headDate"></span></h1>
+    <h1><span class="logo">スポカレ</span><span class="head-date" id="headDate"></span></h1>
     <button id="refreshBtn" title="データを再取得">↻</button>
   </div>
   <div id="netBanner"></div>
@@ -270,11 +320,11 @@
 </main>
 
 <nav id="navBar">
-  <button data-tab="home"><span class="ic">🏠</span>ホーム</button>
-  <button data-tab="sched"><span class="ic">📅</span>日程</button>
-  <button data-tab="result"><span class="ic">🏁</span>結果</button>
-  <button data-tab="follow"><span class="ic">⭐</span>フォロー</button>
-  <button data-tab="set"><span class="ic">⚙️</span>設定</button>
+  <button data-tab="home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></svg></span>ホーム</button>
+  <button data-tab="sched"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>日程</button>
+  <button data-tab="result"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-2.6 4L18 12H5"/></svg></span>結果</button>
+  <button data-tab="follow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3.5 2.7 5.6 6.1.8-4.5 4.3 1.2 6L12 17.3l-5.5 2.9 1.2-6L3.2 9.9l6.1-.8Z"/></svg></span>フォロー</button>
+  <button data-tab="set"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.7M12 18.5v2.7M2.8 12h2.7M18.5 12h2.7M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M18.5 5.5l-1.9 1.9M7.4 16.6l-1.9 1.9"/></svg></span>設定</button>
 </nav>
 
 <div id="modalWrap"><div id="modalBox"></div></div>
@@ -893,7 +943,7 @@ function renderSet() {
     <div class="follow-mini">試合カードの📺欄に表示する内容です。放映権は年ごとに変わるので、実際と違ったらここで直してください(試合ごとのメモは各カードの✏️から)。</div>`;
   for (const k of LEAGUE_KEYS) {
     html += `<div style="margin-top:10px"><b style="font-size:.85rem">${LEAGUES[k].icon} ${esc(LEAGUES[k].name)}</b>
-      <textarea class="bc-preset" data-lg="${k}" rows="2" style="border:1.5px solid var(--line);border-radius:10px;width:100%;padding:8px;margin-top:4px">${esc(bcastPreset(k))}</textarea></div>`;
+      <textarea class="bc-preset" data-lg="${k}" rows="2" style="width:100%;padding:8px;margin-top:4px">${esc(bcastPreset(k))}</textarea></div>`;
   }
   html += `<button class="btn" id="bcSave" style="margin-top:10px;width:100%">視聴先の設定を保存</button></div>`;
 
@@ -957,7 +1007,7 @@ function openBcastModal(id) {
     <h3>📺 この試合の視聴メモ</h3>
     <div class="m-sub">${esc(jaTeam(ev.home, ev.league))} vs ${esc(jaTeam(ev.away, ev.league))}(${ev.dateJst ? keyToLabel(ev.dateJst) : ''})<br>
     例: 「地上波○○テレビ 19時〜」「DAZNで見る」など。空にするとリーグの初期表示に戻ります。</div>
-    <textarea id="bcMemo" rows="3" style="width:100%;border:1.5px solid var(--line);border-radius:10px;padding:9px">${esc(cur)}</textarea>
+    <textarea id="bcMemo" rows="3" style="width:100%;padding:9px">${esc(cur)}</textarea>
     <div class="m-btns">
       <button class="btn sub" id="mCancel">キャンセル</button>
       <button class="btn" id="mSave">保存</button>
