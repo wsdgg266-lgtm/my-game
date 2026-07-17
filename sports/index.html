@@ -294,6 +294,24 @@
   .m-btns .btn { flex: 1; }
 
   .loading-note { text-align: center; color: var(--text-sub); font-size: .85rem; padding: 8px 0 4px; }
+
+  /* ---------- MLB日本人選手 ---------- */
+  .jp-name { font-size: 1.12rem; font-weight: 900; padding: 7px 0 4px; letter-spacing: .02em; }
+  .jp-name small { font-size: .72rem; color: var(--text-sub); font-weight: normal; margin-left: 6px; }
+  .jp-pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 2px; }
+  .jp-pill {
+    display: inline-flex; align-items: baseline; gap: 5px;
+    background: rgba(255,255,255,.05); border: 1px solid var(--line2);
+    border-radius: 8px; padding: 4px 9px; font-size: .92rem; font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .jp-pill small { font-size: .68rem; color: var(--text-sub); font-weight: normal; }
+  .jp-rate { font-size: .84rem; margin: 5px 0 3px; color: var(--text); }
+  .jp-rate small { color: var(--text-sub); }
+  .jp-stars { letter-spacing: 2px; font-size: .95rem; }
+  .jp-stars.s5, .jp-stars.s4 { color: var(--amber); text-shadow: 0 0 12px rgba(255,194,75,.45); }
+  .jp-stars.s3 { color: #d9c9a0; }
+  .jp-stars.s2, .jp-stars.s1 { color: var(--text-sub); }
 </style>
 </head>
 <body>
@@ -315,6 +333,7 @@
   <div class="tab-page" id="page-home"></div>
   <div class="tab-page" id="page-sched"></div>
   <div class="tab-page" id="page-result"></div>
+  <div class="tab-page" id="page-jp"></div>
   <div class="tab-page" id="page-follow"></div>
   <div class="tab-page" id="page-set"></div>
 </main>
@@ -323,6 +342,7 @@
   <button data-tab="home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></svg></span>ホーム</button>
   <button data-tab="sched"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>日程</button>
   <button data-tab="result"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-2.6 4L18 12H5"/></svg></span>結果</button>
+  <button data-tab="jp"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></span>日本人</button>
   <button data-tab="follow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3.5 2.7 5.6 6.1.8-4.5 4.3 1.2 6L12 17.3l-5.5 2.9 1.2-6L3.2 9.9l6.1-.8Z"/></svg></span>フォロー</button>
   <button data-tab="set"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.7M12 18.5v2.7M2.8 12h2.7M18.5 12h2.7M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M18.5 5.5l-1.9 1.9M7.4 16.6l-1.9 1.9"/></svg></span>設定</button>
 </nav>
@@ -365,18 +385,9 @@ const LEAGUES = {
   npb: { name:'プロ野球', short:'NPB', icon:'⚾', tsdbId:'4591', espn:null,
     bcast:'DAZN(広島主催除く) / スカパー！プロ野球セット / パは楽天TV・ベースボールLIVEなども',
     links:[['NPB公式','https://npb.jp/games/'],['スポナビ','https://baseball.yahoo.co.jp/npb/schedule/']] },
-  j1: { name:'Jリーグ(J1)', short:'J1', icon:'⚽', tsdbId:'4633', espn:'soccer/jpn.1',
-    bcast:'DAZN(全試合) / 一部はNHK BSなど',
-    links:[['Jリーグ公式','https://www.jleague.jp/match/'],['スポナビ','https://soccer.yahoo.co.jp/jleague/schedule/']] },
-  b1: { name:'B.LEAGUE(B1)', short:'B1', icon:'🏀', tsdbId:'4977', espn:null,
-    bcast:'バスケットLIVE(Yahoo!) / 一部はBS・地上波など',
-    links:[['B.LEAGUE公式','https://www.bleague.jp/schedule/'],['スポナビ','https://sports.yahoo.co.jp/bleague/']] },
   mlb: { name:'MLB', short:'MLB', icon:'⚾', tsdbId:'4424', espn:'baseball/mlb',
     bcast:'SPOTV NOW / NHK BS / ABEMA(一部) など',
     links:[['MLB公式','https://www.mlb.com/schedule'],['スポナビ','https://baseball.yahoo.co.jp/mlb/schedule/']] },
-  nba: { name:'NBA', short:'NBA', icon:'🏀', tsdbId:'4387', espn:'basketball/nba',
-    bcast:'Prime Video / NBAレークパス など',
-    links:[['NBA公式','https://www.nba.com/schedule'],['スポナビ','https://sports.yahoo.co.jp/nba/']] },
 };
 const LEAGUE_KEYS = Object.keys(LEAGUES);
 
@@ -391,32 +402,9 @@ const TEAM_JA = {
   'Tohoku Rakuten Golden Eagles':'楽天', 'Rakuten Golden Eagles':'楽天', 'Rakuten Eagles':'楽天',
   'Chiba Lotte Marines':'ロッテ', 'Lotte Marines':'ロッテ',
   'Orix Buffaloes':'オリックス', 'Hokkaido Nippon-Ham Fighters':'日本ハム', 'Nippon-Ham Fighters':'日本ハム',
-  // --- J1(近年の主要クラブを広めに収録) ---
-  'Kashima Antlers':'鹿島', 'Urawa Red Diamonds':'浦和', 'Urawa Reds':'浦和',
-  'Kashiwa Reysol':'柏', 'FC Tokyo':'FC東京', 'Tokyo Verdy':'東京V',
-  'Machida Zelvia':'町田', 'FC Machida Zelvia':'町田',
-  'Kawasaki Frontale':'川崎F', 'Yokohama F. Marinos':'横浜FM', 'Yokohama F Marinos':'横浜FM',
-  'Yokohama FC':'横浜FC', 'Shonan Bellmare':'湘南', 'Albirex Niigata':'新潟',
-  'Shimizu S-Pulse':'清水', 'Nagoya Grampus':'名古屋', 'Kyoto Sanga':'京都', 'Kyoto Sanga FC':'京都',
-  'Gamba Osaka':'G大阪', 'Cerezo Osaka':'C大阪', 'Vissel Kobe':'神戸',
-  'Sanfrecce Hiroshima':'広島', 'Avispa Fukuoka':'福岡', 'Sagan Tosu':'鳥栖',
-  'Consadole Sapporo':'札幌', 'Hokkaido Consadole Sapporo':'札幌',
-  'Jubilo Iwata':'磐田', 'Fagiano Okayama':'岡山', 'Ventforet Kofu':'甲府',
-  'Vegalta Sendai':'仙台', 'Oita Trinita':'大分',
-  // --- B1(主要クラブ) ---
-  'Utsunomiya Brex':'宇都宮', 'Alvark Tokyo':'A東京', 'Chiba Jets':'千葉J', 'Chiba Jets Funabashi':'千葉J',
-  'Kawasaki Brave Thunders':'川崎', 'Yokohama B-Corsairs':'横浜BC', 'Sunrockers Shibuya':'SR渋谷',
-  'Sendai 89ers':'仙台', 'Akita Northern Happinets':'秋田', 'Levanga Hokkaido':'北海道',
-  'Ibaraki Robots':'茨城', 'Gunma Crane Thunders':'群馬', 'SeaHorses Mikawa':'三河',
-  'Nagoya Diamond Dolphins':'名古屋D', 'Fighting Eagles Nagoya':'FE名古屋',
-  'San-en NeoPhoenix':'三遠', 'Toyama Grouses':'富山', 'Shinshu Brave Warriors':'信州',
-  'Kyoto Hannaryz':'京都', 'Osaka Evessa':'大阪', 'Shimane Susanoo Magic':'島根',
-  'Hiroshima Dragonflies':'広島D', 'Ryukyu Golden Kings':'琉球', 'Nagasaki Velca':'長崎',
-  'Saga Ballooners':'佐賀', 'Koshigaya Alphas':'越谷', 'Altiri Chiba':'A千葉',
 };
-// MLB/NBAはニックネーム(最後の単語)で日本語化
+// MLBはニックネーム(名前の末尾)で日本語化
 const NICK_JA = {
-  // MLB
   'Dodgers':'ドジャース','Yankees':'ヤンキース','Mets':'メッツ','Cubs':'カブス','Padres':'パドレス',
   'Angels':'エンゼルス','Mariners':'マリナーズ','Giants':'ジャイアンツ','Athletics':'アスレチックス',
   'Astros':'アストロズ','Rangers':'レンジャーズ','Red Sox':'レッドソックス','White Sox':'ホワイトソックス',
@@ -424,29 +412,31 @@ const NICK_JA = {
   'Tigers':'タイガース','Twins':'ツインズ','Royals':'ロイヤルズ','Braves':'ブレーブス','Phillies':'フィリーズ',
   'Marlins':'マーリンズ','Nationals':'ナショナルズ','Brewers':'ブリュワーズ','Cardinals':'カージナルス',
   'Pirates':'パイレーツ','Reds':'レッズ','Diamondbacks':'ダイヤモンドバックス','Rockies':'ロッキーズ',
-  // NBA
-  'Lakers':'レイカーズ','Warriors':'ウォリアーズ','Celtics':'セルティックス','Bulls':'ブルズ',
-  'Knicks':'ニックス','Nets':'ネッツ','76ers':'76ers','Raptors':'ラプターズ','Bucks':'バックス',
-  'Cavaliers':'キャバリアーズ','Pistons':'ピストンズ','Pacers':'ペイサーズ','Hawks':'ホークス',
-  'Heat':'ヒート','Magic':'マジック','Hornets':'ホーネッツ','Wizards':'ウィザーズ',
-  'Nuggets':'ナゲッツ','Timberwolves':'ティンバーウルブズ','Thunder':'サンダー','Trail Blazers':'ブレイザーズ',
-  'Jazz':'ジャズ','Suns':'サンズ','Clippers':'クリッパーズ','Kings':'キングス','Mavericks':'マーベリックス',
-  'Rockets':'ロケッツ','Grizzlies':'グリズリーズ','Pelicans':'ペリカンズ','Spurs':'スパーズ',
 };
 function jaTeam(name, league) {
   if (!name) return '';
   if (TEAM_JA[name]) return TEAM_JA[name];
-  if (league === 'mlb' || league === 'nba') {
+  if (league === 'mlb') {
     for (const nick in NICK_JA) {
       if (name.endsWith(nick)) return NICK_JA[nick];
     }
   }
   return name;
 }
+// MLB日本人選手の名前(ローマ字→日本語、載っていない選手はローマ字のまま表示)
+const PLAYER_JA = {
+  'Shohei Ohtani':'大谷翔平', 'Yoshinobu Yamamoto':'山本由伸', 'Roki Sasaki':'佐々木朗希',
+  'Yu Darvish':'ダルビッシュ有', 'Seiya Suzuki':'鈴木誠也', 'Masataka Yoshida':'吉田正尚',
+  'Shota Imanaga':'今永昇太', 'Kodai Senga':'千賀滉大', 'Yusei Kikuchi':'菊池雄星',
+  'Yuki Matsui':'松井裕樹', 'Tomoyuki Sugano':'菅野智之', 'Kenta Maeda':'前田健太',
+  'Shinnosuke Ogasawara':'小笠原慎之介', 'Munetaka Murakami':'村上宗隆', 'Kazuma Okamoto':'岡本和真',
+  'Tatsuya Imai':'今井達也', 'Kona Takahashi':'髙橋光成', 'Naoyuki Uwasawa':'上沢直之',
+};
+const jaPlayer = n => PLAYER_JA[n] || n;
 
 /* ================= 状態 ================= */
 const state = {
-  settings: lsGet('spx_settings', { enabled: { npb:true, j1:true, b1:true, mlb:true, nba:true }, filter:'all' }),
+  settings: lsGet('spx_settings', { enabled: { npb:true, mlb:true }, filter:'all' }),
   follow:   lsGet('spx_follow',   { teams:{}, players:[] }),
   cache:    lsGet('spx_cache',    {}),
   bcast:    lsGet('spx_bcast',    { presets:{}, overrides:{} }),
@@ -455,6 +445,12 @@ const state = {
   fetching: false,
   fetchNote: '',
 };
+// 旧バージョン(J1/B1/NBA対応時代)の保存データを掃除
+if (state.settings.filter !== 'all' && !LEAGUES[state.settings.filter]) state.settings.filter = 'all';
+if (state.focus && !LEAGUES[state.focus.league]) state.focus = null;
+state.follow.players = (state.follow.players || []).filter(p => LEAGUES[p.league]);
+for (const k in state.follow.teams) if (!LEAGUES[k]) delete state.follow.teams[k];
+for (const k in state.cache) if (!LEAGUES[k] && k !== 'jp') delete state.cache[k];
 function saveAll() {
   lsSet('spx_settings', state.settings);
   lsSet('spx_follow', state.follow);
@@ -609,6 +605,58 @@ async function refreshLeague(lgKey, force) {
   saveCache();
 }
 
+/* --- MLB StatsAPI(キー不要): 日本出身選手の今季成績 --- */
+const seasonYear = () => Number(todayKey().slice(0, 4));
+function jpNormalize(p) {
+  const pos = (p.primaryPosition && p.primaryPosition.abbreviation) || '';
+  const team = (p.currentTeam && p.currentTeam.name) || '';
+  let hit = null, pitch = null;
+  for (const s of (p.stats || [])) {
+    const g = s.group && s.group.displayName;
+    const st = s.splits && s.splits[0] && s.splits[0].stat;
+    if (!st) continue;
+    if (g === 'hitting') hit = { avg: st.avg, hr: st.homeRuns, rbi: st.rbi, ops: st.ops, sb: st.stolenBases, pa: st.plateAppearances, g: st.gamesPlayed };
+    if (g === 'pitching') pitch = { era: st.era, w: st.wins, l: st.losses, sv: st.saves, so: st.strikeOuts, ip: st.inningsPitched, whip: st.whip, g: st.gamesPlayed };
+  }
+  // 投手の「ついでの打撃成績」はノイズなので隠す(大谷ら二刀流TWPは除く)
+  if (pos === 'P' && hit && Number(hit.pa || 0) < 30) hit = null;
+  return { id: p.id, name: p.fullName, team, pos, hit, pitch };
+}
+async function refreshJp(force) {
+  if (!state.settings.enabled.mlb) return;
+  const c = state.cache.jp;
+  if (!force && c && c.fetchedAt && Date.now() - c.fetchedAt < 60 * 60 * 1000) return;
+  try {
+    const y = seasonYear();
+    const list = await fetchJson(`https://statsapi.mlb.com/api/v1/sports/1/players?season=${y}&fields=people,id,fullName,birthCountry,primaryPosition,abbreviation`, 25000);
+    const jp = (list.people || []).filter(p => p.birthCountry === 'Japan');
+    let players = [];
+    if (jp.length) {
+      const ids = jp.map(p => p.id).join(',');
+      const det = await fetchJson(`https://statsapi.mlb.com/api/v1/people?personIds=${ids}&hydrate=stats(group=[hitting,pitching],type=[season],season=${y}),currentTeam`, 25000);
+      players = (det.people || []).map(jpNormalize);
+    }
+    state.cache.jp = { players, fetchedAt: Date.now(), error: players.length ? null : '日本人選手が見つかりませんでした' };
+  } catch(e) {
+    state.cache.jp = { players: (c && c.players) || [], fetchedAt: (c && c.fetchedAt) || null, error: '取得失敗(' + e.message + ')' };
+  }
+  saveCache();
+}
+// 自動評価(★1〜5): 打者はOPS、投手は防御率から機械的に判定
+function rateHit(h) {
+  const ops = parseFloat(h.ops);
+  if (isNaN(ops)) return null;
+  const s = ops >= .900 ? 5 : ops >= .800 ? 4 : ops >= .700 ? 3 : ops >= .600 ? 2 : 1;
+  return { stars: s, low: Number(h.pa || 0) < 50 };
+}
+function ratePitch(p) {
+  const era = parseFloat(p.era);
+  if (isNaN(era)) return null;
+  const s = era <= 2.50 ? 5 : era <= 3.30 ? 4 : era <= 4.10 ? 3 : era <= 5.00 ? 2 : 1;
+  return { stars: s, low: parseFloat(p.ip || '0') < 20 };
+}
+const RATE_LABEL = { 5:'絶好調', 4:'好調', 3:'まずまず', 2:'苦戦', 1:'不振' };
+
 let refreshing = false;
 async function refreshAll(force) {
   if (refreshing) return;
@@ -621,6 +669,9 @@ async function refreshAll(force) {
       try { await refreshLeague(k, force); } catch(e) {}
       render();
     }
+    state.fetchNote = 'MLB日本人選手の成績を取得中…';
+    renderNet();
+    try { await refreshJp(force); } catch(e) {}
   } finally {
     refreshing = false;
     state.fetchNote = '';
@@ -673,6 +724,7 @@ function render() {
   if (t === 'home') renderHome();
   else if (t === 'sched') renderSched();
   else if (t === 'result') renderResult();
+  else if (t === 'jp') renderJp();
   else if (t === 'follow') renderFollow();
   else renderSet();
 }
@@ -837,6 +889,82 @@ function renderResult() {
   bindCards(el);
 }
 
+function starsHtml(rate) {
+  if (!rate) return '';
+  const stars = '★'.repeat(rate.stars) + '☆'.repeat(5 - rate.stars);
+  return `<span class="jp-stars s${rate.stars}">${stars}</span> <b>${RATE_LABEL[rate.stars]}</b>${rate.low ? '<small>(出場少なめ)</small>' : ''}`;
+}
+function statPills(pairs) {
+  return `<div class="jp-pills">` + pairs
+    .filter(p => p[1] != null && p[1] !== '')
+    .map(p => `<span class="jp-pill"><small>${p[0]}</small>${esc(String(p[1]))}</span>`).join('') + `</div>`;
+}
+function jpCard(p, kind) {
+  const ja = jaPlayer(p.name);
+  const teamJa = jaTeam(p.team, 'mlb');
+  const posJa = { 'P':'投手', 'TWP':'二刀流', 'C':'捕手', '1B':'一塁手', '2B':'二塁手', '3B':'三塁手', 'SS':'遊撃手', 'LF':'左翼手', 'CF':'中堅手', 'RF':'右翼手', 'OF':'外野手', 'DH':'DH' }[p.pos] || p.pos;
+  let body = '';
+  if ((kind === 'hit' || p.pos === 'TWP') && p.hit) {
+    const r = rateHit(p.hit);
+    body += statPills([['打率', p.hit.avg], ['本塁打', p.hit.hr], ['打点', p.hit.rbi], ['OPS', p.hit.ops], ['盗塁', p.hit.sb], ['試合', p.hit.g]]);
+    if (r) body += `<div class="jp-rate">打撃評価: ${starsHtml(r)}</div>`;
+  }
+  if ((kind === 'pitch' || p.pos === 'TWP') && p.pitch) {
+    const r = ratePitch(p.pitch);
+    body += statPills([['防御率', p.pitch.era], ['勝-敗', `${p.pitch.w}-${p.pitch.l}`], ['セーブ', Number(p.pitch.sv) ? p.pitch.sv : null], ['奪三振', p.pitch.so], ['投球回', p.pitch.ip], ['WHIP', p.pitch.whip]]);
+    if (r) body += `<div class="jp-rate">投球評価: ${starsHtml(r)}</div>`;
+  }
+  if (!body) body = `<div class="follow-mini">今季のMLB成績はまだありません(マイナー・故障者リスト等)。</div>`;
+  const q = encodeURIComponent(ja + ' 成績 速報');
+  return `<div class="game jp-card">
+    <div class="g-top"><span class="g-lg">⚾ MLB</span>
+      <span>${esc(teamJa)}${posJa ? '・' + esc(posJa) : ''}</span></div>
+    <div class="jp-name">${esc(ja)}${ja !== p.name ? ` <small>${esc(p.name)}</small>` : ''}</div>
+    ${body}
+    <div class="g-links">
+      <a href="https://www.mlb.com/player/${p.id}" target="_blank" rel="noopener">MLB公式</a>
+      <a href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">🔍 最新情報を検索</a>
+      ${p.team ? `<a href="#" class="jp-focus" data-team="${esc(p.team)}" data-label="${esc(ja)}">📅 チームの試合を見る</a>` : ''}
+    </div>
+  </div>`;
+}
+function renderJp() {
+  const c = state.cache.jp;
+  let html = `<div class="sec-title">🇯🇵 MLBの日本人選手 <small>${seasonYear()}年シーズン成績</small></div>`;
+  if (!c || !c.players || !c.players.length) {
+    html += `<div class="empty-note">${c && c.error ? '⚠️ ' + esc(c.error) + '<br>' : ''}
+      まだデータがありません。右上の <b>↻</b> で取得します。</div>`;
+  } else {
+    const hitters = c.players.filter(p => p.hit && p.pos !== 'P' && Number(p.hit.pa || 0) > 0)
+      .sort((a, b) => (parseFloat(b.hit.ops) || 0) - (parseFloat(a.hit.ops) || 0));
+    const hitterIds = new Set(hitters.map(p => p.id));
+    const pitchers = c.players.filter(p => p.pitch && parseFloat(p.pitch.ip || '0') > 0 && !hitterIds.has(p.id))
+      .sort((a, b) => (parseFloat(a.pitch.era) || 99) - (parseFloat(b.pitch.era) || 99));
+    const shown = new Set([...hitters, ...pitchers].map(p => p.id));
+    const others = c.players.filter(p => !shown.has(p.id));
+    if (hitters.length) {
+      html += `<div class="sec-title">💥 打者 <small>OPS順(二刀流は投球成績も表示)</small></div>` + hitters.map(p => jpCard(p, 'hit')).join('');
+    }
+    if (pitchers.length) {
+      html += `<div class="sec-title">🎯 投手 <small>防御率順</small></div>` + pitchers.map(p => jpCard(p, 'pitch')).join('');
+    }
+    if (others.length) {
+      html += `<div class="sec-title">📋 今季成績なし <small>マイナー・故障者リスト等</small></div>` + others.map(p => jpCard(p, 'none')).join('');
+    }
+    if (c.error) html += `<div class="empty-note">⚠️ ${esc(c.error)}</div>`;
+    html += `<div class="follow-mini" style="margin:4px 2px 12px">評価(★)はOPS・防御率からアプリが機械的に付けた目安です。
+      ${c.fetchedAt ? new Date(c.fetchedAt).toLocaleString('ja-JP', { timeZone: JST, month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }) + ' 時点 / ' : ''}出典: MLB StatsAPI</div>`;
+  }
+  const el = $('#page-jp');
+  el.innerHTML = html;
+  el.querySelectorAll('.jp-focus').forEach(a => a.onclick = ev => {
+    ev.preventDefault();
+    state.focus = { league: 'mlb', team: a.dataset.team, label: a.dataset.label };
+    state.tab = 'home'; saveAll(); render();
+    window.scrollTo(0, 0);
+  });
+}
+
 function renderFollow() {
   let html = `<div class="sec-title">⭐ チームをフォロー</div>
     <div class="card-box"><div class="follow-mini">チップをタップするとフォローのオン/オフを切り替えられます。フォローしたチームはホームに「注目」として表示され、下の「絞り込み表示」からそのチームの試合だけを見ることもできます。</div>`;
@@ -958,6 +1086,17 @@ function renderSet() {
       + (c.error ? `<br><span class="ng">⚠ ${esc(c.error)}</span>` : '')
       + `</div>`;
   }
+  {
+    const j = state.cache.jp;
+    if (!j || !j.fetchedAt) html += `<div>🇯🇵 <b>日本人選手</b>: <span class="ng">未取得</span></div>`;
+    else {
+      const when = new Date(j.fetchedAt).toLocaleString('ja-JP', { timeZone: JST, month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' });
+      html += `<div>🇯🇵 <b>日本人選手</b>: `
+        + (j.players && j.players.length ? `<span class="ok">${j.players.length}人</span>` : `<span class="ng">0人</span>`)
+        + ` <small>(${when} / MLB StatsAPI)</small>`
+        + (j.error ? `<br><span class="ng">⚠ ${esc(j.error)}</span>` : '') + `</div>`;
+    }
+  }
   html += `<div style="margin-top:10px;display:flex;gap:8px">
       <button class="btn sub" id="reFetch" style="flex:1">今すぐ再取得</button>
       <button class="btn warn" id="clearCache" style="flex:1">キャッシュ削除</button>
@@ -971,7 +1110,7 @@ function renderSet() {
   html += `</div>`;
 
   html += `<div class="sec-title">ℹ️ このアプリについて</div><div class="card-box follow-mini">
-    試合データは ESPN / TheSportsDB の公開APIから取得しています(有志更新のため、特に日本のリーグは反映が遅れたり抜けたりすることがあります)。
+    試合データは ESPN / TheSportsDB、日本人選手の成績は MLB StatsAPI の公開APIから取得しています(TheSportsDBは有志更新のため、NPBは反映が遅れたり抜けたりすることがあります)。
     正確な情報は各リーグの公式サイト・スポーツナビで確認してください。データはこの端末のブラウザにのみ保存されます。</div>`;
 
   const el = $('#page-set');

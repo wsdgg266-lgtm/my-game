@@ -1,7 +1,7 @@
 // スポカレ！ Service Worker
 // アプリ本体(シェル)だけをキャッシュし、試合データのAPIはキャッシュしない
 // (データはアプリ側が LocalStorage に保存してオフライン表示する)
-const CACHE = 'spx-shell-v2';
+const CACHE = 'spx-shell-v3';
 const SHELL = [
   './',
   './index.html',
