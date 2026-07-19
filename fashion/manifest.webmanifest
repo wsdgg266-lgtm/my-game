@@ -1,0 +1,17 @@
+{
+  "name": "ふくらぶ！ - 流行・お店・お得がわかるファッションアプリ",
+  "short_name": "ふくらぶ",
+  "description": "最近の流行り、近くのお店、セールなどのお得情報がひとつでわかるファッションアプリ",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff6fa",
+  "theme_color": "#fff6fa",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

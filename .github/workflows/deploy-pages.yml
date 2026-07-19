@@ -6,6 +6,7 @@ on:
       - main
       - claude/shopping-reminder-app-7xpyg5
       - claude/sports-schedule-results-app-th4n6j
+      - claude/fashion-app-spec-kr6a32
   workflow_dispatch:
 
 permissions:

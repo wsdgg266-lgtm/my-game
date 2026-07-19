@@ -54,6 +54,12 @@ GitHub Pages はこのリポジトリの `.github/workflows/deploy-pages.yml` �
 「スポカレ！」も入っています(`sports/` フォルダ)。詳しくは
 [sports/README.md](sports/README.md) を見てください。
 
+## 👗 同居アプリ: ふくらぶ!
+
+流行・近くのお店・お得情報がわかるファッションアプリ
+「ふくらぶ!」も入っています(`fashion/` フォルダ)。詳しくは
+[fashion/README.md](fashion/README.md) を見てください。
+
 ## 技術構成
 
 - HTML / CSS / JavaScript のみの単一ファイル構成(依存ライブラリなし)
