@@ -521,7 +521,39 @@
     padding: 12px;
     margin-bottom: 10px;
   }
-  .calc-title { font-size: .82rem; font-weight: 700; color: var(--green-dark); margin-bottom: 8px; }
+  .calc-title {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .tag-shot-btn {
+    border: 1.5px solid var(--green);
+    background: var(--green-light);
+    color: var(--green-dark);
+    border-radius: 99px;
+    padding: 5px 12px;
+    font-size: .8rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .tag-status { font-size: .78rem; color: var(--text-sub); margin-top: 8px; }
+  .tag-status:empty { display: none; }
+  .tag-cands { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag-cands:empty { display: none; }
+  .tag-cands .cand-label { font-size: .74rem; color: var(--text-sub); width: 100%; }
+  .tag-cands button {
+    border: 1.5px solid var(--line);
+    background: var(--bg);
+    border-radius: 99px;
+    padding: 4px 12px;
+    font-size: .84rem;
+    cursor: pointer;
+    color: var(--text);
+  }
   .calc-box .field-select { margin-bottom: 8px; }
   .calc-inputs { display: flex; gap: 8px; }
   .calc-inputs input {
@@ -744,21 +776,27 @@
     <h3>⚖️ どちらがお得?</h3>
     <p class="sub">2つの商品の価格と内容量(g・ml・個など同じ単位)を入れてください。リストに内容量を登録した商品は下から選べます。</p>
     <div class="calc-box">
-      <div class="calc-title">商品A</div>
+      <div class="calc-title"><span>商品A</span><button type="button" class="tag-shot-btn" id="shotA">📷 値札を撮影</button></div>
       <select id="calcSelA" class="field-select"><option value="">(リストから選ぶ)</option></select>
       <div class="calc-inputs">
         <input type="number" id="calcPriceA" inputmode="numeric" min="0" placeholder="価格(円)">
         <input type="number" id="calcAmountA" inputmode="decimal" min="0" placeholder="内容量">
       </div>
+      <div class="tag-status" id="tagStatusA"></div>
+      <div class="tag-cands" id="tagCandsA"></div>
     </div>
     <div class="calc-box">
-      <div class="calc-title">商品B</div>
+      <div class="calc-title"><span>商品B</span><button type="button" class="tag-shot-btn" id="shotB">📷 値札を撮影</button></div>
       <select id="calcSelB" class="field-select"><option value="">(リストから選ぶ)</option></select>
       <div class="calc-inputs">
         <input type="number" id="calcPriceB" inputmode="numeric" min="0" placeholder="価格(円)">
         <input type="number" id="calcAmountB" inputmode="decimal" min="0" placeholder="内容量">
       </div>
+      <div class="tag-status" id="tagStatusB"></div>
+      <div class="tag-cands" id="tagCandsB"></div>
     </div>
+    <input type="file" id="tagFileA" accept="image/*" capture="environment" hidden>
+    <input type="file" id="tagFileB" accept="image/*" capture="environment" hidden>
     <div class="calc-result" id="calcResult">価格と内容量を入力してください</div>
     <div class="modal-btns">
       <button id="calcCloseBtn">閉じる</button>
@@ -1542,6 +1580,225 @@
     $(id).addEventListener('input', updateCalc);
   });
   wireOverlay('calcOverlay', 'calcCloseBtn');
+
+  // ---- 値札の写真読み取り(OCR・すべて端末内で処理) ----
+  var ocrWorkerPromise = null;
+  var ocrStatusCb = null;
+
+  function getOcrWorker() {
+    if (!ocrWorkerPromise) {
+      ocrWorkerPromise = new Promise(function (resolve, reject) {
+        var base = new URL('vendor/tesseract/', window.location.href).href;
+        function boot() {
+          window.Tesseract.createWorker('eng', 1, {
+            workerPath: base + 'worker.min.js',
+            corePath: base,
+            langPath: base + 'lang',
+            logger: function (m) {
+              if (ocrStatusCb && m && m.status === 'recognizing text') {
+                ocrStatusCb('🔍 解析中… ' + Math.round((m.progress || 0) * 100) + '%');
+              }
+            }
+          }).then(resolve, reject);
+        }
+        if (window.Tesseract) { boot(); return; }
+        var s = document.createElement('script');
+        s.src = base + 'tesseract.min.js';
+        s.onload = boot;
+        s.onerror = function () { reject(new Error('OCRの読み込みに失敗')); };
+        document.head.appendChild(s);
+      });
+      ocrWorkerPromise.catch(function () { ocrWorkerPromise = null; });
+    }
+    return ocrWorkerPromise;
+  }
+
+  function fileToImage(file, cb, errCb) {
+    var img = new Image();
+    var url = URL.createObjectURL(file);
+    img.onload = function () { cb(img, url); };
+    img.onerror = function () { URL.revokeObjectURL(url); errCb(); };
+    img.src = url;
+  }
+
+  function imgToCanvas(img, maxSide) {
+    var scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+    var c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(img.width * scale));
+    c.height = Math.max(1, Math.round(img.height * scale));
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    return c;
+  }
+
+  // OCR結果から単語(文字と文字高さ)を集める
+  function collectWords(data) {
+    var words = [];
+    (data.blocks || []).forEach(function (b) {
+      (b.paragraphs || []).forEach(function (p) {
+        (p.lines || []).forEach(function (l) {
+          (l.words || []).forEach(function (w) {
+            words.push({ text: w.text || '', h: w.bbox ? (w.bbox.y1 - w.bbox.y0) : 0 });
+          });
+        });
+      });
+    });
+    return words;
+  }
+
+  // 値札テキストから「容量」と「価格候補」を抽出
+  var VOL_RE = /(\d+(?:\.\d+)?)\s*(ml|mL|ML|Ml|l|L|ℓ|g|G|kg|Kg|KG)(?![A-Za-z])/;
+  function parseTag(words, fullText) {
+    var volumes = [], prices = [];
+    function addVolume(n, u, h) {
+      var raw = String(n);
+      u = u.toLowerCase();
+      if (u === 'l' || u === 'ℓ') { n = n * 1000; u = 'ml'; }
+      if (u === 'kg') { n = n * 1000; u = 'g'; }
+      if (n <= 0 || n > 100000) return;
+      var dup = volumes.some(function (v) { return v.amount === n && v.unit === u; });
+      if (!dup) volumes.push({ amount: n, unit: u, h: h || 0, raw: raw });
+    }
+    words.forEach(function (w) {
+      var t = String(w.text).replace(/[,、]/g, '');
+      var m = t.match(VOL_RE);
+      if (m) { addVolume(parseFloat(m[1]), m[2], w.h); return; }
+      var num = t.replace(/[^0-9.]/g, '');
+      if (!/\d/.test(num)) return;
+      if ((num.match(/\./g) || []).length > 1) return;
+      var v = parseFloat(num);
+      var digits = num.replace(/\D/g, '').length;
+      // 2〜5桁を価格候補に(JANコード等の長い数字は除外)
+      if (!isNaN(v) && v >= 10 && v <= 99999 && digits >= 2 && digits <= 5) {
+        prices.push({ price: Math.round(v), h: w.h || 0 });
+      }
+    });
+    // 単語分割で見逃した容量を全文からも拾う
+    var g = (fullText || '').replace(/[,、\s]/g, '');
+    var re = new RegExp(VOL_RE.source, 'g');
+    var mm;
+    while ((mm = re.exec(g)) !== null) addVolume(parseFloat(mm[1]), mm[2], 0);
+    // 価格は文字が大きい順(値札は価格が一番大きい)・重複除去
+    prices.sort(function (a, b) { return b.h - a.h; });
+    var seen = {};
+    prices = prices.filter(function (p) {
+      if (seen[p.price]) return false;
+      var bad = volumes.some(function (v) {
+        // 容量と同じ数値、および「350g」→「3509」「350ml」→「3501」のような
+        // 単位の読み違いで生まれた数値は価格候補から外す
+        return v.amount === p.price ||
+          String(p.price) === v.raw + '9' ||
+          String(p.price) === v.raw + '1';
+      });
+      if (bad) return false;
+      seen[p.price] = true;
+      return true;
+    });
+    volumes.sort(function (a, b) { return b.h - a.h; });
+    return { prices: prices.slice(0, 4), volumes: volumes.slice(0, 3) };
+  }
+
+  function renderTagCands(side, parsed) {
+    var box = $('tagCands' + side);
+    box.innerHTML = '';
+    if (parsed.prices.length === 0 && parsed.volumes.length === 0) return;
+    if (parsed.prices.length) {
+      var pl = document.createElement('span');
+      pl.className = 'cand-label';
+      pl.textContent = '価格の候補(タップで入力):';
+      box.appendChild(pl);
+      parsed.prices.forEach(function (p) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = yen(p.price);
+        b.addEventListener('click', function () {
+          $('calcPrice' + side).value = p.price;
+          updateCalc();
+        });
+        box.appendChild(b);
+      });
+    }
+    if (parsed.volumes.length) {
+      var vl = document.createElement('span');
+      vl.className = 'cand-label';
+      vl.textContent = '容量の候補:';
+      box.appendChild(vl);
+      parsed.volumes.forEach(function (v) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = v.amount + v.unit;
+        b.addEventListener('click', function () {
+          $('calcAmount' + side).value = v.amount;
+          updateCalc();
+        });
+        box.appendChild(b);
+      });
+    }
+  }
+
+  function runTagOcr(side, file) {
+    var status = $('tagStatus' + side);
+    $('tagCands' + side).innerHTML = '';
+    status.textContent = '📥 読み取りの準備中…(初回のみデータを取得します)';
+    fileToImage(file, function (img, objUrl) {
+      getOcrWorker().then(function (worker) {
+        // 値札は「大きな価格の数字」と「小さな容量表記」が混在するため、
+        // 複数の縮尺で解析して結果を統合する(OCRは30〜50px程度の文字が得意)
+        var passes = [1200, 500, 220, 150];
+        var allWords = [];
+        var allText = '';
+        var idx = 0;
+        function finish() {
+          ocrStatusCb = null;
+          URL.revokeObjectURL(objUrl);
+          var parsed = parseTag(allWords, allText);
+          if (parsed.prices.length === 0 && parsed.volumes.length === 0) {
+            status.textContent = '⚠️ 数字を読み取れませんでした。値札に近づけて、明るい場所でもう一度撮ってみてください。';
+            return;
+          }
+          // 一番確からしい候補を自動入力(候補タップで修正可能)
+          if (parsed.prices.length) $('calcPrice' + side).value = parsed.prices[0].price;
+          if (parsed.volumes.length) $('calcAmount' + side).value = parsed.volumes[0].amount;
+          status.textContent = '✅ 読み取りました。違う場合は下の候補をタップしてください。';
+          renderTagCands(side, parsed);
+          updateCalc();
+        }
+        function next() {
+          if (idx >= passes.length) { finish(); return; }
+          var maxSide = passes[idx];
+          idx += 1;
+          var norm = passes[0] / maxSide; // 文字高さを共通の縮尺に換算
+          var stage = '(' + idx + '/' + passes.length + ')';
+          ocrStatusCb = function (msg) { status.textContent = msg + ' ' + stage; };
+          status.textContent = '🔍 解析中… ' + stage;
+          worker.recognize(imgToCanvas(img, maxSide), {}, { blocks: true, text: true }).then(function (res) {
+            var data = res.data || {};
+            collectWords(data).forEach(function (w) {
+              w.h = (w.h || 0) * norm;
+              allWords.push(w);
+            });
+            allText += '\n' + (data.text || '');
+            next();
+          }, function () { next(); });
+        }
+        next();
+      }).catch(function () {
+        ocrStatusCb = null;
+        URL.revokeObjectURL(objUrl);
+        status.textContent = '⚠️ 読み取りに失敗しました。通信環境の良い場所で再度お試しください。';
+      });
+    }, function () {
+      status.textContent = '⚠️ 写真を読み込めませんでした。';
+    });
+  }
+
+  ['A', 'B'].forEach(function (side) {
+    $('shot' + side).addEventListener('click', function () { $('tagFile' + side).click(); });
+    $('tagFile' + side).addEventListener('change', function () {
+      var file = this.files && this.files[0];
+      this.value = '';
+      if (file) runTagOcr(side, file);
+    });
+  });
 
   // ---- メニュー ----
   $('menuBtn').addEventListener('click', function () { $('menuOverlay').classList.add('show'); });
