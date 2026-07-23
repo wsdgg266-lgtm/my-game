@@ -1,7 +1,6 @@
-// ふくらぶ！ Service Worker
-// アプリ本体(シェル)だけをキャッシュし、楽天APIなど外部データはキャッシュしない
-// (ランキングデータはアプリ側が LocalStorage に保存してオフライン表示する)
-const CACHE = 'fkl-shell-v1';
+// ふくらぶ Service Worker
+// アプリ本体(シェル)だけをキャッシュする(診断は端末内処理なので全機能オフラインでも動く)
+const CACHE = 'fkl-shell-v2';
 const SHELL = [
   './',
   './index.html',

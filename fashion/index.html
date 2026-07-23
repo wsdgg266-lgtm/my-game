@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#fff6fa">
+<meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -11,297 +11,272 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
-<title>ふくらぶ！ - 流行・お店・お得がわかるファッションアプリ</title>
+<title>ふくらぶ - コーデ診断・お店・お得がわかるファッションアプリ</title>
 <style>
   :root {
-    --bg: #fff6fa;
+    --bg: #f7f7f9;
     --card: #ffffff;
-    --text: #46323e;
-    --text-sub: #a88f9c;
-    --line: rgba(214,120,168,.16);
-    --line2: rgba(214,120,168,.32);
-    --pk: #ff5fa2;
-    --pk-deep: #e8438b;
-    --vi: #b06ff5;
-    --grad: linear-gradient(135deg, #ff8ec0, #b98af7);
-    --grad-strong: linear-gradient(135deg, #ff5fa2, #a45ef2);
-    --ink-on-grad: #fff;
-    --ok: #2fbf8f;
-    --warn: #f5a623;
-    --sale: #ff4d6d;
-    --radius: 18px;
-    --shadow: 0 10px 26px rgba(232,67,139,.10);
+    --text: #1d1d24;
+    --text-sub: #8b8b96;
+    --line: #ececf0;
+    --line2: #dcdce4;
+    --ac: #f5568b;
+    --ac-deep: #e63f7a;
+    --ac-soft: #fdeef4;
+    --ok: #27b98b;
+    --warn: #f0a02e;
+    --radius: 16px;
+    --shadow: 0 1px 3px rgba(20,20,30,.06);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body {
-    font-family: "Hiragino Maru Gothic ProN", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
-    background: radial-gradient(880px 460px at 50% -170px, #ffe0ef 0%, var(--bg) 62%) fixed, var(--bg);
-    background-color: var(--bg);
+    font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+    background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    padding-bottom: 92px;
+    padding-bottom: 88px;
     overflow-x: hidden;
     max-width: 100vw;
   }
   input, select, textarea {
     font-size: 16px !important;
     background: #fff; color: var(--text);
-    border: 1.5px solid var(--line2); border-radius: 12px;
+    border: 1.5px solid var(--line2); border-radius: 10px;
     font-family: inherit;
   }
-  input::placeholder, textarea::placeholder { color: #cbb3bf; }
+  input::placeholder, textarea::placeholder { color: #b9b9c2; }
   textarea { line-height: 1.6; }
   button { font-family: inherit; }
-  a { color: var(--pk-deep); }
+  a { color: var(--ac-deep); }
 
   /* ---------- ヘッダー ---------- */
   header {
-    background: rgba(255,246,250,.85);
-    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    background: rgba(255,255,255,.92);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--line);
-    padding: calc(12px + env(safe-area-inset-top)) 14px 11px;
+    padding: calc(13px + env(safe-area-inset-top)) 16px 12px;
     position: sticky; top: 0; z-index: 10;
   }
   .head-row { display: flex; align-items: center; gap: 8px; }
-  header h1 { display: flex; align-items: baseline; gap: 9px; flex: 1; font-size: 1rem; }
-  .logo {
-    font-size: 1.35rem; font-weight: 900; letter-spacing: .05em;
-    background: var(--grad-strong);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    padding-right: 3px;
-  }
-  .head-date { font-size: .74rem; color: var(--text-sub); font-weight: normal; }
-  #refreshBtn {
-    border: 1px solid var(--line2); background: #fff; color: var(--pk-deep);
-    width: 38px; height: 38px; border-radius: 50%; font-size: 18px; cursor: pointer;
-    flex-shrink: 0; line-height: 1; box-shadow: var(--shadow);
-  }
-  #refreshBtn.spin { animation: spin 1s linear infinite; border-color: var(--pk); }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  header h1 { display: flex; align-items: center; gap: 8px; flex: 1; font-size: 1rem; }
+  .logo-mark { width: 26px; height: 26px; flex-shrink: 0; display: block; }
+  .logo { font-size: 1.15rem; font-weight: 800; letter-spacing: .03em; color: var(--text); }
+  .head-date { font-size: .74rem; color: var(--text-sub); font-weight: normal; margin-left: 2px; }
 
   /* ---------- 本文 ---------- */
-  main { padding: 14px 14px 0; max-width: 640px; margin: 0 auto; }
+  main { padding: 16px 16px 0; max-width: 640px; margin: 0 auto; }
   .tab-page { display: none; }
   .tab-page.on { display: block; }
   .sec-title {
-    font-size: .95rem; font-weight: 800; color: var(--text);
-    margin: 20px 2px 9px; display: flex; align-items: center; gap: 7px;
+    font-size: .92rem; font-weight: 700; color: var(--text);
+    margin: 22px 2px 10px; display: flex; align-items: center; gap: 7px;
     letter-spacing: .02em;
   }
-  .sec-title::before { content: ""; width: 4px; height: 15px; border-radius: 2px; background: var(--grad-strong); }
   .sec-title:first-child { margin-top: 2px; }
-  .sec-title small { color: var(--text-sub); font-weight: normal; font-size: .76rem; }
+  .sec-title small { color: var(--text-sub); font-weight: normal; font-size: .75rem; }
   .sec-title .spacer { flex: 1; }
   .sec-title .mini-btn {
-    border: 1px solid var(--line2); background: #fff; color: var(--pk-deep);
-    border-radius: 999px; padding: 4px 12px; font-size: .78rem; cursor: pointer; font-weight: 700;
+    border: none; background: var(--ac-soft); color: var(--ac-deep);
+    border-radius: 999px; padding: 5px 13px; font-size: .78rem; cursor: pointer; font-weight: 700;
   }
   .empty-note {
-    background: #fff; border: 1.5px dashed var(--line2); border-radius: var(--radius);
-    padding: 20px 14px; text-align: center; color: var(--text-sub); font-size: .9rem;
+    background: var(--card); border: 1.5px dashed var(--line2); border-radius: var(--radius);
+    padding: 20px 14px; text-align: center; color: var(--text-sub); font-size: .88rem;
     line-height: 1.7; margin-bottom: 10px;
   }
   .card-box {
     background: var(--card);
     border-radius: var(--radius); border: 1px solid var(--line);
     box-shadow: var(--shadow);
-    padding: 13px; margin-bottom: 12px;
+    padding: 14px; margin-bottom: 12px;
   }
   .note-sub { font-size: .76rem; color: var(--text-sub); line-height: 1.6; }
 
   /* ---------- チップ・ボタン ---------- */
-  .chip-bar {
-    display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; padding: 2px 0 10px;
-  }
-  .chip-bar::-webkit-scrollbar { display: none; }
+  .chip-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip {
-    flex-shrink: 0; border: 1px solid var(--line2); background: #fff;
-    color: var(--text); border-radius: 999px; padding: 7px 14px; font-size: .87rem; cursor: pointer;
+    flex-shrink: 0; border: none; background: #f1f1f5;
+    color: var(--text); border-radius: 999px; padding: 8px 14px; font-size: .86rem; cursor: pointer;
     display: inline-flex; align-items: center; gap: 5px;
   }
-  .chip.on {
-    background: var(--grad-strong); color: var(--ink-on-grad); border-color: transparent; font-weight: 800;
-    box-shadow: 0 2px 14px rgba(232,67,139,.30);
-  }
-  .chip-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip.on { background: var(--ac); color: #fff; font-weight: 700; }
   .btn {
-    border: none; border-radius: 13px; padding: 12px 14px; font-size: .95rem;
-    background: var(--grad-strong); color: var(--ink-on-grad); cursor: pointer; font-weight: 800;
+    border: none; border-radius: 12px; padding: 13px 14px; font-size: .95rem;
+    background: var(--ac); color: #fff; cursor: pointer; font-weight: 700;
     letter-spacing: .02em;
   }
-  .btn.sub { background: #fdeef5; color: var(--pk-deep); }
-  .btn.warn { background: rgba(255,77,109,.12); color: var(--sale); }
+  .btn:active { background: var(--ac-deep); }
+  .btn.sub { background: #f1f1f5; color: var(--text); }
+  .btn.soft { background: var(--ac-soft); color: var(--ac-deep); }
+  .btn.warn { background: #fdeef0; color: #e05555; }
   .btn:disabled { opacity: .5; }
   .link-pills { display: flex; flex-wrap: wrap; gap: 7px; }
   .link-pills a, .link-pills button {
     font-size: .8rem; color: var(--text); text-decoration: none;
-    border: 1px solid var(--line2); border-radius: 999px; padding: 6px 12px;
+    border: 1px solid var(--line2); border-radius: 999px; padding: 7px 13px;
     background: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
   }
 
   /* ---------- セールバナー ---------- */
   .sale-banner {
     display: flex; align-items: center; gap: 9px;
-    border-radius: 14px; padding: 10px 13px; margin-bottom: 8px;
-    font-size: .9rem; font-weight: 700; text-decoration: none;
+    border-radius: 13px; padding: 11px 13px; margin-bottom: 8px;
+    font-size: .88rem; font-weight: 700; text-decoration: none;
   }
-  .sale-banner.on-now { background: var(--grad-strong); color: #fff; box-shadow: 0 4px 16px rgba(232,67,139,.35); }
-  .sale-banner.soon { background: #fff; color: var(--text); border: 1.5px solid var(--line2); box-shadow: var(--shadow); }
-  .sale-banner .st { font-size: .72rem; border-radius: 999px; padding: 2px 9px; flex-shrink: 0; font-weight: 800; }
-  .sale-banner.on-now .st { background: rgba(255,255,255,.25); color: #fff; }
-  .sale-banner.soon .st { background: #fdeef5; color: var(--pk-deep); }
+  .sale-banner.on-now { background: var(--ac); color: #fff; }
+  .sale-banner.soon { background: var(--card); color: var(--text); border: 1px solid var(--line); box-shadow: var(--shadow); }
+  .sale-banner .st { font-size: .7rem; border-radius: 999px; padding: 3px 9px; flex-shrink: 0; font-weight: 700; }
+  .sale-banner.on-now .st { background: rgba(255,255,255,.22); color: #fff; }
+  .sale-banner.soon .st { background: var(--ac-soft); color: var(--ac-deep); }
   .sale-banner .nm { flex: 1; line-height: 1.4; }
-  .sale-banner .dt { font-size: .74rem; font-weight: normal; opacity: .85; }
+  .sale-banner .dt { font-size: .73rem; font-weight: normal; opacity: .8; }
 
-  /* ---------- トレンド商品カード ---------- */
-  .rank-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .item-card {
-    background: #fff; border: 1px solid var(--line); border-radius: 15px;
-    box-shadow: var(--shadow); overflow: hidden; text-decoration: none; color: var(--text);
-    display: flex; flex-direction: column; position: relative;
+  /* ---------- 診断 ---------- */
+  .diag-hero {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 26px 16px; text-align: center; margin-bottom: 12px;
   }
-  .item-card .imgbox { width: 100%; aspect-ratio: 1; background: #faf2f6; position: relative; }
-  .item-card img { width: 100%; height: 100%; object-fit: contain; display: block; }
-  .item-card .rk {
-    position: absolute; top: 7px; left: 7px; z-index: 1;
-    background: rgba(255,255,255,.92); border-radius: 999px; min-width: 30px; height: 30px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: .82rem; font-weight: 900; color: var(--pk-deep);
-    box-shadow: 0 2px 8px rgba(70,50,62,.18); padding: 0 4px;
+  .diag-hero .cam-ic { width: 54px; height: 54px; margin: 0 auto 10px; color: var(--ac); }
+  .diag-hero .cam-ic svg { width: 100%; height: 100%; }
+  .diag-hero h2 { font-size: 1.05rem; margin-bottom: 6px; }
+  .diag-hero p { font-size: .8rem; color: var(--text-sub); line-height: 1.7; margin-bottom: 14px; }
+  .diag-hero .btn { width: 100%; margin-bottom: 8px; }
+  .photo-frame {
+    border-radius: var(--radius); overflow: hidden; background: #111;
+    max-height: 340px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
   }
-  .item-card .rk.top { font-size: 1rem; background: #fff; }
-  .item-card .info { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 3px; }
-  .item-card .nm {
-    font-size: .78rem; line-height: 1.45; color: var(--text);
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-    min-height: 2.3em;
+  .photo-frame img { max-width: 100%; max-height: 340px; display: block; }
+  .field-label { display: block; font-size: .8rem; font-weight: 700; color: var(--text); margin: 12px 0 7px; }
+  .score-wrap { display: flex; align-items: center; gap: 16px; }
+  .score-ring {
+    width: 92px; height: 92px; border-radius: 50%; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #fff; background: var(--ac);
   }
-  .item-card .pr { font-size: .98rem; font-weight: 900; color: var(--pk-deep); }
-  .item-card .pr small { font-size: .7rem; font-weight: 700; }
-  .item-card .shop { font-size: .68rem; color: var(--text-sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .item-card .rev { font-size: .68rem; color: var(--warn); font-weight: 700; }
-  .pick-scroll {
-    display: flex; gap: 10px; overflow-x: auto; -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; padding-bottom: 6px;
+  .score-ring b { font-size: 1.9rem; line-height: 1; }
+  .score-ring small { font-size: .62rem; opacity: .85; margin-top: 2px; }
+  .score-title { font-size: 1rem; font-weight: 800; line-height: 1.5; }
+  .score-sub { font-size: .76rem; color: var(--text-sub); margin-top: 3px; }
+  .palette-row { display: flex; gap: 8px; margin-top: 12px; }
+  .pal {
+    flex: 1; border-radius: 10px; height: 44px; border: 1px solid rgba(0,0,0,.08);
+    position: relative; overflow: hidden;
   }
-  .pick-scroll::-webkit-scrollbar { display: none; }
-  .pick-scroll .item-card { flex: 0 0 138px; }
-  .fetched-note { font-size: .72rem; color: var(--text-sub); text-align: right; margin: 6px 2px 0; }
-  .loading-note { text-align: center; color: var(--text-sub); font-size: .85rem; padding: 14px 0; }
+  .pal small {
+    position: absolute; bottom: 0; left: 0; right: 0; text-align: center;
+    font-size: .62rem; background: rgba(255,255,255,.85); color: #444; padding: 1px 0;
+  }
+  .advice-list { margin-top: 6px; }
+  .advice-row {
+    display: flex; gap: 9px; padding: 10px 2px; border-bottom: 1px solid var(--line);
+    font-size: .86rem; line-height: 1.6;
+  }
+  .advice-row:last-child { border-bottom: none; }
+  .advice-row .mk { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 800; color: #fff; margin-top: 1px; }
+  .advice-row.good .mk { background: var(--ok); }
+  .advice-row.tip .mk { background: var(--warn); }
+  .hist-row {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: var(--shadow); padding: 9px 11px; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 11px; cursor: pointer;
+  }
+  .hist-row img { width: 46px; height: 46px; object-fit: cover; border-radius: 9px; background: #eee; flex-shrink: 0; }
+  .hist-row .grow { flex: 1; min-width: 0; }
+  .hist-row .h-top { font-size: .86rem; font-weight: 700; }
+  .hist-row .h-sub { font-size: .73rem; color: var(--text-sub); margin-top: 1px; }
+  .hist-row .h-score { font-size: 1.05rem; font-weight: 800; color: var(--ac-deep); flex-shrink: 0; }
 
   /* ---------- お店・ブランド ---------- */
   .shop-card {
-    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
-    box-shadow: var(--shadow); padding: 12px 13px; margin-bottom: 10px;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 13px 14px; margin-bottom: 10px;
   }
   .shop-card .s-head { display: flex; align-items: center; gap: 8px; }
-  .shop-card .s-name { font-weight: 800; font-size: 1rem; flex: 1; }
-  .shop-card .s-place { font-size: .78rem; color: var(--text-sub); margin-top: 2px; }
-  .shop-card .s-memo { font-size: .8rem; color: var(--text); background: #fdf4f8; border-radius: 9px; padding: 6px 9px; margin-top: 7px; line-height: 1.5; }
-  .shop-card .s-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
-  .shop-card .s-links a, .shop-card .s-links button {
+  .shop-card .s-name { font-weight: 700; font-size: .98rem; flex: 1; }
+  .shop-card .s-place { font-size: .77rem; color: var(--text-sub); margin-top: 2px; }
+  .shop-card .s-memo { font-size: .8rem; color: var(--text); background: #f7f7f9; border-radius: 9px; padding: 7px 10px; margin-top: 8px; line-height: 1.5; }
+  .shop-card .s-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .shop-card .s-links a {
     font-size: .78rem; color: var(--text); text-decoration: none;
-    border: 1px solid var(--line2); border-radius: 999px; padding: 5px 11px;
-    background: #fff; cursor: pointer;
+    border: 1px solid var(--line2); border-radius: 999px; padding: 6px 12px; background: #fff;
   }
-  .edit-btn { border: none; background: none; font-size: 16px; cursor: pointer; padding: 3px 5px; }
+  .edit-btn { border: none; background: none; font-size: 15px; cursor: pointer; padding: 3px 5px; color: var(--text-sub); }
 
   /* ---------- セールカレンダー ---------- */
   .month-head {
-    font-size: .86rem; font-weight: 800; color: var(--text-sub);
-    margin: 16px 2px 7px; display: flex; align-items: center; gap: 6px;
+    font-size: .82rem; font-weight: 700; color: var(--text-sub);
+    margin: 16px 2px 7px;
   }
-  .month-head.now { color: var(--pk-deep); }
+  .month-head.now { color: var(--ac-deep); }
   .sale-row {
-    background: #fff; border: 1px solid var(--line); border-radius: 14px;
-    box-shadow: var(--shadow); padding: 10px 12px; margin-bottom: 8px;
-    display: flex; align-items: center; gap: 9px; cursor: pointer;
+    background: var(--card); border: 1px solid var(--line); border-radius: 13px;
+    box-shadow: var(--shadow); padding: 11px 13px; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px; cursor: pointer;
   }
-  .sale-row .ic { font-size: 1.15rem; flex-shrink: 0; }
+  .sale-row .ic { font-size: 1.05rem; flex-shrink: 0; }
   .sale-row .grow { flex: 1; min-width: 0; }
-  .sale-row .nm { font-weight: 800; font-size: .92rem; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .sale-row .term { display: block; font-size: .76rem; color: var(--text-sub); margin-top: 1px; }
-  .sale-row .note { display: block; font-size: .74rem; color: var(--text-sub); margin-top: 2px; }
-  .tag { font-size: .66rem; border-radius: 999px; padding: 2px 8px; font-weight: 800; flex-shrink: 0; }
-  .tag.on-now { background: var(--grad-strong); color: #fff; }
-  .tag.soon { background: #fdeef5; color: var(--pk-deep); }
-  .tag.approx { background: #f4eef8; color: #9a7fc0; font-weight: 700; }
+  .sale-row .nm { font-weight: 700; font-size: .9rem; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .sale-row .term { display: block; font-size: .75rem; color: var(--text-sub); margin-top: 2px; }
+  .sale-row .note { display: block; font-size: .73rem; color: var(--text-sub); margin-top: 2px; }
+  .tag { font-size: .64rem; border-radius: 999px; padding: 2px 8px; font-weight: 700; flex-shrink: 0; }
+  .tag.on-now { background: var(--ac); color: #fff; }
+  .tag.soon { background: var(--ac-soft); color: var(--ac-deep); }
+  .tag.approx { background: #f1f1f5; color: var(--text-sub); }
 
   /* ---------- 設定 ---------- */
-  .field-label { display: block; font-size: .8rem; font-weight: 700; color: var(--text); margin: 10px 0 5px; }
   .set-note { font-size: .76rem; color: var(--text-sub); line-height: 1.6; margin-top: 6px; }
-  .set-note strong { color: var(--pk-deep); }
-  .diag { font-size: .78rem; color: var(--text-sub); line-height: 1.9; }
-  .diag b { color: var(--text); }
-  .diag .ok { color: var(--ok); font-weight: 700; }
-  .diag .ng { color: var(--sale); font-weight: 700; }
   .set-row-btns { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
 
   /* ---------- 下部ナビ ---------- */
   nav {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
-    background: rgba(255,251,253,.9);
-    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    background: rgba(255,255,255,.94);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
     border-top: 1px solid var(--line);
     display: flex; padding-bottom: env(safe-area-inset-bottom);
   }
   nav button {
     flex: 1; border: none; background: none; padding: 9px 0 8px; cursor: pointer;
-    font-size: .64rem; color: var(--text-sub); display: flex; flex-direction: column;
-    align-items: center; gap: 3px; letter-spacing: .04em; position: relative;
+    font-size: .62rem; color: #a5a5b0; display: flex; flex-direction: column;
+    align-items: center; gap: 3px; letter-spacing: .04em;
   }
   nav button .ic { width: 22px; height: 22px; display: block; }
   nav button .ic svg { width: 100%; height: 100%; }
-  nav button.on { color: var(--pk-deep); font-weight: 700; }
-  nav button.on::before {
-    content: ""; position: absolute; top: 0; width: 26px; height: 3px;
-    border-radius: 0 0 3px 3px; background: var(--grad-strong);
-  }
+  nav button.on { color: var(--ac-deep); font-weight: 700; }
 
   /* ---------- モーダル ---------- */
   #modalWrap {
     display: none; position: fixed; inset: 0; z-index: 40;
-    background: rgba(70,50,62,.42); align-items: flex-end; justify-content: center;
+    background: rgba(25,25,32,.45); align-items: flex-end; justify-content: center;
   }
   #modalWrap.show { display: flex; }
   #modalBox {
-    background: #fff; border: 1px solid var(--line2); border-bottom: none;
-    border-radius: 22px 22px 0 0; width: 100%; max-width: 640px;
+    background: #fff;
+    border-radius: 20px 20px 0 0; width: 100%; max-width: 640px;
     padding: 20px 16px calc(18px + env(safe-area-inset-bottom));
-    max-height: 82vh; overflow-y: auto;
+    max-height: 84vh; overflow-y: auto;
   }
   #modalBox::before {
-    content: ""; display: block; width: 42px; height: 4px; border-radius: 2px;
+    content: ""; display: block; width: 40px; height: 4px; border-radius: 2px;
     background: var(--line2); margin: -6px auto 14px;
   }
   #modalBox h3 { font-size: 1rem; margin-bottom: 5px; }
   #modalBox .m-sub { font-size: .8rem; color: var(--text-sub); margin-bottom: 10px; line-height: 1.6; }
   .add-form { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-  .add-form input, .add-form select, .add-form textarea { padding: 10px 11px; width: 100%; }
+  .add-form input, .add-form select, .add-form textarea { padding: 11px 12px; width: 100%; }
   .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .m-btns { display: flex; gap: 8px; margin-top: 15px; }
   .m-btns .btn { flex: 1; }
 
-  /* ---------- 初回設定 ---------- */
-  #setupWrap {
-    display: none; position: fixed; inset: 0; z-index: 50; overflow-y: auto;
-    background: radial-gradient(700px 420px at 50% -120px, #ffe0ef 0%, var(--bg) 60%), var(--bg);
-    padding: calc(30px + env(safe-area-inset-top)) 20px calc(30px + env(safe-area-inset-bottom));
-  }
-  #setupWrap.show { display: block; }
-  .setup-inner { max-width: 480px; margin: 0 auto; }
-  .setup-logo { text-align: center; font-size: 2rem; font-weight: 900; letter-spacing: .05em;
-    background: var(--grad-strong); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .setup-sub { text-align: center; color: var(--text-sub); font-size: .86rem; margin: 6px 0 22px; line-height: 1.7; }
-
   /* ---------- トースト ---------- */
   #toast {
-    position: fixed; bottom: calc(96px + env(safe-area-inset-bottom)); left: 50%;
+    position: fixed; bottom: calc(94px + env(safe-area-inset-bottom)); left: 50%;
     transform: translateX(-50%) translateY(16px); z-index: 60;
-    background: var(--text); color: #fff; font-size: .85rem; font-weight: 700;
-    border-radius: 999px; padding: 9px 18px; opacity: 0; pointer-events: none;
+    background: #24242c; color: #fff; font-size: .84rem; font-weight: 700;
+    border-radius: 999px; padding: 10px 18px; opacity: 0; pointer-events: none;
     transition: opacity .2s, transform .2s; max-width: 86vw; text-align: center;
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -311,14 +286,16 @@
 
 <header>
   <div class="head-row">
-    <h1><span class="logo">ふくらぶ！</span><span class="head-date" id="headDate"></span></h1>
-    <button id="refreshBtn" title="トレンドを再取得">↻</button>
+    <h1>
+      <svg class="logo-mark" viewBox="0 0 24 24" fill="none" stroke="#f5568b" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.2c0-1.6 2.4-1.9 2.4-3.4 0-.9-.9-1.6-2.4-1.6s-2.3.7-2.3 1.5"/><path d="M12 6.2 3.2 11.6a1.5 1.5 0 0 0 .8 2.8h16a1.5 1.5 0 0 0 .8-2.8L12 6.2Z"/><path d="M12 22.3c-1.8-1.5-3.4-2.9-3.4-4.5 0-1.2 1-2 2-2 .7 0 1.1.3 1.4.8.3-.5.7-.8 1.4-.8 1 0 2 .8 2 2 0 1.6-1.6 3-3.4 4.5Z" fill="#f5568b" stroke="none"/></svg>
+      <span class="logo">ふくらぶ</span><span class="head-date" id="headDate"></span>
+    </h1>
   </div>
 </header>
 
 <main>
   <div class="tab-page" id="page-home"></div>
-  <div class="tab-page" id="page-trend"></div>
+  <div class="tab-page" id="page-diag"></div>
   <div class="tab-page" id="page-shop"></div>
   <div class="tab-page" id="page-sale"></div>
   <div class="tab-page" id="page-set"></div>
@@ -326,15 +303,16 @@
 
 <nav id="navBar">
   <button data-tab="home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></svg></span>ホーム</button>
-  <button data-tab="trend"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5.5-5.5 4 4L21 7"/><path d="M15 7h6v6"/></svg></span>トレンド</button>
+  <button data-tab="diag"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="3.4"/></svg></span>診断</button>
   <button data-tab="shop"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 13H6L5 8Z"/><path d="M9 11V6a3 3 0 0 1 6 0v5"/></svg></span>お店</button>
   <button data-tab="sale"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 3H20v7.4L11.4 19a2 2 0 0 1-2.8 0L4 14.4a2 2 0 0 1 0-2.8L12.6 3Z"/><circle cx="15.5" cy="7.5" r="1.3"/></svg></span>お得</button>
   <button data-tab="set"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.7M12 18.5v2.7M2.8 12h2.7M18.5 12h2.7M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M18.5 5.5l-1.9 1.9M7.4 16.6l-1.9 1.9"/></svg></span>設定</button>
 </nav>
 
-<div id="setupWrap"><div class="setup-inner" id="setupInner"></div></div>
 <div id="modalWrap"><div id="modalBox"></div></div>
 <div id="toast"></div>
+<input type="file" id="camInput" accept="image/*" capture="environment" hidden>
+<input type="file" id="pickInput" accept="image/*" hidden>
 
 <script>
 'use strict';
@@ -346,7 +324,6 @@ const esc = s => String(s == null ? '' : s)
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
   .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const escAttr = esc;
-const yen = n => '¥' + Number(n || 0).toLocaleString('ja-JP');
 function lsGet(k, fb) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch(e) { return fb; } }
 function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
 const uid = () => 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -356,42 +333,27 @@ function todayParts() {
   const d = new Date();
   return { y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate(), wd: WDAYS[d.getDay()] };
 }
-function fmtClock(ts) {
+function fmtDate(ts) {
   const d = new Date(ts);
-  return (d.getMonth()+1) + '/' + d.getDate() + ' ' +
-    String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  return (d.getMonth()+1) + '/' + d.getDate() + '(' + WDAYS[d.getDay()] + ')';
 }
 function gmaps(q) { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
 function gsearch(q) { return 'https://www.google.com/search?q=' + encodeURIComponent(q); }
 
 /* ================= 定義データ ================= */
-// 楽天ランキングAPIのジャンル
-const TREND_TABS = {
-  ladies: { label: 'レディース', icon: '👗', genreId: '100371', cat: 'ladies' },
-  mens:   { label: 'メンズ',     icon: '👕', genreId: '551177', cat: 'mens' },
-  kids:   { label: 'キッズ',     icon: '🧒', genreId: '100533', cat: 'kids' },
-  shoes:  { label: '靴',         icon: '👟', genreId: '558885' },
-  bag:    { label: 'バッグ',     icon: '👜', genreId: '216131' },
-  age:    { label: '年代別',     icon: '✨', genreId: '' },   // age/sexパラメータで総合ランキング
-};
-
-// トレンドの補完リンク集(公開APIが無いサイト)
 const TREND_LINKS = [
-  ['🛍️', 'ZOZOTOWN ランキング', 'https://zozo.jp/ranking/'],
-  ['📸', 'WEAR コーデランキング', 'https://wear.jp/ranking/'],
-  ['🎀', '楽天ファッション', 'https://brandavenue.rakuten.co.jp/'],
-  ['🧥', 'ユニクロ', 'https://www.uniqlo.com/jp/ja/'],
-  ['👖', 'GU', 'https://www.gu-global.com/jp/ja/'],
-  ['📷', 'Instagram #今日のコーデ', 'https://www.instagram.com/explore/tags/%E4%BB%8A%E6%97%A5%E3%81%AE%E3%82%B3%E3%83%BC%E3%83%87/'],
+  ['ZOZOTOWN ランキング', 'https://zozo.jp/ranking/'],
+  ['WEAR コーデランキング', 'https://wear.jp/ranking/'],
+  ['楽天ファッション', 'https://brandavenue.rakuten.co.jp/'],
+  ['ユニクロ', 'https://www.uniqlo.com/jp/ja/'],
+  ['GU', 'https://www.gu-global.com/jp/ja/'],
+  ['Instagram #今日のコーデ', 'https://www.instagram.com/explore/tags/%E4%BB%8A%E6%97%A5%E3%81%AE%E3%82%B3%E3%83%BC%E3%83%87/'],
 ];
 
-// 周辺検索のカテゴリボタン
 const NEARBY_CATS = [
-  ['🏬', 'ファッションビル'], ['👚', '古着屋'], ['🏷️', 'アウトレット'],
-  ['🧢', 'セレクトショップ'], ['👟', '靴屋'], ['🧸', '子供服'],
+  'ファッションビル', '古着屋', 'アウトレット', 'セレクトショップ', '靴屋', '子供服',
 ];
 
-// ブランドかんたん追加プリセット(URLが空の項目は検索リンクで補う)
 const BRAND_PRESETS = [
   { name: 'ユニクロ', url: 'https://www.uniqlo.com/jp/ja/', storeUrl: 'https://map.uniqlo.com/jp/ja/', saleUrl: 'https://www.uniqlo.com/jp/ja/feature/limited-offers' },
   { name: 'GU', url: 'https://www.gu-global.com/jp/ja/', storeUrl: 'https://map.gu-global.com/jp/ja/' },
@@ -403,55 +365,61 @@ const BRAND_PRESETS = [
   { name: 'GLOBAL WORK', url: 'https://www.dot-st.com/globalwork/' },
 ];
 
-// 年間セールのプリセット(時期は毎年変わるため「目安」。編集するとユーザーデータ側にコピーされる)
 const SALE_PRESETS = [
   { id: 'ps_newyear', name: '初売り・冬バーゲン', icon: '🎍', m1: 1, d1: 1, m2: 1, d2: 31, approx: false, note: '福袋・冬物セールの本番' },
-  { id: 'ps_rss3',  name: '楽天スーパーセール', icon: '🅁', m1: 3, d1: 4, m2: 3, d2: 11, approx: true, url: 'https://event.rakuten.co.jp/campaign/supersale/' },
-  { id: 'ps_rss6',  name: '楽天スーパーセール', icon: '🅁', m1: 6, d1: 4, m2: 6, d2: 11, approx: true, url: 'https://event.rakuten.co.jp/campaign/supersale/' },
+  { id: 'ps_rss3',  name: '楽天スーパーセール', icon: '🛒', m1: 3, d1: 4, m2: 3, d2: 11, approx: true, url: 'https://event.rakuten.co.jp/campaign/supersale/' },
+  { id: 'ps_rss6',  name: '楽天スーパーセール', icon: '🛒', m1: 6, d1: 4, m2: 6, d2: 11, approx: true, url: 'https://event.rakuten.co.jp/campaign/supersale/' },
   { id: 'ps_zozo_s', name: 'ZOZO 夏セール', icon: '🛍️', m1: 6, d1: 20, m2: 7, d2: 20, approx: true, url: 'https://zozo.jp/sale/' },
   { id: 'ps_summer', name: '夏のバーゲン', icon: '🌻', m1: 7, d1: 1, m2: 7, d2: 31, approx: false, note: '百貨店・ファッションビルの夏セール' },
   { id: 'ps_prime', name: 'Amazonプライムデー', icon: '📦', m1: 7, d1: 11, m2: 7, d2: 17, approx: true, url: 'https://www.amazon.co.jp/primeday' },
-  { id: 'ps_rss9',  name: '楽天スーパーセール', icon: '🅁', m1: 9, d1: 4, m2: 9, d2: 11, approx: true, url: 'https://event.rakuten.co.jp/campaign/supersale/' },
+  { id: 'ps_rss9',  name: '楽天スーパーセール', icon: '🛒', m1: 9, d1: 4, m2: 9, d2: 11, approx: true, url: 'https://event.rakuten.co.jp/campaign/supersale/' },
   { id: 'ps_bf', name: 'ブラックフライデー', icon: '🖤', m1: 11, d1: 21, m2: 11, d2: 30, approx: true, note: '各ECサイト・アウトレットで大型セール' },
-  { id: 'ps_rss12', name: '楽天スーパーセール', icon: '🅁', m1: 12, d1: 4, m2: 12, d2: 11, approx: true, url: 'https://event.rakuten.co.jp/campaign/supersale/' },
+  { id: 'ps_rss12', name: '楽天スーパーセール', icon: '🛒', m1: 12, d1: 4, m2: 12, d2: 11, approx: true, url: 'https://event.rakuten.co.jp/campaign/supersale/' },
   { id: 'ps_zozo_w', name: 'ZOZO 冬セール', icon: '🛍️', m1: 12, d1: 20, m2: 1, d2: 20, approx: true, url: 'https://zozo.jp/sale/' },
 ];
 
+const SITUATIONS = {
+  work:   { label: '仕事・通勤', icon: '💼' },
+  date:   { label: 'デート', icon: '💐' },
+  outing: { label: 'お出かけ', icon: '🚃' },
+  casual: { label: 'おうち・近所', icon: '🏠' },
+  formal: { label: 'フォーマル', icon: '🎩' },
+  active: { label: 'アウトドア', icon: '⛰️' },
+};
+const SEASONS = {
+  spring: { label: '春', accent: 'ピンクやライトブルー' },
+  summer: { label: '夏', accent: 'ブルーや白' },
+  autumn: { label: '秋', accent: 'テラコッタやマスタード' },
+  winter: { label: '冬', accent: 'ボルドーや深いグリーン' },
+};
+function currentSeason() {
+  const m = todayParts().m;
+  return m >= 3 && m <= 5 ? 'spring' : m >= 6 && m <= 8 ? 'summer' : m >= 9 && m <= 11 ? 'autumn' : 'winter';
+}
+
 /* ================= 状態 ================= */
 const state = {
-  profile: lsGet('fkl_profile', { cats: { ladies: true, mens: false, kids: false }, age: '', setupDone: false }),
   brands: lsGet('fkl_brands', []),
   shops: lsGet('fkl_shops', []),
   sales: lsGet('fkl_sales', { removed: [], events: [] }),
-  rakutenAppId: lsGet('fkl_rakutenId', ''),
   address: lsGet('fkl_address', ''),
-  cache: lsGet('fkl_cache', {}),
+  diagLog: lsGet('fkl_diagLog', []),
   tab: 'home',
-  trendTab: '',
-  diag: {},
-  fetching: {},
+  // 診断の作業用(保存しない)
+  photo: null,        // dataURL
+  photoResult: null,  // 直近の診断結果
+  situ: 'outing',
+  season: currentSeason(),
 };
+// 旧バージョン(楽天ランキング機能)の保存データを掃除
+['fkl_cache', 'fkl_rakutenId', 'fkl_profile'].forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
+
 function saveAll() {
-  lsSet('fkl_profile', state.profile);
   lsSet('fkl_brands', state.brands);
   lsSet('fkl_shops', state.shops);
   lsSet('fkl_sales', state.sales);
-  lsSet('fkl_rakutenId', state.rakutenAppId);
   lsSet('fkl_address', state.address);
-}
-function saveCache() { lsSet('fkl_cache', state.cache); }
-
-// 表示するトレンドタブ(プロフィールに応じて)
-function trendTabKeys() {
-  const c = state.profile.cats;
-  const keys = [];
-  if (c.ladies) keys.push('ladies');
-  if (c.mens) keys.push('mens');
-  if (c.kids) keys.push('kids');
-  if (!keys.length) keys.push('ladies', 'mens');
-  keys.push('shoes', 'bag');
-  if (state.profile.age) keys.push('age');
-  return keys;
+  lsSet('fkl_diagLog', state.diagLog);
 }
 
 /* ================= セールカレンダー ================= */
@@ -467,7 +435,6 @@ function saleStatus(ev) {
   const s = ev.m1 * 100 + ev.d1, e = ev.m2 * 100 + ev.d2;
   const on = s <= e ? (cur >= s && cur <= e) : (cur >= s || cur <= e);
   if (on) return 'on';
-  // 開始まで7日以内なら「まもなく」
   const now = new Date(t.y, t.m - 1, t.d);
   let start = new Date(t.y, ev.m1 - 1, ev.d1);
   if (start < now) start = new Date(t.y + 1, ev.m1 - 1, ev.d1);
@@ -500,141 +467,231 @@ function brandLinks(b) {
   };
 }
 
-/* ================= 楽天ランキングAPI ================= */
-function rankingUrl(tabKey, opt) {
-  const tb = TREND_TABS[tabKey];
-  let u = 'https://app.rakuten.co.jp/services/api/IchibaItem/Ranking/20220601?format=json' +
-    '&applicationId=' + encodeURIComponent(state.rakutenAppId);
-  if (tb.genreId) {
-    u += '&genreId=' + tb.genreId;
-  } else {
-    // 年代別総合ランキング(genreIdとage/sexは併用不可のため総合のみ)
-    const c = state.profile.cats;
-    if (state.profile.age && !(opt && opt.noAge)) u += '&age=' + state.profile.age;
-    if (!(opt && opt.noSex)) {
-      if (c.mens && !c.ladies) u += '&sex=1';
-      else if (c.ladies && !c.mens) u += '&sex=2';
+/* ================= コーデ診断(端末内で色解析・写真は送信しない) ================= */
+function rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+  const l = (mx + mn) / 2;
+  if (mx === mn) return [0, 0, l];
+  const d = mx - mn;
+  const s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+  let h;
+  if (mx === r) h = ((g - b) / d + (g < b ? 6 : 0));
+  else if (mx === g) h = (b - r) / d + 2;
+  else h = (r - g) / d + 4;
+  return [h * 60, s, l];
+}
+function hex(r, g, b) {
+  const p = n => Math.round(n).toString(16).padStart(2, '0');
+  return '#' + p(r) + p(g) + p(b);
+}
+// 写真から主要カラーを抽出(中央を重視して周辺の背景の影響を弱める)
+function extractPalette(imgEl) {
+  const MAXW = 64;
+  const iw = imgEl.naturalWidth || imgEl.width, ih = imgEl.naturalHeight || imgEl.height;
+  const sc = Math.min(MAXW / iw, MAXW / ih, 1);
+  const w = Math.max(1, Math.round(iw * sc)), h = Math.max(1, Math.round(ih * sc));
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  const cx = cv.getContext('2d');
+  cx.drawImage(imgEl, 0, 0, w, h);
+  const data = cx.getImageData(0, 0, w, h).data;
+  const bins = {};
+  let total = 0;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      if (data[i + 3] < 128) continue;
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      const [hu, s, l] = rgbToHsl(r, g, b);
+      // 中央重み(コーデ本体が写っていることが多い)
+      const dx = x / w - 0.5, dy = y / h - 0.5;
+      const wt = Math.exp(-(dx * dx + dy * dy) / (2 * 0.28 * 0.28));
+      let key;
+      // ベージュ・アイボリーもベーシックカラー(無彩色相当)として扱う
+      const beige = hu >= 20 && hu < 70 && s < 0.42 && l > 0.55;
+      const neutral = s < 0.14 || l > 0.93 || l < 0.09 || beige;
+      if (neutral) {
+        key = l > 0.8 ? 'n-white' : l < 0.22 ? 'n-black' : l < 0.5 ? 'n-dgray' : 'n-lgray';
+      } else {
+        key = Math.floor(hu / 30) + '-' + (s < 0.45 ? 0 : 1) + '-' + (l < 0.35 ? 0 : l < 0.65 ? 1 : 2);
+      }
+      const bin = bins[key] || (bins[key] = { w: 0, r: 0, g: 0, b: 0, neutral });
+      bin.w += wt; bin.r += r * wt; bin.g += g * wt; bin.b += b * wt;
+      total += wt;
     }
   }
-  return u;
-}
-async function fetchJson(url, timeoutMs) {
-  const ctl = new AbortController();
-  const t = setTimeout(() => ctl.abort(), timeoutMs || 12000);
-  try {
-    const res = await fetch(url, { signal: ctl.signal });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    return await res.json();
-  } finally { clearTimeout(t); }
-}
-async function fetchRanking(tabKey, force) {
-  if (!state.rakutenAppId) return;
-  const hit = state.cache[tabKey];
-  if (!force && hit && Date.now() - hit.fetchedAt < 60 * 60 * 1000) return;
-  if (state.fetching[tabKey]) return;
-  state.fetching[tabKey] = true;
-  renderIfTrendVisible(tabKey);
-  try {
-    let json;
-    try {
-      json = await fetchJson(rankingUrl(tabKey));
-    } catch (e1) {
-      // 年代別はパラメータの組み合わせで400になる場合があるため段階的に緩めて再試行
-      if (tabKey === 'age') {
-        try { json = await fetchJson(rankingUrl(tabKey, { noSex: true })); }
-        catch (e2) { json = await fetchJson(rankingUrl(tabKey, { noAge: true, noSex: true })); }
-      } else { throw e1; }
-    }
-    const items = (json.Items || []).map(w => {
-      const it = w.Item || w;
-      const img = ((it.mediumImageUrls || [])[0] || {}).imageUrl || '';
-      return {
-        rank: it.rank, name: it.itemName, price: it.itemPrice, url: it.itemUrl,
-        img: img.replace(/_ex=\d+x\d+/, '_ex=300x300'),
-        shop: it.shopName, rvAvg: Number(it.reviewAverage) || 0, rvCnt: it.reviewCount || 0,
-      };
-    });
-    if (!items.length) throw new Error('0件でした');
-    state.cache[tabKey] = { fetchedAt: Date.now(), items };
-    saveCache();
-    state.diag[tabKey] = { ok: true, count: items.length, at: Date.now() };
-  } catch (e) {
-    state.diag[tabKey] = { ok: false, err: e.message || String(e), at: Date.now() };
-  } finally {
-    state.fetching[tabKey] = false;
-    renderIfTrendVisible(tabKey);
-    if (state.tab === 'home') render();
-    if (state.tab === 'set') render();
+  const list = Object.values(bins).sort((a, b) => b.w - a.w);
+  const out = [];
+  for (const bin of list) {
+    const share = bin.w / total;
+    if (share < 0.06 || out.length >= 5) break;
+    const r = bin.r / bin.w, g = bin.g / bin.w, b = bin.b / bin.w;
+    const [hu, s, l] = rgbToHsl(r, g, b);
+    out.push({ hex: hex(r, g, b), share, h: hu, s, l, neutral: bin.neutral });
   }
+  return out;
 }
-function renderIfTrendVisible(tabKey) {
-  if (state.tab === 'trend' && state.trendTab === tabKey) render();
+// 抽出した色 × 季節 × シチュエーションからアドバイスを作る
+function judgeOutfit(palette, seasonKey, situKey) {
+  const advice = [];
+  const good = t => advice.push({ kind: 'good', text: t });
+  const tip = t => advice.push({ kind: 'tip', text: t });
+  const colors = palette.filter(c => !c.neutral);
+  const n = palette.length;
+  const tw = palette.reduce((a, c) => a + c.share, 0) || 1;
+  const avgL = palette.reduce((a, c) => a + c.l * c.share, 0) / tw;
+  const avgS = palette.reduce((a, c) => a + c.s * c.share, 0) / tw;
+  const warmShare = colors.filter(c => c.h < 70 || c.h >= 330).reduce((a, c) => a + c.share, 0) / tw;
+  const coolShare = colors.filter(c => c.h >= 150 && c.h < 300).reduce((a, c) => a + c.share, 0) / tw;
+
+  // 配色の数(3色ルール)
+  if (n <= 3) good('色数は' + n + '色。3色以内にまとまっていてスッキリ見えます');
+  else tip('色数が多め(' + n + '色)。メイン・サブ・差し色の3色以内に絞るとまとまります');
+
+  // ベーシックカラー中心かどうか
+  if (!colors.length) {
+    good('定番カラー中心で、落ち着いた大人っぽいコーデです');
+    tip(SEASONS[seasonKey].accent + 'を小物で1点足すと、ぐっと季節感が出ます');
+  }
+
+  // 季節
+  if (seasonKey === 'summer') {
+    if (avgL < 0.4) tip('全体が暗めのトーン。夏は白や淡い色を1点入れると涼しげに見えます');
+    else good('明るいトーンで夏らしい爽やかさがあります');
+  } else if (seasonKey === 'winter') {
+    if (avgL > 0.75) tip('淡い色メインの冬コーデは、濃い色を1点「締め色」にすると引き締まります');
+    else good('落ち着いたトーンで冬らしい深みがあります');
+  } else if (seasonKey === 'spring') {
+    if (avgL < 0.35) tip('春は明るいトーンや軽やかな色を入れると季節感が出ます');
+    else good('春らしい軽やかなトーンです');
+  } else if (seasonKey === 'autumn') {
+    if (colors.length && coolShare > warmShare && avgS > 0.4) tip('ブラウン・カーキなどの「こっくり色」を合わせると秋らしさが増します');
+    else good('あたたかみのあるトーンで秋らしい雰囲気です');
+  }
+
+  // シチュエーション
+  if (situKey === 'work') {
+    if (avgS > 0.45 && colors.length) tip('鮮やかな色は面積を小さめにすると、オフィスでも悪目立ちしません');
+    else good('落ち着いた配色で、仕事の場でも好印象です');
+  } else if (situKey === 'date') {
+    if (avgL < 0.35) tip('顔まわり(トップスやストール)に明るい色があると、表情まで明るく見えます');
+    else good('明るさのバランスがよく、やわらかい印象です');
+  } else if (situKey === 'formal') {
+    if (n >= 4) tip('フォーマルな場は色数控えめが上品。ベースカラー+1色くらいが安心です');
+    else good('色数が抑えられていて、きちんと感があります');
+  } else if (situKey === 'active') {
+    tip('外での活動は日差し・気温差に注意。羽織り物が1枚あると安心です');
+  } else if (situKey === 'outing') {
+    good('お出かけにちょうどいいバランスです');
+  } else if (situKey === 'casual') {
+    good('肩の力が抜けたリラックス感がいいですね');
+  }
+
+  // 暖色と寒色のバランス
+  if (warmShare > 0.28 && coolShare > 0.28) {
+    tip('暖色と寒色が同じくらいの分量。どちらかを主役にすると統一感が出ます');
+  }
+
+  const tips = advice.filter(a => a.kind === 'tip').length;
+  let score = 96 - tips * 7 + (n <= 3 ? 2 : 0);
+  score = Math.max(62, Math.min(98, score));
+  const title = score >= 90 ? '今日のコーデ、最高です!'
+    : score >= 82 ? 'とてもいいバランス!'
+    : score >= 72 ? 'いいカンジです!'
+    : 'もうひと工夫で、もっと素敵に';
+  return { score, title, advice, palette };
 }
-async function refreshAll(force) {
-  if (!state.rakutenAppId) { toast('設定で楽天アプリIDを登録すると売れ筋が見られます'); return; }
-  $('#refreshBtn').classList.add('spin');
-  await Promise.all(trendTabKeys().map(k => fetchRanking(k, force)));
-  $('#refreshBtn').classList.remove('spin');
+// 履歴用サムネイル(小さく圧縮して保存)
+function makeThumb(imgEl) {
+  const S = 96;
+  const iw = imgEl.naturalWidth || imgEl.width, ih = imgEl.naturalHeight || imgEl.height;
+  const sc = Math.max(S / iw, S / ih);
+  const cv = document.createElement('canvas');
+  cv.width = S; cv.height = S;
+  const cx = cv.getContext('2d');
+  cx.drawImage(imgEl, (S - iw * sc) / 2, (S - ih * sc) / 2, iw * sc, ih * sc);
+  try { return cv.toDataURL('image/jpeg', 0.6); } catch(e) { return ''; }
+}
+
+function loadPhotoFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    state.photo = reader.result;
+    state.photoResult = null;
+    state.tab = 'diag';
+    render();
+    window.scrollTo(0, 0);
+  };
+  reader.readAsDataURL(file);
+}
+
+function runDiagnosis() {
+  const imgEl = $('#diagPhoto');
+  if (!imgEl || !imgEl.complete) { toast('写真の読み込み中です'); return; }
+  let palette;
+  try { palette = extractPalette(imgEl); } catch(e) { palette = []; }
+  if (!palette.length) { toast('色を読み取れませんでした。別の写真で試してください'); return; }
+  const res = judgeOutfit(palette, state.season, state.situ);
+  state.photoResult = res;
+  // 履歴に保存(最新20件)
+  state.diagLog.unshift({
+    id: uid(), at: Date.now(), situ: state.situ, season: state.season,
+    score: res.score, title: res.title,
+    palette: palette.map(c => c.hex),
+    advice: res.advice, thumb: makeThumb(imgEl),
+  });
+  state.diagLog = state.diagLog.slice(0, 20);
+  saveAll();
   render();
 }
 
 /* ================= 共通描画パーツ ================= */
-function itemCardHtml(it) {
-  const medal = it.rank === 1 ? '🥇' : it.rank === 2 ? '🥈' : it.rank === 3 ? '🥉' : '';
-  return '<a class="item-card" target="_blank" rel="noopener" href="' + escAttr(it.url) + '">' +
-    '<span class="imgbox">' +
-      '<span class="rk' + (medal ? ' top' : '') + '">' + (medal || it.rank + '位') + '</span>' +
-      (it.img ? '<img loading="lazy" src="' + escAttr(it.img) + '" alt="">' : '') +
-    '</span>' +
-    '<span class="info">' +
-      '<span class="nm">' + esc(it.name) + '</span>' +
-      '<span class="pr">' + yen(it.price) + '<small> 円</small></span>' +
-      (it.rvAvg ? '<span class="rev">★' + it.rvAvg.toFixed(1) + ' <span style="color:var(--text-sub);font-weight:normal">(' + it.rvCnt + ')</span></span>' : '') +
-      '<span class="shop">' + esc(it.shop || '') + '</span>' +
-    '</span></a>';
-}
 function saleBannerHtml(x) {
   const ev = x.ev;
   const inner =
     '<span class="st">' + (x.st === 'on' ? '開催中' : 'あと' + saleDaysUntil(ev) + '日') + '</span>' +
-    '<span class="nm">' + esc(ev.icon || '🏷️') + ' ' + esc(ev.name) +
+    '<span class="nm">' + esc(ev.name) +
     ' <span class="dt">' + saleTermLabel(ev) + '</span></span>';
   const cls = 'sale-banner ' + (x.st === 'on' ? 'on-now' : 'soon');
   return ev.url
     ? '<a class="' + cls + '" target="_blank" rel="noopener" href="' + escAttr(ev.url) + '">' + inner + ' <span>›</span></a>'
     : '<div class="' + cls + '">' + inner + '</div>';
 }
-function rakutenGuideHtml() {
-  return '<div class="empty-note">売れ筋ランキングを表示するには、設定で<br>' +
-    '<strong>楽天アプリID(無料)</strong>を登録してください🎀<br>' +
-    '<button class="btn sub" style="margin-top:10px" data-act="go-set">設定をひらく</button></div>';
+function adviceListHtml(advice) {
+  return '<div class="advice-list">' + advice.map(a =>
+    '<div class="advice-row ' + a.kind + '"><span class="mk">' + (a.kind === 'good' ? '✓' : '!') + '</span>' +
+    '<span>' + esc(a.text) + '</span></div>').join('') + '</div>';
+}
+function paletteRowHtml(hexes, shares) {
+  return '<div class="palette-row">' + hexes.map((hx, i) =>
+    '<span class="pal" style="background:' + escAttr(hx) + '">' +
+    (shares ? '<small>' + Math.round(shares[i] * 100) + '%</small>' : '') + '</span>').join('') + '</div>';
+}
+function camIconSvg() {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="3.4"/></svg>';
 }
 
 /* ================= 画面: ホーム ================= */
 function renderHome(el) {
-  const t = todayParts();
   let h = '';
-  // セールのお知らせ
   const act = activeSales();
   if (act.length) {
-    h += '<div class="sec-title">🎉 セールのお知らせ</div>';
+    h += '<div class="sec-title">セールのお知らせ</div>';
     h += act.slice(0, 4).map(saleBannerHtml).join('');
   }
-  // トレンドピックアップ
-  h += '<div class="sec-title">今日のトレンド <small>楽天売れ筋より</small><span class="spacer"></span>' +
-    '<button class="mini-btn" data-act="go-trend">もっと見る</button></div>';
-  if (!state.rakutenAppId) {
-    h += rakutenGuideHtml();
-  } else {
-    const firstKey = trendTabKeys().find(k => state.cache[k] && state.cache[k].items.length);
-    if (firstKey) {
-      h += '<div class="pick-scroll">' +
-        state.cache[firstKey].items.slice(0, 6).map(itemCardHtml).join('') + '</div>';
-    } else {
-      h += '<div class="loading-note">読み込み中…(↻で再取得できます)</div>';
-    }
-  }
-  // よく行くお店
+
+  // コーデ診断への導線
+  h += '<div class="sec-title">コーデ診断</div>';
+  const last = state.diagLog[0];
+  h += '<div class="diag-hero"><div class="cam-ic">' + camIconSvg() + '</div>' +
+    '<h2>今日のコーデ、診断してみよう</h2>' +
+    '<p>服装を撮ると、季節とシチュエーションに合わせて<br>配色のアドバイスをします' +
+    (last ? '<br>前回: ' + last.score + '点(' + fmtDate(last.at) + ')' : '') + '</p>' +
+    '<button class="btn" data-act="cam">写真を撮って診断する</button>' +
+    '<button class="btn soft" data-act="go-diag">診断ページへ</button></div>';
+
   h += '<div class="sec-title">よく行くお店<span class="spacer"></span>' +
     '<button class="mini-btn" data-act="go-shop">お店タブへ</button></div>';
   if (state.shops.length) {
@@ -642,46 +699,65 @@ function renderHome(el) {
       '<a class="chip" style="text-decoration:none" target="_blank" rel="noopener" href="' +
       escAttr(gmaps(s.name + (s.place ? ' ' + s.place : ''))) + '">📍 ' + esc(s.name) + '</a>').join('') + '</div>';
   } else {
-    h += '<div class="empty-note">お店タブから、よく行くお店を登録できます🧸</div>';
+    h += '<div class="empty-note">お店タブから、よく行くお店を登録できます</div>';
   }
-  // ファッションサイトへ
-  h += '<div class="sec-title">ファッションサイトへ</div><div class="link-pills">' +
-    TREND_LINKS.map(l => '<a target="_blank" rel="noopener" href="' + escAttr(l[2]) + '">' + l[0] + ' ' + esc(l[1]) + '</a>').join('') +
+
+  h += '<div class="sec-title">ファッションサイトを見る</div><div class="link-pills">' +
+    TREND_LINKS.map(l => '<a target="_blank" rel="noopener" href="' + escAttr(l[1]) + '">' + esc(l[0]) + '</a>').join('') +
     '</div><div style="height:16px"></div>';
   el.innerHTML = h;
 }
 
-/* ================= 画面: トレンド ================= */
-function renderTrend(el) {
-  const keys = trendTabKeys();
-  if (!keys.includes(state.trendTab)) state.trendTab = keys[0];
-  let h = '<div class="chip-bar">' + keys.map(k =>
-    '<button class="chip' + (k === state.trendTab ? ' on' : '') + '" data-trendtab="' + k + '">' +
-    TREND_TABS[k].icon + ' ' + TREND_TABS[k].label + '</button>').join('') + '</div>';
-
-  if (!state.rakutenAppId) {
-    h += rakutenGuideHtml();
+/* ================= 画面: 診断 ================= */
+function renderDiag(el) {
+  let h = '';
+  if (!state.photo) {
+    h += '<div class="diag-hero"><div class="cam-ic">' + camIconSvg() + '</div>' +
+      '<h2>コーデ診断</h2>' +
+      '<p>今日の服装を撮ると、写真の配色を読み取って<br>季節・シチュエーション別のアドバイスをします。<br>写真は端末の中だけで処理され、どこにも送信されません。</p>' +
+      '<button class="btn" data-act="cam">カメラで撮る</button>' +
+      '<button class="btn sub" data-act="pick">アルバムから選ぶ</button></div>';
   } else {
-    const hit = state.cache[state.trendTab];
-    const dg = state.diag[state.trendTab];
-    if (state.fetching[state.trendTab] && !hit) {
-      h += '<div class="loading-note">読み込み中…🎀</div>';
-    } else if (hit && hit.items.length) {
-      if (state.trendTab === 'age' && state.profile.age) {
-        h += '<div class="note-sub" style="margin-bottom:8px">' + esc(state.profile.age) + '代の総合ランキングです(ファッション以外も含む場合があります)</div>';
-      }
-      h += '<div class="rank-grid">' + hit.items.map(itemCardHtml).join('') + '</div>';
-      h += '<div class="fetched-note">取得: ' + fmtClock(hit.fetchedAt) +
-        (dg && !dg.ok ? ' <span style="color:var(--sale)">(再取得に失敗・前回のデータ)</span>' : '') + '</div>';
+    h += '<div class="photo-frame"><img id="diagPhoto" src="' + escAttr(state.photo) + '" alt="コーデ写真"></div>';
+
+    if (!state.photoResult) {
+      h += '<div class="card-box">' +
+        '<label class="field-label">シチュエーション</label><div class="chip-wrap">' +
+        Object.keys(SITUATIONS).map(k =>
+          '<button class="chip' + (state.situ === k ? ' on' : '') + '" data-situ="' + k + '">' +
+          SITUATIONS[k].icon + ' ' + SITUATIONS[k].label + '</button>').join('') + '</div>' +
+        '<label class="field-label">季節</label><div class="chip-wrap">' +
+        Object.keys(SEASONS).map(k =>
+          '<button class="chip' + (state.season === k ? ' on' : '') + '" data-season="' + k + '">' +
+          SEASONS[k].label + (k === currentSeason() ? '(今)' : '') + '</button>').join('') + '</div>' +
+        '<div class="m-btns"><button class="btn sub" data-act="retake">撮り直す</button>' +
+        '<button class="btn" data-act="run-diag">診断する</button></div></div>';
     } else {
-      h += '<div class="empty-note">まだデータがありません。<br>' +
-        (dg && !dg.ok ? '取得エラー: ' + esc(dg.err) + '<br>' : '') +
-        '<button class="btn sub" style="margin-top:10px" data-act="retry-trend">再取得する</button></div>';
+      const r = state.photoResult;
+      h += '<div class="card-box"><div class="score-wrap">' +
+        '<div class="score-ring"><b>' + r.score + '</b><small>てん</small></div>' +
+        '<div><div class="score-title">' + esc(r.title) + '</div>' +
+        '<div class="score-sub">' + SEASONS[state.season].label + ' × ' + SITUATIONS[state.situ].label + '</div></div></div>' +
+        paletteRowHtml(r.palette.map(c => c.hex), r.palette.map(c => c.share)) +
+        adviceListHtml(r.advice) +
+        '<div class="note-sub" style="margin-top:8px">※ 写真の色味をもとにした診断です。素材や形はぜひ鏡でもチェックを</div>' +
+        '<div class="m-btns"><button class="btn sub" data-act="retake">別の写真で診断</button></div>' +
+        '</div>';
     }
   }
-  h += '<div class="sec-title">ほかのサイトでチェック</div><div class="link-pills">' +
-    TREND_LINKS.map(l => '<a target="_blank" rel="noopener" href="' + escAttr(l[2]) + '">' + l[0] + ' ' + esc(l[1]) + '</a>').join('') +
-    '</div><div style="height:16px"></div>';
+
+  // 履歴
+  if (state.diagLog.length) {
+    h += '<div class="sec-title">これまでの診断<span class="spacer"></span>' +
+      '<button class="mini-btn" data-act="clear-diaglog">全部消す</button></div>';
+    h += state.diagLog.map(d =>
+      '<div class="hist-row" data-hist="' + d.id + '">' +
+      (d.thumb ? '<img src="' + escAttr(d.thumb) + '" alt="">' : '') +
+      '<div class="grow"><div class="h-top">' + esc(d.title) + '</div>' +
+      '<div class="h-sub">' + fmtDate(d.at) + ' ・ ' + SEASONS[d.season].label + ' × ' + SITUATIONS[d.situ].label + '</div></div>' +
+      '<div class="h-score">' + d.score + '<small style="font-size:.6em">点</small></div></div>').join('');
+  }
+  h += '<div style="height:16px"></div>';
   el.innerHTML = h;
 }
 
@@ -690,7 +766,7 @@ function renderShop(el) {
   let h = '<div class="sec-title">よく行くお店<span class="spacer"></span>' +
     '<button class="mini-btn" data-act="add-shop">＋ 追加</button></div>';
   if (!state.shops.length) {
-    h += '<div class="empty-note">よく行くお店を登録すると、地図・公式サイト・<br>セール情報にワンタップで飛べます🧸</div>';
+    h += '<div class="empty-note">よく行くお店を登録すると、地図・公式サイト・<br>セール情報にワンタップで飛べます</div>';
   } else {
     h += state.shops.map(s => {
       const map = gmaps(s.name + (s.place ? ' ' + s.place : ''));
@@ -700,9 +776,9 @@ function renderShop(el) {
         '<button class="edit-btn" data-edit-shop="' + s.id + '">✏️</button></div>' +
         (s.memo ? '<div class="s-memo">' + esc(s.memo) + '</div>' : '') +
         '<div class="s-links">' +
-        '<a target="_blank" rel="noopener" href="' + escAttr(map) + '">🗺️ 地図</a>' +
-        (s.url ? '<a target="_blank" rel="noopener" href="' + escAttr(s.url) + '">🌐 公式</a>' : '') +
-        (s.saleUrl ? '<a target="_blank" rel="noopener" href="' + escAttr(s.saleUrl) + '">🏷️ セール情報</a>' : '') +
+        '<a target="_blank" rel="noopener" href="' + escAttr(map) + '">地図</a>' +
+        (s.url ? '<a target="_blank" rel="noopener" href="' + escAttr(s.url) + '">公式</a>' : '') +
+        (s.saleUrl ? '<a target="_blank" rel="noopener" href="' + escAttr(s.saleUrl) + '">セール情報</a>' : '') +
         '</div></div>';
     }).join('');
   }
@@ -710,20 +786,20 @@ function renderShop(el) {
   h += '<div class="sec-title">近くのお店をさがす <small>Googleマップで開く</small></div>';
   h += '<div class="card-box"><div class="chip-wrap">' +
     NEARBY_CATS.map(c => {
-      const q = c[1] + (state.address ? ' ' + state.address : '');
-      return '<a class="chip" style="text-decoration:none" target="_blank" rel="noopener" href="' + escAttr(gmaps(q)) + '">' + c[0] + ' ' + esc(c[1]) + '</a>';
+      const q = c + (state.address ? ' ' + state.address : '');
+      return '<a class="chip" style="text-decoration:none" target="_blank" rel="noopener" href="' + escAttr(gmaps(q)) + '">' + esc(c) + '</a>';
     }).join('') + '</div>' +
     '<div class="set-note">' + (state.address
-      ? '「<strong>' + esc(state.address) + '</strong>」の周辺で検索します(設定で変更できます)'
+      ? '「' + esc(state.address) + '」の周辺で検索します(設定で変更できます)'
       : '設定で住所を保存すると自宅周辺で検索できます。未設定のときは現在地周辺になります') + '</div></div>';
 
   h += '<div class="sec-title">ブランドの店舗をさがす<span class="spacer"></span>' +
     '<button class="mini-btn" data-act="go-brands">ブランド管理</button></div>';
   if (!state.brands.length) {
-    h += '<div class="empty-note">設定でブランドを登録すると、店舗検索に<br>ワンタップで飛べるようになります💕</div>';
+    h += '<div class="empty-note">設定でブランドを登録すると、店舗検索に<br>ワンタップで飛べるようになります</div>';
   } else {
     h += '<div class="card-box"><div class="link-pills">' +
-      state.brands.map(b => '<a target="_blank" rel="noopener" href="' + escAttr(brandLinks(b).store) + '">🔎 ' + esc(b.name) + '</a>').join('') +
+      state.brands.map(b => '<a target="_blank" rel="noopener" href="' + escAttr(brandLinks(b).store) + '">' + esc(b.name) + '</a>').join('') +
       '</div><div class="set-note">タップで各ブランドの店舗検索(または地図検索)を開きます</div></div>';
   }
   h += '<div style="height:16px"></div>';
@@ -740,7 +816,7 @@ function renderSale(el) {
 
   h += '<div class="sec-title">年間セールカレンダー<span class="spacer"></span>' +
     '<button class="mini-btn" data-act="add-sale">＋ 追加</button></div>';
-  h += '<div class="note-sub" style="margin:0 2px 4px">開催時期は毎年変わるため「ごろ」は目安です。行をタップすると編集できます。</div>';
+  h += '<div class="note-sub" style="margin:0 2px 6px">開催時期は毎年変わるため「ごろ」は目安です。行をタップすると編集できます。</div>';
 
   const t = todayParts();
   const events = allSaleEvents();
@@ -767,7 +843,7 @@ function renderSale(el) {
   h += '<div class="sec-title">ブランドのセール・クーポン<span class="spacer"></span>' +
     '<button class="mini-btn" data-act="go-brands">ブランド管理</button></div>';
   if (!state.brands.length) {
-    h += '<div class="empty-note">設定でブランドを登録すると、セール・クーポン情報に<br>ワンタップで飛べるようになります💕</div>';
+    h += '<div class="empty-note">設定でブランドを登録すると、セール・クーポン情報に<br>ワンタップで飛べるようになります</div>';
   } else {
     h += state.brands.map(b => {
       const L = brandLinks(b);
@@ -775,9 +851,9 @@ function renderSale(el) {
         '<div class="s-head"><div class="s-name">' + esc(b.name) + '</div>' +
         '<button class="edit-btn" data-edit-brand="' + b.id + '">✏️</button></div>' +
         '<div class="s-links">' +
-        '<a target="_blank" rel="noopener" href="' + escAttr(L.sale) + '">🏷️ セール</a>' +
-        '<a target="_blank" rel="noopener" href="' + escAttr(L.coupon) + '">🎫 クーポン</a>' +
-        '<a target="_blank" rel="noopener" href="' + escAttr(L.official) + '">🌐 公式</a>' +
+        '<a target="_blank" rel="noopener" href="' + escAttr(L.sale) + '">セール</a>' +
+        '<a target="_blank" rel="noopener" href="' + escAttr(L.coupon) + '">クーポン</a>' +
+        '<a target="_blank" rel="noopener" href="' + escAttr(L.official) + '">公式</a>' +
         '</div></div>';
     }).join('');
   }
@@ -786,23 +862,8 @@ function renderSale(el) {
 }
 
 /* ================= 画面: 設定 ================= */
-function catChipsHtml(cats) {
-  const defs = [['ladies', '👗 レディース'], ['mens', '👕 メンズ'], ['kids', '🧒 キッズ']];
-  return '<div class="chip-wrap">' + defs.map(d =>
-    '<button class="chip' + (cats[d[0]] ? ' on' : '') + '" data-cat="' + d[0] + '">' + d[1] + '</button>').join('') + '</div>';
-}
-function ageSelectHtml(val) {
-  const ops = [['', '選択しない'], ['10', '10代'], ['20', '20代'], ['30', '30代'], ['40', '40代'], ['50', '50代以上']];
-  return '<select id="ageSel">' + ops.map(o =>
-    '<option value="' + o[0] + '"' + (val === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select>';
-}
 function renderSet(el) {
-  let h = '<div class="sec-title">プロフィール</div><div class="card-box" id="profileBox">' +
-    '<label class="field-label">見たいカテゴリ(複数OK)</label>' + catChipsHtml(state.profile.cats) +
-    '<label class="field-label">年代(年代別ランキングに使います)</label>' + ageSelectHtml(state.profile.age) +
-    '</div>';
-
-  h += '<div class="sec-title">好きなブランド<span class="spacer"></span>' +
+  let h = '<div class="sec-title">好きなブランド<span class="spacer"></span>' +
     '<button class="mini-btn" data-act="add-brand">＋ 追加</button></div><div class="card-box">';
   if (state.brands.length) {
     h += '<div class="chip-wrap" style="margin-bottom:8px">' +
@@ -815,24 +876,16 @@ function renderSet(el) {
   }
   h += '<div class="set-note">登録したブランドは「お店」の店舗検索と「お得」のセール・クーポンに表示されます</div></div>';
 
-  h += '<div class="sec-title">楽天アプリID <small>売れ筋ランキング用</small></div><div class="card-box">' +
-    '<input type="text" id="rakutenIdInput" style="padding:10px 11px;width:100%" value="' + escAttr(state.rakutenAppId) + '" placeholder="楽天アプリID(無料)" autocomplete="off">' +
-    '<div class="set-note">※ <strong>webservice.rakuten.co.jp</strong> で楽天会員なら無料発行できます(「アプリID発行」→ 新規アプリ登録)。' +
-    '登録すると楽天市場の売れ筋ランキングがアプリ内に表示されます。かいわすれナシ!と同じIDが使えます。</div>' +
-    '<div class="m-btns"><button class="btn" data-act="save-rakuten">保存する</button></div></div>';
-
   h += '<div class="sec-title">住所 <small>近くのお店の検索用</small></div><div class="card-box">' +
-    '<input type="text" id="addrInput" style="padding:10px 11px;width:100%" value="' + escAttr(state.address) + '" placeholder="例: 東京都渋谷区" autocomplete="off">' +
+    '<input type="text" id="addrInput" style="padding:11px 12px;width:100%" value="' + escAttr(state.address) + '" placeholder="例: 東京都渋谷区" autocomplete="off">' +
     '<div class="set-note">「お店」タブの周辺検索で使います。空のままなら現在地周辺で検索します。</div>' +
     '<div class="m-btns"><button class="btn" data-act="save-addr">保存する</button></div></div>';
 
   h += '<div class="sec-title">データ</div><div class="card-box"><div class="set-row-btns">' +
-    '<button class="btn sub" data-act="refetch">🔄 トレンドを再取得</button>' +
-    '<button class="btn sub" data-act="diag">🩺 データ取得の診断</button>' +
-    '<button class="btn warn" data-act="clear-cache">🧹 トレンドのキャッシュを削除</button>' +
-    '</div></div>';
+    '<button class="btn sub" data-act="clear-diaglog">診断の履歴を全部消す</button>' +
+    '</div><div class="set-note">お店・ブランド・セールのデータはこの端末のブラウザにだけ保存されています。診断の写真も端末の外には送信されません。</div></div>';
 
-  h += '<div class="note-sub" style="text-align:center;padding:4px 0 16px">ふくらぶ！ - 服がもっと好きになる🎀</div>';
+  h += '<div class="note-sub" style="text-align:center;padding:6px 0 16px">ふくらぶ - 服がもっと好きになる</div>';
   el.innerHTML = h;
 }
 
@@ -849,7 +902,7 @@ function shopModal(shop) {
     '<input id="mShopPlace" placeholder="場所(例: 渋谷パルコ 2F)" value="' + escAttr(s.place || '') + '">' +
     '<input id="mShopUrl" type="url" placeholder="公式サイトURL(任意)" value="' + escAttr(s.url || '') + '">' +
     '<input id="mShopSale" type="url" placeholder="セール情報のURL(任意)" value="' + escAttr(s.saleUrl || '') + '">' +
-    '<textarea id="mShopMemo" rows="2" style="padding:10px 11px" placeholder="メモ(例: 火曜定休・ポイントカードあり)">' + esc(s.memo || '') + '</textarea>' +
+    '<textarea id="mShopMemo" rows="2" style="padding:11px 12px" placeholder="メモ(例: 火曜定休・ポイントカードあり)">' + esc(s.memo || '') + '</textarea>' +
     '</div><div class="m-btns">' +
     (shop ? '<button class="btn warn" data-act="del-shop" data-id="' + s.id + '">削除</button>' : '') +
     '<button class="btn" data-act="save-shop" data-id="' + (s.id || '') + '">保存する</button></div>');
@@ -858,7 +911,7 @@ function brandModal(brand, presetName) {
   const preset = presetName ? BRAND_PRESETS.find(p => p.name === presetName) : null;
   const b = brand || preset || {};
   openModal('<h3>' + (brand ? 'ブランドを編集' : 'ブランドを追加') + '</h3>' +
-    '<div class="m-sub">URLが空の項目は、自動で検索リンクになるので空のままでもOKです🎀</div>' +
+    '<div class="m-sub">URLが空の項目は、自動で検索リンクになるので空のままでもOKです</div>' +
     '<div class="add-form">' +
     '<input id="mBrandName" placeholder="ブランド名(例: ユニクロ)" value="' + escAttr(b.name || '') + '">' +
     '<input id="mBrandUrl" type="url" placeholder="公式サイトURL(任意)" value="' + escAttr(b.url || '') + '">' +
@@ -885,58 +938,21 @@ function saleModal(ev) {
     (ev ? '<button class="btn warn" data-act="del-sale" data-id="' + escAttr(s.id) + '">削除</button>' : '') +
     '<button class="btn" data-act="save-sale" data-id="' + escAttr(s.id || '') + '">保存する</button></div>');
 }
+function histModal(d) {
+  openModal('<h3>' + esc(d.title) + ' <span style="color:var(--ac-deep)">' + d.score + '点</span></h3>' +
+    '<div class="m-sub">' + fmtDate(d.at) + ' ・ ' + SEASONS[d.season].label + ' × ' + SITUATIONS[d.situ].label + '</div>' +
+    (d.thumb ? '<img src="' + escAttr(d.thumb) + '" style="width:72px;height:72px;border-radius:10px;object-fit:cover" alt="">' : '') +
+    paletteRowHtml(d.palette) +
+    adviceListHtml(d.advice) +
+    '<div class="m-btns"><button class="btn warn" data-act="del-hist" data-id="' + d.id + '">この履歴を削除</button>' +
+    '<button class="btn sub" data-act="close-modal">閉じる</button></div>');
+}
 function parseMD(str) {
   const m = String(str || '').trim().match(/^(\d{1,2})\s*[\/月]\s*(\d{1,2})日?$/);
   if (!m) return null;
   const mo = +m[1], da = +m[2];
   if (mo < 1 || mo > 12 || da < 1 || da > 31) return null;
   return [mo, da];
-}
-function diagModal() {
-  const keys = trendTabKeys();
-  let h = '<h3>データ取得の診断</h3><div class="m-sub">楽天ランキングAPIの取得状況です。</div><div class="diag">';
-  if (!state.rakutenAppId) h += '楽天アプリIDが未登録です。設定から登録してください。';
-  keys.forEach(k => {
-    const d = state.diag[k], c = state.cache[k];
-    h += '<div><b>' + TREND_TABS[k].icon + ' ' + TREND_TABS[k].label + '</b>: ';
-    if (d) h += d.ok ? '<span class="ok">OK</span>(' + d.count + '件・' + fmtClock(d.at) + ')' : '<span class="ng">失敗</span>(' + esc(d.err) + ')';
-    else if (c) h += 'キャッシュあり(' + c.items.length + '件・' + fmtClock(c.fetchedAt) + ')';
-    else h += '未取得';
-    h += '</div>';
-  });
-  h += '</div><div class="m-btns"><button class="btn sub" data-act="close-modal">閉じる</button></div>';
-  openModal(h);
-}
-
-/* ================= 初回設定 ================= */
-function renderSetup() {
-  const p = state.profile;
-  $('#setupInner').innerHTML =
-    '<div class="setup-logo">ふくらぶ！</div>' +
-    '<div class="setup-sub">流行・近くのお店・お得情報がわかる<br>あなたのファッションアプリです🎀<br>かんたんな初期設定をどうぞ!</div>' +
-    '<div class="card-box"><label class="field-label">見たいカテゴリ(複数OK)</label>' + catChipsHtml(p.cats) +
-    '<label class="field-label">年代(任意・年代別ランキングに使います)</label>' + ageSelectHtml(p.age) +
-    '<div class="set-note">あとから設定でいつでも変えられます。売れ筋ランキング用の「楽天アプリID」も設定から登録できます。</div></div>' +
-    '<button class="btn" style="width:100%" id="setupDone">はじめる 🎀</button>';
-  $('#setupWrap').classList.add('show');
-  $('#setupInner').onclick = e => {
-    const cat = e.target.closest('[data-cat]');
-    if (cat) {
-      state.profile.cats[cat.dataset.cat] = !state.profile.cats[cat.dataset.cat];
-      saveAll(); renderSetup(); return;
-    }
-    if (e.target.id === 'setupDone') {
-      const sel = $('#setupWrap #ageSel');
-      if (sel) state.profile.age = sel.value;
-      state.profile.setupDone = true;
-      saveAll();
-      $('#setupWrap').classList.remove('show');
-      render();
-      refreshAll(false);
-    }
-  };
-  const sel = $('#setupWrap #ageSel');
-  if (sel) sel.onchange = () => { state.profile.age = sel.value; saveAll(); };
 }
 
 /* ================= トースト ================= */
@@ -956,7 +972,7 @@ function render() {
   const el = $('#page-' + state.tab);
   el.classList.add('on');
   if (state.tab === 'home') renderHome(el);
-  else if (state.tab === 'trend') renderTrend(el);
+  else if (state.tab === 'diag') renderDiag(el);
   else if (state.tab === 'shop') renderShop(el);
   else if (state.tab === 'sale') renderSale(el);
   else if (state.tab === 'set') renderSet(el);
@@ -969,9 +985,9 @@ $('#navBar').addEventListener('click', e => {
   state.tab = b.dataset.tab;
   render();
   window.scrollTo(0, 0);
-  if (state.tab === 'trend') fetchRanking(state.trendTab || trendTabKeys()[0], false);
 });
-$('#refreshBtn').onclick = () => refreshAll(true);
+$('#camInput').addEventListener('change', e => { loadPhotoFile(e.target.files[0]); e.target.value = ''; });
+$('#pickInput').addEventListener('change', e => { loadPhotoFile(e.target.files[0]); e.target.value = ''; });
 
 document.body.addEventListener('click', e => {
   const t = e.target;
@@ -979,15 +995,33 @@ document.body.addEventListener('click', e => {
   const act = actEl ? actEl.dataset.act : null;
 
   // タブ移動系
-  if (act === 'go-set') { state.tab = 'set'; render(); window.scrollTo(0, 0); return; }
-  if (act === 'go-trend') { state.tab = 'trend'; render(); window.scrollTo(0, 0); fetchRanking(state.trendTab || trendTabKeys()[0], false); return; }
+  if (act === 'go-diag') { state.tab = 'diag'; render(); window.scrollTo(0, 0); return; }
   if (act === 'go-shop') { state.tab = 'shop'; render(); window.scrollTo(0, 0); return; }
   if (act === 'go-brands') { state.tab = 'set'; render(); window.scrollTo(0, 0); return; }
 
-  // トレンド
-  const tt = t.closest('[data-trendtab]');
-  if (tt) { state.trendTab = tt.dataset.trendtab; render(); fetchRanking(state.trendTab, false); return; }
-  if (act === 'retry-trend') { fetchRanking(state.trendTab, true); render(); return; }
+  // 診断
+  if (act === 'cam') { $('#camInput').click(); return; }
+  if (act === 'pick') { $('#pickInput').click(); return; }
+  if (act === 'retake') { state.photo = null; state.photoResult = null; render(); return; }
+  if (act === 'run-diag') { runDiagnosis(); return; }
+  const situ = t.closest('[data-situ]');
+  if (situ) { state.situ = situ.dataset.situ; render(); return; }
+  const sea = t.closest('[data-season]');
+  if (sea) { state.season = sea.dataset.season; render(); return; }
+  const hist = t.closest('[data-hist]');
+  if (hist) {
+    const d = state.diagLog.find(x => x.id === hist.dataset.hist);
+    if (d) histModal(d);
+    return;
+  }
+  if (act === 'del-hist') {
+    state.diagLog = state.diagLog.filter(x => x.id !== actEl.dataset.id);
+    saveAll(); closeModal(); render(); toast('削除しました'); return;
+  }
+  if (act === 'clear-diaglog') {
+    state.diagLog = [];
+    saveAll(); render(); toast('診断の履歴を消しました'); return;
+  }
 
   // お店
   if (act === 'add-shop') { shopModal(null); return; }
@@ -1003,7 +1037,7 @@ document.body.addEventListener('click', e => {
     const id = actEl.dataset.id;
     if (id) Object.assign(state.shops.find(x => x.id === id), data);
     else state.shops.push(Object.assign({ id: uid() }, data));
-    saveAll(); closeModal(); render(); toast('保存しました🧸'); return;
+    saveAll(); closeModal(); render(); toast('保存しました'); return;
   }
   if (act === 'del-shop') {
     state.shops = state.shops.filter(x => x.id !== actEl.dataset.id);
@@ -1026,7 +1060,7 @@ document.body.addEventListener('click', e => {
     const id = actEl.dataset.id;
     if (id) Object.assign(state.brands.find(x => x.id === id), data);
     else state.brands.push(Object.assign({ id: uid() }, data));
-    saveAll(); closeModal(); render(); toast('保存しました💕'); return;
+    saveAll(); closeModal(); render(); toast('保存しました'); return;
   }
   if (act === 'del-brand') {
     state.brands = state.brands.filter(x => x.id !== actEl.dataset.id);
@@ -1060,7 +1094,7 @@ document.body.addEventListener('click', e => {
     } else {
       state.sales.events.push(Object.assign({ id: uid() }, data));
     }
-    saveAll(); closeModal(); render(); toast('保存しました🎉'); return;
+    saveAll(); closeModal(); render(); toast('保存しました'); return;
   }
   if (act === 'del-sale') {
     const id = actEl.dataset.id;
@@ -1070,50 +1104,17 @@ document.body.addEventListener('click', e => {
   }
 
   // 設定
-  const cat = t.closest('#profileBox [data-cat]');
-  if (cat) {
-    state.profile.cats[cat.dataset.cat] = !state.profile.cats[cat.dataset.cat];
-    saveAll(); render(); return;
-  }
-  if (act === 'save-rakuten') {
-    state.rakutenAppId = $('#rakutenIdInput').value.trim();
-    saveAll(); toast(state.rakutenAppId ? '保存しました!トレンドを取得します🎀' : '保存しました');
-    if (state.rakutenAppId) refreshAll(true);
-    return;
-  }
   if (act === 'save-addr') {
     state.address = $('#addrInput').value.trim();
-    saveAll(); toast('保存しました📍'); return;
-  }
-  if (act === 'refetch') { refreshAll(true); toast('再取得しています…'); return; }
-  if (act === 'diag') { diagModal(); return; }
-  if (act === 'clear-cache') {
-    state.cache = {}; saveCache(); state.diag = {};
-    render(); toast('キャッシュを削除しました🧹'); return;
+    saveAll(); toast('保存しました'); return;
   }
   if (act === 'close-modal') { closeModal(); return; }
-});
-
-document.body.addEventListener('change', e => {
-  if (e.target.id === 'ageSel' && e.target.closest('#page-set')) {
-    state.profile.age = e.target.value;
-    saveAll(); render();
-  }
 });
 
 /* ================= 初期化 ================= */
 const tp = todayParts();
 $('#headDate').textContent = tp.m + '/' + tp.d + '(' + tp.wd + ')';
-
-if (!state.profile.setupDone) {
-  renderSetup();
-} else {
-  render();
-  // 起動時: キャッシュが60分より古ければ自動取得
-  let newest = 0;
-  for (const k of trendTabKeys()) newest = Math.max(newest, (state.cache[k] && state.cache[k].fetchedAt) || 0);
-  if (state.rakutenAppId && Date.now() - newest > 60 * 60 * 1000) refreshAll(false);
-}
+render();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
