@@ -188,6 +188,9 @@
   .hist-row .h-top { font-size: .86rem; font-weight: 700; }
   .hist-row .h-sub { font-size: .73rem; color: var(--text-sub); margin-top: 1px; }
   .hist-row .h-score { font-size: 1.05rem; font-weight: 800; color: var(--ac-deep); flex-shrink: 0; }
+  .rec-item { padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .rec-item:last-of-type { border-bottom: none; }
+  .rec-item .rec-name { font-size: .86rem; font-weight: 700; margin-bottom: 7px; }
 
   /* ---------- お店・ブランド ---------- */
   .shop-card {
@@ -378,6 +381,16 @@ const SALE_PRESETS = [
   { id: 'ps_zozo_w', name: 'ZOZO 冬セール', icon: '🛍️', m1: 12, d1: 20, m2: 1, d2: 20, approx: true, url: 'https://zozo.jp/sale/' },
 ];
 
+// おすすめアイテムを探せるショップ(設定で選択・登録ブランドも選べる)
+const REC_SHOPS = {
+  rakuten: { label: '楽天市場', url: q => 'https://search.rakuten.co.jp/search/mall/' + encodeURIComponent(q) + '/' },
+  zozo:    { label: 'ZOZOTOWN', url: q => 'https://zozo.jp/search/?p_keyv=' + encodeURIComponent(q) },
+  amazon:  { label: 'Amazon', url: q => 'https://www.amazon.co.jp/s?k=' + encodeURIComponent(q) },
+  yahoo:   { label: 'Yahoo!ショッピング', url: q => 'https://shopping.yahoo.co.jp/search?p=' + encodeURIComponent(q) },
+  uniqlo:  { label: 'ユニクロ', url: q => 'https://www.uniqlo.com/jp/ja/search?q=' + encodeURIComponent(q) },
+  gu:      { label: 'GU', url: q => 'https://www.gu-global.com/jp/ja/search?q=' + encodeURIComponent(q) },
+};
+
 const SITUATIONS = {
   work:   { label: '仕事・通勤', icon: '💼' },
   date:   { label: 'デート', icon: '💐' },
@@ -404,6 +417,7 @@ const state = {
   sales: lsGet('fkl_sales', { removed: [], events: [] }),
   address: lsGet('fkl_address', ''),
   diagLog: lsGet('fkl_diagLog', []),
+  recShops: lsGet('fkl_recShops', ['rakuten', 'zozo', 'uniqlo']),
   tab: 'home',
   // 診断の作業用(保存しない)
   photo: null,        // dataURL
@@ -420,6 +434,26 @@ function saveAll() {
   lsSet('fkl_sales', state.sales);
   lsSet('fkl_address', state.address);
   lsSet('fkl_diagLog', state.diagLog);
+  lsSet('fkl_recShops', state.recShops);
+}
+// おすすめショップの選択肢(内蔵ショップ+登録ブランド)と有効な選択だけを返す
+function recShopOptions() {
+  return Object.keys(REC_SHOPS).map(k => [k, REC_SHOPS[k].label])
+    .concat(state.brands.map(b => ['b:' + b.id, b.name]));
+}
+function recShopSelected() {
+  const valid = new Set(recShopOptions().map(o => o[0]));
+  return state.recShops.filter(id => valid.has(id));
+}
+function recShopLabel(id) {
+  if (REC_SHOPS[id]) return REC_SHOPS[id].label;
+  const b = state.brands.find(x => 'b:' + x.id === id);
+  return b ? b.name : id;
+}
+function recShopUrl(id, q) {
+  if (REC_SHOPS[id]) return REC_SHOPS[id].url(q);
+  const b = state.brands.find(x => 'b:' + x.id === id);
+  return gsearch((b ? b.name + ' ' : '') + q);
 }
 
 /* ================= セールカレンダー ================= */
@@ -535,8 +569,15 @@ function extractPalette(imgEl) {
 // 抽出した色 × 季節 × シチュエーションからアドバイスを作る
 function judgeOutfit(palette, seasonKey, situKey) {
   const advice = [];
+  const items = [];
   const good = t => advice.push({ kind: 'good', text: t });
-  const tip = t => advice.push({ kind: 'tip', text: t });
+  // tipにおすすめアイテム(名前と検索キーワード)を紐づけられる
+  const tip = (t, itName, itQuery) => {
+    advice.push({ kind: 'tip', text: t });
+    if (itName && items.length < 3 && !items.some(i => i.name === itName)) {
+      items.push({ name: itName, query: itQuery });
+    }
+  };
   const colors = palette.filter(c => !c.neutral);
   const n = palette.length;
   const tw = palette.reduce((a, c) => a + c.share, 0) || 1;
@@ -552,36 +593,42 @@ function judgeOutfit(palette, seasonKey, situKey) {
   // ベーシックカラー中心かどうか
   if (!colors.length) {
     good('定番カラー中心で、落ち着いた大人っぽいコーデです');
-    tip(SEASONS[seasonKey].accent + 'を小物で1点足すと、ぐっと季節感が出ます');
+    const ACCENT_ITEM = {
+      spring: ['ピンク系の小物', 'ピンク 小物 春'],
+      summer: ['ブルー系の小物', 'ブルー 小物 夏'],
+      autumn: ['テラコッタ・マスタードの小物', 'テラコッタ 小物'],
+      winter: ['ボルドーのマフラー・小物', 'ボルドー マフラー'],
+    }[seasonKey];
+    tip(SEASONS[seasonKey].accent + 'を小物で1点足すと、ぐっと季節感が出ます', ACCENT_ITEM[0], ACCENT_ITEM[1]);
   }
 
   // 季節
   if (seasonKey === 'summer') {
-    if (avgL < 0.4) tip('全体が暗めのトーン。夏は白や淡い色を1点入れると涼しげに見えます');
+    if (avgL < 0.4) tip('全体が暗めのトーン。夏は白や淡い色を1点入れると涼しげに見えます', '白・淡色のトップス', '白 トップス 夏');
     else good('明るいトーンで夏らしい爽やかさがあります');
   } else if (seasonKey === 'winter') {
-    if (avgL > 0.75) tip('淡い色メインの冬コーデは、濃い色を1点「締め色」にすると引き締まります');
+    if (avgL > 0.75) tip('淡い色メインの冬コーデは、濃い色を1点「締め色」にすると引き締まります', '濃色のニット・アウター', 'ダークカラー ニット');
     else good('落ち着いたトーンで冬らしい深みがあります');
   } else if (seasonKey === 'spring') {
-    if (avgL < 0.35) tip('春は明るいトーンや軽やかな色を入れると季節感が出ます');
+    if (avgL < 0.35) tip('春は明るいトーンや軽やかな色を入れると季節感が出ます', '明るい色のカーディガン', '明るい色 カーディガン 春');
     else good('春らしい軽やかなトーンです');
   } else if (seasonKey === 'autumn') {
-    if (colors.length && coolShare > warmShare && avgS > 0.4) tip('ブラウン・カーキなどの「こっくり色」を合わせると秋らしさが増します');
+    if (colors.length && coolShare > warmShare && avgS > 0.4) tip('ブラウン・カーキなどの「こっくり色」を合わせると秋らしさが増します', 'ブラウン・カーキのトップス', 'ブラウン カーキ トップス');
     else good('あたたかみのあるトーンで秋らしい雰囲気です');
   }
 
   // シチュエーション
   if (situKey === 'work') {
-    if (avgS > 0.45 && colors.length) tip('鮮やかな色は面積を小さめにすると、オフィスでも悪目立ちしません');
+    if (avgS > 0.45 && colors.length) tip('鮮やかな色は面積を小さめにすると、オフィスでも悪目立ちしません', 'ベーシック色のジャケット', 'きれいめ ジャケット ベーシック');
     else good('落ち着いた配色で、仕事の場でも好印象です');
   } else if (situKey === 'date') {
-    if (avgL < 0.35) tip('顔まわり(トップスやストール)に明るい色があると、表情まで明るく見えます');
+    if (avgL < 0.35) tip('顔まわり(トップスやストール)に明るい色があると、表情まで明るく見えます', '明るい色のトップス・ストール', '明るい色 トップス');
     else good('明るさのバランスがよく、やわらかい印象です');
   } else if (situKey === 'formal') {
-    if (n >= 4) tip('フォーマルな場は色数控えめが上品。ベースカラー+1色くらいが安心です');
+    if (n >= 4) tip('フォーマルな場は色数控えめが上品。ベースカラー+1色くらいが安心です', 'ベーシックカラーの小物', 'フォーマル 小物 ベーシック');
     else good('色数が抑えられていて、きちんと感があります');
   } else if (situKey === 'active') {
-    tip('外での活動は日差し・気温差に注意。羽織り物が1枚あると安心です');
+    tip('外での活動は日差し・気温差に注意。羽織り物が1枚あると安心です', '軽く羽織れるアウター', '軽量 羽織り パーカー');
   } else if (situKey === 'outing') {
     good('お出かけにちょうどいいバランスです');
   } else if (situKey === 'casual') {
@@ -593,6 +640,17 @@ function judgeOutfit(palette, seasonKey, situKey) {
     tip('暖色と寒色が同じくらいの分量。どちらかを主役にすると統一感が出ます');
   }
 
+  // おすすめが無いとき(全部good)は季節の新作をすすめる
+  if (!items.length) {
+    const DEFAULT_ITEM = {
+      spring: ['春の新作アイテム', '春 新作 服'],
+      summer: ['夏の新作アイテム', '夏 新作 服'],
+      autumn: ['秋の新作アイテム', '秋 新作 服'],
+      winter: ['冬の新作アイテム', '冬 新作 服'],
+    }[seasonKey];
+    items.push({ name: DEFAULT_ITEM[0], query: DEFAULT_ITEM[1] });
+  }
+
   const tips = advice.filter(a => a.kind === 'tip').length;
   let score = 96 - tips * 7 + (n <= 3 ? 2 : 0);
   score = Math.max(62, Math.min(98, score));
@@ -600,7 +658,7 @@ function judgeOutfit(palette, seasonKey, situKey) {
     : score >= 82 ? 'とてもいいバランス!'
     : score >= 72 ? 'いいカンジです!'
     : 'もうひと工夫で、もっと素敵に';
-  return { score, title, advice, palette };
+  return { score, title, advice, palette, items };
 }
 // 履歴用サムネイル(小さく圧縮して保存)
 function makeThumb(imgEl) {
@@ -640,7 +698,7 @@ function runDiagnosis() {
     id: uid(), at: Date.now(), situ: state.situ, season: state.season,
     score: res.score, title: res.title,
     palette: palette.map(c => c.hex),
-    advice: res.advice, thumb: makeThumb(imgEl),
+    advice: res.advice, items: res.items, thumb: makeThumb(imgEl),
   });
   state.diagLog = state.diagLog.slice(0, 20);
   saveAll();
@@ -668,6 +726,23 @@ function paletteRowHtml(hexes, shares) {
   return '<div class="palette-row">' + hexes.map((hx, i) =>
     '<span class="pal" style="background:' + escAttr(hx) + '">' +
     (shares ? '<small>' + Math.round(shares[i] * 100) + '%</small>' : '') + '</span>').join('') + '</div>';
+}
+function recItemsHtml(items) {
+  if (!items || !items.length) return '';
+  const sel = recShopSelected();
+  let h = '<div class="field-label" style="margin-top:14px">おすすめアイテム</div>';
+  h += items.map(it =>
+    '<div class="rec-item"><div class="rec-name">' + esc(it.name) + '</div>' +
+    (sel.length
+      ? '<div class="link-pills">' + sel.map(id =>
+          '<a target="_blank" rel="noopener" href="' + escAttr(recShopUrl(id, it.query)) + '">' +
+          esc(recShopLabel(id)) + '</a>').join('') + '</div>'
+      : '') +
+    '</div>').join('');
+  h += sel.length
+    ? '<div class="note-sub" style="margin-top:6px">タップすると選んだショップの検索結果が開きます(設定で変更できます)</div>'
+    : '<div class="note-sub" style="margin-top:6px">設定の「おすすめを探すショップ」でショップを選ぶと、ここから商品を探せます</div>';
+  return h;
 }
 function camIconSvg() {
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="3.4"/></svg>';
@@ -740,6 +815,7 @@ function renderDiag(el) {
         '<div class="score-sub">' + SEASONS[state.season].label + ' × ' + SITUATIONS[state.situ].label + '</div></div></div>' +
         paletteRowHtml(r.palette.map(c => c.hex), r.palette.map(c => c.share)) +
         adviceListHtml(r.advice) +
+        recItemsHtml(r.items) +
         '<div class="note-sub" style="margin-top:8px">※ 写真の色味をもとにした診断です。素材や形はぜひ鏡でもチェックを</div>' +
         '<div class="m-btns"><button class="btn sub" data-act="retake">別の写真で診断</button></div>' +
         '</div>';
@@ -876,6 +952,12 @@ function renderSet(el) {
   }
   h += '<div class="set-note">登録したブランドは「お店」の店舗検索と「お得」のセール・クーポンに表示されます</div></div>';
 
+  const selShops = new Set(recShopSelected());
+  h += '<div class="sec-title">おすすめを探すショップ <small>コーデ診断用</small></div><div class="card-box">' +
+    '<div class="chip-wrap">' + recShopOptions().map(o =>
+      '<button class="chip' + (selShops.has(o[0]) ? ' on' : '') + '" data-recshop="' + escAttr(o[0]) + '">' + esc(o[1]) + '</button>').join('') + '</div>' +
+    '<div class="set-note">診断結果の「おすすめアイテム」をどのショップで探すか選べます(複数OK)。ブランドを登録するとここに追加されます。</div></div>';
+
   h += '<div class="sec-title">住所 <small>近くのお店の検索用</small></div><div class="card-box">' +
     '<input type="text" id="addrInput" style="padding:11px 12px;width:100%" value="' + escAttr(state.address) + '" placeholder="例: 東京都渋谷区" autocomplete="off">' +
     '<div class="set-note">「お店」タブの周辺検索で使います。空のままなら現在地周辺で検索します。</div>' +
@@ -944,6 +1026,7 @@ function histModal(d) {
     (d.thumb ? '<img src="' + escAttr(d.thumb) + '" style="width:72px;height:72px;border-radius:10px;object-fit:cover" alt="">' : '') +
     paletteRowHtml(d.palette) +
     adviceListHtml(d.advice) +
+    recItemsHtml(d.items) +
     '<div class="m-btns"><button class="btn warn" data-act="del-hist" data-id="' + d.id + '">この履歴を削除</button>' +
     '<button class="btn sub" data-act="close-modal">閉じる</button></div>');
 }
@@ -1104,6 +1187,13 @@ document.body.addEventListener('click', e => {
   }
 
   // 設定
+  const rs = t.closest('[data-recshop]');
+  if (rs) {
+    const id = rs.dataset.recshop;
+    if (state.recShops.includes(id)) state.recShops = state.recShops.filter(x => x !== id);
+    else state.recShops.push(id);
+    saveAll(); render(); return;
+  }
   if (act === 'save-addr') {
     state.address = $('#addrInput').value.trim();
     saveAll(); toast('保存しました'); return;
