@@ -191,6 +191,23 @@
   .rec-item { padding: 9px 0; border-bottom: 1px solid var(--line); }
   .rec-item:last-of-type { border-bottom: none; }
   .rec-item .rec-name { font-size: .86rem; font-weight: 700; margin-bottom: 7px; }
+  .prod-scroll {
+    display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; padding: 2px 0 8px;
+  }
+  .prod-scroll::-webkit-scrollbar { display: none; }
+  .prod-card {
+    flex: 0 0 110px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    text-decoration: none; color: var(--text); background: #fff; box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+  }
+  .prod-card img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #f7f7f9; display: block; }
+  .prod-card .p-nm {
+    font-size: .66rem; line-height: 1.4; padding: 5px 7px 0;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    min-height: 2em;
+  }
+  .prod-card .p-pr { font-size: .8rem; font-weight: 800; color: var(--ac-deep); padding: 3px 7px 7px; display: block; }
 
   /* ---------- お店・ブランド ---------- */
   .shop-card {
@@ -391,6 +408,39 @@ const REC_SHOPS = {
   gu:      { label: 'GU', url: q => 'https://www.gu-global.com/jp/ja/search?q=' + encodeURIComponent(q) },
 };
 
+// 今シーズンのトレンド(色とアイテム)。流行が変わったらここを更新する
+const TRENDS = {
+  spring: {
+    colors: [
+      { name: 'バターイエロー', h1: 45, h2: 70, sMin: 0.22, lMin: 0.55, lMax: 0.88 },
+      { name: 'パウダーピンク', h1: 325, h2: 360, sMin: 0.15, lMin: 0.6, lMax: 0.9 },
+    ],
+    items: [['シアーシャツ', 'シアーシャツ'], ['ワイドパンツ', 'ワイドパンツ きれいめ']],
+  },
+  summer: {
+    colors: [
+      { name: 'バターイエロー', h1: 45, h2: 70, sMin: 0.22, lMin: 0.55, lMax: 0.88 },
+      { name: 'アイスブルー', h1: 185, h2: 225, sMin: 0.15, lMin: 0.55, lMax: 0.9 },
+    ],
+    items: [['クロシェ編みトップス', 'クロシェ トップス'], ['リネンのワイドパンツ', 'リネン ワイドパンツ']],
+  },
+  autumn: {
+    colors: [
+      { name: 'モカブラウン', h1: 18, h2: 42, sMin: 0.18, lMin: 0.25, lMax: 0.6 },
+      { name: 'バーガンディ', h1: 335, h2: 10, sMin: 0.25, lMin: 0.18, lMax: 0.45 },
+    ],
+    items: [['スエード調ジャケット', 'スエード ジャケット'], ['バレルレッグデニム', 'バレルレッグ デニム']],
+  },
+  winter: {
+    colors: [
+      { name: 'ダークチェリー', h1: 335, h2: 10, sMin: 0.25, lMin: 0.15, lMax: 0.45 },
+      { name: 'ディープグリーン', h1: 140, h2: 175, sMin: 0.2, lMin: 0.15, lMax: 0.4 },
+    ],
+    items: [['ロング丈コート', 'ロングコート'], ['ファー小物', 'ファー バッグ 小物']],
+  },
+};
+function hueIn(h, a, b) { return a <= b ? (h >= a && h <= b) : (h >= a || h <= b); }
+
 const SITUATIONS = {
   work:   { label: '仕事・通勤', icon: '💼' },
   date:   { label: 'デート', icon: '💐' },
@@ -418,6 +468,8 @@ const state = {
   address: lsGet('fkl_address', ''),
   diagLog: lsGet('fkl_diagLog', []),
   recShops: lsGet('fkl_recShops', ['rakuten', 'zozo', 'uniqlo']),
+  rakutenAppId: lsGet('fkl_rakutenId', ''),
+  recCache: {},   // おすすめ商品の取得結果(セッション中のみ)
   tab: 'home',
   // 診断の作業用(保存しない)
   photo: null,        // dataURL
@@ -426,7 +478,7 @@ const state = {
   season: currentSeason(),
 };
 // 旧バージョン(楽天ランキング機能)の保存データを掃除
-['fkl_cache', 'fkl_rakutenId', 'fkl_profile'].forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
+['fkl_cache', 'fkl_profile'].forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
 
 function saveAll() {
   lsSet('fkl_brands', state.brands);
@@ -435,6 +487,7 @@ function saveAll() {
   lsSet('fkl_address', state.address);
   lsSet('fkl_diagLog', state.diagLog);
   lsSet('fkl_recShops', state.recShops);
+  lsSet('fkl_rakutenId', state.rakutenAppId);
 }
 // おすすめショップの選択肢(内蔵ショップ+登録ブランド)と有効な選択だけを返す
 function recShopOptions() {
@@ -640,6 +693,23 @@ function judgeOutfit(palette, seasonKey, situKey) {
     tip('暖色と寒色が同じくらいの分量。どちらかを主役にすると統一感が出ます');
   }
 
+  // 今シーズンのトレンドに照らす
+  const tr = TRENDS[seasonKey];
+  const matched = tr.colors.filter(def =>
+    palette.some(c => hueIn(c.h, def.h1, def.h2) && c.s >= def.sMin && c.l >= def.lMin && c.l <= def.lMax));
+  const trendMatch = matched.length > 0;
+  if (trendMatch) {
+    good('今シーズン流行中の「' + matched.map(m => m.name).join('・') + '」が入っていて、今っぽさがあります');
+  } else {
+    tip('今シーズンのトレンドカラーは「' + tr.colors.map(c => c.name).join('・') + '」。小物でも1点入れると今っぽくなります',
+      '流行中: ' + tr.colors[0].name + 'のアイテム', tr.colors[0].name);
+  }
+  // トレンドアイテムもおすすめに1つ入れる
+  const trIt = tr.items[0];
+  if (items.length < 3 && !items.some(i => i.name === trIt[0])) {
+    items.push({ name: '流行中: ' + trIt[0], query: trIt[1] });
+  }
+
   // おすすめが無いとき(全部good)は季節の新作をすすめる
   if (!items.length) {
     const DEFAULT_ITEM = {
@@ -651,13 +721,15 @@ function judgeOutfit(palette, seasonKey, situKey) {
     items.push({ name: DEFAULT_ITEM[0], query: DEFAULT_ITEM[1] });
   }
 
+  // 採点(やや厳しめ): 指摘1件ごとに減点、色数超過は追加減点、トレンド一致は加点
   const tips = advice.filter(a => a.kind === 'tip').length;
-  let score = 96 - tips * 7 + (n <= 3 ? 2 : 0);
-  score = Math.max(62, Math.min(98, score));
-  const title = score >= 90 ? '今日のコーデ、最高です!'
-    : score >= 82 ? 'とてもいいバランス!'
+  let score = 85 - tips * 8 + (n <= 3 ? 4 : -5) + (trendMatch ? 6 : 0);
+  score = Math.max(40, Math.min(98, score));
+  const title = score >= 92 ? '完璧!今日のコーデ、最高です'
+    : score >= 84 ? 'とてもいいバランス!'
     : score >= 72 ? 'いいカンジです!'
-    : 'もうひと工夫で、もっと素敵に';
+    : score >= 58 ? 'あと少し!調整してみよう'
+    : '今日は思い切って変えてみるのもアリ';
   return { score, title, advice, palette, items };
 }
 // 履歴用サムネイル(小さく圧縮して保存)
@@ -705,6 +777,51 @@ function runDiagnosis() {
   render();
 }
 
+/* ================= おすすめ商品の取得(楽天商品検索API・任意) ================= */
+async function fetchJson(url, timeoutMs) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), timeoutMs || 12000);
+  try {
+    const res = await fetch(url, { signal: ctl.signal });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return await res.json();
+  } finally { clearTimeout(t); }
+}
+function ensureRecProducts(query) {
+  if (!state.rakutenAppId || state.recCache[query]) return;
+  state.recCache[query] = { status: 'loading' };
+  const url = 'https://app.rakuten.co.jp/services/api/IchibaItem/Search/20220601?format=json' +
+    '&applicationId=' + encodeURIComponent(state.rakutenAppId) +
+    '&keyword=' + encodeURIComponent(query) + '&hits=3&imageFlag=1';
+  fetchJson(url).then(json => {
+    const items = (json.Items || []).map(w => {
+      const it = w.Item || w;
+      const img = ((it.mediumImageUrls || [])[0] || {}).imageUrl || '';
+      return {
+        name: it.itemName, price: it.itemPrice, url: it.itemUrl,
+        img: String(img).replace(/_ex=\d+x\d+/, '_ex=300x300'),
+        shop: it.shopName,
+      };
+    });
+    state.recCache[query] = items.length ? { status: 'ok', items } : { status: 'err' };
+  }).catch(() => {
+    state.recCache[query] = { status: 'err' };
+  }).finally(() => {
+    if (state.tab === 'diag') render();
+  });
+}
+function recProductsHtml(query) {
+  if (!state.rakutenAppId) return '';
+  const c = state.recCache[query];
+  if (!c || c.status === 'loading') return '<div class="note-sub" style="margin-bottom:6px">商品をさがしています…</div>';
+  if (c.status === 'err') return '<div class="note-sub" style="margin-bottom:6px">商品を取得できませんでした(下のボタンから探せます)</div>';
+  return '<div class="prod-scroll">' + c.items.map(p =>
+    '<a class="prod-card" target="_blank" rel="noopener" href="' + escAttr(p.url) + '">' +
+    (p.img ? '<img loading="lazy" src="' + escAttr(p.img) + '" alt="">' : '') +
+    '<span class="p-nm">' + esc(p.name) + '</span>' +
+    '<span class="p-pr">¥' + Number(p.price || 0).toLocaleString('ja-JP') + '</span></a>').join('') + '</div>';
+}
+
 /* ================= 共通描画パーツ ================= */
 function saleBannerHtml(x) {
   const ev = x.ev;
@@ -727,12 +844,13 @@ function paletteRowHtml(hexes, shares) {
     '<span class="pal" style="background:' + escAttr(hx) + '">' +
     (shares ? '<small>' + Math.round(shares[i] * 100) + '%</small>' : '') + '</span>').join('') + '</div>';
 }
-function recItemsHtml(items) {
+function recItemsHtml(items, withProducts) {
   if (!items || !items.length) return '';
   const sel = recShopSelected();
   let h = '<div class="field-label" style="margin-top:14px">おすすめアイテム</div>';
   h += items.map(it =>
     '<div class="rec-item"><div class="rec-name">' + esc(it.name) + '</div>' +
+    (withProducts ? recProductsHtml(it.query) : '') +
     (sel.length
       ? '<div class="link-pills">' + sel.map(id =>
           '<a target="_blank" rel="noopener" href="' + escAttr(recShopUrl(id, it.query)) + '">' +
@@ -740,8 +858,11 @@ function recItemsHtml(items) {
       : '') +
     '</div>').join('');
   h += sel.length
-    ? '<div class="note-sub" style="margin-top:6px">タップすると選んだショップの検索結果が開きます(設定で変更できます)</div>'
+    ? '<div class="note-sub" style="margin-top:6px">ボタンをタップすると選んだショップの検索結果が開きます(設定で変更できます)</div>'
     : '<div class="note-sub" style="margin-top:6px">設定の「おすすめを探すショップ」でショップを選ぶと、ここから商品を探せます</div>';
+  if (withProducts && !state.rakutenAppId) {
+    h += '<div class="note-sub">設定で<b>楽天アプリID(無料)</b>を登録すると、実際の商品(画像・価格)がここに表示されます</div>';
+  }
   return h;
 }
 function camIconSvg() {
@@ -809,13 +930,14 @@ function renderDiag(el) {
         '<button class="btn" data-act="run-diag">診断する</button></div></div>';
     } else {
       const r = state.photoResult;
+      r.items.forEach(it => ensureRecProducts(it.query));
       h += '<div class="card-box"><div class="score-wrap">' +
         '<div class="score-ring"><b>' + r.score + '</b><small>てん</small></div>' +
         '<div><div class="score-title">' + esc(r.title) + '</div>' +
         '<div class="score-sub">' + SEASONS[state.season].label + ' × ' + SITUATIONS[state.situ].label + '</div></div></div>' +
         paletteRowHtml(r.palette.map(c => c.hex), r.palette.map(c => c.share)) +
         adviceListHtml(r.advice) +
-        recItemsHtml(r.items) +
+        recItemsHtml(r.items, true) +
         '<div class="note-sub" style="margin-top:8px">※ 写真の色味をもとにした診断です。素材や形はぜひ鏡でもチェックを</div>' +
         '<div class="m-btns"><button class="btn sub" data-act="retake">別の写真で診断</button></div>' +
         '</div>';
@@ -957,6 +1079,13 @@ function renderSet(el) {
     '<div class="chip-wrap">' + recShopOptions().map(o =>
       '<button class="chip' + (selShops.has(o[0]) ? ' on' : '') + '" data-recshop="' + escAttr(o[0]) + '">' + esc(o[1]) + '</button>').join('') + '</div>' +
     '<div class="set-note">診断結果の「おすすめアイテム」をどのショップで探すか選べます(複数OK)。ブランドを登録するとここに追加されます。</div></div>';
+
+  h += '<div class="sec-title">楽天アプリID <small>おすすめ商品の表示用・任意</small></div><div class="card-box">' +
+    '<input type="text" id="rakutenIdInput" style="padding:11px 12px;width:100%" value="' + escAttr(state.rakutenAppId) + '" placeholder="楽天アプリID(無料)" autocomplete="off">' +
+    '<div class="set-note">登録すると、コーデ診断のおすすめアイテムに<b>実際の商品(画像・価格)</b>が表示されます。' +
+    '<b>webservice.rakuten.co.jp</b> で楽天会員なら無料発行できます(「アプリID発行」→ 新規アプリ登録)。' +
+    '未登録でもショップ検索ボタンはそのまま使えます。</div>' +
+    '<div class="m-btns"><button class="btn" data-act="save-rakuten">保存する</button></div></div>';
 
   h += '<div class="sec-title">住所 <small>近くのお店の検索用</small></div><div class="card-box">' +
     '<input type="text" id="addrInput" style="padding:11px 12px;width:100%" value="' + escAttr(state.address) + '" placeholder="例: 東京都渋谷区" autocomplete="off">' +
@@ -1193,6 +1322,13 @@ document.body.addEventListener('click', e => {
     if (state.recShops.includes(id)) state.recShops = state.recShops.filter(x => x !== id);
     else state.recShops.push(id);
     saveAll(); render(); return;
+  }
+  if (act === 'save-rakuten') {
+    state.rakutenAppId = $('#rakutenIdInput').value.trim();
+    state.recCache = {};
+    saveAll();
+    toast(state.rakutenAppId ? '保存しました!診断結果におすすめ商品が出ます' : '保存しました');
+    return;
   }
   if (act === 'save-addr') {
     state.address = $('#addrInput').value.trim();
