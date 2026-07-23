@@ -21,6 +21,25 @@
 公開 URL(GitHub Pages 有効化後):
 `https://wsdgg266-lgtm.github.io/my-game/`
 
+## Vercel で公開する
+
+このリポジトリはビルド不要の静的サイトなので、Vercel にそのままデプロイできます
+(`vercel.json` 設定済み)。
+
+1. [vercel.com](https://vercel.com/) に GitHub アカウントでログイン
+2. **Add New… → Project** で `wsdgg266-lgtm/my-game` を Import
+3. Framework Preset は **Other** のまま、Build Command・Output Directory も
+   変更せずに **Deploy**(ビルド不要の静的サイトとして公開されます)
+4. 発行された URL で各アプリが開けます:
+   - かいわすれナシ!: `https://<プロジェクト名>.vercel.app/`
+   - スポカレ!: `https://<プロジェクト名>.vercel.app/sports/`
+   - ふくらぶ: `https://<プロジェクト名>.vercel.app/fashion/`
+
+以降はデフォルトブランチ(`claude/shopping-reminder-app-7xpyg5`)への push のたびに
+自動で再デプロイされます。
+
+## GitHub Pages で公開する
+
 GitHub Pages はこのリポジトリの `.github/workflows/deploy-pages.yml` により
 対象ブランチへの push で自動デプロイされます。初回のみ以下の設定が必要です。
 
