@@ -1,6 +1,6 @@
 // ふくらぶ Service Worker
 // アプリ本体(シェル)だけをキャッシュする(診断は端末内処理なので全機能オフラインでも動く)
-const CACHE = 'fkl-shell-v4';
+const CACHE = 'fkl-shell-v5';
 const SHELL = [
   './',
   './index.html',

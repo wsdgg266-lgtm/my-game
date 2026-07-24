@@ -208,6 +208,8 @@
     min-height: 2em;
   }
   .prod-card .p-pr { font-size: .8rem; font-weight: 800; color: var(--ac-deep); padding: 3px 7px 7px; display: block; }
+  .mask-wrap { display: flex; gap: 11px; align-items: center; margin: 12px 0 2px; }
+  .mask-wrap img { width: 62px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--line); }
 
   /* ---------- お店・ブランド ---------- */
   .shop-card {
@@ -469,6 +471,7 @@ const state = {
   diagLog: lsGet('fkl_diagLog', []),
   recShops: lsGet('fkl_recShops', ['rakuten', 'zozo', 'uniqlo']),
   rakutenAppId: lsGet('fkl_rakutenId', ''),
+  maskOn: lsGet('fkl_maskOn', true),   // 背景・肌を除外して服だけを採点
   recCache: {},   // おすすめ商品の取得結果(セッション中のみ)
   tab: 'home',
   // 診断の作業用(保存しない)
@@ -488,6 +491,7 @@ function saveAll() {
   lsSet('fkl_diagLog', state.diagLog);
   lsSet('fkl_recShops', state.recShops);
   lsSet('fkl_rakutenId', state.rakutenAppId);
+  lsSet('fkl_maskOn', state.maskOn);
 }
 // おすすめショップの選択肢(内蔵ショップ+登録ブランド)と有効な選択だけを返す
 function recShopOptions() {
@@ -572,9 +576,17 @@ function hex(r, g, b) {
   const p = n => Math.round(n).toString(16).padStart(2, '0');
   return '#' + p(r) + p(g) + p(b);
 }
-// 写真から主要カラーを抽出(中央を重視して周辺の背景の影響を弱める)
-function extractPalette(imgEl) {
-  const MAXW = 64;
+// 肌色の判定(YCbCrの標準的な肌色域)
+function isSkin(r, g, b) {
+  const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
+  const cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
+  return cb >= 77 && cb <= 127 && cr >= 133 && cr <= 173 && r > g && r > b;
+}
+// 写真を解析して服の主要カラーを抽出する。
+// excludeOn のとき、フチと同系色(壁・床などの背景)と肌色を除外して「服だけ」を採点する。
+// 服の範囲をうまく特定できなかった場合は写真全体にフォールバックする。
+function analyzeOutfit(imgEl, excludeOn) {
+  const MAXW = 96;
   const iw = imgEl.naturalWidth || imgEl.width, ih = imgEl.naturalHeight || imgEl.height;
   const sc = Math.min(MAXW / iw, MAXW / ih, 1);
   const w = Math.max(1, Math.round(iw * sc)), h = Math.max(1, Math.round(ih * sc));
@@ -582,42 +594,120 @@ function extractPalette(imgEl) {
   cv.width = w; cv.height = h;
   const cx = cv.getContext('2d');
   cx.drawImage(imgEl, 0, 0, w, h);
-  const data = cx.getImageData(0, 0, w, h).data;
-  const bins = {};
-  let total = 0;
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      const i = (y * w + x) * 4;
-      if (data[i + 3] < 128) continue;
-      const r = data[i], g = data[i + 1], b = data[i + 2];
-      const [hu, s, l] = rgbToHsl(r, g, b);
-      // 中央重み(コーデ本体が写っていることが多い)
-      const dx = x / w - 0.5, dy = y / h - 0.5;
-      const wt = Math.exp(-(dx * dx + dy * dy) / (2 * 0.28 * 0.28));
-      let key;
-      // ベージュ・アイボリーもベーシックカラー(無彩色相当)として扱う
-      const beige = hu >= 20 && hu < 70 && s < 0.42 && l > 0.55;
-      const neutral = s < 0.14 || l > 0.93 || l < 0.09 || beige;
-      if (neutral) {
-        key = l > 0.8 ? 'n-white' : l < 0.22 ? 'n-black' : l < 0.5 ? 'n-dgray' : 'n-lgray';
-      } else {
-        key = Math.floor(hu / 30) + '-' + (s < 0.45 ? 0 : 1) + '-' + (l < 0.35 ? 0 : l < 0.65 ? 1 : 2);
+  const img = cx.getImageData(0, 0, w, h);
+  const data = img.data;
+  const N = w * h;
+  const excl = new Uint8Array(N); // 0=服 1=背景 2=肌
+
+  if (excludeOn) {
+    // フチ(外周2px)の色をクラスタリングして背景色とみなす
+    const ring = 2;
+    const bBins = {};
+    let bTotal = 0;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        if (x >= ring && x < w - ring && y >= ring && y < h - ring) continue;
+        const i = (y * w + x) * 4;
+        const key = (data[i] >> 5) * 1089 + (data[i + 1] >> 5) * 33 + (data[i + 2] >> 5);
+        const bn = bBins[key] || (bBins[key] = { c: 0, r: 0, g: 0, b: 0 });
+        bn.c++; bn.r += data[i]; bn.g += data[i + 1]; bn.b += data[i + 2];
+        bTotal++;
       }
-      const bin = bins[key] || (bins[key] = { w: 0, r: 0, g: 0, b: 0, neutral });
-      bin.w += wt; bin.r += r * wt; bin.g += g * wt; bin.b += b * wt;
-      total += wt;
+    }
+    const bgMeans = [];
+    let cum = 0;
+    for (const bn of Object.values(bBins).sort((a, b) => b.c - a.c)) {
+      if (cum / bTotal >= 0.6 || bgMeans.length >= 3) break;
+      bgMeans.push([bn.r / bn.c, bn.g / bn.c, bn.b / bn.c]);
+      cum += bn.c;
+    }
+    const TH = 42 * 42;
+    for (let p = 0; p < N; p++) {
+      const i = p * 4;
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      let bg = false;
+      for (const m of bgMeans) {
+        const dr = r - m[0], dg = g - m[1], db = b - m[2];
+        if (dr * dr + dg * dg + db * db < TH) { bg = true; break; }
+      }
+      if (bg) excl[p] = 1;
+      else if (isSkin(r, g, b)) excl[p] = 2;
     }
   }
+
+  // 中央重みつきで、服として残った割合を確認(少なすぎたら写真全体にフォールバック)
+  const weightAt = p => {
+    const dx = (p % w) / w - 0.5, dy = Math.floor(p / w) / h - 0.5;
+    return Math.exp(-(dx * dx + dy * dy) / (2 * 0.28 * 0.28));
+  };
+  let totalW = 0, inclW = 0;
+  for (let p = 0; p < N; p++) {
+    const wt = weightAt(p);
+    totalW += wt;
+    if (!excl[p]) inclW += wt;
+  }
+  let fallback = false;
+  if (excludeOn && inclW / totalW < 0.15) {
+    excl.fill(0);
+    fallback = true;
+  }
+
+  // 服の領域だけでカラークラスタリング
+  const bins = {};
+  let total = 0;
+  for (let p = 0; p < N; p++) {
+    if (excl[p]) continue;
+    const i = p * 4;
+    if (data[i + 3] < 128) continue;
+    const r = data[i], g = data[i + 1], b = data[i + 2];
+    const [hu, s, l] = rgbToHsl(r, g, b);
+    const wt = weightAt(p);
+    let key;
+    // ベージュ・アイボリーもベーシックカラー(無彩色相当)として扱う
+    const beige = hu >= 20 && hu < 70 && s < 0.42 && l > 0.55;
+    const neutral = s < 0.14 || l > 0.93 || l < 0.09 || beige;
+    if (neutral) {
+      key = l > 0.8 ? 'n-white' : l < 0.22 ? 'n-black' : l < 0.5 ? 'n-dgray' : 'n-lgray';
+    } else {
+      key = Math.floor(hu / 30) + '-' + (s < 0.45 ? 0 : 1) + '-' + (l < 0.35 ? 0 : l < 0.65 ? 1 : 2);
+    }
+    const bin = bins[key] || (bins[key] = { w: 0, r: 0, g: 0, b: 0, neutral });
+    bin.w += wt; bin.r += r * wt; bin.g += g * wt; bin.b += b * wt;
+    total += wt;
+  }
   const list = Object.values(bins).sort((a, b) => b.w - a.w);
-  const out = [];
+  const palette = [];
   for (const bin of list) {
     const share = bin.w / total;
-    if (share < 0.06 || out.length >= 5) break;
+    if (share < 0.06 || palette.length >= 5) break;
     const r = bin.r / bin.w, g = bin.g / bin.w, b = bin.b / bin.w;
     const [hu, s, l] = rgbToHsl(r, g, b);
-    out.push({ hex: hex(r, g, b), share, h: hu, s, l, neutral: bin.neutral });
+    palette.push({ hex: hex(r, g, b), share, h: hu, s, l, neutral: bin.neutral });
   }
-  return out;
+
+  // 採点範囲のプレビュー(除外部分を暗くした画像)
+  let maskUrl = '';
+  try {
+    const masked = excludeOn && !fallback;
+    if (masked) {
+      const mdata = new Uint8ClampedArray(data);
+      for (let p = 0; p < N; p++) {
+        if (!excl[p]) continue;
+        const i = p * 4;
+        mdata[i] = mdata[i] * 0.22; mdata[i + 1] = mdata[i + 1] * 0.22; mdata[i + 2] = mdata[i + 2] * 0.22;
+      }
+      cx.putImageData(new ImageData(mdata, w, h), 0, 0);
+    }
+    const pv = document.createElement('canvas');
+    const psc = 160 / Math.max(w, h);
+    pv.width = Math.round(w * psc); pv.height = Math.round(h * psc);
+    const pcx = pv.getContext('2d');
+    pcx.imageSmoothingEnabled = true;
+    pcx.drawImage(cv, 0, 0, pv.width, pv.height);
+    maskUrl = pv.toDataURL('image/jpeg', 0.7);
+  } catch (e) {}
+
+  return { palette, maskUrl, fallback, masked: excludeOn && !fallback };
 }
 // 抽出した色 × 季節 × シチュエーションからアドバイスを作る
 function judgeOutfit(palette, seasonKey, situKey) {
@@ -760,10 +850,14 @@ function loadPhotoFile(file) {
 function runDiagnosis() {
   const imgEl = $('#diagPhoto');
   if (!imgEl || !imgEl.complete) { toast('写真の読み込み中です'); return; }
-  let palette;
-  try { palette = extractPalette(imgEl); } catch(e) { palette = []; }
+  let an;
+  try { an = analyzeOutfit(imgEl, state.maskOn); } catch(e) { an = { palette: [] }; }
+  const palette = an.palette || [];
   if (!palette.length) { toast('色を読み取れませんでした。別の写真で試してください'); return; }
   const res = judgeOutfit(palette, state.season, state.situ);
+  res.maskUrl = an.maskUrl;
+  res.masked = an.masked;
+  res.fallback = an.fallback;
   state.photoResult = res;
   // 履歴に保存(最新20件)
   state.diagLog.unshift({
@@ -926,6 +1020,9 @@ function renderDiag(el) {
         Object.keys(SEASONS).map(k =>
           '<button class="chip' + (state.season === k ? ' on' : '') + '" data-season="' + k + '">' +
           SEASONS[k].label + (k === currentSeason() ? '(今)' : '') + '</button>').join('') + '</div>' +
+        '<label class="field-label">採点範囲</label><div class="chip-wrap">' +
+        '<button class="chip' + (state.maskOn ? ' on' : '') + '" data-act="toggle-mask">背景・肌を自動除外(服だけを採点)</button></div>' +
+        (state.maskOn ? '<div class="note-sub" style="margin-top:6px">ベージュ系の服が肌と間違われるときはOFFにしてください</div>' : '') +
         '<div class="m-btns"><button class="btn sub" data-act="retake">撮り直す</button>' +
         '<button class="btn" data-act="run-diag">診断する</button></div></div>';
     } else {
@@ -935,6 +1032,12 @@ function renderDiag(el) {
         '<div class="score-ring"><b>' + r.score + '</b><small>てん</small></div>' +
         '<div><div class="score-title">' + esc(r.title) + '</div>' +
         '<div class="score-sub">' + SEASONS[state.season].label + ' × ' + SITUATIONS[state.situ].label + '</div></div></div>' +
+        (r.maskUrl ? '<div class="mask-wrap"><img src="' + escAttr(r.maskUrl) + '" alt="採点範囲">' +
+          '<div class="note-sub">' + (r.masked
+            ? '背景と肌を除外し、明るく写っている部分(服)だけで採点しました'
+            : r.fallback
+              ? '服の範囲をうまく特定できなかったため、写真全体で採点しました'
+              : '写真全体で採点しました(自動除外OFF)') + '</div></div>' : '') +
         paletteRowHtml(r.palette.map(c => c.hex), r.palette.map(c => c.share)) +
         adviceListHtml(r.advice) +
         recItemsHtml(r.items, true) +
@@ -1215,6 +1318,7 @@ document.body.addEventListener('click', e => {
   if (act === 'cam') { $('#camInput').click(); return; }
   if (act === 'pick') { $('#pickInput').click(); return; }
   if (act === 'retake') { state.photo = null; state.photoResult = null; render(); return; }
+  if (act === 'toggle-mask') { state.maskOn = !state.maskOn; saveAll(); render(); return; }
   if (act === 'run-diag') { runDiagnosis(); return; }
   const situ = t.closest('[data-situ]');
   if (situ) { state.situ = situ.dataset.situ; render(); return; }
