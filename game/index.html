@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1a1c2c">
+<title>ピコラン! - ぴょんぴょんだいぼうけん</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #1a1c2c; touch-action: none;
+    font-family: 'Hiragino Maru Gothic ProN', 'BIZ UDGothic', 'Yu Gothic', sans-serif;
+    -webkit-user-select: none; user-select: none; position: fixed; }
+  #wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  canvas { image-rendering: pixelated; image-rendering: crisp-edges; display: block; background: #000; }
+
+  /* ===== 仮想ボタン ===== */
+  #pad { position: absolute; inset: 0; pointer-events: none; display: none; z-index: 5; }
+  .padbtn { position: absolute; pointer-events: auto; border-radius: 50%;
+    background: rgba(255,255,255,.14); border: 2px solid rgba(255,255,255,.35);
+    color: rgba(255,255,255,.85); display: flex; align-items: center; justify-content: center;
+    font-weight: bold; }
+  .padbtn.on { background: rgba(255,255,255,.4); }
+  #btnL { left: max(12px, env(safe-area-inset-left)); bottom: 18px; width: 64px; height: 64px; font-size: 26px; }
+  #btnR { left: calc(max(12px, env(safe-area-inset-left)) + 76px); bottom: 18px; width: 64px; height: 64px; font-size: 26px; }
+  #btnA { right: max(16px, env(safe-area-inset-right)); bottom: 18px; width: 80px; height: 80px; font-size: 22px;
+    background: rgba(255,120,80,.25); border-color: rgba(255,150,110,.55); }
+  #btnA.on { background: rgba(255,120,80,.55); }
+  #btnPause { position: absolute; top: max(8px, env(safe-area-inset-top)); right: max(8px, env(safe-area-inset-right));
+    width: 40px; height: 40px; border-radius: 10px; font-size: 18px; pointer-events: auto;
+    background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.3); color: #fff;
+    display: flex; align-items: center; justify-content: center; }
+
+  /* ===== 画面(オーバーレイ) ===== */
+  .screen { position: absolute; inset: 0; z-index: 10; display: none;
+    flex-direction: column; align-items: center; justify-content: safe center; gap: 12px;
+    color: #fff; text-align: center; padding: 16px; overflow-y: auto; }
+  .screen.show { display: flex; }
+  #scrTitle { background: linear-gradient(#2a5db8, #57a6e8 60%, #8fd06a); }
+  #scrSelect { background: linear-gradient(#1a1c2c, #2d2f4e); overflow-y: auto; }
+  #scrClear, #scrEnding { background: rgba(20,24,46,.92); }
+  #scrOver, #scrPause { background: rgba(10,10,20,.9); }
+  .logo { font-size: clamp(34px, 9vw, 60px); font-weight: 900; letter-spacing: 2px;
+    color: #ffd93d; text-shadow: 3px 3px 0 #d1495b, 6px 6px 0 rgba(0,0,0,.35); }
+  .sub { font-size: 14px; opacity: .95; text-shadow: 1px 1px 0 rgba(0,0,0,.4); }
+  .bigbtn { font-size: 18px; font-weight: bold; padding: 14px 36px; border-radius: 999px;
+    border: none; color: #5a3a00; background: #ffd93d; box-shadow: 0 4px 0 #c9a227;
+    font-family: inherit; }
+  .bigbtn:active { transform: translateY(3px); box-shadow: 0 1px 0 #c9a227; }
+  .bigbtn.gray { background: #cfd6e4; box-shadow: 0 4px 0 #93a0b8; color: #2c3550; }
+  .soundtoggle { font-size: 14px; padding: 8px 20px; border-radius: 999px;
+    background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.5);
+    color: #fff; font-family: inherit; }
+  h2.head { font-size: 24px; text-shadow: 2px 2px 0 rgba(0,0,0,.4); }
+  #stageList { display: grid; grid-template-columns: repeat(2, minmax(130px, 170px)); gap: 12px; }
+  .stagecard { border-radius: 14px; padding: 14px 8px; border: 2px solid rgba(255,255,255,.25);
+    background: rgba(255,255,255,.08); color: #fff; font-family: inherit; font-size: 15px;
+    font-weight: bold; display: flex; flex-direction: column; gap: 4px; align-items: center; }
+  .stagecard .icon { font-size: 26px; }
+  .stagecard .hs { font-size: 11px; opacity: .8; font-weight: normal; }
+  .stagecard.locked { opacity: .45; }
+  .stagecard:not(.locked):active { background: rgba(255,255,255,.25); }
+  .tally { font-size: 17px; line-height: 2; }
+  .tally b { color: #ffd93d; }
+  .newrec { color: #ff8fa3; font-weight: bold; font-size: 15px; }
+  #rotateHint { position: absolute; left: 0; right: 0; bottom: 6px; z-index: 11;
+    text-align: center; font-size: 11px; color: rgba(255,255,255,.75); pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="cv" width="320" height="192"></canvas></div>
+
+<div id="pad">
+  <div class="padbtn" id="btnL">◀</div>
+  <div class="padbtn" id="btnR">▶</div>
+  <div class="padbtn" id="btnA">Ⓐ</div>
+  <div id="btnPause">⏸</div>
+</div>
+
+<div class="screen show" id="scrTitle">
+  <div class="logo">ピコラン!</div>
+  <div class="sub">〜 ぴょんぴょん だいぼうけん 〜</div>
+  <button class="bigbtn" id="btnStart">はじめる</button>
+  <button class="soundtoggle" id="btnSound">🔇 おと OFF</button>
+  <div class="sub" style="font-size:12px">◀▶ でうごく ・ Ⓐ でジャンプ(ながおしで大ジャンプ)</div>
+</div>
+
+<div class="screen" id="scrSelect">
+  <h2 class="head">ステージをえらぶ</h2>
+  <div id="stageList"></div>
+  <button class="bigbtn gray" id="btnToTitle">タイトルへ</button>
+</div>
+
+<div class="screen" id="scrClear">
+  <h2 class="head">🚩 ステージクリア!</h2>
+  <div class="tally" id="clearTally"></div>
+  <button class="bigbtn" id="btnNext">つぎのステージへ</button>
+  <button class="bigbtn gray" id="btnClearSelect">ステージをえらぶ</button>
+</div>
+
+<div class="screen" id="scrOver">
+  <h2 class="head">😢 ゲームオーバー</h2>
+  <div class="tally" id="overTally"></div>
+  <button class="bigbtn" id="btnRetry">もういちど</button>
+  <button class="bigbtn gray" id="btnOverSelect">ステージをえらぶ</button>
+</div>
+
+<div class="screen" id="scrPause">
+  <h2 class="head">ちょっときゅうけい</h2>
+  <button class="bigbtn" id="btnResume">つづける</button>
+  <button class="soundtoggle" id="btnSound2">🔇 おと OFF</button>
+  <button class="bigbtn gray" id="btnPauseSelect">ステージをえらぶ</button>
+</div>
+
+<div class="screen" id="scrEnding">
+  <div class="logo" style="font-size:clamp(26px,7vw,44px)">✨クリア<br>おめでとう!✨</div>
+  <div class="tally" id="endTally"></div>
+  <div class="sub">ピコのぼうけんは だいせいこう!</div>
+  <button class="bigbtn" id="btnEndSelect">ステージをえらぶ</button>
+  <button class="bigbtn gray" id="btnEndTitle">タイトルへ</button>
+</div>
+
+<div id="rotateHint">📱 よこもちにすると あそびやすいよ</div>
+
+<script>
+'use strict';
+/* =====================================================
+   ピコラン! - 横スクロールアクション
+   すべてコードで描画・合成(画像/音声ファイルなし)
+   ===================================================== */
+const TILE = 16, VW = 320, VH = 192, ROWS = 12;
+const SOLID = '#B?HU';
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+
+function fitCanvas() {
+  const s = Math.min(innerWidth / VW, innerHeight / VH);
+  cv.style.width = (VW * s) + 'px';
+  cv.style.height = (VH * s) + 'px';
+}
+addEventListener('resize', fitCanvas);
+fitCanvas();
+
+/* ---------- 保存 (LocalStorage) ---------- */
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem('pkr.' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('pkr.' + k, JSON.stringify(v)); } catch (e) {} }
+};
+
+/* =====================================================
+   サウンド (Web Audio 合成・音声ファイル不要)
+   ===================================================== */
+let AC = null, master = null;
+let soundOn = LS.get('sound', false);
+function audio() {
+  if (!AC) {
+    AC = new (window.AudioContext || window.webkitAudioContext)();
+    master = AC.createGain();
+    master.gain.value = soundOn ? 0.5 : 0;
+    master.connect(AC.destination);
+  }
+  if (AC.state === 'suspended') AC.resume();
+  return AC;
+}
+function tone(type, f0, f1, dur, vol, when) {
+  if (!soundOn || !AC) return;
+  const t = AC.currentTime + (when || 0);
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(f0, t);
+  if (f1 && f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(f1, 1), t + dur);
+  g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o.connect(g); g.connect(master);
+  o.start(t); o.stop(t + dur + 0.02);
+}
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+const sfx = {
+  jump()  { tone('square', 260, 520, 0.14, 0.15); },
+  coin()  { tone('square', 988, 0, 0.06, 0.12); tone('square', 1319, 0, 0.22, 0.12, 0.06); },
+  stomp() { tone('square', 300, 80, 0.12, 0.2); },
+  brick() { tone('square', 200, 60, 0.15, 0.18); tone('triangle', 150, 40, 0.2, 0.2); },
+  bump()  { tone('square', 150, 110, 0.08, 0.15); },
+  power() { [523, 659, 784, 1047].forEach((f, i) => tone('square', f, 0, 0.1, 0.12, i * 0.07)); },
+  oneup() { [660, 784, 988, 1319, 1568].forEach((f, i) => tone('square', f, 0, 0.09, 0.12, i * 0.08)); },
+  hurt()  { tone('sawtooth', 400, 90, 0.25, 0.18); },
+  die()   { [523, 494, 440, 392, 330, 262].forEach((f, i) => tone('square', f, 0, 0.12, 0.14, i * 0.09)); },
+  cp()    { [784, 1047].forEach((f, i) => tone('square', f, 0, 0.12, 0.12, i * 0.1)); },
+  clear() { [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, i) => tone('square', f, 0, 0.14, 0.13, i * 0.11)); },
+  bossHit(){ tone('square', 180, 60, 0.2, 0.22); tone('sawtooth', 400, 100, 0.15, 0.12); },
+  bossDie(){ [200, 180, 160, 140, 120, 100, 80].forEach((f, i) => tone('sawtooth', f, f * 0.7, 0.15, 0.15, i * 0.1)); },
+};
+
+/* ---------- BGM (8分音符シーケンス・ループ) ---------- */
+const BGM = {
+  grass: { bpm: 150,
+    mel: [76,79,84,0, 79,0,81,79, 76,72,74,76, 74,0,72,0, 76,79,84,0, 86,84,81,79, 81,84,88,86, 84,0,0,0],
+    bass:[48,0,55,0, 57,0,55,0, 41,0,48,0, 43,0,55,0, 48,0,55,0, 53,0,57,0, 50,0,53,0, 55,0,43,0] },
+  cave: { bpm: 112,
+    mel: [57,0,0,60, 64,63,64,0, 60,0,57,0, 55,0,52,0, 57,0,0,60, 64,66,67,0, 66,64,63,64, 60,0,0,0],
+    bass:[33,0,45,0, 33,0,45,0, 31,0,43,0, 28,0,40,0, 33,0,45,0, 33,0,45,0, 35,0,47,0, 33,0,45,0] },
+  sky: { bpm: 160,
+    mel: [77,81,84,81, 86,84,81,84, 79,83,86,83, 88,86,83,86, 77,81,84,81, 89,88,86,84, 86,84,81,79, 77,0,0,0],
+    bass:[41,0,48,0, 43,0,50,0, 46,0,53,0, 43,0,50,0, 41,0,48,0, 43,0,50,0, 46,0,53,0, 48,0,43,0] },
+  castle: { bpm: 138,
+    mel: [62,0,62,65, 62,0,61,0, 62,0,62,65, 69,0,68,65, 62,0,62,65, 62,0,61,0, 58,0,61,0, 62,0,0,0],
+    bass:[38,50,38,50, 38,50,38,50, 36,48,36,48, 34,46,34,46, 38,50,38,50, 38,50,38,50, 34,46,34,46, 38,50,38,50] },
+};
+let bgmCur = null, bgmPos = 0, bgmNext = 0, bgmTimer = null;
+function playBgm(name, mul) {
+  stopBgm();
+  const seq = BGM[name];
+  if (!seq) return;
+  bgmCur = { seq, step: 30 / (seq.bpm * (mul || 1)) };
+  bgmPos = 0;
+  if (soundOn) { audio(); bgmNext = AC.currentTime + 0.1; }
+  bgmTimer = setInterval(bgmTick, 90);
+}
+function bgmTick() {
+  if (!AC || !bgmCur || !soundOn) return;
+  if (bgmNext < AC.currentTime - 0.5) bgmNext = AC.currentTime + 0.05;
+  while (bgmNext < AC.currentTime + 0.3) {
+    const { seq, step } = bgmCur;
+    const m = seq.mel[bgmPos % seq.mel.length], b = seq.bass[bgmPos % seq.bass.length];
+    const when = bgmNext - AC.currentTime;
+    if (m > 0) tone('square', mtof(m), 0, step * 0.9, 0.055, when);
+    if (b > 0) tone('triangle', mtof(b), 0, step * 0.95, 0.1, when);
+    bgmNext += step;
+    bgmPos++;
+  }
+}
+function stopBgm() {
+  if (bgmTimer) { clearInterval(bgmTimer); bgmTimer = null; }
+  bgmCur = null;
+}
+function setSound(on) {
+  soundOn = on;
+  LS.set('sound', on);
+  if (on) { audio(); if (bgmCur) bgmNext = AC.currentTime + 0.1; }
+  if (master) master.gain.value = on ? 0.5 : 0;
+  updateSoundBtns();
+}
+
+/* =====================================================
+   入力 (タッチ仮想ボタン + キーボード)
+   ===================================================== */
+const input = { l: false, r: false, a: false };
+addEventListener('keydown', e => {
+  if (e.repeat) return;
+  if (e.key === 'ArrowLeft' || e.key === 'a') input.l = true;
+  if (e.key === 'ArrowRight' || e.key === 'd') input.r = true;
+  if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'z') { input.a = true; e.preventDefault(); }
+});
+addEventListener('keyup', e => {
+  if (e.key === 'ArrowLeft' || e.key === 'a') input.l = false;
+  if (e.key === 'ArrowRight' || e.key === 'd') input.r = false;
+  if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'z') input.a = false;
+});
+function bindBtn(el, set) {
+  const on = e => { e.preventDefault(); el.classList.add('on'); set(true); audio(); };
+  const off = e => { if (e) e.preventDefault(); el.classList.remove('on'); set(false); };
+  el.addEventListener('touchstart', on, { passive: false });
+  el.addEventListener('touchend', off, { passive: false });
+  el.addEventListener('touchcancel', off, { passive: false });
+  el.addEventListener('mousedown', on);
+  el.addEventListener('mouseup', off);
+  el.addEventListener('mouseleave', () => off());
+}
+const pad = document.getElementById('pad');
+bindBtn(document.getElementById('btnL'), v => input.l = v);
+bindBtn(document.getElementById('btnR'), v => input.r = v);
+bindBtn(document.getElementById('btnA'), v => input.a = v);
+document.addEventListener('contextmenu', e => e.preventDefault());
+/* =====================================================
+   ステージデータ (文字=ブロック種別のテキスト地図)
+   #=地面 B=レンガ ?=コインブロック H=ハートブロック C=コイン
+   E=てくてく S=とげとげ F=ふわふわ D=おちるゆか L=ようがん
+   ==よこ移動足場 !=たて移動足場 c=ちゅうかん旗 G=ゴール旗 P=スタート X=ボス
+   ===================================================== */
+const LEVELS = [
+{ name: 'くさはら', icon: '🌿', theme: 'grass', time: 300, map: [
+'                                                                                                                                                                          ',
+'                                                                                                                                                                          ',
+'                                                                                                                                                                          ',
+'                                                                                                                                                                          ',
+'                                                                                                                         CCCCC                                            ',
+'                                                 CCC                                           CCCC                                                                       ',
+'                     CCC      ?BHB?                         E         ?BBB?                                  ?   H     BBBBBBBBB                                          ',
+'        CCC                                               CCCCC                                 ##                                  CCC           CCC                     ',
+'  P                                             #####                               c         ######                                                              G       ',
+'                    #####             E     E   #####             E                         ##########    E    E    #                   E               E                 ',
+'############################################################################################################################################  ############################',
+'############################################################################################################################################  ############################',
+]},
+{ name: 'どうくつ', icon: '🕳️', theme: 'cave', time: 300, map: [
+'##########################################################################################################################################################################',
+'            #             #             #                 #               #                 #                 #                 #                 #             #         ',
+'            #             #             #                 #               #                 #                 #                 #                 #             #         ',
+'                                                                                                                                                                          ',
+'                                       CCC                                                         CC     F                                                               ',
+'                                                     CC           F                                                                                   F                   ',
+'                                      ?   ?                            CCCC           H ?                                             ?BBB?                               ',
+'       CCC                                                                                        ####                                         CCCC                       ',
+'  P                                                 ####                                    c   ######                                                            G       ',
+'              E     E         DDDD              S   ####      E       DDDDDD      S             ######        E   E     DDDDD     S                       E               ',
+'##############################    ####################################      ############################################     #############################################',
+'##############################    ####################################      ############################################     #############################################',
+]},
+{ name: 'そら', icon: '☁️', theme: 'sky', time: 300, map: [
+'                                                                                                                                                                                    ',
+'                                                                                                                                                                                    ',
+'                                                                                                                                                                                    ',
+'                                                                                                                                                                                    ',
+'                                                                                                           CCCCC                     CCC        F                                   ',
+'                                                    CCCCC     F      CCCCC                     F                                                                                    ',
+'                                  ?                                    c         H                                                                                                  ',
+'         CCC                CC                                                                     =         S                      #####                         CCC               ',
+'  P                                        =                    !   #######                               #######               !   #####               =                   G       ',
+'                      E                               E             #######             #####             #######       E           #####                                           ',
+'###############   #########   #########           #########         #######   #######   #####             #######   #########       #####   #########         ######################',
+'###############   #########   #########           #########         #######   #######   #####             #######   #########       #####   #########         ######################',
+]},
+{ name: 'おしろ', icon: '🏰', theme: 'castle', time: 350, map: [
+'########################################################################################################################################################',
+'          #                       #                               #                     #               #                                             ##',
+'          #                       #                               #                     #               #                                             ##',
+'                                                                                                                                                      ##',
+'                                                                                  F                                                                   ##',
+'                          CC                        F                                                                                                 ##',
+'                      ?               ?   H                               ?BBB?                 CCC        H                                          ##',
+'        CCC               BB                                      CCC                                           #                   X                 ##',
+'  P                                           ####     DDDDD                              ####  =      c        #                                     ##',
+'              E    S              S     E     ####              E     S               S   ####                  #                                     ##',
+'#########################LLLL##########################LLLLL###################################LLLLL####################################################',
+'#########################LLLL##########################LLLLL###################################LLLLL####################################################',
+]},
+];
+/* =====================================================
+   ゲーム進行・物理・当たり判定
+   ===================================================== */
+let scr = 'title';       // 'title' | 'select' | 'game'
+let paused = false;
+let fr = 0;              // グローバルフレームカウンタ(演出用)
+const G = {};            // 進行中のゲームの状態
+
+function solidTile(tx, ty) {
+  if (tx < 0 || tx >= G.W) return true;      // 左右端は壁
+  if (ty < 0 || ty >= ROWS) return false;
+  return SOLID.includes(G.tiles[ty][tx]);
+}
+function overlap(a, b) {
+  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+}
+function snapGroundY(x, y) { // その列の下方向で最初の地面の上端(旗の位置決め用)
+  for (let ty = y; ty < ROWS; ty++) if (SOLID.includes(G.tiles[ty][x])) return ty * TILE;
+  return ROWS * TILE;
+}
+
+function mkEnemy(type, tx, ty) {
+  return { type, x: tx * TILE + 2, y: ty * TILE + 2, w: 12, h: 12,
+    vx: type === 'walk' ? -0.4 : type === 'spike' ? -0.35 : 0,
+    vy: 0, t: Math.random() * 100, baseY: ty * TILE + 2,
+    ground: false, hitWall: false, dead: 0, active: false };
+}
+
+function startStage(idx) {
+  G.lv = idx;
+  G.score = 0; G.coins = 0; G.lives = 3;
+  G.checkpoint = null;
+  loadStage(idx);
+  scr = 'game'; paused = false;
+  showScreen(null);
+  playStageBgm();
+}
+
+function loadStage(idx) { // タイル・エンティティ構築(リスポーン時にも呼ぶ)
+  const L = LEVELS[idx];
+  G.W = L.map[0].length;
+  G.tiles = L.map.map(r => r.split(''));
+  G.coinsE = []; G.enemies = []; G.floors = []; G.plats = [];
+  G.items = []; G.parts = []; G.bumps = []; G.cps = [];
+  G.goal = null; G.boss = null; G.bossLockOn = false; G.bossLock = 0;
+  G.start = { x: 32, y: 100 };
+  const later = []; // 旗は地形確定後に位置決め
+  for (let y = 0; y < ROWS; y++) for (let x = 0; x < G.W; x++) {
+    const c = G.tiles[y][x];
+    if (' #B?HUL'.includes(c)) continue;
+    G.tiles[y][x] = ' ';
+    switch (c) {
+      case 'P': G.start = { x: x * TILE + 3, y: y * TILE }; break;
+      case 'C': G.coinsE.push({ x: x * TILE + 8, y: y * TILE + 8, taken: false }); break;
+      case 'E': case 'S': case 'F':
+        G.enemies.push(mkEnemy(c === 'E' ? 'walk' : c === 'S' ? 'spike' : 'fly', x, y)); break;
+      case 'D': G.floors.push({ tx: x, ty: y, x: x * TILE, y: y * TILE, vy: 0, st: 0, t: 0 }); break;
+      case '=': G.plats.push({ axis: 'h', bx: x * TILE - 16, by: y * TILE, x: x * TILE - 16, y: y * TILE, w: 48, h: 8, t: 0, dx: 0, dy: 0 }); break;
+      case '!': G.plats.push({ axis: 'v', bx: x * TILE - 16, by: y * TILE, x: x * TILE - 16, y: y * TILE, w: 48, h: 8, t: 0, dx: 0, dy: 0 }); break;
+      case 'c': later.push(() => G.cps.push({ x: x * TILE, y: snapGroundY(x, y), on: false })); break;
+      case 'G': later.push(() => { G.goal = { x: x * TILE, y: snapGroundY(x, y), flag: 0 }; }); break;
+      case 'X': G.boss = { x: x * TILE - 8, y: y * TILE, w: 26, h: 22, vx: 0, vy: 0,
+        hp: 3, inv: 0, t: 0, jt: 120, ground: false, hitWall: false, active: false, dead: 0 }; break;
+    }
+  }
+  later.forEach(f => f());
+  // ちゅうかん地点を通過済みなら旗を立てておく
+  if (G.checkpoint) for (const c of G.cps) if (Math.abs(c.x - G.checkpoint.cx) < 2) c.on = true;
+  resetPlayer();
+  G.time = L.time * 60;
+  G.state = 'play';
+  G.cam = clamp(G.p.x - VW * 0.42, 0, G.W * TILE - VW);
+  G.aPrev = false;
+}
+
+function resetPlayer() {
+  const s = G.checkpoint || G.start;
+  G.p = { x: s.x, y: s.y, vx: 0, vy: 0, w: 10, h: 14, dir: 1,
+    ground: false, coyote: 0, jbuf: 0, power: false,
+    inv: G.checkpoint ? 90 : 0, anim: 0, dead: 0, hitWall: false };
+}
+
+function addScore(n) { G.score += n; }
+function addCoin() {
+  G.coins++; addScore(10);
+  if (G.coins >= 100) { G.coins -= 100; G.lives++; sfx.oneup(); }
+}
+function puff(x, y, col, n) {
+  for (let i = 0; i < (n || 6); i++)
+    G.parts.push({ x, y, vx: (Math.random() - 0.5) * 2.4, vy: -Math.random() * 2.5,
+      t: 20 + Math.random() * 15, c: col || '#fff' });
+}
+
+/* ---------- タイルとの当たり判定(軸ごと) ---------- */
+function collideX(e) {
+  const y1 = Math.floor(e.y / TILE), y2 = Math.floor((e.y + e.h - 1) / TILE);
+  if (e.vx > 0) {
+    const tx = Math.floor((e.x + e.w) / TILE);
+    for (let ty = y1; ty <= y2; ty++) if (solidTile(tx, ty)) {
+      e.x = tx * TILE - e.w - 0.01; e.hitWall = true; return;
+    }
+  } else if (e.vx < 0) {
+    const tx = Math.floor(e.x / TILE);
+    for (let ty = y1; ty <= y2; ty++) if (solidTile(tx, ty)) {
+      e.x = tx * TILE + TILE + 0.01; e.hitWall = true; return;
+    }
+  }
+}
+function collideY(e, isPlayer) {
+  const x1 = Math.floor(e.x / TILE), x2 = Math.floor((e.x + e.w - 1) / TILE);
+  if (e.vy >= 0) {
+    const ty = Math.floor((e.y + e.h) / TILE);
+    for (let tx = x1; tx <= x2; tx++) if (solidTile(tx, ty)) {
+      e.y = ty * TILE - e.h; e.vy = 0; e.ground = true; return;
+    }
+  } else {
+    const ty = Math.floor(e.y / TILE);
+    let hit = -1, best = 1e9;
+    for (let tx = x1; tx <= x2; tx++) if (solidTile(tx, ty)) {
+      const d = Math.abs(tx * TILE + 8 - (e.x + e.w / 2));
+      if (d < best) { best = d; hit = tx; }
+    }
+    if (hit >= 0) {
+      e.y = ty * TILE + TILE + 0.01; e.vy = 0;
+      if (isPlayer) headBump(hit, ty);
+    }
+  }
+}
+function headBump(tx, ty) {
+  const c = G.tiles[ty][tx];
+  if (c === '?') {
+    G.tiles[ty][tx] = 'U';
+    G.bumps.push({ tx, ty, t: 0 });
+    G.parts.push({ x: tx * TILE + 8, y: ty * TILE - 6, vx: 0, vy: -2.6, t: 22, c: 'coinpop' });
+    addCoin(); sfx.coin();
+  } else if (c === 'H') {
+    G.tiles[ty][tx] = 'U';
+    G.bumps.push({ tx, ty, t: 0 });
+    G.items.push({ x: tx * TILE + 2, y: ty * TILE - 14, w: 12, h: 12, vx: 0.35, vy: -1.5, ground: false, hitWall: false, taken: false });
+    sfx.bump();
+  } else if (c === 'B') {
+    if (G.p.power) {
+      G.tiles[ty][tx] = ' ';
+      puff(tx * TILE + 8, ty * TILE + 8, '#c9705a', 8);
+      addScore(10); sfx.brick();
+    } else {
+      G.bumps.push({ tx, ty, t: 0 }); sfx.bump();
+    }
+  } else sfx.bump();
+}
+
+/* ---------- 1フレームぶんの更新 ---------- */
+function step() {
+  fr++;
+  if (scr !== 'game' || paused) return;
+  // パーティクル・ブロックのバウンドは常に動かす
+  G.parts = G.parts.filter(pt => { pt.x += pt.vx; pt.y += pt.vy; pt.vy += 0.13; return --pt.t > 0; });
+  G.bumps = G.bumps.filter(b => ++b.t < 12);
+  if (G.state === 'play') updatePlay();
+  else if (G.state === 'dead') updateDead();
+  else if (G.state === 'clear') updateClear();
+  else if (G.state === 'bossdying') updateBossDying();
+}
+
+function updatePlay() {
+  const p = G.p;
+  const aPressed = input.a && !G.aPrev;
+  G.aPrev = input.a;
+
+  // ---- タイマー ----
+  if (--G.time <= 0) { kill(); return; }
+
+  // ---- プレイヤー移動 ----
+  if (input.l && !input.r) { p.vx -= 0.14; p.dir = -1; }
+  else if (input.r && !input.l) { p.vx += 0.14; p.dir = 1; }
+  else { p.vx *= 0.8; if (Math.abs(p.vx) < 0.05) p.vx = 0; }
+  p.vx = clamp(p.vx, -1.6, 1.6);
+  if (Math.abs(p.vx) > 0.2) p.anim += Math.abs(p.vx); else p.anim = 0;
+
+  if (aPressed) p.jbuf = 8;                    // 先行入力
+  if (p.ground) p.coyote = 8; else if (p.coyote > 0) p.coyote--;
+  if (p.jbuf > 0) {
+    p.jbuf--;
+    if (p.coyote > 0) { p.vy = -4.7; p.ground = false; p.coyote = 0; p.jbuf = 0; sfx.jump(); }
+  }
+  p.vy = Math.min(p.vy + ((input.a && p.vy < 0) ? 0.13 : 0.26), 4.2);
+  if (!input.a && p.vy < -2) p.vy = -2;        // 早めに離すと低いジャンプ
+
+  p.hitWall = false;
+  p.x += p.vx; collideX(p); if (p.hitWall) p.vx = 0;
+  p.x = clamp(p.x, 0, G.W * TILE - p.w);
+  p.y += p.vy; p.ground = false; collideY(p, true);
+  if (p.inv > 0) p.inv--;
+
+  // ---- 動く足場 ----
+  for (const pl of G.plats) {
+    pl.t++;
+    const off = Math.sin(pl.t * 0.028) * (pl.axis === 'h' ? 40 : 26);
+    const nx = pl.bx + (pl.axis === 'h' ? off : 0);
+    const ny = pl.by + (pl.axis === 'v' ? off : 0);
+    pl.dx = nx - pl.x; pl.dy = ny - pl.y;
+    const standing = p.vy >= 0 && Math.abs(p.y + p.h - pl.y) < 3 && p.x + p.w > pl.x + 1 && p.x < pl.x + pl.w - 1;
+    pl.x = nx; pl.y = ny;
+    if (standing) { p.x += pl.dx; p.y = pl.y - p.h; p.ground = true; p.vy = 0; }
+    else tryLand(p, pl.x, pl.w, pl.y);
+  }
+
+  // ---- おちるゆか ----
+  for (const f of G.floors) {
+    if (f.st === 0 || f.st === 1) {
+      if (tryLand(p, f.x, TILE, f.y) && f.st === 0) { f.st = 1; f.t = 25; }
+      if (f.st === 1 && --f.t <= 0) f.st = 2;
+    } else if (f.st === 2) {
+      f.vy = Math.min(f.vy + 0.22, 5); f.y += f.vy;
+      if (f.y > ROWS * TILE + 40) { f.st = 3; f.t = 240; }
+    } else if (f.st === 3) {
+      if (--f.t <= 0) { f.st = 0; f.y = f.ty * TILE; f.vy = 0; }
+    }
+  }
+
+  // ---- コイン ----
+  for (const c of G.coinsE) {
+    if (c.taken) continue;
+    const dx = (p.x + p.w / 2) - c.x, dy = (p.y + p.h / 2) - c.y;
+    if (Math.abs(dx) < 11 && Math.abs(dy) < 12) { c.taken = true; addCoin(); sfx.coin(); }
+  }
+
+  // ---- ハートの実 ----
+  for (const it of G.items) {
+    if (it.taken) continue;
+    it.vy = Math.min(it.vy + 0.2, 3);
+    it.hitWall = false;
+    it.x += it.vx; collideX(it); if (it.hitWall) it.vx = -it.vx;
+    it.y += it.vy; it.ground = false; collideY(it);
+    if (it.y > ROWS * TILE + 20) { it.taken = true; continue; }
+    if (overlap(p, it)) {
+      it.taken = true;
+      if (!p.power) { p.power = true; } else addScore(100);
+      sfx.power();
+      puff(it.x + 6, it.y + 6, '#ff8fa3');
+    }
+  }
+
+  // ---- 敵 ----
+  for (const e of G.enemies) {
+    if (e.dead) { e.t++; continue; }
+    if (!e.active) {
+      if (e.x < G.cam + VW + 48 && e.x > G.cam - 48) e.active = true;
+      else continue;
+    }
+    if (e.type === 'fly') {
+      e.t++; e.y = e.baseY + Math.sin(e.t * 0.04) * 22;
+    } else {
+      e.vy = Math.min(e.vy + 0.26, 4.2);
+      e.hitWall = false;
+      e.x += e.vx; collideX(e);
+      e.y += e.vy; e.ground = false; collideY(e);
+      if (e.ground && !e.hitWall) { // 崖の手前で引き返す
+        const aheadX = e.vx > 0 ? e.x + e.w + 1 : e.x - 1;
+        if (!solidTile(Math.floor(aheadX / TILE), Math.floor((e.y + e.h + 2) / TILE))) e.hitWall = true;
+      }
+      if (e.hitWall) e.vx = -e.vx;
+      if (e.y > ROWS * TILE + 20) { e.dead = 1; e.t = 99; }
+    }
+    // プレイヤーとの当たり
+    if (G.state !== 'play' || p.inv > 0 || !overlap(p, e)) continue;
+    if (e.type !== 'spike' && p.vy > 0 && (p.y + p.h) - e.y < 10) {
+      e.dead = 1; e.t = 0;
+      addScore(100); sfx.stomp(); puff(e.x + 6, e.y + 4);
+      p.vy = input.a ? -4.7 : -3.0;
+      p.y = e.y - p.h;
+    } else hurt();
+  }
+  G.enemies = G.enemies.filter(e => !(e.dead && e.t > 40));
+
+  // ---- ボス ----
+  updateBoss();
+
+  // ---- ようがん・落下 ----
+  if (G.state === 'play') {
+    const midx = Math.floor((p.x + p.w / 2) / TILE);
+    const tly = Math.floor((p.y + p.h - 2) / TILE);
+    if (tly >= 0 && tly < ROWS && G.tiles[tly][midx] === 'L') { kill(); return; }
+    if (p.y > ROWS * TILE + 8) { kill(); return; }
+  }
+
+  // ---- ちゅうかん地点 ----
+  for (const c of G.cps) {
+    if (!c.on && Math.abs((p.x + p.w / 2) - (c.x + 8)) < 10 && p.y + p.h > c.y - 52) {
+      c.on = true;
+      G.checkpoint = { x: c.x + 3, y: c.y - 32, cx: c.x };
+      sfx.cp(); puff(c.x + 8, c.y - 40, '#ffd43b');
+    }
+  }
+
+  // ---- ゴール ----
+  if (G.goal && G.state === 'play' &&
+      p.x + p.w > G.goal.x + 6 && p.x < G.goal.x + 12 && p.y + p.h > G.goal.y - 68) {
+    startClear();
+  }
+
+  // ---- カメラ ----
+  let target = G.bossLockOn ? G.bossLock : clamp(p.x - VW * 0.42, 0, G.W * TILE - VW);
+  G.cam += (target - G.cam) * 0.15;
+  G.cam = clamp(G.cam, 0, G.W * TILE - VW);
+  if (G.bossLockOn) { // ボス戦中は画面外に出られない
+    p.x = clamp(p.x, G.bossLock + 2, G.bossLock + VW - p.w - 2);
+  }
+}
+
+function tryLand(e, sx, sw, sy) { // 一方通行の足場に乗る
+  if (e.vy < 0) return false;
+  const feet = e.y + e.h;
+  if (e.x + e.w > sx + 1 && e.x < sx + sw - 1 && feet >= sy && feet <= sy + e.vy + 5) {
+    e.y = sy - e.h; e.vy = 0; e.ground = true;
+    return true;
+  }
+  return false;
+}
+
+function updateBoss() {
+  const b = G.boss, p = G.p;
+  if (!b || b.dead) return;
+  if (!b.active) {
+    if (p.x > b.x - 160) {
+      b.active = true;
+      G.bossLockOn = true;
+      G.bossLock = clamp(b.x - 176, 0, G.W * TILE - VW);
+      playBgm('castle', 1.25);
+    }
+    return;
+  }
+  b.t++;
+  if (b.inv > 0) b.inv--;
+  const spd = 0.3 + (3 - b.hp) * 0.18;
+  b.vx = (p.x + p.w / 2 > b.x + b.w / 2) ? spd : -spd;
+  if (--b.jt <= 0 && b.ground) { b.vy = -4.3; b.jt = 100 + b.hp * 25; }
+  b.vy = Math.min(b.vy + 0.24, 4.2);
+  b.hitWall = false;
+  b.x += b.vx; collideX(b);
+  b.x = clamp(b.x, G.bossLock + 10, G.bossLock + VW - b.w - 10);
+  b.y += b.vy; b.ground = false; collideY(b);
+  if (G.state !== 'play' || !overlap(p, b)) return;
+  if (p.vy > 0 && (p.y + p.h) - b.y < 11 && b.inv === 0) {
+    b.hp--; b.inv = 75;
+    addScore(500); sfx.bossHit(); puff(b.x + 13, b.y, '#ffd43b', 10);
+    p.vy = -4.6; p.y = b.y - p.h;
+    if (b.hp <= 0) {
+      b.dead = 1; b.t = 0;
+      G.state = 'bossdying';
+      stopBgm(); sfx.bossDie();
+    }
+  } else if (b.inv === 0 && p.inv === 0) hurt();
+}
+
+function hurt() {
+  const p = G.p;
+  if (p.inv > 0 || G.state !== 'play') return;
+  if (p.power) { p.power = false; p.inv = 120; sfx.hurt(); }
+  else kill();
+}
+function kill() {
+  if (G.state !== 'play') return;
+  G.state = 'dead';
+  G.p.vy = -5; G.p.dead = 0;
+  stopBgm(); sfx.die();
+}
+function updateDead() {
+  const p = G.p;
+  p.dead++;
+  p.vy = Math.min(p.vy + 0.2, 5);
+  p.y += p.vy;
+  if (p.dead > 110) {
+    G.lives--;
+    if (G.lives <= 0) showGameOver();
+    else {
+      const cp = G.checkpoint;
+      loadStage(G.lv);
+      G.p.inv = 90;
+      playStageBgm();
+    }
+  }
+}
+
+function startClear() {
+  G.state = 'clear'; G.ct = 0;
+  G.bonus = Math.max(0, Math.ceil(G.time / 60)) * 5;
+  G.score += G.bonus;
+  stopBgm(); sfx.clear();
+  saveResult();
+}
+function updateClear() {
+  G.ct++;
+  if (G.goal && G.goal.flag < 40) G.goal.flag += 1;   // 旗がおりる
+  if (G.ct === 130) showClear();
+}
+function updateBossDying() {
+  const b = G.boss;
+  b.t++;
+  if (b.t % 12 === 0) puff(b.x + Math.random() * 26, b.y + Math.random() * 20, '#ffd43b', 4);
+  if (b.t === 90) {
+    G.bonus = Math.max(0, Math.ceil(G.time / 60)) * 5;
+    G.score += G.bonus;
+    sfx.clear();
+    saveResult();
+  }
+  if (b.t === 200) showClear();
+}
+function saveResult() {
+  const hs = LS.get('hs' + G.lv, 0);
+  G.newRec = G.score > hs;
+  if (G.newRec) LS.set('hs' + G.lv, G.score);
+  const unlocked = LS.get('unlocked', 1);
+  if (G.lv + 2 > unlocked) LS.set('unlocked', Math.min(G.lv + 2, LEVELS.length));
+}
+function playStageBgm() {
+  playBgm(LEVELS[G.lv].theme, G.bossLockOn ? 1.25 : 1);
+}
+/* =====================================================
+   描画 (すべてコードによるドット絵)
+   ===================================================== */
+function R(x, y, w, h, c) { ctx.fillStyle = c; ctx.fillRect(Math.round(x), Math.round(y), w, h); }
+function T(s, x, y, c) {
+  ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillText(s, x + 1, y + 1);
+  ctx.fillStyle = c || '#fff'; ctx.fillText(s, x, y);
+}
+
+const THEME = {
+  grass:  { sky: '#7ecdf4', cap: '#59b83a', capHi: '#8be06a', dirt: '#8a5a2b', dot: '#6e441f' },
+  cave:   { sky: '#171226', cap: '#7a7a95', capHi: '#9c9cba', dirt: '#5d5d75', dot: '#454458' },
+  sky:    { sky: '#9fd9ff', cap: '#67c957', capHi: '#95e284', dirt: '#c99b64', dot: '#a87c47' },
+  castle: { sky: '#2a1626', cap: '#8a8aa0', capHi: '#a8a8c0', dirt: '#6b6b7e', dot: '#54546a' },
+};
+
+function drawBg(theme, cam) {
+  const th = THEME[theme];
+  R(0, 0, VW, VH, th.sky);
+  if (theme === 'grass') {
+    R(272, 16, 24, 24, '#ffe066'); R(276, 20, 16, 16, '#ffd43b');   // たいよう
+    for (let i = 0; i < 5; i++) {                                    // くも
+      const x = ((i * 130 + 40 - cam * 0.3) % (VW + 120) + VW + 120) % (VW + 120) - 60;
+      R(x, 24 + (i % 3) * 18, 34, 10, '#fff'); R(x + 6, 18 + (i % 3) * 18, 20, 8, '#fff');
+    }
+    for (let i = 0; i < 8; i++) {                                    // おか
+      const x = ((i * 120 - cam * 0.5) % (VW + 160) + VW + 160) % (VW + 160) - 80;
+      R(x, 128, 80, 40, i % 2 ? '#4f9d3f' : '#3f8a31');
+      R(x + 16, 112, 48, 20, i % 2 ? '#4f9d3f' : '#3f8a31');
+    }
+  } else if (theme === 'cave') {
+    for (let i = 0; i < 8; i++) {                                    // 奥の岩
+      const x = ((i * 110 - cam * 0.4) % (VW + 140) + VW + 140) % (VW + 140) - 70;
+      R(x, 0, 26, 60 + (i % 3) * 22, '#241b3d');
+      R(x + 40, 130 - (i % 2) * 30, 30, 80, '#241b3d');
+    }
+    for (let i = 0; i < 12; i++) {                                   // きらきら
+      const x = ((i * 87 - cam * 0.2) % VW + VW) % VW;
+      const y = (i * 53) % 150 + 10;
+      if ((fr + i * 13) % 90 < 45) R(x, y, 2, 2, '#b197fc');
+    }
+  } else if (theme === 'sky') {
+    R(24, 14, 22, 22, '#fff2a8');                                    // たいよう
+    for (let i = 0; i < 7; i++) {
+      const x = ((i * 100 + 20 - cam * 0.25) % (VW + 140) + VW + 140) % (VW + 140) - 70;
+      R(x, 20 + (i % 4) * 34, 44, 12, 'rgba(255,255,255,.9)');
+      R(x + 8, 13 + (i % 4) * 34, 26, 9, 'rgba(255,255,255,.9)');
+    }
+    for (let i = 0; i < 6; i++) {                                    // 下のくも(遠)
+      const x = ((i * 140 - cam * 0.5) % (VW + 160) + VW + 160) % (VW + 160) - 80;
+      R(x, 168 + (i % 2) * 8, 70, 20, 'rgba(255,255,255,.5)');
+    }
+    for (let i = 0; i < 14; i++) {                                   // かぜ
+      const x = ((i * 61 - fr * (1 + i % 3) * 0.7) % (VW + 30) + VW + 30) % (VW + 30) - 15;
+      R(x, (i * 37) % 170 + 8, 10 + (i % 3) * 5, 1, 'rgba(255,255,255,.45)');
+    }
+  } else { // castle
+    for (let i = 0; i < 6; i++) {                                    // まど
+      const x = ((i * 130 + 30 - cam * 0.4) % (VW + 140) + VW + 140) % (VW + 140) - 70;
+      R(x, 40 + (i % 2) * 44, 12, 20, '#f7b32b');
+      R(x + 2, 44 + (i % 2) * 44, 8, 12, '#ffd97a');
+      R(x - 4, 36 + (i % 2) * 44, 20, 4, '#1c0e1a');
+    }
+    for (let i = 0; i < 9; i++) {                                    // 柱
+      const x = ((i * 90 - cam * 0.55) % (VW + 120) + VW + 120) % (VW + 120) - 60;
+      R(x, 80, 14, 112, '#3b2136');
+    }
+  }
+}
+
+function bumpOff(tx, ty) {
+  for (const b of G.bumps) if (b.tx === tx && b.ty === ty) return -Math.round(4 * Math.sin(Math.PI * b.t / 12));
+  return 0;
+}
+
+function drawTiles(cam) {
+  const th = THEME[LEVELS[G.lv].theme];
+  const x1 = Math.max(0, Math.floor(cam / TILE) - 1), x2 = Math.min(G.W - 1, x1 + 22);
+  for (let ty = 0; ty < ROWS; ty++) for (let tx = x1; tx <= x2; tx++) {
+    const c = G.tiles[ty][tx];
+    if (c === ' ') continue;
+    const px = tx * TILE - cam, py = ty * TILE + bumpOff(tx, ty);
+    if (c === '#') {
+      const capTop = ty === 0 || !SOLID.includes(G.tiles[ty - 1][tx]);
+      R(px, py, TILE, TILE, th.dirt);
+      R(px + 3, py + 6, 2, 2, th.dot); R(px + 10, py + 10, 3, 2, th.dot); R(px + 7, py + 3, 2, 2, th.dot);
+      if (capTop) { R(px, py, TILE, 5, th.cap); R(px, py, TILE, 2, th.capHi); }
+    } else if (c === 'B') {
+      R(px, py, TILE, TILE, '#c9705a');
+      R(px, py, TILE, 1, '#e2947e'); R(px, py + 7, TILE, 2, '#8f4a3a');
+      R(px + 7, py, 2, 7, '#8f4a3a'); R(px + 3, py + 9, 2, 7, '#8f4a3a'); R(px + 11, py + 9, 2, 7, '#8f4a3a');
+    } else if (c === '?' || c === 'H') {
+      R(px, py, TILE, TILE, '#ffca3a');
+      R(px, py, TILE, 2, '#ffe08a'); R(px, py + 14, TILE, 2, '#c78f00');
+      R(px, py, 2, TILE, '#ffe08a'); R(px + 14, py, 2, TILE, '#c78f00');
+      if ((fr % 60) < 45) { ctx.fillStyle = '#7a5200'; ctx.font = 'bold 10px monospace'; ctx.fillText('?', px + 5, py + 12); }
+    } else if (c === 'U') {
+      R(px, py, TILE, TILE, '#a97142');
+      R(px, py, TILE, 2, '#c08b58'); R(px, py + 14, TILE, 2, '#7d4f2a');
+    } else if (c === 'L') {
+      const capTop = ty === 0 || G.tiles[ty - 1][tx] !== 'L';
+      R(px, py, TILE, TILE, '#e8542f');
+      if (capTop) {
+        const w1 = Math.sin(fr * 0.08 + tx * 1.7) * 2;
+        R(px, py, TILE, 3 + w1, '#ffd166');
+        R(px + 4, py + 5 + w1, 3, 3, '#ff9f45');
+        if ((fr + tx * 17) % 70 < 8) R(px + 10, py - 3, 3, 3, '#ffd166'); // あわ
+      } else R(px + 5, py + 6, 4, 3, '#ff9f45');
+    }
+  }
+}
+
+/* ---------- キャラクターの描画 ---------- */
+function drawPlayer(cam) {
+  const p = G.p;
+  if (G.state === 'play' && p.inv > 0 && (fr >> 2) % 2 === 0) return; // 点滅
+  const x = Math.round(p.x - cam) - 1, y = Math.round(p.y);
+  const walk = Math.floor(p.anim / 7) % 2;
+  const jumpF = !p.ground && G.state === 'play';
+  ctx.save();
+  if (G.state === 'dead') { ctx.translate(x + 6, y + 7); ctx.rotate(Math.PI); ctx.translate(-x - 6, -y - 7); }
+  R(x + 5, y - 1, 2, 2, '#e8590c');                                  // あたまの毛
+  R(x + 2, y + 1, 8, 2, '#ffa94d');                                  // からだ
+  R(x + 1, y + 3, 10, 7, '#ffa94d');
+  R(x + 2, y + 10, 8, 2, '#ffa94d');
+  R(x + 3, y + 7, 6, 4, '#ffd8a8');                                  // おなか
+  if (p.power) { R(x + 1, y + 1, 10, 2, '#e03131'); R(x + 5, y - 1, 2, 2, '#e03131'); } // パワーの赤ぼうし
+  const ex = p.dir > 0 ? 1 : -1;                                     // め
+  R(x + 3, y + 4, 2, 3, '#fff'); R(x + 7, y + 4, 2, 3, '#fff');
+  R(x + 3 + (ex > 0 ? 1 : 0), y + 5, 1, 2, '#222'); R(x + 7 + (ex > 0 ? 1 : 0), y + 5, 1, 2, '#222');
+  if (G.state === 'dead') { R(x + 3, y + 4, 2, 1, '#222'); R(x + 7, y + 4, 2, 1, '#222'); }
+  if (jumpF) { R(x + 3, y + 12, 2, 2, '#7f4f24'); R(x + 7, y + 12, 2, 2, '#7f4f24'); }
+  else if (walk) { R(x + 1, y + 12, 3, 2, '#7f4f24'); R(x + 8, y + 12, 3, 2, '#7f4f24'); }
+  else { R(x + 2, y + 12, 3, 2, '#7f4f24'); R(x + 7, y + 12, 3, 2, '#7f4f24'); }
+  ctx.restore();
+}
+
+function drawEnemy(e, cam) {
+  const x = Math.round(e.x - cam), y = Math.round(e.y);
+  if (e.dead) { // ぺちゃんこ
+    if (e.type === 'walk') { R(x, y + 8, 12, 4, '#a9714b'); R(x + 2, y + 9, 2, 2, '#fff'); R(x + 8, y + 9, 2, 2, '#fff'); }
+    else { R(x, y + 8, 12, 4, '#74c0fc'); }
+    return;
+  }
+  const walk = Math.floor(fr / 8) % 2;
+  if (e.type === 'walk') {
+    R(x + 1, y + 2, 10, 8, '#a9714b'); R(x + 2, y + 1, 8, 2, '#c08b58');
+    R(x + 2, y + 4, 3, 3, '#fff'); R(x + 7, y + 4, 3, 3, '#fff');
+    R(x + 3, y + 5, 1, 2, '#222'); R(x + 8, y + 5, 1, 2, '#222');
+    R(x + (walk ? 1 : 2), y + 10, 3, 2, '#6e441f'); R(x + (walk ? 8 : 7), y + 10, 3, 2, '#6e441f');
+  } else if (e.type === 'spike') {
+    for (const sx of [1, 5, 9]) { R(x + sx + 1, y, 1, 2, '#e9e4ff'); R(x + sx, y + 2, 3, 2, '#cfc4f5'); }
+    R(x, y + 4, 12, 6, '#7048c6');
+    R(x + 2, y + 5, 3, 3, '#ffe066'); R(x + 7, y + 5, 3, 3, '#ffe066');
+    R(x + 3, y + 6, 1, 2, '#222'); R(x + 8, y + 6, 1, 2, '#222');
+    R(x + (walk ? 1 : 2), y + 10, 3, 2, '#40275e'); R(x + (walk ? 8 : 7), y + 10, 3, 2, '#40275e');
+  } else { // fly
+    const wf = Math.floor(fr / 6) % 2;
+    R(x - 1, y + (wf ? 1 : 4), 3, 4, '#e7f5ff'); R(x + 10, y + (wf ? 1 : 4), 3, 4, '#e7f5ff'); // はね
+    R(x + 2, y + 2, 8, 8, '#74c0fc'); R(x + 3, y + 1, 6, 2, '#a5d8ff');
+    R(x + 3, y + 4, 2, 3, '#fff'); R(x + 7, y + 4, 2, 3, '#fff');
+    R(x + 3, y + 5, 1, 2, '#222'); R(x + 7, y + 5, 1, 2, '#222');
+  }
+}
+
+function drawBoss(cam) {
+  const b = G.boss;
+  if (!b || (!b.active && !b.dead)) return;
+  const x = Math.round(b.x - cam) - 1, y = Math.round(b.y);
+  if (b.dead) {
+    if (b.t < 200) { R(x, y + 12, 28, 10, '#6741d9'); R(x + 6, y + 14, 4, 3, '#fff'); R(x + 18, y + 14, 4, 3, '#fff'); }
+    return;
+  }
+  const flash = b.inv > 0 && (fr >> 2) % 2 === 0;
+  const body = flash ? '#fff' : '#6741d9', dark = flash ? '#ddd' : '#40275e';
+  R(x + 3, y - 4, 4, 6, '#ffd43b'); R(x + 21, y - 4, 4, 6, '#ffd43b');  // つの
+  R(x + 2, y, 24, 4, body);
+  R(x, y + 4, 28, 16, body);
+  const walk = Math.floor(fr / 10) % 2;
+  R(x + (walk ? 3 : 4), y + 20, 7, 4, dark); R(x + (walk ? 18 : 17), y + 20, 7, 4, dark);
+  R(x + 6, y + 7, 6, 6, '#fff'); R(x + 16, y + 7, 6, 6, '#fff');
+  const px2 = G.p.x > b.x ? 2 : 0;
+  R(x + 7 + px2, y + 9, 3, 4, '#e03131'); R(x + 17 + px2, y + 9, 3, 4, '#e03131');
+  R(x + 10, y + 15, 8, 3, dark);
+}
+
+function drawCoinAt(cx, cy, big) {
+  const w = Math.max(2, Math.round(Math.abs(Math.sin(fr * 0.09 + cx * 0.05)) * (big ? 8 : 6)));
+  const h = big ? 10 : 8;
+  R(cx - w / 2, cy - h / 2, w, h, '#ffd43b');
+  if (w > 3) R(cx - w / 2 + 1, cy - h / 2 + 1, w - 2, h - 2, '#fab005');
+}
+function drawHeartAt(x, y) { // 12x11 のハート
+  R(x + 1, y, 4, 2, '#ff6b6b'); R(x + 7, y, 4, 2, '#ff6b6b');
+  R(x, y + 2, 12, 3, '#ff6b6b'); R(x + 1, y + 5, 10, 2, '#ff6b6b');
+  R(x + 3, y + 7, 6, 2, '#ff6b6b'); R(x + 5, y + 9, 2, 2, '#ff6b6b');
+  R(x + 2, y + 1, 2, 2, '#ffc9c9');
+}
+function drawHeartIcon(x, y, on) {
+  const c = on ? '#ff6b6b' : 'rgba(255,255,255,.25)';
+  R(x, y, 3, 2, c); R(x + 4, y, 3, 2, c);
+  R(x, y + 1, 7, 3, c); R(x + 1, y + 4, 5, 1, c); R(x + 2, y + 5, 3, 1, c);
+}
+
+function drawFlags(cam) {
+  for (const c of G.cps) {
+    const x = Math.round(c.x - cam), y = c.y;
+    R(x + 7, y - 40, 2, 40, '#9aa0ab');
+    R(x + 6, y - 42, 4, 3, '#ced4da');
+    R(x + 9, y - 38, 9, 7, c.on ? '#ff5d5d' : '#7a8291');
+    R(x + 4, y - 3, 8, 3, '#6c757d');
+  }
+  if (G.goal) {
+    const g = G.goal, x = Math.round(g.x - cam), y = g.y;
+    R(x + 7, y - 64, 2, 64, '#ced4da');
+    R(x + 5, y - 68, 6, 5, '#ffd43b');
+    const fy = y - 62 + (g.flag || 0);
+    R(x + 9, fy, 11, 8, '#37b24d'); R(x + 9, fy + 2, 8, 4, '#69db7c');
+    R(x + 2, y - 4, 12, 4, '#8a8a9a');
+  }
+}
+
+function render() {
+  const cam = Math.round(G.cam);
+  drawBg(LEVELS[G.lv].theme, cam);
+  drawTiles(cam);
+  drawFlags(cam);
+  // おちるゆか
+  for (const f of G.floors) {
+    if (f.st === 3) continue;
+    const fx = Math.round(f.x - cam) + (f.st === 1 ? Math.round(Math.sin(fr * 1.2)) : 0);
+    R(fx, f.y, TILE, 6, '#b9a48a'); R(fx, f.y, TILE, 2, '#d9c4a5');
+    R(fx + 4, f.y + 2, 1, 4, '#8d7a60'); R(fx + 10, f.y + 3, 1, 3, '#8d7a60');
+  }
+  // 動く足場
+  for (const pl of G.plats) {
+    const px = Math.round(pl.x - cam);
+    R(px, pl.y, pl.w, 8, '#e8b04b'); R(px, pl.y, pl.w, 3, '#ffd88a');
+    R(px + 2, pl.y + 5, 2, 2, '#a87b26'); R(px + 22, pl.y + 5, 2, 2, '#a87b26'); R(px + 44, pl.y + 5, 2, 2, '#a87b26');
+  }
+  for (const c of G.coinsE) if (!c.taken) drawCoinAt(c.x - cam, c.y, false);
+  for (const it of G.items) if (!it.taken) drawHeartAt(Math.round(it.x - cam), Math.round(it.y) + 1);
+  for (const e of G.enemies) if (e.active || e.dead) drawEnemy(e, cam);
+  drawBoss(cam);
+  drawPlayer(cam);
+  // パーティクル
+  for (const pt of G.parts) {
+    if (pt.c === 'coinpop') drawCoinAt(pt.x - cam, pt.y, false);
+    else R(pt.x - cam, pt.y, 2, 2, pt.c);
+  }
+  drawHud();
+}
+
+function drawHud() {
+  ctx.font = 'bold 8px sans-serif';
+  T('スコア ' + String(G.score).padStart(6, '0'), 6, 11, '#fff');
+  drawCoinAt(11, 20, false);
+  T('×' + G.coins, 18, 23, '#ffd43b');
+  for (let i = 0; i < Math.max(3, G.lives); i++) drawHeartIcon(44 + i * 10, 16, i < G.lives);
+  if (G.p.power) T('パワー!', 96, 23, '#ff8fa3');
+  const sec = Math.max(0, Math.ceil(G.time / 60));
+  T('のこり ' + sec, VW - 52, 11, sec <= 60 && (fr >> 4) % 2 === 0 ? '#ff6b6b' : '#fff');
+  // ボスの体力
+  const b = G.boss;
+  if (b && b.active && !b.dead) {
+    T('ボス', VW / 2 - 24, 11, '#e599f7');
+    for (let i = 0; i < 3; i++) drawHeartIcon(VW / 2 + i * 10, 5, i < b.hp);
+  }
+  if (G.state === 'clear' || G.state === 'bossdying') {
+    ctx.font = 'bold 16px sans-serif';
+    T(G.state === 'clear' ? '🚩 クリア!' : '👑 ボスをたおした!', VW / 2 - 44, VH / 2 - 20, '#ffd43b');
+    ctx.font = 'bold 8px sans-serif';
+  }
+}
+
+/* =====================================================
+   画面(DOM)まわり
+   ===================================================== */
+const $ = id => document.getElementById(id);
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('show'));
+  if (id) $(id).classList.add('show');
+  pad.style.display = (scr === 'game' && !id) ? 'block' : 'none';
+  $('rotateHint').style.display = (id === 'scrTitle') ? 'block' : 'none';
+}
+function updateSoundBtns() {
+  const t = soundOn ? '🔊 おと ON' : '🔇 おと OFF';
+  $('btnSound').textContent = t;
+  $('btnSound2').textContent = t;
+}
+function buildSelect() {
+  const unlocked = LS.get('unlocked', 1);
+  const list = $('stageList');
+  list.innerHTML = '';
+  LEVELS.forEach((L, i) => {
+    const locked = i >= unlocked;
+    const hs = LS.get('hs' + i, 0);
+    const b = document.createElement('button');
+    b.className = 'stagecard' + (locked ? ' locked' : '');
+    b.innerHTML = `<span class="icon">${locked ? '🔒' : L.icon}</span>` +
+      `<span>ステージ${i + 1}<br>${L.name}</span>` +
+      `<span class="hs">${hs > 0 ? '⭐ ' + hs : 'ハイスコア --'}</span>`;
+    if (!locked) b.addEventListener('click', () => { audio(); startStage(i); });
+    list.appendChild(b);
+  });
+}
+function goSelect() {
+  stopBgm();
+  scr = 'select'; paused = false;
+  buildSelect();
+  showScreen('scrSelect');
+}
+function showClear() {
+  const hs = LS.get('hs' + G.lv, 0);
+  const tally =
+    `スコア <b>${G.score}</b><br>` +
+    `(タイムボーナス +${G.bonus})<br>` +
+    `ハイスコア <b>${hs}</b>` +
+    (G.newRec ? '<br><span class="newrec">🎉 しんきろく!</span>' : '');
+  if (G.lv === LEVELS.length - 1) {
+    $('endTally').innerHTML = tally;
+    showScreen('scrEnding');
+  } else {
+    $('clearTally').innerHTML = tally;
+    showScreen('scrClear');
+  }
+}
+function showGameOver() {
+  G.state = 'over';
+  $('overTally').innerHTML = `スコア <b>${G.score}</b><br>ハイスコア <b>${LS.get('hs' + G.lv, 0)}</b>`;
+  showScreen('scrOver');
+}
+function pauseGame() {
+  if (scr !== 'game' || paused || G.state !== 'play') return;
+  paused = true;
+  stopBgm();
+  showScreen('scrPause');
+}
+
+$('btnStart').addEventListener('click', () => { audio(); goSelect(); });
+$('btnToTitle').addEventListener('click', () => { scr = 'title'; showScreen('scrTitle'); });
+$('btnSound').addEventListener('click', () => setSound(!soundOn));
+$('btnSound2').addEventListener('click', () => setSound(!soundOn));
+$('btnNext').addEventListener('click', () => startStage(G.lv + 1));
+$('btnClearSelect').addEventListener('click', goSelect);
+$('btnRetry').addEventListener('click', () => startStage(G.lv));
+$('btnOverSelect').addEventListener('click', goSelect);
+$('btnResume').addEventListener('click', () => { paused = false; showScreen(null); playStageBgm(); });
+$('btnPauseSelect').addEventListener('click', goSelect);
+$('btnEndSelect').addEventListener('click', goSelect);
+$('btnEndTitle').addEventListener('click', () => { scr = 'title'; showScreen('scrTitle'); });
+$('btnPause').addEventListener('click', pauseGame);
+$('btnPause').addEventListener('touchstart', e => { e.preventDefault(); pauseGame(); }, { passive: false });
+document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
+
+updateSoundBtns();
+
+/* ---------- メインループ(固定タイムステップ) ---------- */
+let last = 0, acc = 0;
+function loop(ts) {
+  requestAnimationFrame(loop);
+  if (!last) last = ts;
+  acc += Math.min(ts - last, 100);
+  last = ts;
+  let n = 0;
+  while (acc >= 16.66 && n < 4) { step(); acc -= 16.66; n++; }
+  if (acc >= 16.66) acc = 0;
+  if (scr === 'game') render();
+}
+requestAnimationFrame(loop);
+
+/* ---------- PWA ---------- */
+if ('serviceWorker' in navigator) {
+  addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>

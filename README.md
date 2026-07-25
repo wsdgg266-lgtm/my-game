@@ -34,6 +34,7 @@
    - かいわすれナシ!: `https://<プロジェクト名>.vercel.app/`
    - スポカレ!: `https://<プロジェクト名>.vercel.app/sports/`
    - ふくらぶ: `https://<プロジェクト名>.vercel.app/fashion/`
+   - ピコラン!: `https://<プロジェクト名>.vercel.app/game/`
 
 以降はデフォルトブランチ(`claude/shopping-reminder-app-7xpyg5`)への push のたびに
 自動で再デプロイされます。
@@ -79,6 +80,12 @@ GitHub Pages はこのリポジトリの `.github/workflows/deploy-pages.yml` �
 流行・近くのお店・お得情報がわかるファッションアプリ
 「ふくらぶ!」も入っています(`fashion/` フォルダ)。詳しくは
 [fashion/README.md](fashion/README.md) を見てください。
+
+## 🎮 同居アプリ: ピコラン!
+
+ドット絵の横スクロールジャンプアクションゲーム
+「ピコラン!」も入っています(`game/` フォルダ)。詳しくは
+[game/README.md](game/README.md) を見てください。
 
 ## 技術構成
 
