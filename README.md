@@ -35,6 +35,7 @@
    - スポカレ!: `https://<プロジェクト名>.vercel.app/sports/`
    - ふくらぶ: `https://<プロジェクト名>.vercel.app/fashion/`
    - ピコラン!: `https://<プロジェクト名>.vercel.app/game/`
+   - ハナビカメラ: `https://<プロジェクト名>.vercel.app/fireworks/`
 
 以降はデフォルトブランチ(`claude/shopping-reminder-app-7xpyg5`)への push のたびに
 自動で再デプロイされます。
@@ -86,6 +87,13 @@ GitHub Pages はこのリポジトリの `.github/workflows/deploy-pages.yml` �
 ドット絵の横スクロールジャンプアクションゲーム
 「ピコラン!」も入っています(`game/` フォルダ)。詳しくは
 [game/README.md](game/README.md) を見てください。
+
+## 🎆 同居アプリ: ハナビカメラ
+
+連写と比較明合成で、スマホでも花火の光跡がきれいに伸びた1枚を撮れるカメラアプリ
+「ハナビカメラ」も入っています(`fireworks/` フォルダ)。詳しくは
+[fireworks/README.md](fireworks/README.md) を見てください。
+(カメラを使うため https の公開URLで開く必要があります)
 
 ## 技術構成
 

@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#080a16">
+<title>ハナビカメラ - 花火がきれいに撮れるカメラ</title>
+<meta name="description" content="連写と比較明合成で、スマホでも花火の光跡がきれいに伸びた1枚を撮れるカメラアプリ。">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  :root{
+    --bg:#080a16; --panel:#12162a; --line:#252b45; --fg:#eef1ff; --sub:#98a0c4;
+    --accent:#ff8a3d; --accent2:#ff4d8d; --ok:#4ade80; --ng:#f87171;
+    --top: env(safe-area-inset-top); --bot: env(safe-area-inset-bottom);
+  }
+  html,body{ width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--fg);
+    font-family:'Hiragino Kaku Gothic ProN','BIZ UDPGothic','Yu Gothic',sans-serif;
+    -webkit-user-select:none; user-select:none; position:fixed; overscroll-behavior:none; }
+  body{ display:flex; flex-direction:column; }
+  button{ font:inherit; color:inherit; background:none; border:none; cursor:pointer; }
+  input[type=range]{ -webkit-appearance:none; appearance:none; width:100%; height:28px; background:none; }
+  input[type=range]::-webkit-slider-runnable-track{ height:4px; border-radius:2px; background:#2b3252; }
+  input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:22px; height:22px; margin-top:-9px;
+    border-radius:50%; background:var(--accent); border:2px solid #fff3; }
+  input[type=range]::-moz-range-track{ height:4px; border-radius:2px; background:#2b3252; }
+  input[type=range]::-moz-range-thumb{ width:22px; height:22px; border:2px solid #fff3; border-radius:50%; background:var(--accent); border-color:#fff3; }
+
+  /* ===== ヘッダー ===== */
+  header{ flex:none; padding:calc(var(--top) + 8px) 10px 8px; display:flex; align-items:center; gap:8px;
+    background:linear-gradient(#0d1024,#080a16); border-bottom:1px solid var(--line); z-index:20; }
+  .logo{ font-size:15px; font-weight:bold; letter-spacing:.02em; white-space:nowrap;
+    background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text;
+    background-clip:text; color:transparent; }
+  .seg{ display:flex; background:#1a1f38; border-radius:9px; padding:2px; margin-left:auto; }
+  .seg button{ padding:6px 10px; font-size:12px; border-radius:7px; color:var(--sub); white-space:nowrap; }
+  .seg button.on{ background:#2c3358; color:#fff; }
+  .iconbtn{ width:34px; height:34px; border-radius:9px; background:#1a1f38; font-size:15px;
+    display:flex; align-items:center; justify-content:center; flex:none; }
+  .iconbtn.on{ background:var(--accent); color:#171008; }
+
+  /* ===== ビュー ===== */
+  #stage{ flex:1; position:relative; background:#000; overflow:hidden; display:flex;
+    align-items:center; justify-content:center; min-height:0; }
+  #video,#live{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
+  #live{ display:none; }
+  body.rec #video{ visibility:hidden; }
+  body.rec #live{ display:block; }
+  #grid{ position:absolute; inset:0; display:none; pointer-events:none; }
+  body.grid #grid{ display:block; }
+  #grid i{ position:absolute; background:rgba(255,255,255,.22); }
+  #grid i.v{ top:0; bottom:0; width:1px; } #grid i.h{ left:0; right:0; height:1px; }
+
+  #msg{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:12px; padding:24px; text-align:center; font-size:13px;
+    line-height:1.7; color:var(--sub); background:var(--bg); }
+  #msg b{ color:var(--fg); font-size:15px; display:block; margin-bottom:2px; }
+  #msg .btn{ background:var(--accent); color:#1a1206; font-weight:bold; padding:11px 20px;
+    border-radius:11px; font-size:14px; }
+  #msg.hide{ display:none; }
+
+  /* 撮影中のバッジ */
+  #recbar{ position:absolute; top:10px; left:50%; transform:translateX(-50%); display:none;
+    align-items:center; gap:8px; background:rgba(8,10,22,.72); backdrop-filter:blur(6px);
+    padding:6px 12px; border-radius:999px; font-size:12px; font-variant-numeric:tabular-nums; z-index:6; }
+  body.rec #recbar{ display:flex; }
+  #recbar .dot{ width:8px; height:8px; border-radius:50%; background:var(--accent2);
+    animation:blink 1s steps(2) infinite; }
+  @keyframes blink{ 50%{ opacity:.15 } }
+  #shake{ position:absolute; top:46px; left:50%; transform:translateX(-50%); display:none; z-index:6;
+    background:rgba(248,113,113,.92); color:#2a0808; font-weight:bold; font-size:12px;
+    padding:5px 12px; border-radius:999px; }
+  body.shaking #shake{ display:block; }
+
+  /* ===== 操作パネル ===== */
+  #dock{ flex:none; background:linear-gradient(#0b0e1e,#080a16); border-top:1px solid var(--line);
+    padding:8px 10px calc(var(--bot) + 8px); z-index:10; }
+  #presets{ display:flex; gap:6px; margin-bottom:8px; }
+  #presets button{ flex:1; padding:8px 4px; border-radius:10px; background:#161b31;
+    border:1px solid var(--line); font-size:11px; line-height:1.35; color:var(--sub); }
+  #presets button.on{ background:#2a1c2f; border-color:var(--accent2); color:#fff; }
+  #presets button em{ display:block; font-style:normal; font-size:9px; opacity:.65; margin-top:2px; }
+  #shutterRow{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; }
+  #hint{ font-size:10.5px; color:var(--sub); line-height:1.5; }
+  #shutter{ width:78px; height:78px; flex:none; border-radius:50%; margin:0 auto;
+    background:radial-gradient(circle at 50% 35%,#fff,#ffd9b8 60%,#ff9d4d);
+    box-shadow:0 0 0 4px #ffffff22, 0 0 22px #ff8a3d55; transition:transform .08s; }
+  #shutter:active,#shutter.on{ transform:scale(.92); }
+  #shutter.on{ background:radial-gradient(circle at 50% 35%,#fff,#ffb3cd 60%,#ff4d8d); }
+  #shutter:disabled{ filter:grayscale(1) brightness(.5); }
+  #pickWrap{ display:none; padding:4px 0 6px; }
+  body.import #presets,body.import #shutterRow{ display:none; }
+  body.import #pickWrap{ display:block; }
+  #pick{ display:block; width:100%; text-align:center; background:var(--accent); color:#1a1206;
+    font-weight:bold; padding:14px; border-radius:12px; font-size:14px; }
+  #pickNote{ font-size:10.5px; color:var(--sub); text-align:center; margin-top:7px; line-height:1.5; }
+
+  /* ===== 詳細設定 ===== */
+  #adv{ display:none; max-height:44vh; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    background:#0e1224; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:8px; }
+  body.adv #adv{ display:block; }
+  .row{ padding:6px 0; border-bottom:1px solid #1b2038; }
+  .row:last-child{ border-bottom:none; }
+  .row .lb{ display:flex; justify-content:space-between; align-items:center; font-size:12px; }
+  .row .lb span{ color:var(--sub); font-variant-numeric:tabular-nums; font-size:11px; }
+  .sw{ width:44px; height:26px; border-radius:99px; background:#2b3252; position:relative; flex:none; }
+  .sw::after{ content:''; position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%;
+    background:#8b93b8; transition:.15s; }
+  .sw.on{ background:#3d2a3a; } .sw.on::after{ left:21px; background:var(--accent); }
+  #caps{ font-size:10.5px; color:var(--sub); line-height:1.6; padding-top:8px; }
+  #caps b{ color:var(--fg); font-weight:normal; }
+  .ok{ color:var(--ok); } .ng{ color:var(--ng); }
+
+  /* ===== 仕上げ画面 ===== */
+  #review{ position:fixed; inset:0; background:var(--bg); z-index:40; display:none;
+    flex-direction:column; padding-top:var(--top); }
+  #review.on{ display:flex; }
+  #rvHead{ flex:none; display:flex; align-items:center; gap:8px; padding:8px 10px; }
+  #rvHead .t{ font-size:14px; font-weight:bold; }
+  #rvHead .s{ font-size:10.5px; color:var(--sub); margin-left:auto; }
+  #rvStage{ flex:1; min-height:0; position:relative; background:#000; display:flex;
+    align-items:center; justify-content:center; }
+  #out{ max-width:100%; max-height:100%; object-fit:contain; }
+  #rvCtl{ flex:none; padding:8px 12px calc(var(--bot) + 10px); background:#0b0e1e;
+    border-top:1px solid var(--line); max-height:50vh; overflow-y:auto; }
+  #rvBtns{ display:flex; gap:8px; margin-top:10px; }
+  #rvBtns button{ flex:1; padding:13px; border-radius:12px; font-size:14px; font-weight:bold; }
+  #again{ background:#1a1f38; color:var(--fg); }
+  #save{ background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#1a0d06; }
+  #saveNote{ font-size:10.5px; color:var(--sub); text-align:center; margin-top:8px; line-height:1.5; }
+  #reset{ font-size:11px; color:var(--sub); text-decoration:underline; padding:4px 0; }
+
+  /* ===== ヘルプ ===== */
+  #help{ position:fixed; inset:0; background:rgba(4,5,12,.86); backdrop-filter:blur(4px); z-index:60;
+    display:none; align-items:center; justify-content:center; padding:18px; }
+  #help.on{ display:flex; }
+  #helpBox{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px;
+    max-width:420px; width:100%; max-height:82vh; overflow-y:auto; }
+  #helpBox h2{ font-size:15px; margin-bottom:10px; }
+  #helpBox ul{ list-style:none; font-size:12.5px; line-height:1.75; color:#d3d8f0; }
+  #helpBox li{ padding:6px 0 6px 22px; position:relative; border-bottom:1px solid #1b2038; }
+  #helpBox li:last-child{ border-bottom:none; }
+  #helpBox li::before{ content:'🎆'; position:absolute; left:0; font-size:12px; }
+  #helpBox li b{ color:var(--accent); }
+  #helpBox .btn{ display:block; width:100%; margin-top:14px; background:var(--accent); color:#1a1206;
+    font-weight:bold; padding:12px; border-radius:11px; font-size:14px; }
+  #toast{ position:fixed; left:50%; bottom:calc(var(--bot) + 24px); transform:translateX(-50%);
+    background:rgba(20,24,44,.95); border:1px solid var(--line); color:#fff; font-size:12.5px;
+    padding:10px 18px; border-radius:999px; z-index:70; opacity:0; pointer-events:none; transition:opacity .2s; }
+  #toast.on{ opacity:1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🎆 ハナビカメラ</div>
+  <div class="seg">
+    <button id="mLive" class="on">📷 ライブ</button>
+    <button id="mImport">🖼 写真から</button>
+  </div>
+  <button class="iconbtn" id="btnHelp" aria-label="撮り方のコツ">?</button>
+  <button class="iconbtn" id="btnAdv" aria-label="詳細設定">⚙</button>
+</header>
+
+<div id="stage">
+  <video id="video" playsinline muted autoplay></video>
+  <canvas id="live"></canvas>
+  <div id="grid"><i class="v" style="left:33.33%"></i><i class="v" style="left:66.66%"></i><i class="h" style="top:33.33%"></i><i class="h" style="top:66.66%"></i></div>
+  <div id="recbar"><span class="dot"></span><span id="recTime">0.0s</span><span id="recFrames">0コマ</span></div>
+  <div id="shake">⚠ 端末が揺れています</div>
+  <div id="msg"><div><b>カメラを準備しています…</b></div></div>
+</div>
+
+<div id="dock">
+  <div id="adv">
+    <div class="row">
+      <div class="lb"><label for="sMax">合成する秒数の上限</label><span id="vMax">8秒</span></div>
+      <input type="range" id="sMax" min="1" max="15" step="1" value="8">
+    </div>
+    <div class="row">
+      <div class="lb"><label for="sEv">明るさ(露出)</label><span id="vEv">±0</span></div>
+      <input type="range" id="sEv" min="-2" max="1" step="0.25" value="0">
+    </div>
+    <div class="row">
+      <div class="lb"><label for="sDecay">光跡の残り</label><span id="vDecay">100%</span></div>
+      <input type="range" id="sDecay" min="90" max="100" step="0.5" value="100">
+    </div>
+    <div class="row"><div class="lb">ピントを無限遠で固定<button class="sw on" id="swFocus" role="switch" aria-checked="true" aria-label="ピントを無限遠で固定"></button></div></div>
+    <div class="row"><div class="lb">ホワイトバランスを固定<button class="sw on" id="swWb" role="switch" aria-checked="true" aria-label="ホワイトバランスを固定"></button></div></div>
+    <div class="row"><div class="lb">三分割グリッド<button class="sw" id="swGrid" role="switch" aria-checked="false" aria-label="三分割グリッド"></button></div></div>
+    <div class="row"><div class="lb">手ブレ警告<button class="sw" id="swShake" role="switch" aria-checked="false" aria-label="手ブレ警告"></button></div></div>
+    <div id="caps">カメラ制御: <span id="capTxt">—</span></div>
+  </div>
+
+  <div id="presets">
+    <button data-p="single">打ち上げ<em>単発を1枚に</em></button>
+    <button data-p="starmine" class="on">スターマイン<em>連発向き</em></button>
+    <button data-p="set">仕掛け花火<em>ナイヤガラ</em></button>
+  </div>
+
+  <div id="shutterRow">
+    <div id="hint">シャッターを<b>押している間</b>だけ光を重ねます。<br>短くタップすると上限秒数まで撮り続けます。</div>
+    <button id="shutter" aria-label="撮影"></button>
+    <div></div>
+  </div>
+
+  <div id="pickWrap">
+    <button id="pick">🖼 写真をえらぶ</button>
+    <div id="pickNote">複数えらぶと比較明合成で1枚にまとめます。<br>1枚だけなら仕上げ調整だけかけます。</div>
+    <input type="file" id="file" accept="image/*" multiple hidden>
+  </div>
+</div>
+
+<div id="review">
+  <div id="rvHead">
+    <div class="t">🎆 仕上げ</div>
+    <div class="s" id="rvInfo"></div>
+  </div>
+  <div id="rvStage"><canvas id="out"></canvas></div>
+  <div id="rvCtl">
+    <div class="row">
+      <div class="lb"><label for="aHaze">かぶり除去(夜空の浮きをとる)</label><span id="vHaze">70%</span></div>
+      <input type="range" id="aHaze" min="0" max="100" step="1" value="70">
+    </div>
+    <div class="row">
+      <div class="lb"><label for="aBright">明るさ</label><span id="vBright">±0</span></div>
+      <input type="range" id="aBright" min="-50" max="50" step="1" value="0">
+    </div>
+    <div class="row">
+      <div class="lb"><label for="aContrast">コントラスト</label><span id="vContrast">±0</span></div>
+      <input type="range" id="aContrast" min="-50" max="50" step="1" value="0">
+    </div>
+    <div class="row">
+      <div class="lb"><label for="aSat">鮮やかさ</label><span id="vSat">+10</span></div>
+      <input type="range" id="aSat" min="-50" max="80" step="1" value="10">
+    </div>
+    <div style="text-align:center"><button id="reset">調整をリセット</button></div>
+    <div id="rvBtns">
+      <button id="again">↩ 撮り直す</button>
+      <button id="save">⬇ 保存する</button>
+    </div>
+    <div id="saveNote">保存できないときは、画像を長押しして「"写真"に追加」でも保存できます。</div>
+  </div>
+</div>
+
+<div id="help"><div id="helpBox">
+  <h2>🎆 花火をきれいに撮るコツ</h2>
+  <ul>
+    <li><b>端末を固定する。</b>手すり・三脚・カバンの上など。合成中に動くと光跡が二重になります</li>
+    <li><b>打ち上がる音が聞こえたらシャッター。</b>開いてから押すと間に合いません</li>
+    <li><b>横位置で空を広めに。</b>花火は思ったよりずっと大きく開きます</li>
+    <li><b>白く飛ぶときは⚙の「明るさ」をマイナスに。</b>暗すぎるときは仕上げで持ち上げられます</li>
+    <li>連発で真っ白になるときは<b>「光跡の残り」を下げる</b>と、古い光から消えていきます</li>
+  </ul>
+  <button class="btn" id="helpClose">とじる</button>
+</div></div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const clamp = (v,a,b) => v < a ? a : v > b ? b : v;
+
+/* ============================================================
+   状態
+   ============================================================ */
+const PRESETS = {
+  single:   { max: 4, decay: 100 },
+  starmine: { max: 8, decay: 98.5 },
+  set:      { max: 6, decay: 97 },
+};
+const S = {
+  mode:'live', preset:'starmine', adv:false,
+  max:8, ev:0, decay:100,
+  focus:true, wb:true, grid:false, shake:false,
+};
+const SAVE_KEY = 'hanabi.settings.v1';
+
+function loadSettings(){
+  try{
+    const o = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+    for(const k of ['preset','adv','max','ev','decay','focus','wb','grid','shake']){
+      if(o[k] !== undefined) S[k] = o[k];
+    }
+  }catch(e){}
+}
+function saveSettings(){
+  try{
+    const o = {};
+    for(const k of ['preset','adv','max','ev','decay','focus','wb','grid','shake']) o[k] = S[k];
+    localStorage.setItem(SAVE_KEY, JSON.stringify(o));
+  }catch(e){}
+}
+
+let toastTimer = 0;
+function toast(text){
+  const t = $('toast');
+  t.textContent = text; t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 2200);
+}
+
+/* ============================================================
+   カメラ
+   ============================================================ */
+const video = $('video');
+const liveCanvas = $('live');
+const liveCtx = liveCanvas.getContext('2d', { willReadFrequently:false });
+let stream = null, track = null, caps = {};
+let camReady = false;
+const applied = { exposure:null, focus:null, wb:null };
+
+function showMsg(html, btnText, btnFn){
+  const m = $('msg');
+  m.classList.remove('hide');
+  m.innerHTML = '';
+  const d = document.createElement('div');
+  d.innerHTML = html;
+  m.appendChild(d);
+  if(btnText){
+    const b = document.createElement('button');
+    b.className = 'btn'; b.textContent = btnText;
+    b.addEventListener('click', btnFn);
+    m.appendChild(b);
+  }
+}
+const hideMsg = () => $('msg').classList.add('hide');
+
+async function startCamera(){
+  if(S.mode !== 'live') return;
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    camReady = false;
+    showMsg('<b>このブラウザではカメラを使えません</b>「🖼 写真から」なら、撮影済みの写真を合成できます。');
+    return;
+  }
+  if(!window.isSecureContext){
+    camReady = false;
+    showMsg('<b>カメラには https の公開URLが必要です</b>ファイルを直接開いた状態ではカメラを起動できません。<br>「🖼 写真から」は今のままでも使えます。');
+    return;
+  }
+  showMsg('<b>カメラを準備しています…</b>許可を求められたら「許可」を選んでください。');
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({
+      video:{ facingMode:{ ideal:'environment' }, width:{ ideal:1920 }, height:{ ideal:1080 }, frameRate:{ ideal:30 } },
+      audio:false,
+    });
+  }catch(err){
+    camReady = false;
+    const denied = err && (err.name === 'NotAllowedError' || err.name === 'SecurityError');
+    showMsg(denied
+      ? '<b>カメラの使用が許可されていません</b>ブラウザの設定からこのページのカメラを許可すると撮影できます。'
+      : '<b>カメラを起動できませんでした</b>他のアプリがカメラを使っていないか確認してください。',
+      'もう一度ためす', () => startCamera());
+    return;
+  }
+  video.srcObject = stream;
+  try{ await video.play(); }catch(e){}
+  track = stream.getVideoTracks()[0];
+  caps = (track && track.getCapabilities) ? (track.getCapabilities() || {}) : {};
+  camReady = true;
+  hideMsg();
+  layoutGrid();
+  await tuneCamera();
+}
+
+/* グリッドはカメラ映像の表示範囲(レターボックスの内側)に合わせる */
+function layoutGrid(){
+  const el = $('grid'), stage = $('stage');
+  const w = video.videoWidth, h = video.videoHeight;
+  if(!w || !h || S.mode !== 'live'){ el.style.cssText = ''; return; }
+  const sw = stage.clientWidth, sh = stage.clientHeight;
+  const s = Math.min(sw / w, sh / h);
+  const dw = w * s, dh = h * s;
+  el.style.left = ((sw - dw) / 2) + 'px';
+  el.style.top = ((sh - dh) / 2) + 'px';
+  el.style.right = 'auto'; el.style.bottom = 'auto';
+  el.style.width = dw + 'px'; el.style.height = dh + 'px';
+}
+video.addEventListener('loadedmetadata', layoutGrid);
+window.addEventListener('resize', layoutGrid);
+window.addEventListener('orientationchange', () => setTimeout(layoutGrid, 300));
+
+function stopCamera(){
+  if(stream){ stream.getTracks().forEach(t => t.stop()); stream = null; track = null; }
+  camReady = false;
+}
+
+/* 端末が対応している制御だけを適用する。どれが効いたかは詳細モードに表示する */
+async function tuneCamera(){
+  applied.exposure = applied.focus = applied.wb = null;
+  if(!track || !track.applyConstraints){ renderCaps(); return; }
+  const adv = {};
+
+  if(S.focus && Array.isArray(caps.focusMode) && caps.focusMode.includes('manual') && caps.focusDistance){
+    adv.focusMode = 'manual';
+    adv.focusDistance = caps.focusDistance.max;   // 無限遠側に寄せる
+    applied.focus = 'manual';
+  }else if(Array.isArray(caps.focusMode) && caps.focusMode.includes('continuous')){
+    adv.focusMode = 'continuous';
+    applied.focus = 'auto';
+  }
+
+  if(S.wb && Array.isArray(caps.whiteBalanceMode) && caps.whiteBalanceMode.includes('manual')){
+    adv.whiteBalanceMode = 'manual';
+    if(caps.colorTemperature){
+      adv.colorTemperature = clamp(4200, caps.colorTemperature.min, caps.colorTemperature.max);
+    }
+    applied.wb = 'manual';
+  }
+
+  // 露出: 手動が使えるなら短めシャッター＋低ISOで白飛びを抑える
+  if(Array.isArray(caps.exposureMode) && caps.exposureMode.includes('manual') && caps.exposureTime){
+    adv.exposureMode = 'manual';
+    const et = caps.exposureTime;
+    // exposureTime は 100µs 単位。1/30秒 = 333 を基準に、明るさ設定を段数として掛ける
+    const target = 333 * Math.pow(2, S.ev);
+    adv.exposureTime = clamp(target, et.min, et.max);
+    if(caps.iso) adv.iso = clamp(caps.iso.min * 2, caps.iso.min, caps.iso.max);
+    applied.exposure = 'manual';
+  }else if(caps.exposureCompensation){
+    const ec = caps.exposureCompensation;
+    adv.exposureCompensation = clamp(S.ev, ec.min, ec.max);
+    applied.exposure = 'ev';
+  }
+
+  if(Object.keys(adv).length){
+    try{ await track.applyConstraints({ advanced:[adv] }); }
+    catch(e){
+      // まとめて弾かれる端末があるので、1項目ずつ入れ直す
+      for(const k of Object.keys(adv)){
+        try{ await track.applyConstraints({ advanced:[{ [k]:adv[k] }] }); }
+        catch(e2){
+          if(k === 'exposureMode' || k === 'exposureCompensation') applied.exposure = null;
+          if(k === 'focusMode') applied.focus = null;
+          if(k === 'whiteBalanceMode') applied.wb = null;
+        }
+      }
+    }
+  }
+  renderCaps();
+}
+
+/* 露出制御が効かない端末では、取り込み時にデジタルで暗くして白飛びを抑える */
+function digitalGain(){
+  return applied.exposure ? 1 : clamp(Math.pow(2, S.ev), 0.25, 1);
+}
+
+function renderCaps(){
+  const mark = (label, v, okText) =>
+    `<b>${label}</b><span class="${v ? 'ok' : 'ng'}">${v ? (okText || '◯') : '×'}</span>`;
+  $('capTxt').innerHTML = camReady
+    ? [
+        mark('露出 ', applied.exposure, applied.exposure === 'manual' ? '手動◯' : '補正◯'),
+        mark('ピント ', applied.focus === 'manual', ''),
+        mark('WB ', applied.wb === 'manual', ''),
+      ].join(' / ') + (applied.exposure ? '' : '<br>露出制御が使えないため、明るさは取り込み時に調整します')
+    : '—(カメラ未使用)';
+}
+
+/* ============================================================
+   ライブ合成(比較明合成)
+   ============================================================ */
+let rec = false, holdMode = false, recStart = 0, frames = 0, raf = 0;
+let pressAt = 0;
+const CANVAS_FILTER_OK = (() => {
+  const c = document.createElement('canvas').getContext('2d');
+  c.filter = 'brightness(0.5)';
+  return c.filter === 'brightness(0.5)';
+})();
+
+function beginRec(){
+  if(!camReady || rec) return;
+  const w = video.videoWidth, h = video.videoHeight;
+  if(!w || !h){ toast('カメラの準備中です'); return; }
+  liveCanvas.width = w; liveCanvas.height = h;
+  liveCtx.globalCompositeOperation = 'source-over';
+  liveCtx.filter = 'none';
+  liveCtx.fillStyle = '#000';
+  liveCtx.fillRect(0, 0, w, h);
+  rec = true; frames = 0; recStart = performance.now();
+  document.body.classList.add('rec');
+  $('shutter').classList.add('on');
+  shakePeak = 0;
+  raf = requestAnimationFrame(tick);
+}
+
+function tick(){
+  if(!rec) return;
+  const w = liveCanvas.width, h = liveCanvas.height;
+  const elapsed = (performance.now() - recStart) / 1000;
+
+  if(S.decay < 100){
+    // 直前までの合成結果をわずかに暗くする = 古い光跡から順に消える
+    const f = Math.round(255 * (S.decay / 100));
+    liveCtx.globalCompositeOperation = 'multiply';
+    liveCtx.fillStyle = `rgb(${f},${f},${f})`;
+    liveCtx.fillRect(0, 0, w, h);
+  }
+
+  const g = digitalGain();
+  liveCtx.globalCompositeOperation = 'lighten';
+  // filter が使えない環境(古い Safari)では、重ねる光の量を alpha で減らして代用する
+  if(g !== 1){
+    if(CANVAS_FILTER_OK) liveCtx.filter = `brightness(${g})`;
+    else liveCtx.globalAlpha = g;
+  }
+  try{ liveCtx.drawImage(video, 0, 0, w, h); }catch(e){}
+  liveCtx.filter = 'none';
+  liveCtx.globalAlpha = 1;
+  frames++;
+
+  $('recTime').textContent = elapsed.toFixed(1) + 's';
+  $('recFrames').textContent = frames + 'コマ';
+
+  if(elapsed >= S.max){ endRec(); return; }
+  raf = requestAnimationFrame(tick);
+}
+
+function endRec(){
+  if(!rec) return;
+  rec = false; holdMode = false;
+  cancelAnimationFrame(raf);
+  document.body.classList.remove('rec', 'shaking');
+  $('shutter').classList.remove('on');
+  const secs = (performance.now() - recStart) / 1000;
+  if(frames < 2){ toast('もう少し長く押してください'); return; }
+  openReview(liveCanvas, `${secs.toFixed(1)}秒 / ${frames}コマ合成`);
+}
+
+/* シャッター: 押しっぱなしで合成、短いタップなら上限秒数まで撮り続ける */
+const shutter = $('shutter');
+shutter.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  if(rec && holdMode){ endRec(); return; }   // 撮りっぱなし中のタップで停止
+  pressAt = performance.now();
+  beginRec();
+});
+const releaseShutter = e => {
+  if(e) e.preventDefault();
+  if(!rec) return;
+  if(performance.now() - pressAt < 320){ holdMode = true; return; }  // タップ扱い
+  endRec();
+};
+shutter.addEventListener('pointerup', releaseShutter);
+shutter.addEventListener('pointercancel', releaseShutter);
+shutter.addEventListener('contextmenu', e => e.preventDefault());
+
+/* ============================================================
+   手ブレ警告(加速度センサー)
+   ============================================================ */
+let shakePeak = 0, shakeHideTimer = 0;
+function onMotion(e){
+  if(!rec) return;
+  const a = e.accelerationIncludingGravity || e.acceleration;
+  if(!a) return;
+  const m = Math.hypot(a.x || 0, a.y || 0, a.z || 0);
+  if(shakePeak === 0){ shakePeak = m; return; }
+  const d = Math.abs(m - shakePeak);
+  shakePeak = shakePeak * 0.85 + m * 0.15;
+  if(d > 1.6){
+    document.body.classList.add('shaking');
+    clearTimeout(shakeHideTimer);
+    shakeHideTimer = setTimeout(() => document.body.classList.remove('shaking'), 900);
+  }
+}
+async function setShake(on){
+  if(on && typeof DeviceMotionEvent !== 'undefined' && DeviceMotionEvent.requestPermission){
+    try{
+      const r = await DeviceMotionEvent.requestPermission();
+      if(r !== 'granted'){ toast('センサーの利用が許可されませんでした'); return false; }
+    }catch(e){ toast('この端末では手ブレ警告を使えません'); return false; }
+  }
+  if(on) window.addEventListener('devicemotion', onMotion);
+  else { window.removeEventListener('devicemotion', onMotion); document.body.classList.remove('shaking'); }
+  return true;
+}
+
+/* ============================================================
+   写真から合成
+   ============================================================ */
+const MAX_SIDE = 3000;
+
+async function loadBitmap(file){
+  if(window.createImageBitmap){
+    try{ return await createImageBitmap(file, { imageOrientation:'from-image' }); }
+    catch(e){
+      try{ return await createImageBitmap(file); }catch(e2){}
+    }
+  }
+  return await new Promise((res, rej) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => { URL.revokeObjectURL(url); res(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('load failed')); };
+    img.src = url;
+  });
+}
+
+async function mergeFiles(files){
+  const list = Array.from(files).filter(f => f.type.startsWith('image/'));
+  if(!list.length){ toast('画像を選んでください'); return; }
+  toast(list.length > 1 ? `${list.length}枚を合成しています…` : '読み込んでいます…');
+
+  let canvas = null, ctx = null, used = 0;
+  for(const f of list){
+    let bmp;
+    try{ bmp = await loadBitmap(f); }catch(e){ continue; }
+    const bw = bmp.width || bmp.naturalWidth, bh = bmp.height || bmp.naturalHeight;
+    if(!bw || !bh) continue;
+
+    if(!canvas){
+      const scale = Math.min(1, MAX_SIDE / Math.max(bw, bh));
+      canvas = document.createElement('canvas');
+      canvas.width = Math.round(bw * scale);
+      canvas.height = Math.round(bh * scale);
+      ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = 'lighten';
+    }
+    // 1枚目のサイズに合わせて、はみ出さないよう縮小して中央に重ねる
+    const s = Math.min(canvas.width / bw, canvas.height / bh);
+    const dw = bw * s, dh = bh * s;
+    ctx.drawImage(bmp, (canvas.width - dw) / 2, (canvas.height - dh) / 2, dw, dh);
+    if(bmp.close) bmp.close();
+    used++;
+  }
+  if(!canvas || !used){ toast('画像を読み込めませんでした'); return; }
+  openReview(canvas, used > 1 ? `${used}枚を比較明合成` : '1枚を仕上げ');
+}
+
+$('pick').addEventListener('click', () => $('file').click());
+$('file').addEventListener('change', e => {
+  const files = e.target.files;
+  if(files && files.length) mergeFiles(files);
+  e.target.value = '';
+});
+
+/* ============================================================
+   仕上げ(現像)
+   ============================================================ */
+const out = $('out');
+const outCtx = out.getContext('2d', { willReadFrequently:true });
+let master = null;            // 元解像度の合成結果
+let preview = null;           // 画面表示用の縮小版
+let autoBlack = [0, 0, 0];    // チャンネルごとの夜空の明るさ
+let autoScale = 1;
+const ADJ = { haze:70, bright:0, contrast:0, sat:10 };
+const ADJ_DEFAULT = { haze:70, bright:0, contrast:0, sat:10 };
+
+/* ヒストグラムから、夜空のかぶり(下位25%)と白飛び手前(上位0.5%)を求める */
+function analyze(src){
+  const w = 220, h = Math.max(1, Math.round(w * src.height / src.width));
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const cx = c.getContext('2d', { willReadFrequently:true });
+  cx.drawImage(src, 0, 0, w, h);
+  const d = cx.getImageData(0, 0, w, h).data;
+  const total = w * h;
+  const hist = [new Uint32Array(256), new Uint32Array(256), new Uint32Array(256)];
+  const lum = new Uint32Array(256);
+  for(let i = 0; i < d.length; i += 4){
+    hist[0][d[i]]++; hist[1][d[i+1]]++; hist[2][d[i+2]]++;
+    lum[Math.max(d[i], d[i+1], d[i+2])]++;
+  }
+  const pct = (arr, p) => {
+    const need = total * p;
+    let acc = 0;
+    for(let v = 0; v < 256; v++){ acc += arr[v]; if(acc >= need) return v; }
+    return 255;
+  };
+  autoBlack = [pct(hist[0], 0.25), pct(hist[1], 0.25), pct(hist[2], 0.25)];
+  const white = pct(lum, 0.995);
+  const base = Math.max(1, white - Math.max(...autoBlack));
+  autoScale = clamp(255 / base, 1, 1.6);   // 伸ばしすぎると白飛びするので上限をかける
+}
+
+/* トーンカーブを 256段のLUT にしておき、描画は1パスで済ませる */
+function buildLUT(ch){
+  const lut = new Uint8ClampedArray(256);
+  const black = autoBlack[ch] * (ADJ.haze / 100);
+  const gamma = Math.pow(2, -ADJ.bright / 60);
+  const contrast = 1 + ADJ.contrast / 70;
+  for(let i = 0; i < 256; i++){
+    let v = (i - black) * autoScale;
+    v = v < 0 ? 0 : v > 255 ? 255 : v;
+    v = Math.pow(v / 255, gamma) * 255;
+    v = (v - 128) * contrast + 128;
+    lut[i] = v;
+  }
+  return lut;
+}
+
+function develop(src, dst){
+  dst.width = src.width; dst.height = src.height;
+  const cx = dst.getContext('2d', { willReadFrequently:true });
+  cx.globalCompositeOperation = 'source-over';
+  cx.filter = 'none';
+  cx.drawImage(src, 0, 0);
+  const img = cx.getImageData(0, 0, dst.width, dst.height);
+  const d = img.data;
+  const lr = buildLUT(0), lg = buildLUT(1), lb = buildLUT(2);
+  const sat = 1 + ADJ.sat / 100;
+  for(let i = 0; i < d.length; i += 4){
+    let r = lr[d[i]], g = lg[d[i+1]], b = lb[d[i+2]];
+    if(sat !== 1){
+      const y = 0.299 * r + 0.587 * g + 0.114 * b;
+      r = y + (r - y) * sat; g = y + (g - y) * sat; b = y + (b - y) * sat;
+    }
+    d[i] = r; d[i+1] = g; d[i+2] = b;
+  }
+  cx.putImageData(img, 0, 0);
+}
+
+function renderPreview(){
+  if(!preview) return;
+  develop(preview, out);
+}
+
+function openReview(srcCanvas, info){
+  // 合成結果を退避(ライブキャンバスは次の撮影で上書きされるため)
+  master = document.createElement('canvas');
+  master.width = srcCanvas.width; master.height = srcCanvas.height;
+  master.getContext('2d').drawImage(srcCanvas, 0, 0);
+
+  const scale = Math.min(1, 1400 / Math.max(master.width, master.height));
+  preview = document.createElement('canvas');
+  preview.width = Math.max(1, Math.round(master.width * scale));
+  preview.height = Math.max(1, Math.round(master.height * scale));
+  preview.getContext('2d').drawImage(master, 0, 0, preview.width, preview.height);
+
+  analyze(master);
+  Object.assign(ADJ, ADJ_DEFAULT);
+  syncAdjustUI();
+  renderPreview();
+  $('rvInfo').textContent = `${info} ・ ${master.width}×${master.height}`;
+  $('review').classList.add('on');
+}
+
+function closeReview(){
+  $('review').classList.remove('on');
+  master = preview = null;
+}
+
+function syncAdjustUI(){
+  $('aHaze').value = ADJ.haze;     $('vHaze').textContent = ADJ.haze + '%';
+  $('aBright').value = ADJ.bright; $('vBright').textContent = (ADJ.bright > 0 ? '+' : '') + (ADJ.bright || '±0');
+  $('aContrast').value = ADJ.contrast; $('vContrast').textContent = (ADJ.contrast > 0 ? '+' : '') + (ADJ.contrast || '±0');
+  $('aSat').value = ADJ.sat;       $('vSat').textContent = (ADJ.sat > 0 ? '+' : '') + (ADJ.sat || '±0');
+}
+
+let previewTimer = 0;
+function onAdjust(key, el, label, fmt){
+  const apply = () => {
+    ADJ[key] = Number(el.value);
+    $(label).textContent = fmt(ADJ[key]);
+    clearTimeout(previewTimer);
+    previewTimer = setTimeout(renderPreview, 40);
+  };
+  el.addEventListener('input', apply);
+}
+const signed = v => (v > 0 ? '+' : '') + (v || '±0');
+onAdjust('haze', $('aHaze'), 'vHaze', v => v + '%');
+onAdjust('bright', $('aBright'), 'vBright', signed);
+onAdjust('contrast', $('aContrast'), 'vContrast', signed);
+onAdjust('sat', $('aSat'), 'vSat', signed);
+
+$('reset').addEventListener('click', () => {
+  Object.assign(ADJ, ADJ_DEFAULT);
+  syncAdjustUI();
+  renderPreview();
+});
+$('again').addEventListener('click', closeReview);
+
+$('save').addEventListener('click', () => {
+  if(!master) return;
+  const full = document.createElement('canvas');
+  develop(master, full);          // 保存時だけ元解像度で現像する
+  const now = new Date();
+  const p = n => String(n).padStart(2, '0');
+  const name = `hanabi-${now.getFullYear()}${p(now.getMonth()+1)}${p(now.getDate())}-`
+             + `${p(now.getHours())}${p(now.getMinutes())}${p(now.getSeconds())}.jpg`;
+  full.toBlob(blob => {
+    if(!blob){ toast('保存に失敗しました'); return; }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    toast('保存しました: ' + name);
+  }, 'image/jpeg', 0.92);
+});
+
+/* ============================================================
+   設定UI
+   ============================================================ */
+function applyPreset(name){
+  const p = PRESETS[name];
+  if(!p) return;
+  S.preset = name; S.max = p.max; S.decay = p.decay;
+  syncSettingsUI();
+  saveSettings();
+}
+
+function syncSettingsUI(){
+  document.querySelectorAll('#presets button').forEach(b => b.classList.toggle('on', b.dataset.p === S.preset));
+  $('sMax').value = S.max;       $('vMax').textContent = S.max + '秒';
+  $('sEv').value = S.ev;         $('vEv').textContent = S.ev === 0 ? '±0' : (S.ev > 0 ? '+' : '') + S.ev + '段';
+  $('sDecay').value = S.decay;   $('vDecay').textContent = S.decay + '%';
+  $('swFocus').classList.toggle('on', S.focus);
+  $('swWb').classList.toggle('on', S.wb);
+  $('swGrid').classList.toggle('on', S.grid);
+  $('swShake').classList.toggle('on', S.shake);
+  document.body.classList.toggle('adv', S.adv);
+  document.body.classList.toggle('grid', S.grid);
+  $('btnAdv').classList.toggle('on', S.adv);
+}
+
+document.querySelectorAll('#presets button').forEach(b => {
+  b.addEventListener('click', () => applyPreset(b.dataset.p));
+});
+
+$('sMax').addEventListener('input', e => {
+  S.max = Number(e.target.value); $('vMax').textContent = S.max + '秒'; saveSettings();
+});
+$('sDecay').addEventListener('input', e => {
+  S.decay = Number(e.target.value); $('vDecay').textContent = S.decay + '%'; saveSettings();
+});
+let evTimer = 0;
+$('sEv').addEventListener('input', e => {
+  S.ev = Number(e.target.value);
+  $('vEv').textContent = S.ev === 0 ? '±0' : (S.ev > 0 ? '+' : '') + S.ev + '段';
+  clearTimeout(evTimer);
+  evTimer = setTimeout(() => { tuneCamera(); saveSettings(); }, 180);
+});
+
+const toggle = (el, key, after) => {
+  // 行全体をタップ対象にする(暗い会場では小さなつまみを狙いにくいため)
+  const target = $(el).closest('.row') || $(el);
+  target.addEventListener('click', async () => {
+    const next = !S[key];
+    if(after){
+      const ok = await after(next);
+      if(ok === false) return;
+    }
+    S[key] = next;
+    $(el).setAttribute('aria-checked', String(next));
+    syncSettingsUI();
+    saveSettings();
+  });
+};
+toggle('swFocus', 'focus', () => { setTimeout(tuneCamera, 0); });
+toggle('swWb', 'wb', () => { setTimeout(tuneCamera, 0); });
+toggle('swGrid', 'grid');
+toggle('swShake', 'shake', next => setShake(next));
+
+$('btnAdv').addEventListener('click', () => { S.adv = !S.adv; syncSettingsUI(); saveSettings(); });
+
+/* モード切替 */
+function setMode(m){
+  S.mode = m;
+  $('mLive').classList.toggle('on', m === 'live');
+  $('mImport').classList.toggle('on', m === 'import');
+  document.body.classList.toggle('import', m === 'import');
+  if(m === 'live'){
+    if(!camReady) startCamera();
+  }else{
+    if(rec) endRec();
+    stopCamera();
+    showMsg('<b>🖼 写真から合成</b>撮影済みの花火写真を選ぶと、複数枚を1枚に重ねて<br>夜空のかぶりをとった状態に仕上げます。');
+    renderCaps();
+  }
+}
+$('mLive').addEventListener('click', () => setMode('live'));
+$('mImport').addEventListener('click', () => setMode('import'));
+
+/* ヘルプ */
+const HELP_KEY = 'hanabi.helpSeen.v1';
+$('btnHelp').addEventListener('click', () => $('help').classList.add('on'));
+$('helpClose').addEventListener('click', () => {
+  $('help').classList.remove('on');
+  try{ localStorage.setItem(HELP_KEY, '1'); }catch(e){}
+});
+
+/* 画面を離れたら撮影とカメラを止める(発熱・電池対策) */
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden){
+    if(rec) endRec();
+    stopCamera();
+  }else if(S.mode === 'live' && !camReady && !$('review').classList.contains('on')){
+    startCamera();
+  }
+});
+
+/* ============================================================
+   起動
+   ============================================================ */
+loadSettings();
+syncSettingsUI();
+if(S.shake) setShake(true);
+try{ if(!localStorage.getItem(HELP_KEY)) $('help').classList.add('on'); }catch(e){}
+setMode('live');
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
