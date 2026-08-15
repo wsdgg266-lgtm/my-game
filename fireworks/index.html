@@ -133,6 +133,9 @@
   #save{ background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#1a0d06; }
   #saveNote{ font-size:10.5px; color:var(--sub); text-align:center; margin-top:8px; line-height:1.5; }
   #reset{ font-size:11px; color:var(--sub); text-decoration:underline; padding:4px 0; }
+  /* 煙が見つからなかった写真では、効かないスライダーだと分かるように落とす */
+  #smokeRow.off{ opacity:.45; }
+  #smokeRow.off input{ pointer-events:none; }
 
   /* ===== ヘルプ ===== */
   #help{ position:fixed; inset:0; background:rgba(4,5,12,.86); backdrop-filter:blur(4px); z-index:60;
@@ -226,6 +229,10 @@
       <div class="lb"><label for="aHaze">かぶり除去(夜空の浮きをとる)</label><span id="vHaze">70%</span></div>
       <input type="range" id="aHaze" min="0" max="100" step="1" value="70">
     </div>
+    <div class="row" id="smokeRow">
+      <div class="lb"><label for="aSmoke">煙を消す(白くただよう煙をとる)</label><span id="vSmoke">50%</span></div>
+      <input type="range" id="aSmoke" min="0" max="100" step="1" value="50">
+    </div>
     <div class="row">
       <div class="lb"><label for="aBright">明るさ</label><span id="vBright">±0</span></div>
       <input type="range" id="aBright" min="-50" max="50" step="1" value="0">
@@ -255,6 +262,7 @@
     <li><b>横位置で空を広めに。</b>花火は思ったよりずっと大きく開きます</li>
     <li><b>白く飛ぶときは⚙の「明るさ」をマイナスに。</b>暗すぎるときは仕上げで持ち上げられます</li>
     <li>連発で真っ白になるときは<b>「光跡の残り」を下げる</b>と、古い光から消えていきます</li>
+    <li><b>煙で白くかすんだら、仕上げの「煙を消す」を上げる。</b>風のない日や連発のあとはどうしても煙が残ります</li>
   </ul>
   <button class="btn" id="helpClose">とじる</button>
 </div></div>
@@ -648,10 +656,13 @@ const out = $('out');
 const outCtx = out.getContext('2d', { willReadFrequently:true });
 let master = null;            // 元解像度の合成結果
 let preview = null;           // 画面表示用の縮小版
-let autoBlack = [0, 0, 0];    // チャンネルごとの夜空の明るさ
+let autoBlack = [0, 0, 0];    // チャンネルごとの夜空の明るさ(画面全体)
+let autoWhite = 255;
 let autoScale = 1;
-const ADJ = { haze:70, bright:0, contrast:0, sat:10 };
-const ADJ_DEFAULT = { haze:70, bright:0, contrast:0, sat:10 };
+let smokeGrid = null;         // 場所ごとの煙の濃さ(粗いグリッド)
+let smokeMap = null;          // それを表示サイズに引き伸ばしたもの
+const ADJ = { haze:70, smoke:50, bright:0, contrast:0, sat:10 };
+const ADJ_DEFAULT = { haze:70, smoke:50, bright:0, contrast:0, sat:10 };
 
 /* ヒストグラムから、夜空のかぶり(下位25%)と白飛び手前(上位0.5%)を求める */
 function analyze(src){
@@ -675,9 +686,137 @@ function analyze(src){
     return 255;
   };
   autoBlack = [pct(hist[0], 0.25), pct(hist[1], 0.25), pct(hist[2], 0.25)];
-  const white = pct(lum, 0.995);
-  const base = Math.max(1, white - Math.max(...autoBlack));
+  autoWhite = pct(lum, 0.995);
+  const base = Math.max(1, autoWhite - Math.max(...autoBlack));
   autoScale = clamp(255 / base, 1, 1.6);   // 伸ばしすぎると白飛びするので上限をかける
+}
+
+/* ============================================================
+   煙の検出
+   比較明合成は「明るいほうを残す」ので、花火に照らされて明るくなった煙は
+   一度写り込むと最後まで消えない。ただし煙は、
+     ・光跡のように細くなく、ぼんやり広い範囲を覆う
+     ・その範囲の中では暗いほうの画素まで底上げされている
+   という性質があるので、画面をマス目に区切って「そのマスの暗いほうの明るさ」を
+   調べると、花火の光には反応せずに煙の濃さだけを拾える。
+   全体のかぶり(autoBlack)を超えたぶんが、その場所の煙の量になる。
+   ============================================================ */
+const SMOKE_SAMPLE_W = 256;   // 解析に使う縮小幅
+const SMOKE_CELL = 8;         // 縮小画像上でのマスの大きさ
+
+function smoothGrid(g, w, h, passes){
+  const tmp = new Float32Array(g.length);
+  for(let p = 0; p < passes; p++){
+    for(let y = 0; y < h; y++){
+      for(let x = 0; x < w; x++){
+        for(let ch = 0; ch < 3; ch++){
+          let s = 0, n = 0;
+          for(let dy = -1; dy <= 1; dy++){
+            for(let dx = -1; dx <= 1; dx++){
+              const yy = y + dy, xx = x + dx;
+              if(yy < 0 || xx < 0 || yy >= h || xx >= w) continue;
+              s += g[(yy * w + xx) * 3 + ch]; n++;
+            }
+          }
+          tmp[(y * w + x) * 3 + ch] = s / n;
+        }
+      }
+    }
+    g.set(tmp);
+  }
+}
+
+function buildSmokeMap(src){
+  smokeGrid = null; smokeMap = null;
+  const sw = SMOKE_SAMPLE_W;
+  const sh = Math.max(1, Math.round(sw * src.height / src.width));
+  const c = document.createElement('canvas');
+  c.width = sw; c.height = sh;
+  const cx = c.getContext('2d', { willReadFrequently:true });
+  cx.drawImage(src, 0, 0, sw, sh);
+  const d = cx.getImageData(0, 0, sw, sh).data;
+
+  const gw = Math.max(2, Math.ceil(sw / SMOKE_CELL));
+  const gh = Math.max(2, Math.ceil(sh / SMOKE_CELL));
+  const grid = new Float32Array(gw * gh * 3);
+  const vals = [], lum = [];
+  for(let gy = 0; gy < gh; gy++){
+    for(let gx = 0; gx < gw; gx++){
+      const x0 = gx * SMOKE_CELL, y0 = gy * SMOKE_CELL;
+      const x1 = Math.min(sw, x0 + SMOKE_CELL), y1 = Math.min(sh, y0 + SMOKE_CELL);
+
+      // まずこのマスが「煙」か「花火そのもの」かを見分ける。
+      // 煙は一様に明るいので明暗差が小さく、花火は光と闇が同居するので差が大きい
+      lum.length = 0;
+      for(let y = y0; y < y1; y++){
+        for(let x = x0; x < x1; x++){
+          const i = (y * sw + x) * 4;
+          lum.push(Math.max(d[i], d[i+1], d[i+2]));
+        }
+      }
+      lum.sort((a, b) => a - b);
+      const lo = lum[Math.floor(lum.length * 0.1)] || 0;
+      const hi = lum[Math.floor(lum.length * 0.75)] || 0;
+      const gi = (gy * gw + gx) * 3;
+      if(hi - lo > 30){
+        // 花火が写っているマス。煙の量は周囲から埋める(この時点では0にしておく)
+        grid[gi] = autoBlack[0]; grid[gi+1] = autoBlack[1]; grid[gi+2] = autoBlack[2];
+        continue;
+      }
+      for(let ch = 0; ch < 3; ch++){
+        vals.length = 0;
+        for(let y = y0; y < y1; y++){
+          for(let x = x0; x < x1; x++) vals.push(d[(y * sw + x) * 4 + ch]);
+        }
+        vals.sort((a, b) => a - b);
+        // マス内の暗いほうの明るさ = そこにかかっている煙の濃さ
+        grid[gi + ch] = vals[Math.floor(vals.length * 0.1)] || 0;
+      }
+    }
+  }
+  // 花火のかたちに引きずられないよう、たっぷりならす
+  smoothGrid(grid, gw, gh, 3);
+
+  // 建物や観客席の明かりまで消してしまわないよう、引く量に上限をかける
+  const cap = Math.max(12, (autoWhite - Math.max(...autoBlack)) * 0.35);
+  const g2 = document.createElement('canvas');
+  g2.width = gw; g2.height = gh;
+  const gc = g2.getContext('2d');
+  const img = gc.createImageData(gw, gh);
+  let peak = 0;
+  for(let i = 0; i < gw * gh; i++){
+    for(let ch = 0; ch < 3; ch++){
+      const v = clamp(grid[i * 3 + ch] - autoBlack[ch], 0, cap);
+      img.data[i * 4 + ch] = v;
+      if(v > peak) peak = v;
+    }
+    img.data[i * 4 + 3] = 255;
+  }
+  gc.putImageData(img, 0, 0);
+  // ごく薄いムラしかないなら引いても見た目が変わらないので、スライダーごと無効にする
+  smokeGrid = peak >= 8 ? g2 : null;
+  return peak;
+}
+
+/* 粗いグリッドを描画サイズまで滑らかに引き伸ばす(2段階に分けるとムラが出にくい) */
+function getSmokeData(w, h){
+  if(!smokeGrid) return null;
+  if(smokeMap && smokeMap.w === w && smokeMap.h === h) return smokeMap.data;
+  const midW = Math.min(w, 320), midH = Math.max(1, Math.round(midW * h / w));
+  const mid = document.createElement('canvas');
+  mid.width = midW; mid.height = midH;
+  const mcx = mid.getContext('2d');
+  mcx.imageSmoothingEnabled = true; mcx.imageSmoothingQuality = 'high';
+  mcx.drawImage(smokeGrid, 0, 0, midW, midH);
+
+  const full = document.createElement('canvas');
+  full.width = w; full.height = h;
+  const fcx = full.getContext('2d', { willReadFrequently:true });
+  fcx.imageSmoothingEnabled = true; fcx.imageSmoothingQuality = 'high';
+  fcx.drawImage(mid, 0, 0, w, h);
+  const data = fcx.getImageData(0, 0, w, h).data;
+  if(w * h <= 3000000) smokeMap = { w, h, data };   // 保存時の原寸ぶんは持ち回らない
+  return data;
 }
 
 /* トーンカーブを 256段のLUT にしておき、描画は1パスで済ませる */
@@ -706,7 +845,14 @@ function develop(src, dst){
   const d = img.data;
   const lr = buildLUT(0), lg = buildLUT(1), lb = buildLUT(2);
   const sat = 1 + ADJ.sat / 100;
+  const sm = ADJ.smoke > 0 ? getSmokeData(dst.width, dst.height) : null;
+  const k = ADJ.smoke / 100;
   for(let i = 0; i < d.length; i += 4){
+    if(sm){
+      // その場所の煙のぶんだけ先に引いてから、いつものトーンカーブに通す
+      const r0 = d[i] - sm[i] * k, g0 = d[i+1] - sm[i+1] * k, b0 = d[i+2] - sm[i+2] * k;
+      d[i] = r0 > 0 ? r0 : 0; d[i+1] = g0 > 0 ? g0 : 0; d[i+2] = b0 > 0 ? b0 : 0;
+    }
     let r = lr[d[i]], g = lg[d[i+1]], b = lb[d[i+2]];
     if(sat !== 1){
       const y = 0.299 * r + 0.587 * g + 0.114 * b;
@@ -735,6 +881,7 @@ function openReview(srcCanvas, info){
   preview.getContext('2d').drawImage(master, 0, 0, preview.width, preview.height);
 
   analyze(master);
+  buildSmokeMap(master);
   Object.assign(ADJ, ADJ_DEFAULT);
   syncAdjustUI();
   renderPreview();
@@ -749,6 +896,8 @@ function closeReview(){
 
 function syncAdjustUI(){
   $('aHaze').value = ADJ.haze;     $('vHaze').textContent = ADJ.haze + '%';
+  $('aSmoke').value = ADJ.smoke;   $('vSmoke').textContent = smokeGrid ? ADJ.smoke + '%' : '煙なし';
+  $('smokeRow').classList.toggle('off', !smokeGrid);
   $('aBright').value = ADJ.bright; $('vBright').textContent = (ADJ.bright > 0 ? '+' : '') + (ADJ.bright || '±0');
   $('aContrast').value = ADJ.contrast; $('vContrast').textContent = (ADJ.contrast > 0 ? '+' : '') + (ADJ.contrast || '±0');
   $('aSat').value = ADJ.sat;       $('vSat').textContent = (ADJ.sat > 0 ? '+' : '') + (ADJ.sat || '±0');
@@ -766,6 +915,7 @@ function onAdjust(key, el, label, fmt){
 }
 const signed = v => (v > 0 ? '+' : '') + (v || '±0');
 onAdjust('haze', $('aHaze'), 'vHaze', v => v + '%');
+onAdjust('smoke', $('aSmoke'), 'vSmoke', v => smokeGrid ? v + '%' : '煙なし');
 onAdjust('bright', $('aBright'), 'vBright', signed);
 onAdjust('contrast', $('aContrast'), 'vContrast', signed);
 onAdjust('sat', $('aSat'), 'vSat', signed);
