@@ -1,0 +1,17 @@
+{
+  "name": "キタイベ！ - 北近畿のイベント＆チケット発売レーダー",
+  "short_name": "キタイベ",
+  "description": "北近畿(京都府北部・兵庫県北部)のイベントをジャンル別に探して、チケットの発売日を逃さないためのアプリ",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#140f1e",
+  "theme_color": "#140f1e",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

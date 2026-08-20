@@ -1,0 +1,249 @@
+{
+  "_readme": "キタイベ！のイベントデータ。すべて動作確認用のサンプルで、実在のイベントではありません。GitHub Actions で自動更新するか、手で書き換えて使ってください。sample:true を外すとアプリ内の「サンプル」表示が消えます。",
+  "updatedAt": "2026-08-20",
+  "events": [
+    {
+      "id": "sample-maizuru-hall-0912",
+      "sample": true,
+      "title": "【サンプル】舞鶴 秋の吹奏楽コンサート",
+      "genres": ["music"],
+      "start": "2026-09-12T18:30",
+      "venue": "サンプル文化ホール 大ホール",
+      "city": "舞鶴市",
+      "price": "全席指定 3,000円 / 学生 1,500円",
+      "needsTicket": true,
+      "sales": [
+        { "type": "general", "label": "一般発売", "opensAt": "2026-07-05T10:00", "lottery": false }
+      ]
+    },
+    {
+      "id": "sample-toyooka-live-1017",
+      "sample": true,
+      "title": "【サンプル】豊岡ホール 秋のワンマンライブ",
+      "genres": ["music"],
+      "start": "2026-10-17T18:00",
+      "venue": "サンプル市民会館",
+      "city": "豊岡市",
+      "price": "全席指定 6,800円",
+      "note": "先行3段階のサンプル。抽選先行は当落発表と入金期限つき",
+      "needsTicket": true,
+      "sales": [
+        { "type": "fc", "label": "ファンクラブ先行(抽選)", "opensAt": "2026-08-25T10:00", "closesAt": "2026-08-31T23:59", "lottery": true, "resultAt": "2026-09-04", "payBy": "2026-09-10" },
+        { "type": "presale", "label": "プレイガイド先行", "opensAt": "2026-09-12T10:00", "closesAt": "2026-09-18T23:59", "lottery": true, "resultAt": "2026-09-22", "payBy": "2026-09-28" },
+        { "type": "general", "label": "一般発売", "opensAt": "2026-09-26T10:00", "lottery": false }
+      ]
+    },
+    {
+      "id": "sample-kyotango-marathon-1103",
+      "sample": true,
+      "title": "【サンプル】京丹後シーサイドマラソン",
+      "genres": ["sports"],
+      "start": "2026-11-03T09:00",
+      "venue": "サンプル海浜公園 スタート地点",
+      "city": "京丹後市",
+      "price": "フル 8,000円 / ハーフ 5,000円",
+      "note": "大会エントリーも「受付」として発売レーダーに載るサンプル",
+      "needsTicket": true,
+      "sales": [
+        { "type": "entry", "label": "エントリー受付", "opensAt": "2026-08-22T10:00", "closesAt": "2026-09-30T23:59", "lottery": false }
+      ]
+    },
+    {
+      "id": "sample-fukuchiyama-art-1010",
+      "sample": true,
+      "title": "【サンプル】福知山 写真展「丹波の四季」",
+      "genres": ["art"],
+      "start": "2026-10-10T10:00",
+      "end": "2026-11-08T17:00",
+      "venue": "サンプル市立美術館",
+      "city": "福知山市",
+      "price": "前売 800円 / 当日 1,000円",
+      "needsTicket": true,
+      "sales": [
+        { "type": "general", "label": "前売券 発売", "opensAt": "2026-08-21T10:00", "closesAt": "2026-10-09T23:59", "lottery": false }
+      ]
+    },
+    {
+      "id": "sample-kameoka-rakugo-0920",
+      "sample": true,
+      "title": "【サンプル】亀岡 秋の落語会",
+      "genres": ["stage"],
+      "start": "2026-09-20T14:00",
+      "venue": "サンプル交流会館",
+      "city": "亀岡市",
+      "price": "全席自由 2,500円",
+      "needsTicket": true,
+      "sales": [
+        { "type": "general", "label": "一般発売", "opensAt": "2026-08-01T10:00", "lottery": false }
+      ]
+    },
+    {
+      "id": "sample-ayabe-workshop-1115",
+      "sample": true,
+      "title": "【サンプル】綾部 陶芸ワークショップ(全2回)",
+      "genres": ["exp", "art"],
+      "start": "2026-11-15T13:00",
+      "venue": "サンプル工房",
+      "city": "綾部市",
+      "price": "材料費込み 4,000円",
+      "note": "定員12名。予約受付も同じ仕組みで管理できるサンプル",
+      "needsTicket": true,
+      "sales": [
+        { "type": "reserve", "label": "予約受付", "opensAt": "2026-09-01T09:00", "closesAt": "2026-11-08T17:00", "lottery": false }
+      ]
+    },
+    {
+      "id": "sample-asago-classic-1205",
+      "sample": true,
+      "title": "【サンプル】朝来 冬のクラシックコンサート",
+      "genres": ["music"],
+      "start": "2026-12-05T15:00",
+      "venue": "サンプル文化センター",
+      "city": "朝来市",
+      "price": "全席指定 4,500円",
+      "needsTicket": true,
+      "sales": [
+        { "type": "presale", "label": "友の会先行", "opensAt": "2026-09-15T10:00", "closesAt": "2026-09-25T23:59", "lottery": true, "resultAt": "2026-09-29", "payBy": "2026-10-06" },
+        { "type": "general", "label": "一般発売", "opensAt": "2026-10-10T10:00", "lottery": false }
+      ]
+    },
+    {
+      "id": "sample-miyazu-asaichi-0906",
+      "sample": true,
+      "title": "【サンプル】宮津 港の朝市",
+      "genres": ["food"],
+      "start": "2026-09-06T07:00",
+      "end": "2026-09-06T12:00",
+      "venue": "サンプル漁港広場",
+      "city": "宮津市",
+      "price": "入場無料",
+      "needsTicket": false,
+      "sales": []
+    },
+    {
+      "id": "sample-tanbasasayama-food-0927",
+      "sample": true,
+      "title": "【サンプル】丹波篠山 秋の味覚マルシェ",
+      "genres": ["food", "exp"],
+      "start": "2026-09-27T10:00",
+      "end": "2026-09-27T16:00",
+      "venue": "サンプル城下広場",
+      "city": "丹波篠山市",
+      "price": "入場無料(飲食は有料)",
+      "needsTicket": false,
+      "sales": []
+    },
+    {
+      "id": "sample-tanba-sakagura-1108",
+      "sample": true,
+      "title": "【サンプル】丹波 酒蔵開き",
+      "genres": ["food", "exp"],
+      "start": "2026-11-08T10:00",
+      "end": "2026-11-08T16:00",
+      "venue": "サンプル酒造",
+      "city": "丹波市",
+      "price": "利き酒セット 1,500円(要予約)",
+      "needsTicket": true,
+      "sales": [
+        { "type": "reserve", "label": "利き酒セット予約", "opensAt": "2026-10-01T10:00", "closesAt": "2026-11-01T23:59", "lottery": false }
+      ]
+    },
+    {
+      "id": "sample-yabu-trail-1025",
+      "sample": true,
+      "title": "【サンプル】養父 山岳トレイルラン大会",
+      "genres": ["sports"],
+      "start": "2026-10-25T08:30",
+      "venue": "サンプル高原スキー場",
+      "city": "養父市",
+      "price": "ロング 7,000円 / ショート 4,500円",
+      "needsTicket": true,
+      "sales": [
+        { "type": "entry", "label": "エントリー受付(先着)", "opensAt": "2026-09-05T20:00", "closesAt": "2026-10-10T23:59", "lottery": false }
+      ]
+    },
+    {
+      "id": "sample-nantan-art-1122",
+      "sample": true,
+      "title": "【サンプル】南丹 現代アート企画展",
+      "genres": ["art"],
+      "start": "2026-11-22T10:00",
+      "end": "2026-12-20T17:00",
+      "venue": "サンプル文化博物館",
+      "city": "南丹市",
+      "price": "一般 1,200円",
+      "needsTicket": true,
+      "sales": [
+        { "type": "general", "label": "前売券 発売", "opensAt": "2026-10-15T10:00", "closesAt": "2026-11-21T23:59", "lottery": false }
+      ]
+    },
+    {
+      "id": "sample-yosano-matsuri-0823",
+      "sample": true,
+      "title": "【サンプル】与謝野 夏の終わり灯籠まつり",
+      "genres": ["matsuri", "trad"],
+      "start": "2026-08-23T18:00",
+      "end": "2026-08-23T21:00",
+      "venue": "サンプル河川敷",
+      "city": "与謝野町",
+      "price": "入場無料",
+      "needsTicket": false,
+      "sales": []
+    },
+    {
+      "id": "sample-kyotanba-food-0822",
+      "sample": true,
+      "title": "【サンプル】京丹波 きのこフェア",
+      "genres": ["food"],
+      "start": "2026-08-22T09:00",
+      "end": "2026-08-22T15:00",
+      "venue": "サンプル道の駅",
+      "city": "京丹波町",
+      "price": "入場無料",
+      "needsTicket": false,
+      "sales": []
+    },
+    {
+      "id": "sample-kami-kids-0913",
+      "sample": true,
+      "title": "【サンプル】香美 親子ふれあい水族館ナイト",
+      "genres": ["kids", "exp"],
+      "start": "2026-09-13T17:30",
+      "venue": "サンプル水族館",
+      "city": "香美町",
+      "price": "大人 1,800円 / 子ども 900円",
+      "needsTicket": true,
+      "sales": [
+        { "type": "reserve", "label": "予約受付", "opensAt": "2026-08-24T10:00", "closesAt": "2026-09-10T17:00", "lottery": false }
+      ]
+    },
+    {
+      "id": "sample-shinonsen-stage-1004",
+      "sample": true,
+      "title": "【サンプル】新温泉 秋のお笑いライブ",
+      "genres": ["stage"],
+      "start": "2026-10-04T14:00",
+      "venue": "サンプル町民センター",
+      "city": "新温泉町",
+      "price": "全席自由 3,200円",
+      "needsTicket": true,
+      "sales": [
+        { "type": "presale", "label": "先行販売", "opensAt": "2026-08-28T10:00", "closesAt": "2026-09-05T23:59", "lottery": false },
+        { "type": "general", "label": "一般発売", "opensAt": "2026-09-12T10:00", "lottery": false }
+      ]
+    },
+    {
+      "id": "sample-ine-illumi-1220",
+      "sample": true,
+      "title": "【サンプル】伊根 舟屋イルミネーション",
+      "genres": ["season"],
+      "start": "2026-12-20T17:00",
+      "end": "2027-01-12T21:00",
+      "venue": "サンプル舟屋群一帯",
+      "city": "伊根町",
+      "price": "入場無料",
+      "needsTicket": false,
+      "sales": []
+    }
+  ]
+}
