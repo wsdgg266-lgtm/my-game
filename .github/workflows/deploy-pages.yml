@@ -1,5 +1,8 @@
 name: Deploy to GitHub Pages
 
+# github-pages 環境のブランチ制限により、デプロイはデフォルトブランチからしか成功しない。
+# 機能ブランチをここに足すと push のたびに失敗する実行が残るだけなので入れないこと
+# (機能ブランチの内容はデフォルトブランチにマージした時点で公開される)。
 on:
   push:
     branches:
@@ -7,7 +10,6 @@ on:
       - claude/shopping-reminder-app-7xpyg5
       - claude/sports-schedule-results-app-th4n6j
       - claude/fashion-app-spec-kr6a32
-      - claude/kita-kinki-event-app-5g4fi0
   workflow_dispatch:
 
 permissions:
