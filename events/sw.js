@@ -1,7 +1,7 @@
 // キタイベ！ Service Worker
 // アプリ本体(シェル)とイベントデータをキャッシュし、オフラインでも開けるようにする。
 // events.json は「まずネットワーク、だめならキャッシュ」で常に新しい方を出す。
-const CACHE = 'kitaibe-shell-v2';
+const CACHE = 'kitaibe-shell-v3';
 const SHELL = [
   './',
   './index.html',

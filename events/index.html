@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#140f1e">
+<meta name="theme-color" content="#fff9f3">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,27 +14,30 @@
 <title>キタイベ！ - 北近畿のイベント＆チケット発売レーダー</title>
 <style>
   :root {
-    --bg: #140f1e;
-    --card: #1e1830;
-    --card2: #271f3e;
-    --text: #f0ebfa;
-    --text-sub: #9a90b5;
-    --line: rgba(255,255,255,.08);
-    --line2: rgba(255,255,255,.16);
-    --am: #ffb020;
-    --pk: #ff4d94;
-    --grad: linear-gradient(135deg, #ffb020, #ff4d94);
-    --ink-on-grad: #2a1400;
-    --ok: #3ddc84;
-    --hot: #ff4d6d;
-    --cy: #3ee6ff;
+    --bg: #fff9f3;
+    --card: #ffffff;
+    --card2: #fff2e4;
+    --text: #2c2033;
+    --text-sub: #6b5a76;
+    --line: rgba(60,40,70,.11);
+    --line2: rgba(60,40,70,.19);
+    --am: #e07d00;
+    --pk: #e0327b;
+    --grad: linear-gradient(135deg, #ff9412, #ff3d88);
+    /* 文字に使う用。白地でも沈まないよう深めにする */
+    --grad-deep: linear-gradient(135deg, #ef7a00, #e0327b);
+    --ink-on-grad: #4a1200;
+    --ok: #0f9257;
+    --hot: #dc2f4d;
+    --cy: #0b8fb5;
+    --shadow: 0 1px 3px rgba(70,45,80,.07), 0 1px 1px rgba(70,45,80,.04);
     --radius: 16px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body {
     font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
-    background: radial-gradient(900px 480px at 50% -200px, #3a2350 0%, var(--bg) 62%) fixed, var(--bg);
+    background: radial-gradient(900px 480px at 50% -200px, #ffe6cd 0%, var(--bg) 60%) fixed, var(--bg);
     background-color: var(--bg);
     color: var(--text);
     min-height: 100vh;
@@ -45,7 +48,7 @@
   }
   input, select, textarea {
     font-size: 16px !important;
-    background: #161123; color: var(--text);
+    background: #fffdfb; color: var(--text);
     border: 1.5px solid var(--line2); border-radius: 10px;
     padding: 9px 11px; width: 100%;
   }
@@ -58,7 +61,7 @@
   /* ---------- ヘッダー ---------- */
   header {
     position: sticky; top: 0; z-index: 40;
-    background: rgba(20,15,30,.86);
+    background: rgba(255,249,243,.88);
     -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--line);
     padding: calc(10px + env(safe-area-inset-top)) 12px 0;
@@ -66,7 +69,7 @@
   .hd-row { display: flex; align-items: center; gap: 8px; }
   .hd-title {
     font-size: 19px; font-weight: 800; letter-spacing: .02em;
-    background: var(--grad); -webkit-background-clip: text; background-clip: text;
+    background: var(--grad-deep); -webkit-background-clip: text; background-clip: text;
     -webkit-text-fill-color: transparent; white-space: nowrap;
   }
   .hd-spacer { flex: 1; }
@@ -95,7 +98,7 @@
   /* ---------- 共通 ---------- */
   main { padding: 12px; max-width: 720px; margin: 0 auto; }
   .sec-title {
-    font-size: 13px; font-weight: 800; color: var(--text-sub);
+    font-size: 13px; font-weight: 800; color: var(--text);
     letter-spacing: .06em; margin: 20px 2px 9px;
     display: flex; align-items: center; gap: 7px;
   }
@@ -115,7 +118,7 @@
   .card {
     background: var(--card); border: 1px solid var(--line);
     border-radius: var(--radius); padding: 12px 13px; margin-bottom: 9px;
-    position: relative; overflow: hidden;
+    position: relative; overflow: hidden; box-shadow: var(--shadow);
   }
   .card:active { background: var(--card2); }
   .card .stripe { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
@@ -133,19 +136,20 @@
     font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 8px;
     border: 1px solid var(--line2); color: var(--text-sub);
   }
-  .badge.hot { background: rgba(255,77,109,.16); border-color: rgba(255,77,109,.5); color: #ff8fa3; }
-  .badge.soon { background: rgba(255,176,32,.16); border-color: rgba(255,176,32,.5); color: var(--am); }
-  .badge.open { background: rgba(61,220,132,.14); border-color: rgba(61,220,132,.45); color: var(--ok); }
-  .badge.fav { background: rgba(255,77,148,.16); border-color: rgba(255,77,148,.5); color: var(--pk); }
-  .badge.sample { background: rgba(154,144,181,.14); }
+  .badge.hot { background: rgba(220,47,77,.10); border-color: rgba(220,47,77,.38); color: #c22343; }
+  .badge.soon { background: rgba(224,125,0,.12); border-color: rgba(224,125,0,.40); color: #b26200; }
+  .badge.open { background: rgba(15,146,87,.10); border-color: rgba(15,146,87,.38); color: #0c7a48; }
+  .badge.fav { background: rgba(224,50,123,.10); border-color: rgba(224,50,123,.38); color: var(--pk); }
+  .badge.sample { background: rgba(123,106,134,.10); }
 
   /* ---------- 発売レーダー行 ---------- */
   .radar {
     background: var(--card); border: 1px solid var(--line);
     border-left: 4px solid var(--am);
     border-radius: 12px; padding: 11px 12px; margin-bottom: 8px;
+    box-shadow: var(--shadow);
   }
-  .radar.urgent { border-left-color: var(--hot); background: linear-gradient(90deg, rgba(255,77,109,.10), var(--card) 55%); }
+  .radar.urgent { border-left-color: var(--hot); background: linear-gradient(90deg, rgba(220,47,77,.09), var(--card) 55%); }
   .radar-top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
   .phase { font-size: 11.5px; font-weight: 900; padding: 2px 8px; border-radius: 7px; }
   .cd { font-size: 14px; font-weight: 900; font-variant-numeric: tabular-nums; margin-left: auto; }
@@ -169,7 +173,7 @@
   /* ---------- タブバー ---------- */
   nav {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
-    background: rgba(20,15,30,.94);
+    background: rgba(255,249,243,.94);
     -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
     border-top: 1px solid var(--line);
     display: flex; padding-bottom: env(safe-area-inset-bottom);
@@ -192,18 +196,19 @@
   /* ---------- モーダル ---------- */
   .sheet {
     position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column;
-    background: rgba(10,7,16,.72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    background: rgba(58,36,54,.40); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   }
   .sheet-body {
     margin-top: auto; background: var(--bg); border-radius: 22px 22px 0 0;
     border-top: 1px solid var(--line2); max-height: 92vh; overflow-y: auto;
+    box-shadow: 0 -8px 30px rgba(58,36,54,.16);
     padding: 6px 15px calc(24px + env(safe-area-inset-bottom));
     -webkit-overflow-scrolling: touch;
   }
   .sheet-body.full { margin-top: 0; max-height: 100vh; height: 100vh; border-radius: 0; padding-top: calc(10px + env(safe-area-inset-top)); }
   .grab { width: 40px; height: 4px; background: var(--line2); border-radius: 999px; margin: 9px auto 13px; }
   .sheet h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
-  .sheet h3 { font-size: 14px; font-weight: 800; margin: 18px 0 8px; color: var(--text-sub); letter-spacing: .04em; }
+  .sheet h3 { font-size: 14px; font-weight: 800; margin: 18px 0 8px; color: var(--text); letter-spacing: .04em; }
   .field { margin-bottom: 11px; }
   .field label { display: block; font-size: 12px; font-weight: 800; color: var(--text-sub); margin-bottom: 5px; }
   .row2 { display: flex; gap: 8px; } .row2 > * { flex: 1; min-width: 0; }
@@ -233,26 +238,27 @@
   .dash .big {
     font-size: 54px; font-weight: 900; font-variant-numeric: tabular-nums;
     letter-spacing: -.02em; line-height: 1;
-    background: var(--grad); -webkit-background-clip: text; background-clip: text;
+    background: var(--grad-deep); -webkit-background-clip: text; background-clip: text;
     -webkit-text-fill-color: transparent;
   }
   .dash .big.go { -webkit-text-fill-color: var(--ok); background: none; font-size: 40px; }
   .dash .sync { font-size: 11px; color: var(--text-sub); margin-top: 8px; }
   .note {
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    background: var(--card2); border: 1px solid var(--line); border-radius: 12px;
     padding: 10px 12px; font-size: 12.5px; color: var(--text-sub); line-height: 1.7;
   }
   .note b { color: var(--text); }
   .banner {
-    background: rgba(255,176,32,.12); border: 1px solid rgba(255,176,32,.4);
+    background: rgba(255,148,18,.13); border: 1px solid rgba(224,125,0,.35);
     border-radius: 12px; padding: 10px 12px; font-size: 12.5px; margin-bottom: 12px;
     display: flex; gap: 9px; align-items: flex-start;
   }
   .banner .x { margin-left: auto; background: none; border: none; color: var(--text-sub); font-size: 16px; flex: none; }
   .toast {
     position: fixed; left: 50%; bottom: 104px; transform: translateX(-50%);
-    background: var(--card2); border: 1px solid var(--line2); color: var(--text);
+    background: #2c2033; border: 1px solid rgba(255,255,255,.14); color: #fff;
     padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 700;
+    box-shadow: 0 4px 14px rgba(60,40,70,.22);
     z-index: 200; opacity: 0; transition: opacity .25s; pointer-events: none;
     max-width: 88vw; text-align: center;
   }
@@ -292,16 +298,16 @@
    マスタ定義
    ============================================================ */
 const GENRES = [
-  { id:'music',   name:'音楽・ライブ',       icon:'🎵', color:'#ff4d94', key:true },
-  { id:'stage',   name:'演劇・お笑い',       icon:'🎭', color:'#c86bff', key:true },
-  { id:'food',    name:'グルメ・マルシェ',   icon:'🍜', color:'#ffb020', key:true },
-  { id:'exp',     name:'体験・ワークショップ',icon:'🧑‍🍳', color:'#3ddc84', key:true },
-  { id:'sports',  name:'スポーツ',           icon:'🏟', color:'#3ee6ff', key:true },
-  { id:'art',     name:'アート・展示',       icon:'🎨', color:'#7b8cff', key:true },
-  { id:'matsuri', name:'祭り・花火',         icon:'🎆', color:'#ff7a45' },
-  { id:'trad',    name:'伝統行事・神事',     icon:'⛩', color:'#d9a441' },
-  { id:'kids',    name:'子ども・ファミリー', icon:'👶', color:'#54d6c0' },
-  { id:'season',  name:'季節・自然',         icon:'🌸', color:'#ff9ec4' },
+  { id:'music',   name:'音楽・ライブ',       icon:'🎵', color:'#d81b6b', key:true },
+  { id:'stage',   name:'演劇・お笑い',       icon:'🎭', color:'#7c3aed', key:true },
+  { id:'food',    name:'グルメ・マルシェ',   icon:'🍜', color:'#c2620a', key:true },
+  { id:'exp',     name:'体験・ワークショップ',icon:'🧑‍🍳', color:'#0f8a52', key:true },
+  { id:'sports',  name:'スポーツ',           icon:'🏟', color:'#0e7ba3', key:true },
+  { id:'art',     name:'アート・展示',       icon:'🎨', color:'#4550c8', key:true },
+  { id:'matsuri', name:'祭り・花火',         icon:'🎆', color:'#d94e1f' },
+  { id:'trad',    name:'伝統行事・神事',     icon:'⛩', color:'#96701a' },
+  { id:'kids',    name:'子ども・ファミリー', icon:'👶', color:'#0d8a7c' },
+  { id:'season',  name:'季節・自然',         icon:'🌸', color:'#c9357a' },
 ];
 const GENRE_BY = Object.fromEntries(GENRES.map(g => [g.id, g]));
 
@@ -329,12 +335,12 @@ AREAS.forEach(a => a.cities.forEach(c => { CITY_TO_AREA[c] = a.id; }));
 
 // 販売・受付の段階。ライブの先行抽選も大会のエントリーも同じ構造で扱う
 const SALE_TYPES = {
-  fc:      { label:'ファンクラブ先行',   rank:1, color:'#ff4d94' },
-  presale: { label:'プレイガイド先行',   rank:2, color:'#ffb020' },
-  general: { label:'一般発売',           rank:4, color:'#3ee6ff' },
-  entry:   { label:'エントリー受付',     rank:3, color:'#3ddc84' },
-  reserve: { label:'予約受付',           rank:3, color:'#7b8cff' },
-  other:   { label:'受付',               rank:5, color:'#9a90b5' },
+  fc:      { label:'ファンクラブ先行',   rank:1, color:'#d81b6b' },
+  presale: { label:'プレイガイド先行',   rank:2, color:'#c2620a' },
+  general: { label:'一般発売',           rank:4, color:'#0e7ba3' },
+  entry:   { label:'エントリー受付',     rank:3, color:'#0f8a52' },
+  reserve: { label:'予約受付',           rank:3, color:'#4550c8' },
+  other:   { label:'受付',               rank:5, color:'#7b6a86' },
 };
 const saleType = t => SALE_TYPES[t] || SALE_TYPES.other;
 
@@ -348,10 +354,10 @@ const DEFAULT_GUIDES = [
 ];
 
 const STATUSES = [
-  { id:'want',   label:'気になる',   icon:'⭐', color:'#ffb020' },
-  { id:'applied',label:'申込済み',   icon:'📮', color:'#7b8cff' },
-  { id:'won',    label:'当選・購入', icon:'🎫', color:'#3ddc84' },
-  { id:'lost',   label:'落選',       icon:'💧', color:'#9a90b5' },
+  { id:'want',   label:'気になる',   icon:'⭐', color:'#c2620a' },
+  { id:'applied',label:'申込済み',   icon:'📮', color:'#4550c8' },
+  { id:'won',    label:'当選・購入', icon:'🎫', color:'#0f8a52' },
+  { id:'lost',   label:'落選',       icon:'💧', color:'#7b6a86' },
 ];
 const STATUS_BY = Object.fromEntries(STATUSES.map(s => [s.id, s]));
 
@@ -705,7 +711,7 @@ function renderChips() {
   const html = [`<button class="chip all ${f.genres.length ? '' : 'on'}" data-g="">すべて</button>`]
     .concat(GENRES.map(g => {
       const on = f.genres.includes(g.id);
-      const style = on ? `background:${g.color};border-color:transparent;color:#1a1024` : '';
+      const style = on ? `background:${g.color};border-color:transparent;color:#fff` : '';
       return `<button class="chip ${on ? 'on' : ''}" data-g="${g.id}" style="${style}">${g.icon} ${esc(g.name)}</button>`;
     }));
   el('genreChips').innerHTML = html.join('');
@@ -1257,7 +1263,7 @@ function openForm(id) {
         ${GENRES.map(g => {
           const on = e.genres.includes(g.id);
           return `<button type="button" class="chip ${on ? 'on' : ''}" data-fg="${g.id}"
-            style="${on ? `background:${g.color};border-color:transparent;color:#1a1024` : ''}">${g.icon} ${esc(g.name)}</button>`;
+            style="${on ? `background:${g.color};border-color:transparent;color:#fff` : ''}">${g.icon} ${esc(g.name)}</button>`;
         }).join('')}
       </div></div>
     <div class="row2">
@@ -1297,7 +1303,7 @@ function openForm(id) {
     genres = genres.includes(g) ? genres.filter(x => x !== g) : [...genres, g];
     const on = genres.includes(g), c = GENRE_BY[g].color;
     b.classList.toggle('on', on);
-    b.style.cssText = on ? `background:${c};border-color:transparent;color:#1a1024` : '';
+    b.style.cssText = on ? `background:${c};border-color:transparent;color:#fff` : '';
   });
 
   const redrawSales = () => {
