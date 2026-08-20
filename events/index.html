@@ -86,6 +86,17 @@
     scrollbar-width: none; -ms-overflow-style: none;
   }
   .chips::-webkit-scrollbar { display: none; }
+  /* ジャンル行: ふだんは1行の横スクロール、展開すると全ジャンルを折り返して表示 */
+  .genre-row { display: flex; align-items: flex-start; gap: 6px; }
+  .genre-row .chips { flex: 1; min-width: 0; }
+  .genre-row .chips.open { flex-wrap: wrap; overflow-x: visible; }
+  .chip-more {
+    flex: none; margin-top: 10px; width: 32px; height: 32px; border-radius: 999px;
+    background: var(--card); border: 1.5px solid var(--line2); color: var(--text-sub);
+    font-size: 15px; font-weight: 800; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chip-more.open { background: var(--card2); color: var(--text); transform: rotate(180deg); }
   .chip {
     flex: none; border: 1.5px solid var(--line2); background: var(--card);
     color: var(--text-sub); border-radius: 999px; padding: 6px 13px;
@@ -275,7 +286,10 @@
     <button class="icon-btn" id="btnAdd" title="イベントを追加">＋</button>
     <button class="icon-btn" id="btnSettings" title="設定">⚙</button>
   </div>
-  <div class="chips" id="genreChips"></div>
+  <div class="genre-row">
+    <div class="chips" id="genreChips"></div>
+    <button class="chip-more" id="btnMoreGenres" aria-expanded="false" title="ジャンルを全部見る">⌄</button>
+  </div>
 </header>
 
 <main>
@@ -304,9 +318,9 @@ const GENRES = [
   { id:'exp',     name:'体験・ワークショップ',icon:'🧑‍🍳', color:'#0f8a52', key:true },
   { id:'sports',  name:'スポーツ',           icon:'🏟', color:'#0e7ba3', key:true },
   { id:'art',     name:'アート・展示',       icon:'🎨', color:'#4550c8', key:true },
+  { id:'kids',    name:'子ども向け',         icon:'👶', color:'#0d8a7c', key:true },
   { id:'matsuri', name:'祭り・花火',         icon:'🎆', color:'#d94e1f' },
   { id:'trad',    name:'伝統行事・神事',     icon:'⛩', color:'#96701a' },
-  { id:'kids',    name:'子ども・ファミリー', icon:'👶', color:'#0d8a7c' },
   { id:'season',  name:'季節・自然',         icon:'🌸', color:'#c9357a' },
 ];
 const GENRE_BY = Object.fromEntries(GENRES.map(g => [g.id, g]));
@@ -373,7 +387,7 @@ const DEFAULT_STATE = {
     myCity: '', extArea: false, notify: true,
     genreNotify: GENRES.filter(g => g.key).map(g => g.id),
     guides: DEFAULT_GUIDES.map(g => ({ ...g })),
-    hideSample: false, sampleBannerClosed: false,
+    hideSample: false, sampleBannerClosed: false, genresExpanded: false,
   },
   userEvents: [],        // 手動追加したイベント
   cache: { events: null, at: 0 },
@@ -714,7 +728,13 @@ function renderChips() {
       const style = on ? `background:${g.color};border-color:transparent;color:#fff` : '';
       return `<button class="chip ${on ? 'on' : ''}" data-g="${g.id}" style="${style}">${g.icon} ${esc(g.name)}</button>`;
     }));
-  el('genreChips').innerHTML = html.join('');
+  const box = el('genreChips');
+  box.innerHTML = html.join('');
+  const open = !!S.settings.genresExpanded;
+  box.classList.toggle('open', open);
+  const btn = el('btnMoreGenres');
+  btn.classList.toggle('open', open);
+  btn.setAttribute('aria-expanded', String(open));
 }
 
 function renderHome(list) {
@@ -1535,6 +1555,11 @@ document.addEventListener('click', e => {
   if (hit('#btnSettings')) return openSettings();
   if (hit('#btnArea')) return openAreaPicker();
   if (hit('#closeBanner')) { S.settings.sampleBannerClosed = true; save(); render(); return; }
+
+  if (hit('#btnMoreGenres')) {
+    S.settings.genresExpanded = !S.settings.genresExpanded;
+    save(); renderChips(); return;
+  }
 
   // ジャンルチップ(ヘッダー)
   const chip = hit('#genreChips .chip');
