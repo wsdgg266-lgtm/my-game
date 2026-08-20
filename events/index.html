@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#fff9f3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="キタイベ">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<title>キタイベ！ - 北近畿のイベント＆チケット発売レーダー</title>
+<style>
+  :root {
+    --bg: #fff9f3;
+    --card: #ffffff;
+    --card2: #fff2e4;
+    --text: #2c2033;
+    --text-sub: #6b5a76;
+    --line: rgba(60,40,70,.11);
+    --line2: rgba(60,40,70,.19);
+    --am: #e07d00;
+    --pk: #e0327b;
+    --grad: linear-gradient(135deg, #ff9412, #ff3d88);
+    /* 文字に使う用。白地でも沈まないよう深めにする */
+    --grad-deep: linear-gradient(135deg, #ef7a00, #e0327b);
+    --ink-on-grad: #4a1200;
+    --ok: #0f9257;
+    --hot: #dc2f4d;
+    --cy: #0b8fb5;
+    --shadow: 0 1px 3px rgba(70,45,80,.07), 0 1px 1px rgba(70,45,80,.04);
+    --radius: 16px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+    background: radial-gradient(900px 480px at 50% -200px, #ffe6cd 0%, var(--bg) 60%) fixed, var(--bg);
+    background-color: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 96px;
+    overflow-x: hidden;
+    max-width: 100vw;
+    line-height: 1.6;
+  }
+  input, select, textarea {
+    font-size: 16px !important;
+    background: #fffdfb; color: var(--text);
+    border: 1.5px solid var(--line2); border-radius: 10px;
+    padding: 9px 11px; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--am); }
+  textarea { line-height: 1.6; resize: vertical; }
+  button { font-family: inherit; cursor: pointer; }
+  a { color: var(--am); }
+  .hide { display: none !important; }
+
+  /* ---------- ヘッダー ---------- */
+  header {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(255,249,243,.88);
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+    padding: calc(10px + env(safe-area-inset-top)) 12px 0;
+  }
+  .hd-row { display: flex; align-items: center; gap: 8px; }
+  .hd-title {
+    font-size: 19px; font-weight: 800; letter-spacing: .02em;
+    background: var(--grad-deep); -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; white-space: nowrap;
+  }
+  .hd-spacer { flex: 1; }
+  .icon-btn {
+    background: var(--card2); border: 1px solid var(--line2); color: var(--text);
+    width: 36px; height: 36px; border-radius: 10px; font-size: 16px;
+    display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  .icon-btn:active { transform: scale(.94); }
+
+  /* ジャンルチップ */
+  .chips {
+    display: flex; gap: 7px; overflow-x: auto; padding: 10px 0 10px;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  /* ジャンル行: ふだんは1行の横スクロール、展開すると全ジャンルを折り返して表示 */
+  .genre-row { display: flex; align-items: flex-start; gap: 6px; }
+  .genre-row .chips { flex: 1; min-width: 0; }
+  .genre-row .chips.open { flex-wrap: wrap; overflow-x: visible; }
+  .chip-more {
+    flex: none; margin-top: 10px; width: 32px; height: 32px; border-radius: 999px;
+    background: var(--card); border: 1.5px solid var(--line2); color: var(--text-sub);
+    font-size: 15px; font-weight: 800; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chip-more.open { background: var(--card2); color: var(--text); transform: rotate(180deg); }
+  .chip {
+    flex: none; border: 1.5px solid var(--line2); background: var(--card);
+    color: var(--text-sub); border-radius: 999px; padding: 6px 13px;
+    font-size: 13px; font-weight: 700; white-space: nowrap;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .chip.on { color: var(--ink-on-grad); border-color: transparent; }
+  .chip.all.on { background: var(--grad); }
+
+  /* ---------- 共通 ---------- */
+  main { padding: 12px; max-width: 720px; margin: 0 auto; }
+  .sec-title {
+    font-size: 13px; font-weight: 800; color: var(--text);
+    letter-spacing: .06em; margin: 20px 2px 9px;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .sec-title:first-child { margin-top: 4px; }
+  .sec-title .cnt {
+    background: var(--card2); color: var(--text-sub); font-size: 11px;
+    border-radius: 999px; padding: 1px 8px; font-weight: 700;
+  }
+  .empty {
+    text-align: center; color: var(--text-sub); font-size: 13px;
+    padding: 30px 16px; background: var(--card); border-radius: var(--radius);
+    border: 1px dashed var(--line2);
+  }
+  .empty b { color: var(--text); display: block; margin-bottom: 5px; font-size: 14px; }
+
+  /* ---------- イベントカード ---------- */
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 12px 13px; margin-bottom: 9px;
+    position: relative; overflow: hidden; box-shadow: var(--shadow);
+  }
+  .card:active { background: var(--card2); }
+  .card .stripe { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+  .card-top { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; flex-wrap: wrap; }
+  .g-tag {
+    font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 3px;
+  }
+  .when { font-size: 13px; font-weight: 800; color: var(--am); }
+  .when.sat { color: var(--cy); } .when.sun { color: var(--pk); }
+  .card h3 { font-size: 15.5px; font-weight: 800; line-height: 1.45; margin: 2px 0 5px; }
+  .meta { font-size: 12px; color: var(--text-sub); display: flex; gap: 9px; flex-wrap: wrap; }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .badge {
+    font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 8px;
+    border: 1px solid var(--line2); color: var(--text-sub);
+  }
+  .badge.hot { background: rgba(220,47,77,.10); border-color: rgba(220,47,77,.38); color: #c22343; }
+  .badge.soon { background: rgba(224,125,0,.12); border-color: rgba(224,125,0,.40); color: #b26200; }
+  .badge.open { background: rgba(15,146,87,.10); border-color: rgba(15,146,87,.38); color: #0c7a48; }
+  .badge.fav { background: rgba(224,50,123,.10); border-color: rgba(224,50,123,.38); color: var(--pk); }
+  .badge.sample { background: rgba(123,106,134,.10); }
+
+  /* ---------- 発売レーダー行 ---------- */
+  .radar {
+    background: var(--card); border: 1px solid var(--line);
+    border-left: 4px solid var(--am);
+    border-radius: 12px; padding: 11px 12px; margin-bottom: 8px;
+    box-shadow: var(--shadow);
+  }
+  .radar.urgent { border-left-color: var(--hot); background: linear-gradient(90deg, rgba(220,47,77,.09), var(--card) 55%); }
+  .radar-top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
+  .phase { font-size: 11.5px; font-weight: 900; padding: 2px 8px; border-radius: 7px; }
+  .cd { font-size: 14px; font-weight: 900; font-variant-numeric: tabular-nums; margin-left: auto; }
+  .cd.urgent { color: var(--hot); }
+  .radar h4 { font-size: 14.5px; font-weight: 800; line-height: 1.4; }
+  .radar .sub { font-size: 11.5px; color: var(--text-sub); margin-top: 3px; }
+
+  /* ---------- ボタン ---------- */
+  .btn {
+    background: var(--card2); border: 1.5px solid var(--line2); color: var(--text);
+    border-radius: 11px; padding: 10px 14px; font-size: 13.5px; font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn.pri { background: var(--grad); color: var(--ink-on-grad); border-color: transparent; }
+  .btn.wide { width: 100%; }
+  .btn.sm { padding: 7px 11px; font-size: 12.5px; border-radius: 9px; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-row > .btn { flex: 1; min-width: 130px; }
+
+  /* ---------- タブバー ---------- */
+  nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    background: rgba(255,249,243,.94);
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    border-top: 1px solid var(--line);
+    display: flex; padding-bottom: env(safe-area-inset-bottom);
+  }
+  nav button {
+    flex: 1; background: none; border: none; color: var(--text-sub);
+    padding: 9px 2px 8px; font-size: 10.5px; font-weight: 800;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    position: relative;
+  }
+  nav button .ic { font-size: 20px; line-height: 1; }
+  nav button.on { color: var(--am); }
+  nav .nbadge {
+    position: absolute; top: 4px; left: 50%; margin-left: 6px;
+    background: var(--hot); color: #fff; font-size: 10px; font-weight: 900;
+    min-width: 17px; height: 17px; border-radius: 999px; padding: 0 4px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ---------- モーダル ---------- */
+  .sheet {
+    position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column;
+    background: rgba(58,36,54,.40); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  }
+  .sheet-body {
+    margin-top: auto; background: var(--bg); border-radius: 22px 22px 0 0;
+    border-top: 1px solid var(--line2); max-height: 92vh; overflow-y: auto;
+    box-shadow: 0 -8px 30px rgba(58,36,54,.16);
+    padding: 6px 15px calc(24px + env(safe-area-inset-bottom));
+    -webkit-overflow-scrolling: touch;
+  }
+  .sheet-body.full { margin-top: 0; max-height: 100vh; height: 100vh; border-radius: 0; padding-top: calc(10px + env(safe-area-inset-top)); }
+  .grab { width: 40px; height: 4px; background: var(--line2); border-radius: 999px; margin: 9px auto 13px; }
+  .sheet h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .sheet h3 { font-size: 14px; font-weight: 800; margin: 18px 0 8px; color: var(--text); letter-spacing: .04em; }
+  .field { margin-bottom: 11px; }
+  .field label { display: block; font-size: 12px; font-weight: 800; color: var(--text-sub); margin-bottom: 5px; }
+  .row2 { display: flex; gap: 8px; } .row2 > * { flex: 1; min-width: 0; }
+
+  .kv { display: flex; gap: 10px; font-size: 13.5px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .kv .k { color: var(--text-sub); font-weight: 700; flex: none; width: 84px; }
+  .kv .v { flex: 1; min-width: 0; word-break: break-word; }
+
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; }
+  .seg button {
+    flex: 1; min-width: 64px; background: var(--card); border: 1.5px solid var(--line2);
+    color: var(--text-sub); border-radius: 10px; padding: 9px 4px; font-size: 12px; font-weight: 800;
+    white-space: nowrap;
+  }
+  .seg button.on { background: var(--grad); color: var(--ink-on-grad); border-color: transparent; }
+
+  .check { display: flex; align-items: flex-start; gap: 9px; padding: 9px 0; font-size: 13.5px; }
+  .check input { width: 20px; height: 20px; flex: none; margin-top: 1px; accent-color: var(--am); }
+  .switch { display: flex; align-items: center; gap: 10px; padding: 10px 0; font-size: 13.5px; border-bottom: 1px solid var(--line); }
+  .switch input { width: 20px; height: 20px; flex: none; accent-color: var(--am); }
+  .switch .lbl { flex: 1; } .switch .lbl small { display: block; color: var(--text-sub); font-size: 11.5px; }
+
+  /* ---------- 発売ダッシュ ---------- */
+  .dash { text-align: center; padding: 8px 0 4px; }
+  .dash .ttl { font-size: 15px; font-weight: 800; line-height: 1.4; margin-bottom: 3px; }
+  .dash .ph { font-size: 12.5px; color: var(--am); font-weight: 800; margin-bottom: 14px; }
+  .dash .big {
+    font-size: 54px; font-weight: 900; font-variant-numeric: tabular-nums;
+    letter-spacing: -.02em; line-height: 1;
+    background: var(--grad-deep); -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .dash .big.go { -webkit-text-fill-color: var(--ok); background: none; font-size: 40px; }
+  .dash .sync { font-size: 11px; color: var(--text-sub); margin-top: 8px; }
+  .note {
+    background: var(--card2); border: 1px solid var(--line); border-radius: 12px;
+    padding: 10px 12px; font-size: 12.5px; color: var(--text-sub); line-height: 1.7;
+  }
+  .note b { color: var(--text); }
+  .banner {
+    background: rgba(255,148,18,.13); border: 1px solid rgba(224,125,0,.35);
+    border-radius: 12px; padding: 10px 12px; font-size: 12.5px; margin-bottom: 12px;
+    display: flex; gap: 9px; align-items: flex-start;
+  }
+  .banner .x { margin-left: auto; background: none; border: none; color: var(--text-sub); font-size: 16px; flex: none; }
+  .toast {
+    position: fixed; left: 50%; bottom: 104px; transform: translateX(-50%);
+    background: #2c2033; border: 1px solid rgba(255,255,255,.14); color: #fff;
+    padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 700;
+    box-shadow: 0 4px 14px rgba(60,40,70,.22);
+    z-index: 200; opacity: 0; transition: opacity .25s; pointer-events: none;
+    max-width: 88vw; text-align: center;
+  }
+  .toast.on { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd-row">
+    <div class="hd-title">🎪 キタイベ！</div>
+    <div class="hd-spacer"></div>
+    <button class="icon-btn" id="btnArea" title="エリア">📍</button>
+    <button class="icon-btn" id="btnAdd" title="イベントを追加">＋</button>
+    <button class="icon-btn" id="btnSettings" title="設定">⚙</button>
+  </div>
+  <div class="genre-row">
+    <div class="chips" id="genreChips"></div>
+    <button class="chip-more" id="btnMoreGenres" aria-expanded="false" title="ジャンルを全部見る">⌄</button>
+  </div>
+</header>
+
+<main>
+  <div id="view"></div>
+</main>
+
+<nav>
+  <button data-tab="home" class="on"><span class="ic">🏠</span>ホーム</button>
+  <button data-tab="search"><span class="ic">🔎</span>さがす</button>
+  <button data-tab="radar"><span class="ic">🎟</span>発売<span class="nbadge hide" id="radarBadge">0</span></button>
+  <button data-tab="mine"><span class="ic">⭐</span>マイ<span class="nbadge hide" id="mineBadge">0</span></button>
+</nav>
+
+<div class="toast" id="toast"></div>
+<div id="modalRoot"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   マスタ定義
+   ============================================================ */
+const GENRES = [
+  { id:'music',   name:'音楽・ライブ',       icon:'🎵', color:'#d81b6b', key:true },
+  { id:'stage',   name:'演劇・お笑い',       icon:'🎭', color:'#7c3aed', key:true },
+  { id:'food',    name:'グルメ・マルシェ',   icon:'🍜', color:'#c2620a', key:true },
+  { id:'exp',     name:'体験・ワークショップ',icon:'🧑‍🍳', color:'#0f8a52', key:true },
+  { id:'sports',  name:'スポーツ',           icon:'🏟', color:'#0e7ba3', key:true },
+  { id:'art',     name:'アート・展示',       icon:'🎨', color:'#4550c8', key:true },
+  { id:'kids',    name:'子ども向け',         icon:'👶', color:'#0d8a7c', key:true },
+  { id:'matsuri', name:'祭り・花火',         icon:'🎆', color:'#d94e1f' },
+  { id:'trad',    name:'伝統行事・神事',     icon:'⛩', color:'#96701a' },
+  { id:'season',  name:'季節・自然',         icon:'🌸', color:'#c9357a' },
+];
+const GENRE_BY = Object.fromEntries(GENRES.map(g => [g.id, g]));
+
+const AREAS = [
+  { id:'tango',  name:'丹後', pref:'京都府', cities:['京丹後市','宮津市','与謝野町','伊根町'] },
+  { id:'chutan', name:'中丹', pref:'京都府', cities:['舞鶴市','綾部市','福知山市'] },
+  { id:'nantan', name:'南丹', pref:'京都府', cities:['南丹市','京丹波町','亀岡市'] },
+  { id:'tajima', name:'但馬', pref:'兵庫県', cities:['豊岡市','養父市','朝来市','香美町','新温泉町'] },
+  { id:'tanba',  name:'丹波', pref:'兵庫県', cities:['丹波市','丹波篠山市'] },
+  { id:'ext',    name:'拡張エリア', pref:'福井県嶺南・滋賀県北部', ext:true,
+    cities:['敦賀市','小浜市','高浜町','おおい町','若狭町','美浜町','長浜市','米原市'] },
+];
+const AREA_BY = Object.fromEntries(AREAS.map(a => [a.id, a]));
+// ブロックの隣接関係(「近くだけ」フィルタ用)
+const NEIGHBORS = {
+  tango:  ['tango','chutan','tajima'],
+  chutan: ['chutan','tango','nantan','tanba','tajima'],
+  nantan: ['nantan','chutan','tanba'],
+  tajima: ['tajima','tango','chutan','tanba'],
+  tanba:  ['tanba','chutan','nantan','tajima'],
+  ext:    ['ext','tango','tajima','nantan'],
+};
+const CITY_TO_AREA = {};
+AREAS.forEach(a => a.cities.forEach(c => { CITY_TO_AREA[c] = a.id; }));
+
+// 販売・受付の段階。ライブの先行抽選も大会のエントリーも同じ構造で扱う
+const SALE_TYPES = {
+  fc:      { label:'ファンクラブ先行',   rank:1, color:'#d81b6b' },
+  presale: { label:'プレイガイド先行',   rank:2, color:'#c2620a' },
+  general: { label:'一般発売',           rank:4, color:'#0e7ba3' },
+  entry:   { label:'エントリー受付',     rank:3, color:'#0f8a52' },
+  reserve: { label:'予約受付',           rank:3, color:'#4550c8' },
+  other:   { label:'受付',               rank:5, color:'#7b6a86' },
+};
+const saleType = t => SALE_TYPES[t] || SALE_TYPES.other;
+
+// プレイガイド。検索URLは設定画面で編集できる({q} が検索語に置き換わる)
+const DEFAULT_GUIDES = [
+  { id:'pia',     name:'チケットぴあ',     url:'https://t.pia.jp/search?keyword={q}' },
+  { id:'lawson',  name:'ローソンチケット', url:'https://l-tike.com/search/?keyword={q}' },
+  { id:'eplus',   name:'イープラス',       url:'https://eplus.jp/sf/search?keyword={q}' },
+  { id:'rakuten', name:'楽天チケット',     url:'https://ticket.rakuten.co.jp/search/?q={q}' },
+  { id:'google',  name:'Google で検索',    url:'https://www.google.com/search?q={q}+チケット' },
+];
+
+const STATUSES = [
+  { id:'want',   label:'気になる',   icon:'⭐', color:'#c2620a' },
+  { id:'applied',label:'申込済み',   icon:'📮', color:'#4550c8' },
+  { id:'won',    label:'当選・購入', icon:'🎫', color:'#0f8a52' },
+  { id:'lost',   label:'落選',       icon:'💧', color:'#7b6a86' },
+];
+const STATUS_BY = Object.fromEntries(STATUSES.map(s => [s.id, s]));
+
+/* ============================================================
+   保存(LocalStorage)
+   ============================================================ */
+const LS = 'kitaibe.v1';
+const DEFAULT_STATE = {
+  myEvents: {},          // id -> { status, memo, checks:{}, updatedAt }
+  alerts: {},            // "id|saleIndex" -> { d1:bool, h1:bool, m10:bool }
+  filters: { genres: [], areas: [], ticketOnly: false, q: '', near: false },
+  settings: {
+    myCity: '', extArea: false, notify: true,
+    genreNotify: GENRES.filter(g => g.key).map(g => g.id),
+    guides: DEFAULT_GUIDES.map(g => ({ ...g })),
+    hideSample: false, sampleBannerClosed: false, genresExpanded: false,
+  },
+  userEvents: [],        // 手動追加したイベント
+  cache: { events: null, at: 0 },
+};
+
+function loadState() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(LS) || '{}');
+    const s = { ...structuredClone(DEFAULT_STATE), ...raw };
+    s.settings = { ...DEFAULT_STATE.settings, ...(raw.settings || {}) };
+    s.filters  = { ...DEFAULT_STATE.filters,  ...(raw.filters  || {}) };
+    if (!Array.isArray(s.settings.guides) || !s.settings.guides.length) {
+      s.settings.guides = DEFAULT_GUIDES.map(g => ({ ...g }));
+    }
+    return s;
+  } catch (e) {
+    return structuredClone(DEFAULT_STATE);
+  }
+}
+let S = loadState();
+let saveTimer = null;
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try { localStorage.setItem(LS, JSON.stringify(S)); }
+    catch (e) { toast('保存できませんでした(容量不足かも)'); }
+  }, 120);
+}
+
+/* ============================================================
+   日時ユーティリティ
+   ------------------------------------------------------------
+   日時は "2026-08-22T19:00" のようなローカル時刻の文字列で持つ。
+   Safari は "2026-08-22 19:00" 形式を解釈しないことがあるので自前で解析する。
+   ============================================================ */
+function parseDT(str) {
+  if (!str) return null;
+  const m = String(str).trim().match(
+    /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{1,2}):(\d{2}))?/);
+  if (!m) return null;
+  const d = new Date(+m[1], +m[2] - 1, +m[3], m[4] ? +m[4] : 0, m[5] ? +m[5] : 0, 0, 0);
+  return isNaN(d) ? null : d;
+}
+const hasTime = str => /[T ]\d{1,2}:\d{2}/.test(String(str || ''));
+const WD = ['日','月','火','水','木','金','土'];
+const pad = n => String(n).padStart(2, '0');
+
+function fmtDate(str, opt = {}) {
+  const d = parseDT(str); if (!d) return '';
+  const now = new Date();
+  const y = d.getFullYear() !== now.getFullYear() || opt.year ? `${d.getFullYear()}/` : '';
+  let s = `${y}${d.getMonth() + 1}/${d.getDate()}(${WD[d.getDay()]})`;
+  if (hasTime(str) && !opt.dateOnly) s += ` ${d.getHours()}:${pad(d.getMinutes())}`;
+  return s;
+}
+function fmtRange(ev) {
+  const a = fmtDate(ev.start);
+  if (!ev.end) return a;
+  const s = parseDT(ev.start), e = parseDT(ev.end);
+  if (!s || !e) return a;
+  const sameDay = s.toDateString() === e.toDateString();
+  return sameDay ? a : `${a} 〜 ${fmtDate(ev.end)}`;
+}
+// Date オブジェクトをローカル時刻のまま "YYYY-MM-DDTHH:MM" にする
+// (toISOString() は UTC に変換してしまい日付がずれるので使わない)
+const dtToStr = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const fmtDateObj = (d, opt) => fmtDate(dtToStr(d), opt);
+
+const startOfDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+const dayDiff = (a, b) => Math.round((startOfDay(a) - startOfDay(b)) / 86400000);
+
+// 残り時間を「3日と4時間」「12分30秒」のように読みやすく
+function fmtLeft(ms, precise = false) {
+  if (ms <= 0) return '0';
+  const s = Math.floor(ms / 1000);
+  const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600);
+  const mi = Math.floor(s % 3600 / 60), se = s % 60;
+  if (d >= 1) return h ? `${d}日と${h}時間` : `${d}日`;
+  if (h >= 1) return `${h}時間${mi}分`;
+  if (precise) return `${pad(mi)}:${pad(se)}`;
+  return mi >= 1 ? `${mi}分${se}秒` : `${se}秒`;
+}
+
+/* ============================================================
+   サーバー時刻との同期
+   ------------------------------------------------------------
+   端末の時計は数十秒ずれていることがある。発売の瞬間を狙うアプリなので、
+   自サイトへの HEAD リクエストの Date ヘッダーからズレを測って補正する。
+   Date ヘッダーは秒単位までしか無いので、精度はおよそ 1秒。
+   ============================================================ */
+let timeOffset = 0, timeSynced = false, timeRtt = 0;
+const serverNow = () => Date.now() + timeOffset;
+
+async function syncTime() {
+  let best = null;
+  for (let i = 0; i < 3; i++) {
+    const t0 = Date.now();
+    try {
+      const res = await fetch(`./?_t=${t0}`, { method: 'HEAD', cache: 'no-store' });
+      const t1 = Date.now();
+      const h = res.headers.get('Date');
+      if (!h) continue;
+      const parsed = Date.parse(h);
+      if (isNaN(parsed)) continue;
+      const rtt = t1 - t0;
+      // Date は秒未満が切り捨てられるので、平均して +500ms 寄せる
+      const offset = parsed + 500 + rtt / 2 - t1;
+      if (!best || rtt < best.rtt) best = { rtt, offset };
+    } catch (e) { /* オフライン等。端末時計のまま使う */ }
+  }
+  if (best) { timeOffset = best.offset; timeRtt = best.rtt; timeSynced = true; }
+  return timeSynced;
+}
+
+/* ============================================================
+   イベントデータの読み込み
+   ------------------------------------------------------------
+   同一オリジンの data/events.json を読むだけなので CORS の問題が起きない。
+   外部サイトの取り込みは GitHub Actions 側で行い、この JSON を更新する。
+   ============================================================ */
+let ALL = [];
+
+function normalize(ev, idx) {
+  const e = { ...ev };
+  e.id = e.id || `ev-${idx}-${(e.title || '').slice(0, 12)}`;
+  e.genres = Array.isArray(e.genres) ? e.genres.filter(g => GENRE_BY[g]) : [];
+  if (!e.genres.length) e.genres = ['music'];
+  e.area = e.area || CITY_TO_AREA[e.city] || '';
+  e.sales = Array.isArray(e.sales) ? e.sales : [];
+  e.needsTicket = e.needsTicket !== false && (e.needsTicket === true || e.sales.length > 0);
+  return e;
+}
+
+async function fetchList(path) {
+  try {
+    const res = await fetch(`${path}?_=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return Array.isArray(json) ? json : json.events || null;
+  } catch (e) {
+    return null;   // オフラインや未生成。呼び出し側でキャッシュに寄せる
+  }
+}
+
+async function loadEvents() {
+  // events.json は手で整備するデータ、imported.json は GitHub Actions が自動更新するデータ
+  const [curated, imported] = await Promise.all([
+    fetchList('./data/events.json'),
+    fetchList('./data/imported.json'),
+  ]);
+  let list = null;
+  if (curated || imported) list = [...(curated || []), ...(imported || [])];
+
+  if (Array.isArray(list)) {
+    S.cache = { events: list, at: Date.now() };
+    save();
+  } else {
+    list = (S.cache && S.cache.events) || [];
+  }
+  ALL = [...list, ...S.userEvents].map(normalize);
+  // 同じ id が重なったら後勝ち(手動追加で内蔵データを上書きできる)
+  const map = new Map();
+  ALL.forEach(e => map.set(e.id, e));
+  ALL = [...map.values()];
+  return ALL;
+}
+/* ============================================================
+   発売・受付段階の解釈
+   ------------------------------------------------------------
+   ライブの「先行抽選」もマラソン大会の「エントリー」も構造は同じなので、
+   受付開始 / 申込締切 / 当落発表 / 入金期限 の4つの期限として一律に扱う。
+   ============================================================ */
+function phaseState(sale, now) {
+  const o = parseDT(sale.opensAt), c = parseDT(sale.closesAt);
+  if (o && now < o) return 'upcoming';
+  if (c && now >= c) return 'closed';
+  return o ? 'open' : 'unknown';
+}
+
+// 1つの販売段階から「気にすべき期限」を取り出す
+function deadlines(ev, sale, i, now) {
+  const st = (S.myEvents[ev.id] || {}).status;
+  const applied = st === 'applied' || st === 'won';
+  const out = [];
+  const push = (kind, at, label) => {
+    const d = parseDT(at);
+    if (d && d.getTime() > now) out.push({ ev, sale, i, kind, at: d, label });
+  };
+  push('open', sale.opensAt, '受付開始');
+  if (phaseState(sale, new Date(now)) === 'open') push('close', sale.closesAt, '申込締切');
+  // 当落・入金は「申し込んだ人」にしか関係しないので、その時だけ出す
+  if (applied) { push('result', sale.resultAt, '当落発表'); push('pay', sale.payBy, '入金期限'); }
+  return out;
+}
+
+function allDeadlines(events) {
+  const now = serverNow();
+  const out = [];
+  events.forEach(ev => (ev.sales || []).forEach((s, i) => out.push(...deadlines(ev, s, i, now))));
+  return out.sort((a, b) => a.at - b.at);
+}
+
+// いま受付中の段階
+function openNow(events) {
+  const now = new Date(serverNow());
+  const out = [];
+  events.forEach(ev => (ev.sales || []).forEach((s, i) => {
+    if (phaseState(s, now) === 'open') out.push({ ev, sale: s, i });
+  }));
+  return out.sort((a, b) => {
+    const ca = parseDT(a.sale.closesAt), cb = parseDT(b.sale.closesAt);
+    if (ca && cb) return ca - cb;
+    return ca ? -1 : cb ? 1 : 0;
+  });
+}
+
+// イベントが「まだ終わっていない」か(終了日 or 開始日が今日以降)
+function isUpcoming(ev) {
+  const d = parseDT(ev.end || ev.start);
+  if (!d) return true;
+  return dayDiff(d, new Date(serverNow())) >= 0;
+}
+
+/* ============================================================
+   絞り込み
+   ============================================================ */
+function visibleEvents() {
+  const f = S.filters, set = S.settings;
+  const q = (f.q || '').trim().toLowerCase();
+  const nearAreas = set.myCity ? NEIGHBORS[CITY_TO_AREA[set.myCity]] || [] : [];
+  return ALL.filter(ev => {
+    if (set.hideSample && ev.sample) return false;
+    const a = AREA_BY[ev.area];
+    if (a && a.ext && !set.extArea) return false;
+    if (f.genres.length && !ev.genres.some(g => f.genres.includes(g))) return false;
+    if (f.areas.length && !f.areas.includes(ev.area)) return false;
+    if (f.near && nearAreas.length && !nearAreas.includes(ev.area)) return false;
+    if (f.ticketOnly && !ev.needsTicket) return false;
+    if (q) {
+      const hay = [ev.title, ev.venue, ev.city, ev.price, ev.note,
+        ...ev.genres.map(g => GENRE_BY[g].name)].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+/* ============================================================
+   描画ヘルパー
+   ============================================================ */
+const esc = s => String(s == null ? '' : s)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+const el = id => document.getElementById(id);
+
+function toast(msg) {
+  const t = el('toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove('on'), 2200);
+}
+
+function genreTag(gid) {
+  const g = GENRE_BY[gid]; if (!g) return '';
+  return `<span class="g-tag" style="background:${g.color}22;color:${g.color}">${g.icon} ${esc(g.name)}</span>`;
+}
+
+function whenClass(str) {
+  const d = parseDT(str); if (!d) return '';
+  return d.getDay() === 6 ? 'sat' : d.getDay() === 0 ? 'sun' : '';
+}
+
+// カード上に出す状態バッジ(発売中/まもなく/締切間近)
+function eventBadges(ev) {
+  const out = [];
+  const my = S.myEvents[ev.id];
+  if (my && STATUS_BY[my.status]) {
+    const s = STATUS_BY[my.status];
+    out.push(`<span class="badge fav">${s.icon} ${s.label}</span>`);
+  }
+  const now = serverNow();
+  const dl = [];
+  (ev.sales || []).forEach((s, i) => dl.push(...deadlines(ev, s, i, now)));
+  const open = (ev.sales || []).some(s => phaseState(s, new Date(now)) === 'open');
+  if (open) out.push('<span class="badge open">🟢 受付中</span>');
+  if (dl.length) {
+    const n = dl.sort((a, b) => a.at - b.at)[0];
+    const left = n.at.getTime() - now;
+    const cls = left < 86400000 ? 'hot' : 'soon';
+    out.push(`<span class="badge ${cls}">⏰ ${esc(n.label)}まで ${fmtLeft(left)}</span>`);
+  }
+  if (ev.sample) out.push('<span class="badge sample">サンプル</span>');
+  return out.length ? `<div class="badges">${out.join('')}</div>` : '';
+}
+
+function eventCard(ev) {
+  const g = GENRE_BY[ev.genres[0]];
+  return `<div class="card" data-ev="${esc(ev.id)}">
+    <div class="stripe" style="background:${g.color}"></div>
+    <div class="card-top">
+      <span class="when ${whenClass(ev.start)}">${esc(fmtRange(ev))}</span>
+    </div>
+    <h3>${esc(ev.title)}</h3>
+    <div class="meta">
+      <span>📍 ${esc(ev.city || '')}${ev.venue ? ' / ' + esc(ev.venue) : ''}</span>
+      ${ev.price ? `<span>💴 ${esc(ev.price)}</span>` : ''}
+    </div>
+    <div class="badges">${ev.genres.map(genreTag).join('')}</div>
+    ${eventBadges(ev)}
+  </div>`;
+}
+
+// 発売レーダーの1行
+function radarRow(d) {
+  const t = saleType(d.sale.type);
+  const left = d.at.getTime() - serverNow();
+  const urgent = left < 3600000 * 24;
+  const kindIcon = { open:'🎟', close:'⏳', result:'📣', pay:'💳' }[d.kind] || '⏰';
+  return `<div class="radar ${urgent ? 'urgent' : ''}" data-ev="${esc(d.ev.id)}">
+    <div class="radar-top">
+      <span class="phase" style="background:${t.color}22;color:${t.color}">${esc(d.sale.label || t.label)}</span>
+      <span class="cd ${urgent ? 'urgent' : ''}" data-cd="${d.at.getTime()}">${esc(fmtLeft(left))}</span>
+    </div>
+    <h4>${esc(d.ev.title)}</h4>
+    <div class="sub">${kindIcon} ${esc(d.label)} ${esc(fmtDateObj(d.at))} ・ ${esc(d.ev.city || '')}</div>
+  </div>`;
+}
+/* ============================================================
+   画面
+   ============================================================ */
+let TAB = 'home';
+
+function renderChips() {
+  const f = S.filters;
+  const html = [`<button class="chip all ${f.genres.length ? '' : 'on'}" data-g="">すべて</button>`]
+    .concat(GENRES.map(g => {
+      const on = f.genres.includes(g.id);
+      const style = on ? `background:${g.color};border-color:transparent;color:#fff` : '';
+      return `<button class="chip ${on ? 'on' : ''}" data-g="${g.id}" style="${style}">${g.icon} ${esc(g.name)}</button>`;
+    }));
+  const box = el('genreChips');
+  box.innerHTML = html.join('');
+  const open = !!S.settings.genresExpanded;
+  box.classList.toggle('open', open);
+  const btn = el('btnMoreGenres');
+  btn.classList.toggle('open', open);
+  btn.setAttribute('aria-expanded', String(open));
+}
+
+function renderHome(list) {
+  const now = new Date(serverNow());
+  const up = list.filter(isUpcoming).sort((a, b) => (parseDT(a.start) || 0) - (parseDT(b.start) || 0));
+  const dl = allDeadlines(list).filter(d => d.at - now < 14 * 86400000).slice(0, 5);
+  const open = openNow(list).slice(0, 3);
+
+  // 今週末 = 直近の土日(今日が土日ならその週末)
+  const dow = now.getDay();
+  const toSat = dow === 0 ? -1 : 6 - dow;
+  const sat = startOfDay(new Date(now.getTime() + toSat * 86400000));
+  const sun = new Date(sat.getTime() + 86400000);
+  const weekend = up.filter(ev => {
+    const d = parseDT(ev.start); if (!d) return false;
+    return dayDiff(d, sat) === 0 || dayDiff(d, sun) === 0;
+  });
+  const soon = up.filter(ev => !weekend.includes(ev)).slice(0, 20);
+
+  let h = '';
+  if (dl.length) {
+    h += `<div class="sec-title">⏰ まもなく締切・発売 <span class="cnt">${dl.length}</span></div>`;
+    h += dl.map(radarRow).join('');
+  }
+  if (open.length) {
+    h += `<div class="sec-title">🟢 いま受付中 <span class="cnt">${open.length}</span></div>`;
+    h += open.map(o => eventCard(o.ev)).join('');
+  }
+  h += `<div class="sec-title">📅 今週末 (${sat.getMonth() + 1}/${sat.getDate()}・${sun.getMonth() + 1}/${sun.getDate()}) <span class="cnt">${weekend.length}</span></div>`;
+  h += weekend.length ? weekend.map(eventCard).join('')
+    : `<div class="empty">今週末の予定はありません<br>「さがす」で先の予定を見てみてください</div>`;
+  if (soon.length) {
+    h += `<div class="sec-title">これから <span class="cnt">${soon.length}</span></div>`;
+    h += soon.map(eventCard).join('');
+  }
+  if (!up.length) h += emptyAll();
+  return h;
+}
+
+function emptyAll() {
+  return `<div class="empty"><b>表示できるイベントがありません</b>
+    絞り込みを外すか、右上の「＋」からイベントを追加してください</div>`;
+}
+
+function renderSearch(list) {
+  const f = S.filters;
+  const set = S.settings;
+  const areas = AREAS.filter(a => !a.ext || set.extArea);
+  const up = list.filter(isUpcoming).sort((a, b) => (parseDT(a.start) || 0) - (parseDT(b.start) || 0));
+  let h = `<div class="field">
+      <input type="search" id="qInput" placeholder="🔎 イベント名・会場・市町で検索" value="${esc(f.q)}">
+    </div>
+    <div class="chips" style="padding-top:2px">
+      <button class="chip ${f.areas.length ? '' : 'on'} ${f.areas.length ? '' : 'all'}" data-a="">全エリア</button>
+      ${areas.map(a => `<button class="chip ${f.areas.includes(a.id) ? 'on' : ''}" data-a="${a.id}"
+        style="${f.areas.includes(a.id) ? 'background:var(--grad);border-color:transparent' : ''}">${esc(a.name)}</button>`).join('')}
+    </div>
+    <div class="chips" style="padding-top:0">
+      <button class="chip ${f.ticketOnly ? 'on' : ''}" data-t="1"
+        style="${f.ticketOnly ? 'background:var(--grad);border-color:transparent' : ''}">🎟 チケットが要るものだけ</button>
+      ${set.myCity ? `<button class="chip ${f.near ? 'on' : ''}" data-n="1"
+        style="${f.near ? 'background:var(--grad);border-color:transparent' : ''}">📍 ${esc(set.myCity)}の近くだけ</button>` : ''}
+    </div>
+    <div class="sec-title">検索結果 <span class="cnt">${up.length}</span></div>`;
+  h += up.length ? up.map(eventCard).join('') : emptyAll();
+  return h;
+}
+
+function renderRadar(list) {
+  const now = serverNow();
+  const dl = allDeadlines(list);
+  const open = openNow(list);
+  const soon = dl.filter(d => d.at - now < 7 * 86400000);
+  const later = dl.filter(d => d.at - now >= 7 * 86400000);
+
+  let h = `<div class="note" style="margin-bottom:12px">
+    <b>🎟 発売レーダー</b><br>
+    チケットの発売日・申込締切が近い順に並びます。行を開いて
+    <b>発売アラート</b>を入れておくと、前日 / 1時間前 / 10分前に知らせます。
+    ${timeSynced ? `時計はサーバーと同期済み(誤差およそ1秒)。` : `<span style="color:var(--am)">時計は端末のものを使用中。</span>`}
+  </div>`;
+
+  if (soon.length) {
+    h += `<div class="sec-title">⏰ 7日以内 <span class="cnt">${soon.length}</span></div>`;
+    h += soon.map(radarRow).join('');
+  }
+  if (open.length) {
+    h += `<div class="sec-title">🟢 いま受付中 <span class="cnt">${open.length}</span></div>`;
+    h += open.map(o => {
+      const t = saleType(o.sale.type);
+      const c = parseDT(o.sale.closesAt);
+      return `<div class="radar" data-ev="${esc(o.ev.id)}">
+        <div class="radar-top">
+          <span class="phase" style="background:${t.color}22;color:${t.color}">${esc(o.sale.label || t.label)}</span>
+          ${c ? `<span class="cd" data-cd="${c.getTime()}">${esc(fmtLeft(c - serverNow()))}</span>` : '<span class="cd" style="color:var(--ok)">受付中</span>'}
+        </div>
+        <h4>${esc(o.ev.title)}</h4>
+        <div class="sub">🎟 ${c ? '締切 ' + esc(fmtDateObj(c)) : '締切の指定なし'} ・ ${esc(o.ev.city || '')}</div>
+      </div>`;
+    }).join('');
+  }
+  if (later.length) {
+    h += `<div class="sec-title">📅 これから <span class="cnt">${later.length}</span></div>`;
+    h += later.map(radarRow).join('');
+  }
+  if (!soon.length && !open.length && !later.length) {
+    h += `<div class="empty"><b>先の発売予定がありません</b>
+      イベントに発売日を登録すると、ここに発売日順で並びます</div>`;
+  }
+  return h;
+}
+
+function renderMine(list) {
+  const ids = Object.keys(S.myEvents).filter(id => S.myEvents[id] && S.myEvents[id].status);
+  const byId = Object.fromEntries(ALL.map(e => [e.id, e]));
+  const now = serverNow();
+
+  // 期限(当落発表・入金期限・締切)が近いものを先頭に
+  const urgent = allDeadlines(ALL.filter(e => ids.includes(e.id)))
+    .filter(d => d.at - now < 30 * 86400000).slice(0, 6);
+
+  let h = '';
+  if (urgent.length) {
+    h += `<div class="sec-title">⚠️ 期限が近いもの <span class="cnt">${urgent.length}</span></div>`;
+    h += urgent.map(radarRow).join('');
+  }
+  STATUSES.forEach(st => {
+    const evs = ids.map(id => byId[id]).filter(e => e && S.myEvents[e.id].status === st.id)
+      .sort((a, b) => (parseDT(a.start) || 0) - (parseDT(b.start) || 0));
+    if (!evs.length) return;
+    h += `<div class="sec-title">${st.icon} ${st.label} <span class="cnt">${evs.length}</span></div>`;
+    h += evs.map(eventCard).join('');
+  });
+  if (!ids.length) {
+    h += `<div class="empty"><b>まだ登録がありません</b>
+      イベントを開いて「⭐ 気になる」を押すと、ここに集まります。<br>
+      申込済みにすると、当落発表と入金期限も追いかけます</div>`;
+  }
+  return h;
+}
+
+function render() {
+  renderChips();
+  const list = visibleEvents();
+  const view = el('view');
+  let h = '';
+  if (!S.settings.sampleBannerClosed && ALL.some(e => e.sample)) {
+    h += `<div class="banner"><span>💡</span><div>
+      同梱データは<b>動作確認用のサンプル</b>です。右上の「＋」から実際のイベントを登録するか、
+      設定でサンプルを隠せます。</div>
+      <button class="x" id="closeBanner">✕</button></div>`;
+  }
+  h += TAB === 'home' ? renderHome(list)
+    : TAB === 'search' ? renderSearch(list)
+    : TAB === 'radar' ? renderRadar(list)
+    : renderMine(list);
+  view.innerHTML = h;
+  updateBadges(list);
+  document.querySelectorAll('nav button').forEach(b =>
+    b.classList.toggle('on', b.dataset.tab === TAB));
+}
+
+function updateBadges(list) {
+  const now = serverNow();
+  const soon = allDeadlines(list).filter(d => d.at - now < 7 * 86400000).length;
+  const rb = el('radarBadge');
+  rb.textContent = soon; rb.classList.toggle('hide', !soon);
+  const mineIds = Object.keys(S.myEvents).filter(id => S.myEvents[id] && S.myEvents[id].status);
+  const mineUrgent = allDeadlines(ALL.filter(e => mineIds.includes(e.id)))
+    .filter(d => d.at - now < 7 * 86400000).length;
+  const mb = el('mineBadge');
+  mb.textContent = mineUrgent; mb.classList.toggle('hide', !mineUrgent);
+}
+
+// カウントダウン表示を1秒ごとに更新(再描画はしない)
+setInterval(() => {
+  const now = serverNow();
+  document.querySelectorAll('[data-cd]').forEach(n => {
+    const left = +n.dataset.cd - now;
+    n.textContent = left > 0 ? fmtLeft(left) : '受付開始';
+    if (left <= 0) n.style.color = 'var(--ok)';
+  });
+  maybeOpenDash();
+}, 1000);
+/* ============================================================
+   モーダル
+   ============================================================ */
+function openSheet(html, opt = {}) {
+  const root = el('modalRoot');
+  root.innerHTML = `<div class="sheet" id="sheet">
+    <div style="flex:1" data-close="1"></div>
+    <div class="sheet-body ${opt.full ? 'full' : ''}">
+      ${opt.full ? '' : '<div class="grab"></div>'}${html}
+    </div>
+  </div>`;
+  root.querySelectorAll('[data-close]').forEach(n =>
+    n.addEventListener('click', closeSheet));
+  document.body.style.overflow = 'hidden';
+}
+function closeSheet() {
+  el('modalRoot').innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+/* ---------- イベント詳細 ---------- */
+function guideLinks(ev) {
+  const q = encodeURIComponent(ev.title || '');
+  return S.settings.guides.map(g =>
+    `<a class="btn sm" href="${esc(g.url.replace('{q}', q))}" target="_blank" rel="noopener">${esc(g.name)} ↗</a>`
+  ).join('');
+}
+
+function saleBlock(ev, s, i) {
+  const t = saleType(s.type);
+  const st = phaseState(s, new Date(serverNow()));
+  const a = S.alerts[`${ev.id}|${i}`] || {};
+  const stLabel = { upcoming:'発売前', open:'🟢 受付中', closed:'受付終了', unknown:'—' }[st];
+  const line = (k, v) => v ? `<div class="kv"><div class="k">${k}</div><div class="v">${esc(fmtDate(v))}</div></div>` : '';
+  return `<div class="note" style="margin-bottom:10px;background:var(--card)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <span class="phase" style="background:${t.color}22;color:${t.color}">${esc(s.label || t.label)}</span>
+      <span style="font-size:12px;font-weight:800">${stLabel}</span>
+      ${s.lottery ? '<span class="badge">抽選</span>' : ''}
+    </div>
+    ${line('受付開始', s.opensAt)}
+    ${line('申込締切', s.closesAt)}
+    ${line('当落発表', s.resultAt)}
+    ${line('入金期限', s.payBy)}
+    <div class="btn-row" style="margin-top:10px">
+      ${s.url ? `<a class="btn sm pri" href="${esc(s.url)}" target="_blank" rel="noopener">販売ページを開く ↗</a>` : ''}
+      <button class="btn sm" data-ics="${esc(ev.id)}|${i}">📅 カレンダーに追加</button>
+      ${parseDT(s.opensAt) && parseDT(s.opensAt) > new Date(serverNow())
+        ? `<button class="btn sm" data-dash="${esc(ev.id)}|${i}">🚀 発売ダッシュ</button>` : ''}
+    </div>
+    <div style="margin-top:9px;font-size:12px;color:var(--text-sub);font-weight:800">⏰ 発売アラート</div>
+    <div class="seg" style="margin-top:6px">
+      ${[['d1','前日'],['h1','1時間前'],['m10','10分前']].map(([k, lb]) =>
+        `<button class="${a[k] ? 'on' : ''}" data-alert="${esc(ev.id)}|${i}|${k}">${lb}</button>`).join('')}
+    </div>
+  </div>`;
+}
+
+function openEvent(id) {
+  const ev = ALL.find(e => e.id === id);
+  if (!ev) return;
+  const my = S.myEvents[id] || {};
+  const h = `
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">${ev.genres.map(genreTag).join('')}</div>
+    <h2>${esc(ev.title)}</h2>
+    <div style="color:var(--am);font-weight:800;font-size:14px;margin-bottom:12px">${esc(fmtRange(ev))}</div>
+    <div class="kv"><div class="k">会場</div><div class="v">${esc(ev.venue || '—')}</div></div>
+    <div class="kv"><div class="k">場所</div><div class="v">${esc(ev.city || '—')}${AREA_BY[ev.area] ? ` (${esc(AREA_BY[ev.area].name)})` : ''}</div></div>
+    ${ev.price ? `<div class="kv"><div class="k">料金</div><div class="v">${esc(ev.price)}</div></div>` : ''}
+    ${ev.note ? `<div class="kv"><div class="k">メモ</div><div class="v">${esc(ev.note)}</div></div>` : ''}
+    ${ev.url ? `<div class="kv"><div class="k">公式</div><div class="v"><a href="${esc(ev.url)}" target="_blank" rel="noopener">サイトを開く ↗</a></div></div>` : ''}
+
+    <h3>マイステータス</h3>
+    <div class="seg">
+      ${STATUSES.map(s => `<button class="${my.status === s.id ? 'on' : ''}" data-status="${esc(id)}|${s.id}">${s.icon} ${s.label}</button>`).join('')}
+    </div>
+    <div class="field" style="margin-top:10px">
+      <label>自分用メモ(会員番号の下4桁・希望席種など。端末内にのみ保存)</label>
+      <textarea rows="2" id="myMemo" placeholder="例: 会員番号 ****1234 / 2階席希望 / 2枚">${esc(my.memo || '')}</textarea>
+    </div>
+
+    <h3>チケット・受付</h3>
+    ${(ev.sales || []).length ? ev.sales.map((s, i) => saleBlock(ev, s, i)).join('')
+      : `<div class="note">発売情報が登録されていません。<br>
+         下のプレイガイドで探して、「編集」から発売日を登録すると発売レーダーに載ります。</div>`}
+
+    <h3>プレイガイドで探す</h3>
+    <div class="btn-row">${guideLinks(ev)}</div>
+
+    <h3>&nbsp;</h3>
+    <div class="btn-row">
+      <button class="btn" data-edit="${esc(id)}">✏️ 編集</button>
+      <button class="btn" data-icsev="${esc(id)}">📅 開催日をカレンダーへ</button>
+    </div>
+    <button class="btn wide" style="margin-top:8px" data-close="1">閉じる</button>
+    <div style="height:8px"></div>`;
+  openSheet(h);
+
+  el('myMemo').addEventListener('input', e => {
+    S.myEvents[id] = { ...(S.myEvents[id] || {}), memo: e.target.value, updatedAt: Date.now() };
+    save();
+  });
+}
+
+/* ============================================================
+   カレンダー書き出し(.ics)
+   ------------------------------------------------------------
+   Web Push は iOS だとホーム画面に追加した時しか使えないので、
+   確実に鳴らせるカレンダー登録を通知の主軸にする。
+   ============================================================ */
+function icsStamp(d) {
+  return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+}
+function buildICS(items) {
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//kitaibe//JP','CALSCALE:GREGORIAN'];
+  items.forEach((it, n) => {
+    const end = new Date(it.at.getTime() + (it.durMin || 60) * 60000);
+    lines.push('BEGIN:VEVENT',
+      `UID:kitaibe-${Date.now()}-${n}@local`,
+      `DTSTAMP:${icsStamp(new Date())}`,
+      `DTSTART:${icsStamp(it.at)}`,
+      `DTEND:${icsStamp(end)}`,
+      `SUMMARY:${icsEsc(it.title)}`,
+      `DESCRIPTION:${icsEsc(it.desc || '')}`);
+    (it.alarms || []).forEach(min => {
+      lines.push('BEGIN:VALARM','ACTION:DISPLAY',
+        `DESCRIPTION:${icsEsc(it.title)}`,
+        `TRIGGER:-PT${min}M`, 'END:VALARM');
+    });
+    lines.push('END:VEVENT');
+  });
+  lines.push('END:VCALENDAR');
+  return lines.join('\r\n');
+}
+const icsEsc = s => String(s || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;')
+  .replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+
+function downloadICS(items, filename) {
+  const blob = new Blob([buildICS(items)], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename || 'kitaibe.ics';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+// iOS などで .ics のダウンロードがうまくいかない場合の逃げ道
+function googleCalUrl(it) {
+  const f = d => `${d.getUTCFullYear()}${pad(d.getUTCMonth()+1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
+  const end = new Date(it.at.getTime() + (it.durMin || 60) * 60000);
+  const p = new URLSearchParams({
+    action: 'TEMPLATE', text: it.title, details: it.desc || '',
+    dates: `${f(it.at)}/${f(end)}`,
+  });
+  return `https://calendar.google.com/calendar/render?${p}`;
+}
+
+function askCalendar(items, filename) {
+  const it = items[0];
+  openSheet(`<h2>📅 カレンダーに追加</h2>
+    <div class="note" style="margin:10px 0">
+      <b>${esc(it.title)}</b><br>${esc(fmtDateObj(it.at))}
+    </div>
+    <div class="note" style="margin-bottom:12px">
+      端末のカレンダーに入れておくと、アプリを開いていなくても通知が鳴ります。
+      iPhone でファイルが開けないときは Google カレンダーの方を使ってください。
+    </div>
+    <button class="btn pri wide" id="icsDl">📥 カレンダーファイル(.ics)で追加</button>
+    <div style="height:8px"></div>
+    <a class="btn wide" href="${esc(googleCalUrl(it))}" target="_blank" rel="noopener">🗓 Google カレンダーで開く ↗</a>
+    <div style="height:8px"></div>
+    <button class="btn wide" data-close="1">閉じる</button><div style="height:8px"></div>`);
+  el('icsDl').addEventListener('click', () => {
+    downloadICS(items, filename);
+    toast('カレンダーファイルを書き出しました');
+  });
+}
+/* ============================================================
+   🚀 発売ダッシュ
+   ------------------------------------------------------------
+   発売10分前に自動で開く。ズレ補正済みのカウントダウンを 0.1秒まで出し、
+   販売ページのボタンを先に並べておくことで「0秒で押す」を狙う。
+   ============================================================ */
+let dashKey = null, dashTimer = null, dashDismissed = {};
+
+const CHECKS = [
+  ['member', 'プレイガイドの会員登録は済んでいる?'],
+  ['login',  'ログインしたままになっている?'],
+  ['pay',    '支払い方法(クレカ等)は登録済み?'],
+  ['seat',   '枚数・席種・同行者は決めた?'],
+  ['period', '抽選先行なら、申込期間はいつまで?'],
+];
+
+function openDash(evId, i) {
+  const ev = ALL.find(e => e.id === evId); if (!ev) return;
+  const sale = ev.sales[i]; if (!sale) return;
+  const at = parseDT(sale.opensAt); if (!at) return;
+  dashKey = `${evId}|${i}`;
+  const my = S.myEvents[evId] || {};
+  const checks = my.checks || {};
+  const t = saleType(sale.type);
+
+  openSheet(`<div class="dash">
+      <div class="ph" style="color:${t.color}">${esc(sale.label || t.label)}</div>
+      <div class="ttl">${esc(ev.title)}</div>
+      <div style="font-size:12px;color:var(--text-sub);margin-bottom:16px">${esc(fmtDateObj(at))} 発売</div>
+      <div class="big" id="dashBig">--:--</div>
+      <div class="sync" id="dashSync"></div>
+    </div>
+    <div class="btn-row" style="margin-top:18px">
+      ${sale.url ? `<a class="btn pri wide" href="${esc(sale.url)}" target="_blank" rel="noopener"
+        style="font-size:15px;padding:14px">🎟 販売ページを開く ↗</a>` : ''}
+    </div>
+    <div class="btn-row" style="margin-top:8px">${guideLinks(ev)}</div>
+
+    <h3>事前準備チェック</h3>
+    ${CHECKS.map(([k, lb]) => `<label class="check">
+      <input type="checkbox" data-check="${esc(evId)}|${k}" ${checks[k] ? 'checked' : ''}>
+      <span>${esc(lb)}</span></label>`).join('')}
+
+    <div class="field" style="margin-top:10px">
+      <label>メモ(会員番号の下4桁・希望席種など)</label>
+      <textarea rows="2" id="dashMemo" placeholder="例: 会員番号 ****1234 / 2階席 / 2枚">${esc(my.memo || '')}</textarea>
+    </div>
+    <button class="btn wide" style="margin-top:10px" id="dashClose">閉じる</button>
+    <div style="height:10px"></div>`, { full: true });
+
+  el('dashMemo').addEventListener('input', e => {
+    S.myEvents[evId] = { ...(S.myEvents[evId] || {}), memo: e.target.value, updatedAt: Date.now() };
+    save();
+  });
+  el('dashClose').addEventListener('click', () => {
+    dashDismissed[dashKey] = true; dashKey = null;
+    clearInterval(dashTimer); closeSheet();
+  });
+
+  clearInterval(dashTimer);
+  const tick = () => {
+    const big = el('dashBig'); if (!big) { clearInterval(dashTimer); return; }
+    const left = at.getTime() - serverNow();
+    if (left <= 0) {
+      big.textContent = '販売開始！';
+      big.classList.add('go');
+    } else if (left < 3600000) {
+      const s = left / 1000;
+      big.textContent = `${pad(Math.floor(s / 60))}:${pad(Math.floor(s % 60))}.${Math.floor(s * 10 % 10)}`;
+    } else {
+      big.textContent = fmtLeft(left);
+    }
+    const sync = el('dashSync');
+    if (sync) sync.textContent = timeSynced
+      ? `サーバー時刻と同期済み(通信の往復 ${Math.round(timeRtt)}ms・誤差およそ1秒)`
+      : '端末の時計を使用中(オフラインのため未同期)';
+  };
+  tick();
+  dashTimer = setInterval(tick, 100);
+}
+
+// 発売10分前になったら自動で開く
+function maybeOpenDash() {
+  if (dashKey || el('modalRoot').innerHTML) return;
+  const now = serverNow();
+  for (const ev of ALL) {
+    for (let i = 0; i < (ev.sales || []).length; i++) {
+      const key = `${ev.id}|${i}`;
+      if (dashDismissed[key]) continue;
+      const a = S.alerts[key];
+      if (!a || !a.m10) continue;                 // アラートを入れた段階だけ
+      const at = parseDT(ev.sales[i].opensAt);
+      if (!at) continue;
+      const left = at.getTime() - now;
+      if (left > 0 && left <= 10 * 60000) { openDash(ev.id, i); return; }
+    }
+  }
+}
+
+/* ============================================================
+   通知(アプリを開いている間の3段階アラート)
+   ============================================================ */
+const ALERT_OFFSETS = { d1: 24 * 3600000, h1: 3600000, m10: 10 * 60000 };
+let firedAlerts = {};
+
+async function ensureNotifyPermission() {
+  if (!('Notification' in window)) return false;
+  if (Notification.permission === 'granted') return true;
+  if (Notification.permission === 'denied') return false;
+  const r = await Notification.requestPermission();
+  return r === 'granted';
+}
+
+function notify(title, body) {
+  try {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, { body, icon: 'icons/icon-192.png', tag: title });
+      return;
+    }
+  } catch (e) { /* 通知が使えない環境ではトーストで代替 */ }
+  toast(`${title} ${body}`);
+}
+
+// アプリを開いている間だけ動く見張り。閉じている間はカレンダー(.ics)が担当する
+setInterval(() => {
+  if (!S.settings.notify) return;
+  const now = serverNow();
+  ALL.forEach(ev => (ev.sales || []).forEach((s, i) => {
+    const key = `${ev.id}|${i}`;
+    const a = S.alerts[key]; if (!a) return;
+    const at = parseDT(s.opensAt); if (!at) return;
+    const left = at.getTime() - now;
+    Object.entries(ALERT_OFFSETS).forEach(([k, off]) => {
+      if (!a[k]) return;
+      const fk = `${key}|${k}`;
+      if (firedAlerts[fk]) return;
+      if (left <= off && left > off - 60000) {
+        firedAlerts[fk] = true;
+        const lb = { d1:'明日', h1:'1時間後', m10:'10分後' }[k];
+        notify(`🎟 ${lb}に発売`, `${ev.title} / ${s.label || saleType(s.type).label}`);
+      }
+    });
+  }));
+}, 20000);
+/* ============================================================
+   イベントの追加・編集
+   ============================================================ */
+let formSales = [];
+
+function saleRow(s, i) {
+  const opt = Object.entries(SALE_TYPES).map(([k, v]) =>
+    `<option value="${k}" ${s.type === k ? 'selected' : ''}>${esc(v.label)}</option>`).join('');
+  return `<div class="note" style="background:var(--card);margin-bottom:10px" data-srow="${i}">
+    <div class="row2">
+      <div class="field"><label>種別</label><select data-s="${i}|type">${opt}</select></div>
+      <div class="field"><label>表示名(空欄可)</label><input data-s="${i}|label" value="${esc(s.label || '')}" placeholder="例: 先行抽選"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>受付開始</label><input type="datetime-local" data-s="${i}|opensAt" value="${esc(s.opensAt || '')}"></div>
+      <div class="field"><label>申込締切</label><input type="datetime-local" data-s="${i}|closesAt" value="${esc(s.closesAt || '')}"></div>
+    </div>
+    <label class="check"><input type="checkbox" data-s="${i}|lottery" ${s.lottery ? 'checked' : ''}><span>抽選である(当落発表・入金期限を管理する)</span></label>
+    <div class="row2">
+      <div class="field"><label>当落発表</label><input type="date" data-s="${i}|resultAt" value="${esc((s.resultAt || '').slice(0, 10))}"></div>
+      <div class="field"><label>入金期限</label><input type="date" data-s="${i}|payBy" value="${esc((s.payBy || '').slice(0, 10))}"></div>
+    </div>
+    <div class="field"><label>販売ページURL</label><input type="url" data-s="${i}|url" value="${esc(s.url || '')}" placeholder="https://"></div>
+    <button class="btn sm" data-delsale="${i}">この段階を削除</button>
+  </div>`;
+}
+
+function openForm(id) {
+  const ev = id ? ALL.find(e => e.id === id) : null;
+  const e = ev || { genres: [], sales: [] };
+  formSales = (e.sales || []).map(s => ({ ...s }));
+  const cities = AREAS.filter(a => !a.ext || S.settings.extArea)
+    .map(a => `<optgroup label="${esc(a.name)}(${esc(a.pref)})">${
+      a.cities.map(c => `<option ${e.city === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}</optgroup>`).join('');
+
+  openSheet(`<h2>${ev ? '✏️ イベントを編集' : '＋ イベントを追加'}</h2>
+    <div class="field"><label>イベント名 <span style="color:var(--pk)">*</span></label>
+      <input id="fTitle" value="${esc(e.title || '')}" placeholder="例: ○○ホール 開館記念公演"></div>
+    <div class="field"><label>ジャンル(複数可) <span style="color:var(--pk)">*</span></label>
+      <div class="chips" id="fGenres" style="padding:0;flex-wrap:wrap;overflow:visible">
+        ${GENRES.map(g => {
+          const on = e.genres.includes(g.id);
+          return `<button type="button" class="chip ${on ? 'on' : ''}" data-fg="${g.id}"
+            style="${on ? `background:${g.color};border-color:transparent;color:#fff` : ''}">${g.icon} ${esc(g.name)}</button>`;
+        }).join('')}
+      </div></div>
+    <div class="row2">
+      <div class="field"><label>開始 <span style="color:var(--pk)">*</span></label>
+        <input type="datetime-local" id="fStart" value="${esc(e.start || '')}"></div>
+      <div class="field"><label>終了(空欄可)</label>
+        <input type="datetime-local" id="fEnd" value="${esc(e.end || '')}"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>市町</label><select id="fCity"><option value="">選択しない</option>${cities}</select></div>
+      <div class="field"><label>会場</label><input id="fVenue" value="${esc(e.venue || '')}" placeholder="例: ○○文化ホール"></div>
+    </div>
+    <div class="field"><label>料金</label><input id="fPrice" value="${esc(e.price || '')}" placeholder="例: 全席指定 4,500円"></div>
+    <div class="field"><label>公式サイトURL</label><input type="url" id="fUrl" value="${esc(e.url || '')}" placeholder="https://"></div>
+    <div class="field"><label>メモ</label><textarea id="fNote" rows="2">${esc(e.note || '')}</textarea></div>
+    <label class="check"><input type="checkbox" id="fTicket" ${e.needsTicket !== false ? 'checked' : ''}><span>チケット・申込が必要なイベント</span></label>
+
+    <h3>チケット・受付の段階</h3>
+    <div class="note" style="margin-bottom:10px">
+      先行 → 一般のように<b>段階ごとに登録</b>できます。マラソン大会のエントリーや
+      ワークショップの予約も同じ形で扱えます。
+    </div>
+    <div id="fSales">${formSales.map(saleRow).join('')}</div>
+    <button class="btn sm" id="addSale">＋ 段階を追加</button>
+
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn pri" id="fSave">保存する</button>
+      ${ev && ev.userAdded ? `<button class="btn" data-delev="${esc(id)}">削除</button>` : ''}
+    </div>
+    <button class="btn wide" style="margin-top:8px" data-close="1">キャンセル</button>
+    <div style="height:10px"></div>`, { full: true });
+
+  let genres = [...e.genres];
+  el('fGenres').addEventListener('click', ev2 => {
+    const b = ev2.target.closest('[data-fg]'); if (!b) return;
+    const g = b.dataset.fg;
+    genres = genres.includes(g) ? genres.filter(x => x !== g) : [...genres, g];
+    const on = genres.includes(g), c = GENRE_BY[g].color;
+    b.classList.toggle('on', on);
+    b.style.cssText = on ? `background:${c};border-color:transparent;color:#fff` : '';
+  });
+
+  const redrawSales = () => {
+    el('fSales').innerHTML = formSales.map(saleRow).join('');
+  };
+  el('addSale').addEventListener('click', () => {
+    formSales.push({ type: 'general', label: '', opensAt: '', closesAt: '', lottery: false, url: '' });
+    redrawSales();
+  });
+  el('fSales').addEventListener('click', ev2 => {
+    const d = ev2.target.closest('[data-delsale]'); if (!d) return;
+    formSales.splice(+d.dataset.delsale, 1); redrawSales();
+  });
+  el('fSales').addEventListener('change', ev2 => {
+    const n = ev2.target.closest('[data-s]'); if (!n) return;
+    const [i, k] = n.dataset.s.split('|');
+    formSales[+i][k] = n.type === 'checkbox' ? n.checked : n.value;
+  });
+
+  el('fSave').addEventListener('click', () => {
+    const title = el('fTitle').value.trim();
+    const start = el('fStart').value;
+    if (!title) return toast('イベント名を入れてください');
+    if (!genres.length) return toast('ジャンルを1つ以上選んでください');
+    if (!start) return toast('開始日時を入れてください');
+    const city = el('fCity').value;
+    const rec = {
+      id: id || `user-${Date.now()}`,
+      userAdded: true,
+      title, genres, start, end: el('fEnd').value || null,
+      city, area: CITY_TO_AREA[city] || '',
+      venue: el('fVenue').value.trim(),
+      price: el('fPrice').value.trim(),
+      url: el('fUrl').value.trim(),
+      note: el('fNote').value.trim(),
+      needsTicket: el('fTicket').checked,
+      sales: formSales.filter(s => s.opensAt || s.closesAt || s.url),
+    };
+    const idx = S.userEvents.findIndex(x => x.id === rec.id);
+    if (idx >= 0) S.userEvents[idx] = rec; else S.userEvents.push(rec);
+    save();
+    loadEvents().then(() => { closeSheet(); render(); toast(id ? '保存しました' : 'イベントを追加しました'); });
+  });
+}
+
+/* ============================================================
+   設定
+   ============================================================ */
+function openSettings() {
+  const set = S.settings;
+  const cities = AREAS.filter(a => !a.ext || set.extArea)
+    .map(a => `<optgroup label="${esc(a.name)}">${a.cities.map(c =>
+      `<option ${set.myCity === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}</optgroup>`).join('');
+  const at = S.cache && S.cache.at ? new Date(S.cache.at) : null;
+
+  openSheet(`<h2>⚙ 設定</h2>
+    <h3>エリア</h3>
+    <div class="field"><label>自分の市町(「近くだけ」で使います)</label>
+      <select id="sCity"><option value="">選択しない</option>${cities}</select></div>
+    <label class="switch"><input type="checkbox" id="sExt" ${set.extArea ? 'checked' : ''}>
+      <span class="lbl">拡張エリアを含める<small>福井県嶺南(敦賀・小浜など)・滋賀県北部(長浜など)</small></span></label>
+
+    <h3>通知</h3>
+    <label class="switch"><input type="checkbox" id="sNotify" ${set.notify ? 'checked' : ''}>
+      <span class="lbl">発売アラートを鳴らす<small>アプリを開いている間に前日/1時間前/10分前で通知します</small></span></label>
+    <button class="btn sm" id="sPerm" style="margin-top:8px">通知を許可する</button>
+    <div class="note" style="margin-top:10px">
+      <b>iPhone をお使いの場合</b><br>
+      Safari の通知はホーム画面に追加したときしか使えません。確実に知らせるため、
+      発売日は<b>カレンダー(.ics)にも登録</b>しておくのがおすすめです。
+    </div>
+
+    <h3>プレイガイド</h3>
+    <div class="note" style="margin-bottom:10px">
+      検索リンクのURLです。<b>{q}</b> の部分がイベント名に置き換わります。
+      サイト側の仕様変更でうまく開かないときはここを直してください。
+    </div>
+    <div id="sGuides">${set.guides.map((g, i) => `<div class="field">
+      <label>${esc(g.name)}</label><input data-guide="${i}" value="${esc(g.url)}"></div>`).join('')}</div>
+    <button class="btn sm" id="sGuideReset">初期値に戻す</button>
+
+    <h3>データ</h3>
+    <div class="note" style="margin-bottom:10px">
+      同梱データ最終取得: <b>${at ? esc(fmtDateObj(at)) : '未取得'}</b><br>
+      登録イベント数: <b>${ALL.length}</b>件(うち手動追加 ${S.userEvents.length}件)
+    </div>
+    <label class="switch"><input type="checkbox" id="sHideSample" ${set.hideSample ? 'checked' : ''}>
+      <span class="lbl">サンプルデータを隠す<small>実際のイベントを登録したらONにしてください</small></span></label>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn" id="sReload">🔄 データを再取得</button>
+      <button class="btn" id="sExport">⬇️ 自分のデータを書き出す</button>
+    </div>
+    <button class="btn wide" style="margin-top:8px" id="sClear">🗑 手動追加とマイ登録を全部消す</button>
+
+    <button class="btn wide pri" style="margin-top:18px" data-close="1">閉じる</button>
+    <div style="height:10px"></div>`, { full: true });
+
+  const bind = (id, fn) => el(id).addEventListener('change', fn);
+  bind('sCity', e => { set.myCity = e.target.value; save(); render(); });
+  bind('sExt', e => { set.extArea = e.target.checked; save(); render(); });
+  bind('sNotify', e => { set.notify = e.target.checked; save(); });
+  bind('sHideSample', e => { set.hideSample = e.target.checked; save(); render(); });
+  el('sPerm').addEventListener('click', async () => {
+    toast(await ensureNotifyPermission() ? '通知を許可しました' : '通知が使えません(.icsをお使いください)');
+  });
+  el('sGuides').addEventListener('change', e => {
+    const n = e.target.closest('[data-guide]'); if (!n) return;
+    set.guides[+n.dataset.guide].url = n.value; save();
+  });
+  el('sGuideReset').addEventListener('click', () => {
+    set.guides = DEFAULT_GUIDES.map(g => ({ ...g })); save(); closeSheet(); openSettings();
+  });
+  el('sReload').addEventListener('click', async () => {
+    await loadEvents(); render(); toast('データを再取得しました');
+  });
+  el('sExport').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify({ userEvents: S.userEvents, myEvents: S.myEvents, alerts: S.alerts }, null, 2)],
+      { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'kitaibe-backup.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('書き出しました');
+  });
+  el('sClear').addEventListener('click', () => {
+    if (!confirm('手動追加したイベントと、マイ登録・アラートを全部消します。よろしいですか?')) return;
+    S.userEvents = []; S.myEvents = {}; S.alerts = {}; save();
+    loadEvents().then(() => { closeSheet(); render(); toast('消しました'); });
+  });
+}
+
+/* ---------- エリア選択(ヘッダーの📍) ---------- */
+function openAreaPicker() {
+  const f = S.filters, set = S.settings;
+  const areas = AREAS.filter(a => !a.ext || set.extArea);
+  openSheet(`<h2>📍 エリアで絞る</h2>
+    <div class="note" style="margin:10px 0">選ばなければ全エリアが対象です</div>
+    ${areas.map(a => `<label class="switch">
+      <input type="checkbox" data-area="${a.id}" ${f.areas.includes(a.id) ? 'checked' : ''}>
+      <span class="lbl">${esc(a.name)}<small>${esc(a.cities.join('・'))}</small></span></label>`).join('')}
+    ${set.myCity ? `<label class="switch"><input type="checkbox" id="pNear" ${f.near ? 'checked' : ''}>
+      <span class="lbl">📍 ${esc(set.myCity)}の近くだけ<small>自分のブロックと隣のブロックに絞ります</small></span></label>` : ''}
+    <label class="switch"><input type="checkbox" id="pTicket" ${f.ticketOnly ? 'checked' : ''}>
+      <span class="lbl">🎟 チケットが要るものだけ<small>祭りなどの入場無料イベントを除きます</small></span></label>
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn" id="pClear">絞り込みを解除</button>
+      <button class="btn pri" data-close="1">決定</button>
+    </div><div style="height:10px"></div>`);
+  el('modalRoot').addEventListener('change', e => {
+    const a = e.target.closest('[data-area]');
+    if (a) {
+      const id = a.dataset.area;
+      f.areas = a.checked ? [...f.areas, id] : f.areas.filter(x => x !== id);
+    }
+    if (e.target.id === 'pNear') f.near = e.target.checked;
+    if (e.target.id === 'pTicket') f.ticketOnly = e.target.checked;
+    save(); render();
+  });
+  el('pClear').addEventListener('click', () => {
+    f.areas = []; f.near = false; f.ticketOnly = false; f.genres = [];
+    save(); closeSheet(); render(); toast('絞り込みを解除しました');
+  });
+}
+/* ============================================================
+   操作
+   ============================================================ */
+function setStatus(id, st) {
+  const cur = S.myEvents[id] || {};
+  S.myEvents[id] = { ...cur, status: cur.status === st ? null : st, updatedAt: Date.now() };
+  save(); render();
+  const s = STATUS_BY[st];
+  toast(S.myEvents[id].status ? `${s.icon} ${s.label} にしました` : '登録を外しました');
+}
+
+function toggleAlert(id, i, k) {
+  const key = `${id}|${i}`;
+  const a = S.alerts[key] || {};
+  a[k] = !a[k];
+  if (!a.d1 && !a.h1 && !a.m10) delete S.alerts[key]; else S.alerts[key] = a;
+  save();
+  if (a[k]) ensureNotifyPermission();
+  const ev = ALL.find(e => e.id === id);
+  closeSheet(); openEvent(id); render();
+  toast(a[k] ? 'アラートを設定しました' : 'アラートを外しました');
+}
+
+function icsForSale(id, i) {
+  const ev = ALL.find(e => e.id === id); if (!ev) return;
+  const s = ev.sales[i]; if (!s) return;
+  const t = saleType(s.type);
+  const items = [];
+  const at = parseDT(s.opensAt);
+  if (at) items.push({
+    at, durMin: 30, title: `🎟 ${ev.title} ${s.label || t.label}`,
+    desc: `${ev.title}\n${s.label || t.label} 受付開始\n${s.url || ''}`,
+    alarms: [1440, 60, 10],
+  });
+  const c = parseDT(s.closesAt);
+  if (c) items.push({ at: c, durMin: 15, title: `⏳ ${ev.title} 申込締切`, desc: s.url || '', alarms: [1440, 60] });
+  const r = parseDT(s.resultAt);
+  if (r) items.push({ at: r, durMin: 15, title: `📣 ${ev.title} 当落発表`, desc: s.url || '', alarms: [0] });
+  const p = parseDT(s.payBy);
+  if (p) items.push({ at: p, durMin: 15, title: `💳 ${ev.title} 入金期限`, desc: s.url || '', alarms: [1440] });
+  if (!items.length) return toast('登録できる日時がありません');
+  askCalendar(items, 'kitaibe-ticket.ics');
+}
+
+function icsForEvent(id) {
+  const ev = ALL.find(e => e.id === id); if (!ev) return;
+  const at = parseDT(ev.start); if (!at) return toast('開催日時がありません');
+  const end = parseDT(ev.end);
+  askCalendar([{
+    at, durMin: end ? Math.max(30, (end - at) / 60000) : 120,
+    title: ev.title,
+    desc: [ev.venue, ev.city, ev.price, ev.url].filter(Boolean).join('\n'),
+    alarms: [1440, 60],
+  }], 'kitaibe-event.ics');
+}
+
+document.addEventListener('click', e => {
+  const t = e.target;
+  const hit = sel => t.closest(sel);
+
+  // タブ
+  const nav = hit('nav button');
+  if (nav) { TAB = nav.dataset.tab; window.scrollTo(0, 0); render(); return; }
+
+  // ヘッダー
+  if (hit('#btnAdd')) return openForm(null);
+  if (hit('#btnSettings')) return openSettings();
+  if (hit('#btnArea')) return openAreaPicker();
+  if (hit('#closeBanner')) { S.settings.sampleBannerClosed = true; save(); render(); return; }
+
+  if (hit('#btnMoreGenres')) {
+    S.settings.genresExpanded = !S.settings.genresExpanded;
+    save(); renderChips(); return;
+  }
+
+  // ジャンルチップ(ヘッダー)
+  const chip = hit('#genreChips .chip');
+  if (chip) {
+    const g = chip.dataset.g;
+    if (!g) S.filters.genres = [];
+    else S.filters.genres = S.filters.genres.includes(g)
+      ? S.filters.genres.filter(x => x !== g) : [...S.filters.genres, g];
+    save(); render(); return;
+  }
+
+  // さがす画面のエリア・条件チップ
+  const ac = hit('[data-a]');
+  if (ac && !hit('.sheet')) {
+    const a = ac.dataset.a;
+    if (!a) S.filters.areas = [];
+    else S.filters.areas = S.filters.areas.includes(a)
+      ? S.filters.areas.filter(x => x !== a) : [...S.filters.areas, a];
+    save(); render(); return;
+  }
+  if (hit('[data-t]') && !hit('.sheet')) { S.filters.ticketOnly = !S.filters.ticketOnly; save(); render(); return; }
+  if (hit('[data-n]') && !hit('.sheet')) { S.filters.near = !S.filters.near; save(); render(); return; }
+
+  // シート内のアクション
+  const st = hit('[data-status]');
+  if (st) { const [id, s] = st.dataset.status.split('|'); closeSheet(); setStatus(id, s); return; }
+  const al = hit('[data-alert]');
+  if (al) { const [id, i, k] = al.dataset.alert.split('|'); return toggleAlert(id, +i, k); }
+  const ic = hit('[data-ics]');
+  if (ic) { const [id, i] = ic.dataset.ics.split('|'); return icsForSale(id, +i); }
+  const ie = hit('[data-icsev]');
+  if (ie) return icsForEvent(ie.dataset.icsev);
+  const da = hit('[data-dash]');
+  if (da) { const [id, i] = da.dataset.dash.split('|'); closeSheet(); return openDash(id, +i); }
+  const ed = hit('[data-edit]');
+  if (ed) { const id = ed.dataset.edit; closeSheet(); return openForm(id); }
+  const de = hit('[data-delev]');
+  if (de) {
+    if (!confirm('このイベントを削除しますか?')) return;
+    S.userEvents = S.userEvents.filter(x => x.id !== de.dataset.delev);
+    save(); loadEvents().then(() => { closeSheet(); render(); toast('削除しました'); });
+    return;
+  }
+
+  // イベントカード / レーダー行
+  const card = hit('[data-ev]');
+  if (card) return openEvent(card.dataset.ev);
+});
+
+// チェックリスト
+document.addEventListener('change', e => {
+  const c = e.target.closest('[data-check]');
+  if (!c) return;
+  const [id, k] = c.dataset.check.split('|');
+  const my = S.myEvents[id] || {};
+  my.checks = { ...(my.checks || {}), [k]: c.checked };
+  S.myEvents[id] = { ...my, updatedAt: Date.now() };
+  save();
+});
+
+// 検索入力(再描画でフォーカスが飛ばないように位置を戻す)
+document.addEventListener('input', e => {
+  if (e.target.id !== 'qInput') return;
+  S.filters.q = e.target.value;
+  const pos = e.target.selectionStart;
+  save(); render();
+  const n = el('qInput');
+  if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (err) {} }
+});
+
+/* ============================================================
+   起動
+   ============================================================ */
+async function init() {
+  render();                       // まずキャッシュ/空で描いて、体感を速くする
+  await loadEvents();
+  render();
+  syncTime().then(() => { if (TAB === 'radar') render(); });
+  if (S.settings.notify && 'Notification' in window && Notification.permission === 'default') {
+    // 初回に無言で聞かない。設定画面かアラート設定時に聞く
+  }
+}
+init();
+
+// 復帰時に時刻を測り直す(スリープ中に時計がずれることがある)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) { syncTime(); render(); }
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>

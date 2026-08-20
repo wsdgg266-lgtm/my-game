@@ -1,0 +1,5 @@
+{
+  "_readme": "GitHub Actions の events-import ワークフローが自動生成します。手で編集しても次回の実行で上書きされます。手入力のイベントは events.json の方に書いてください。",
+  "generatedAt": null,
+  "events": []
+}

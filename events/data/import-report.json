@@ -1,0 +1,17 @@
+{
+  "ranAt": "2026-08-20T00:16:15.043Z",
+  "imported": 0,
+  "changed": false,
+  "log": [
+    {
+      "source": "BODIK(全国横断カタログ)",
+      "level": "error",
+      "msg": "カタログに接続できませんでした: HTTP 403"
+    },
+    {
+      "source": "京都府・市町村オープンデータポータル",
+      "level": "error",
+      "msg": "カタログに接続できませんでした: HTTP 403"
+    }
+  ]
+}

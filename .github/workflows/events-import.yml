@@ -1,0 +1,48 @@
+# 北近畿のイベント情報を自治体オープンデータから取り込み、events/data/imported.json を更新する。
+#
+# ブラウザから直接よそのサイトを読むと CORS で弾かれるので、取得はここ(サーバー側)で行い、
+# 結果をリポジトリに置く。アプリは同一オリジンの JSON を読むだけで済む。
+#
+# 初回は Actions タブから手動実行して、events/data/import-report.json に
+# どのソースが使えたかを確認してください。1件も取れなくてもアプリは動きます
+# (手入力したイベントは events/data/events.json 側にあるため)。
+name: Import events
+
+on:
+  schedule:
+    - cron: '0 18 * * *'   # UTC 18:00 = 日本時間 翌 3:00
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: events-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 取り込みロジックのテスト
+        run: node scripts/test-import.mjs
+
+      - name: イベントを取り込む
+        run: node scripts/import-events.mjs
+
+      - name: 変更があればコミットする
+        run: |
+          if [ -z "$(git status --porcelain events/data)" ]; then
+            echo "変更なし"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add events/data
+          git commit -m "イベントデータを自動更新 ($(date -u +%Y-%m-%d))"
+          git push
