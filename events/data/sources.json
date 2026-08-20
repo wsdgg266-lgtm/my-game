@@ -1,0 +1,15 @@
+{
+  "_readme": "自動取り込みの対象。CKAN(自治体オープンデータのカタログ)を探して、国の推奨データセット「イベント一覧」形式のCSVを拾います。動かないソースは import-report.json に理由が出るので、そこを見て足したり消したりしてください。",
+  "targetCities": [
+    "京丹後市", "宮津市", "与謝野町", "伊根町",
+    "舞鶴市", "綾部市", "福知山市",
+    "南丹市", "京丹波町", "亀岡市",
+    "豊岡市", "養父市", "朝来市", "香美町", "新温泉町",
+    "丹波市", "丹波篠山市"
+  ],
+  "ckan": [
+    { "name": "BODIK(全国横断カタログ)", "base": "https://data.bodik.jp", "enabled": true },
+    { "name": "京都府・市町村オープンデータポータル", "base": "https://odcs.bodik.jp/kyoto-pref", "enabled": true },
+    { "name": "e-Govデータポータル", "base": "https://data.e-gov.go.jp/data", "enabled": false }
+  ]
+}

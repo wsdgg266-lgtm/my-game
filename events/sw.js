@@ -1,12 +1,13 @@
 // キタイベ！ Service Worker
 // アプリ本体(シェル)とイベントデータをキャッシュし、オフラインでも開けるようにする。
 // events.json は「まずネットワーク、だめならキャッシュ」で常に新しい方を出す。
-const CACHE = 'kitaibe-shell-v1';
+const CACHE = 'kitaibe-shell-v2';
 const SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
   './data/events.json',
+  './data/imported.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
@@ -32,14 +33,14 @@ self.addEventListener('fetch', e => {
   // サーバー時刻の同期に使う HEAD/キャッシュ無効リクエストは素通しする
   if (e.request.cache === 'no-store' || url.searchParams.has('_t')) return;
 
-  // イベントデータは常に最新を優先
-  if (url.pathname.endsWith('/data/events.json')) {
+  // イベントデータ(手動整備・自動取り込みとも)は常に最新を優先
+  if (/\/data\/(events|imported)\.json$/.test(url.pathname)) {
     e.respondWith(
       fetch(e.request).then(res => {
         const copy = res.clone();
         caches.open(CACHE).then(c => c.put(e.request, copy));
         return res;
-      }).catch(() => caches.match(e.request).then(hit => hit || caches.match('./data/events.json')))
+      }).catch(() => caches.match(e.request))
     );
     return;
   }
