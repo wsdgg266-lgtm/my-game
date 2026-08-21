@@ -1,0 +1,16 @@
+{
+  "name": "ジャマケシ - 写真のじゃまなものを消す",
+  "short_name": "ジャマケシ",
+  "description": "写真に写り込んだ通行人・電線・看板などを、指でなぞるだけで消せる加工アプリ。まわりの絵柄から作り直して埋めるので、消した跡が残りません。写真は端末の外に送信しません。",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d0b18",
+  "theme_color": "#0d0b18",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -37,6 +37,7 @@
    - ピコラン!: `https://<プロジェクト名>.vercel.app/game/`
    - ハナビカメラ: `https://<プロジェクト名>.vercel.app/fireworks/`
    - キタイベ!: `https://<プロジェクト名>.vercel.app/events/`
+   - ジャマケシ: `https://<プロジェクト名>.vercel.app/retouch/`
 
 以降はデフォルトブランチ(`claude/shopping-reminder-app-7xpyg5`)への push のたびに
 自動で再デプロイされます。
@@ -101,6 +102,13 @@ GitHub Pages はこのリポジトリの `.github/workflows/deploy-pages.yml` �
 北近畿(京都府北部・兵庫県北部)のイベントをジャンル別に探して、チケットの発売日を
 逃さないためのアプリ「キタイベ!」も入っています(`events/` フォルダ)。詳しくは
 [events/README.md](events/README.md) を見てください。
+
+## 🪄 同居アプリ: ジャマケシ
+
+写真に写り込んだ通行人・電線・看板などを、指でなぞるだけで消せる加工アプリ
+「ジャマケシ」も入っています(`retouch/` フォルダ)。まわりの景色から作り直して
+埋めるので消した跡が残らず、写真は端末の外に一切送信しません。詳しくは
+[retouch/README.md](retouch/README.md) を見てください。
 
 ## 技術構成
 
