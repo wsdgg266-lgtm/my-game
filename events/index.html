@@ -390,7 +390,9 @@ const DEFAULT_STATE = {
     hideSample: false, sampleBannerClosed: false, genresExpanded: false,
   },
   userEvents: [],        // 手動追加したイベント
-  cache: { events: null, at: 0 },
+  userVenues: [],        // 自分で足した会場
+  seenVenueUpdates: [],  // 既読にした会場更新(url|detectedAt)
+  cache: { events: null, venues: null, at: 0 },
 };
 
 function loadState() {
@@ -509,6 +511,8 @@ async function syncTime() {
    外部サイトの取り込みは GitHub Actions 側で行い、この JSON を更新する。
    ============================================================ */
 let ALL = [];
+let VENUES = [];        // 会場マスタ(data/venues.json + 自分で足した分)
+let VENUE_UPDATES = []; // 会場ページの更新検知(GitHub Actions が生成)
 
 function normalize(ev, idx) {
   const e = { ...ev };
@@ -526,10 +530,22 @@ async function fetchList(path) {
     const res = await fetch(`${path}?_=${Date.now()}`, { cache: 'no-store' });
     if (!res.ok) return null;
     const json = await res.json();
-    return Array.isArray(json) ? json : json.events || null;
+    if (Array.isArray(json)) return json;
+    return json.events || json.venues || json.updates || null;
   } catch (e) {
     return null;   // オフラインや未生成。呼び出し側でキャッシュに寄せる
   }
+}
+
+async function loadVenues() {
+  const [master, updates] = await Promise.all([
+    fetchList('./data/venues.json').then(v => v || null,  () => null),
+    fetchList('./data/venue-updates.json').then(v => v || null, () => null),
+  ]);
+  const base = Array.isArray(master) ? master : (S.cache.venues || []);
+  if (Array.isArray(master)) { S.cache.venues = master; save(); }
+  VENUES = [...base, ...S.userVenues];
+  VENUE_UPDATES = Array.isArray(updates) ? updates : [];
 }
 
 async function loadEvents() {
@@ -755,6 +771,24 @@ function renderHome(list) {
   const soon = up.filter(ev => !weekend.includes(ev)).slice(0, 20);
 
   let h = '';
+  const fresh = VENUE_UPDATES.filter(u =>
+    !S.seenVenueUpdates.includes(`${u.url}|${u.detectedAt}`) &&
+    Date.now() - Date.parse(u.detectedAt) < 21 * 86400000);
+  if (fresh.length) {
+    h += `<div class="sec-title">🔔 会場ページに更新あり <span class="cnt">${fresh.length}</span></div>`;
+    h += fresh.slice(0, 4).map(u => `<div class="radar urgent">
+      <div class="radar-top">
+        <span class="phase" style="background:rgba(220,47,77,.12);color:var(--hot)">新着の可能性</span>
+        <button class="btn sm" style="margin-left:auto;padding:4px 9px"
+          data-seenvu="${esc(u.url)}|${esc(u.detectedAt)}">確認した</button>
+      </div>
+      <h4>${esc(u.venue)}</h4>
+      <div class="sub">📄 ${esc(u.label)} が ${esc(fmtDateObj(new Date(u.detectedAt)))} に変わりました</div>
+      <div class="btn-row" style="margin-top:8px">
+        <a class="btn sm pri" href="${esc(u.url)}" target="_blank" rel="noopener">ページを開く ↗</a>
+      </div>
+    </div>`).join('');
+  }
   if (dl.length) {
     h += `<div class="sec-title">⏰ まもなく締切・発売 <span class="cnt">${dl.length}</span></div>`;
     h += dl.map(radarRow).join('');
@@ -815,7 +849,10 @@ function renderRadar(list) {
     チケットの発売日・申込締切が近い順に並びます。行を開いて
     <b>発売アラート</b>を入れておくと、前日 / 1時間前 / 10分前に知らせます。
     ${timeSynced ? `時計はサーバーと同期済み(誤差およそ1秒)。` : `<span style="color:var(--am)">時計は端末のものを使用中。</span>`}
-  </div>`;
+  </div>
+  <button class="btn wide" id="openVenues" style="margin-bottom:14px">
+    🏛 会場からいち早く見つける（${VENUES.length}会場を監視中）
+  </button>`;
 
   if (soon.length) {
     h += `<div class="sec-title">⏰ 7日以内 <span class="cnt">${soon.length}</span></div>`;
@@ -887,6 +924,7 @@ function render() {
       設定でサンプルを隠せます。</div>
       <button class="x" id="closeBanner">✕</button></div>`;
   }
+  h += activeFilterBar();
   h += TAB === 'home' ? renderHome(list)
     : TAB === 'search' ? renderSearch(list)
     : TAB === 'radar' ? renderRadar(list)
@@ -895,6 +933,23 @@ function render() {
   updateBadges(list);
   document.querySelectorAll('nav button').forEach(b =>
     b.classList.toggle('on', b.dataset.tab === TAB));
+}
+
+// 絞り込みは全画面に効く。さがすタブ以外では効いていることが見えないので、
+// 何で絞られているかと解除ボタンを出す(イベントが消えたと誤解しないように)
+function activeFilterBar() {
+  const f = S.filters;
+  if (TAB === 'search') return '';
+  const parts = [];
+  if (f.q) parts.push(`「${esc(f.q)}」`);
+  f.genres.forEach(g => GENRE_BY[g] && parts.push(GENRE_BY[g].name));
+  f.areas.forEach(a => AREA_BY[a] && parts.push(AREA_BY[a].name));
+  if (f.ticketOnly) parts.push('チケット要のみ');
+  if (f.near) parts.push('近くだけ');
+  if (!parts.length) return '';
+  return `<div class="banner" style="background:rgba(224,50,123,.10);border-color:rgba(224,50,123,.32)">
+    <span>🔎</span><div>絞り込み中: <b>${parts.join(' ・ ')}</b></div>
+    <button class="x" id="clearFilters" title="絞り込みを解除">✕</button></div>`;
 }
 
 function updateBadges(list) {
@@ -1437,7 +1492,8 @@ function openSettings() {
     set.guides = DEFAULT_GUIDES.map(g => ({ ...g })); save(); closeSheet(); openSettings();
   });
   el('sReload').addEventListener('click', async () => {
-    await loadEvents(); render(); toast('データを再取得しました');
+    await Promise.all([loadEvents(), loadVenues()]);
+    render(); toast('データを再取得しました');
   });
   el('sExport').addEventListener('click', () => {
     const blob = new Blob([JSON.stringify({ userEvents: S.userEvents, myEvents: S.myEvents, alerts: S.alerts }, null, 2)],
@@ -1451,6 +1507,69 @@ function openSettings() {
     if (!confirm('手動追加したイベントと、マイ登録・アラートを全部消します。よろしいですか?')) return;
     S.userEvents = []; S.myEvents = {}; S.alerts = {}; save();
     loadEvents().then(() => { closeSheet(); render(); toast('消しました'); });
+  });
+}
+
+/* ============================================================
+   🏛 会場ウォッチ
+   ------------------------------------------------------------
+   ホールの「チケット発売情報」ページは、公演がプレイガイドに並ぶより先に
+   更新されることが多い。ここを起点にすると最速の先行受付に間に合う。
+   ============================================================ */
+function venueBlock(v) {
+  const upd = VENUE_UPDATES.filter(u => u.venueId === v.id);
+  const fresh = upd.filter(u => !S.seenVenueUpdates.includes(`${u.url}|${u.detectedAt}`));
+  return `<div class="note" style="background:var(--card);margin-bottom:10px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+      <b style="font-size:14.5px;color:var(--text)">${esc(v.name)}</b>
+      ${fresh.length ? '<span class="badge hot">🔔 更新あり</span>' : ''}
+    </div>
+    <div style="font-size:12px;margin-bottom:9px">📍 ${esc(v.city || '')}</div>
+    <div class="btn-row">
+      ${(v.links || []).map(l => `<a class="btn sm" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join('')}
+    </div>
+    ${upd.length ? `<div style="font-size:11.5px;color:var(--text-sub);margin-top:8px">
+      最後に更新を検知: ${esc(fmtDateObj(new Date(upd[0].detectedAt)))}</div>` : ''}
+    ${v.userAdded ? `<button class="btn sm" style="margin-top:8px" data-delvenue="${esc(v.id)}">この会場を削除</button>` : ''}
+  </div>`;
+}
+
+function openVenues() {
+  openSheet(`<h2>🏛 会場からいち早く見つける</h2>
+    <div class="note" style="margin:10px 0">
+      ホールの<b>チケット発売情報ページ</b>は、公演がプレイガイドに並ぶより先に更新されることが
+      多いところです。ここを見に行くのが<b>先行受付に間に合わせる最短経路</b>。<br>
+      毎日1回、登録した会場のページに更新がないか自動でチェックし、
+      変化があればホームに「🔔 会場ページに更新あり」として出します。
+    </div>
+    ${VENUES.length ? VENUES.map(venueBlock).join('') : '<div class="empty">会場が登録されていません</div>'}
+
+    <h3>会場を追加する</h3>
+    <div class="field"><label>会場名</label><input id="vName" placeholder="例: 京丹後市峰山総合福祉センター"></div>
+    <div class="row2">
+      <div class="field"><label>市町</label><input id="vCity" placeholder="例: 京丹後市"></div>
+      <div class="field"><label>リンクの名前</label><input id="vLabel" placeholder="例: 公演情報"></div>
+    </div>
+    <div class="field"><label>公演情報ページのURL</label><input type="url" id="vUrl" placeholder="https://"></div>
+    <label class="check"><input type="checkbox" id="vWatch" checked>
+      <span>このページの更新を毎日チェックする</span></label>
+    <button class="btn pri wide" style="margin-top:8px" id="vAdd">会場を追加</button>
+
+    <button class="btn wide" style="margin-top:18px" data-close="1">閉じる</button>
+    <div style="height:10px"></div>`, { full: true });
+
+  el('vAdd').addEventListener('click', () => {
+    const name = el('vName').value.trim();
+    const url = el('vUrl').value.trim();
+    if (!name) return toast('会場名を入れてください');
+    if (!/^https?:\/\//.test(url)) return toast('URLは http:// か https:// から入れてください');
+    S.userVenues.push({
+      id: `uv-${Date.now()}`, userAdded: true,
+      name, city: el('vCity').value.trim(),
+      links: [{ label: el('vLabel').value.trim() || '公演情報', url, watch: el('vWatch').checked }],
+    });
+    save();
+    loadVenues().then(() => { closeSheet(); openVenues(); render(); toast('会場を追加しました'); });
   });
 }
 
@@ -1556,6 +1675,26 @@ document.addEventListener('click', e => {
   if (hit('#btnArea')) return openAreaPicker();
   if (hit('#closeBanner')) { S.settings.sampleBannerClosed = true; save(); render(); return; }
 
+  if (hit('#clearFilters')) {
+    S.filters = { ...S.filters, q: '', genres: [], areas: [], ticketOnly: false, near: false };
+    save(); render(); toast('絞り込みを解除しました');
+    return;
+  }
+  if (hit('#openVenues')) return openVenues();
+  const vu = hit('[data-seenvu]');
+  if (vu) {
+    S.seenVenueUpdates.push(vu.dataset.seenvu);
+    save(); render(); toast('確認済みにしました');
+    return;
+  }
+  const dv = hit('[data-delvenue]');
+  if (dv) {
+    S.userVenues = S.userVenues.filter(x => x.id !== dv.dataset.delvenue);
+    save();
+    loadVenues().then(() => { closeSheet(); openVenues(); render(); toast('削除しました'); });
+    return;
+  }
+
   if (hit('#btnMoreGenres')) {
     S.settings.genresExpanded = !S.settings.genresExpanded;
     save(); renderChips(); return;
@@ -1635,7 +1774,7 @@ document.addEventListener('input', e => {
    ============================================================ */
 async function init() {
   render();                       // まずキャッシュ/空で描いて、体感を速くする
-  await loadEvents();
+  await Promise.all([loadEvents(), loadVenues()]);
   render();
   syncTime().then(() => { if (TAB === 'radar') render(); });
   if (S.settings.notify && 'Notification' in window && Notification.permission === 'default') {

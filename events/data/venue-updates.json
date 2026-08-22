@@ -1,0 +1,5 @@
+{
+  "_readme": "会場ページの更新検知の結果。GitHub Actions の watch-venues が自動生成します。手で編集しても次回の実行で上書きされます。",
+  "generatedAt": null,
+  "updates": []
+}

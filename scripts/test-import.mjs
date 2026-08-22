@@ -2,6 +2,7 @@
 //   node scripts/test-import.mjs
 import { parseCsv, mapColumns, guessGenres, normDate, toEvent, decodeCsv }
   from './import-events.mjs';
+import { fingerprint } from './watch-venues.mjs';
 
 const CITIES = ['京丹後市','宮津市','与謝野町','伊根町','舞鶴市','綾部市','福知山市',
   '南丹市','京丹波町','亀岡市','豊岡市','養父市','朝来市','香美町','新温泉町','丹波市','丹波篠山市'];
@@ -76,6 +77,27 @@ ok('Shift_JISのCSVを行に分解できる', (() => {
   const rows = parseCsv(decodeCsv(sjis));
   return rows[0][0] === 'イベント名' && rows[0][1] === '開始日時';
 })());
+
+console.log('--- 会場ウォッチの指紋 ---');
+const page = t => `<!doctype html><html><head><style>.a{color:red}</style>
+<script>var x=1;</script></head><body><!-- コメント -->
+<h1>チケット発売情報</h1><ul>${t}</ul>
+<p>このページの更新日時: 2026-08-20 10:33:21</p></body></html>`;
+
+const base = fingerprint(page('<li>吉本新喜劇 10/3</li>'));
+ok('タグ・script・styleを落とす', !/[<>]|color:red|var x/.test(base), base.slice(0, 80));
+ok('本文は残る', base.includes('吉本新喜劇') && base.includes('チケット発売情報'), base.slice(0, 80));
+ok('HTMLコメントを落とす', !base.includes('コメント'), base);
+ok('同じ内容なら同じ指紋', fingerprint(page('<li>吉本新喜劇 10/3</li>')) === base);
+ok('公演が増えたら指紋が変わる',
+   fingerprint(page('<li>吉本新喜劇 10/3</li><li>新公演 12/1</li>')) !== base);
+ok('更新日時だけの違いは無視する', (() => {
+  const a = fingerprint(page('<li>吉本新喜劇 10/3</li>'));
+  const b = fingerprint(page('<li>吉本新喜劇 10/3</li>').replace('2026-08-20 10:33:21', '2026-08-21 04:00:05'));
+  return a === b;
+})(), '時計表示で誤検知する');
+ok('空白の揺れは無視する',
+   fingerprint('<p>あ   い\n\nう</p>') === fingerprint('<p>あ い う</p>'));
 
 console.log(`\n結果: ${pass} 件成功 / ${fail} 件失敗`);
 process.exit(fail ? 1 : 0);

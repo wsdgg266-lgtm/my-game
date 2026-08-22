@@ -1,0 +1,41 @@
+{
+  "_readme": "「いち早く知る」ための会場ウォッチ。ホールのチケット発売情報ページは、公演がプレイガイドに並ぶより前に更新されることが多いので、ここを見に行くのが最短経路です。URLはすべて実在を確認したものですが、サイト改装で変わることがあります。アプリ内から追加・編集できます。",
+  "venues": [
+    {
+      "id": "fukuchiyama-kosei",
+      "name": "福知山市厚生会館",
+      "city": "福知山市",
+      "links": [
+        { "label": "施設の公式ページ", "url": "https://www.city.fukuchiyama.lg.jp/soshiki/7/2023.html", "watch": true },
+        { "label": "チケットぴあ 会場ページ", "url": "https://t.pia.jp/pia/venue/venue.do?venueCd=FYKN&prefectureCd=26&cityCd=201" },
+        { "label": "イープラス 会場ページ(大ホール)", "url": "https://eplus.jp/sf/venue/6200040" }
+      ]
+    },
+    {
+      "id": "maizuru-bunka",
+      "name": "舞鶴市総合文化会館",
+      "city": "舞鶴市",
+      "links": [
+        { "label": "チケット発売情報一覧", "url": "https://www.city.maizuru.kyoto.jp/0000014925.html", "watch": true },
+        { "label": "施設トップ", "url": "https://www.city.maizuru.kyoto.jp/category/16-0-0-0-0-0-0-0-0-0.html" }
+      ]
+    },
+    {
+      "id": "chutan-bunka",
+      "name": "京都府中丹文化会館",
+      "city": "綾部市",
+      "links": [
+        { "label": "公式サイト", "url": "https://www.chutan.or.jp/", "watch": true }
+      ]
+    },
+    {
+      "id": "toyooka-shimin",
+      "name": "豊岡市民会館",
+      "city": "豊岡市",
+      "links": [
+        { "label": "施設の公式ページ", "url": "https://www.city.toyooka.lg.jp/1019810/1019844/shiminhall/", "watch": true },
+        { "label": "イープラス 会場ページ(文化ホール)", "url": "https://eplus.jp/sf/venue/6680010" }
+      ]
+    }
+  ]
+}

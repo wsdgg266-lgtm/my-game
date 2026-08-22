@@ -3,6 +3,46 @@
   "updatedAt": "2026-08-20",
   "events": [
     {
+      "id": "yoshimoto-shinkigeki-demae-2026-fukuchiyama",
+      "title": "吉本新喜劇出前ツアー2026【京都福知山市公演】",
+      "genres": [
+        "stage"
+      ],
+      "start": "2026-10-03",
+      "venue": "福知山市厚生会館",
+      "city": "福知山市",
+      "price": "一般 6,000円 / 小学生以下 3,500円(全席指定・税込)",
+      "needsTicket": true,
+      "note": "寛平GMプロデュース公演。開演時間は公式ページで確認してください。チケット情報は2026-08-20時点の調べで、最新は公式・プレイガイドで確認を。",
+      "url": "https://shinkigeki.yoshimoto.co.jp/stage/detail/1116",
+      "source": "manual:公式サイト",
+      "sales": [
+        {
+          "type": "fc",
+          "label": "OFFICIAL FAN CLUB 抽選先行",
+          "opensAt": "2026-06-20T11:00",
+          "closesAt": "2026-06-23T11:00",
+          "lottery": true,
+          "url": "https://shinkigeki.yoshimoto.co.jp/stage/detail/1116"
+        },
+        {
+          "type": "presale",
+          "label": "FANY先行",
+          "opensAt": "2026-06-27T11:00",
+          "closesAt": "2026-06-29T11:00",
+          "lottery": false,
+          "url": "https://shinkigeki.yoshimoto.co.jp/stage/detail/1116"
+        },
+        {
+          "type": "general",
+          "label": "一般発売",
+          "opensAt": "2026-07-05T10:00",
+          "lottery": false,
+          "url": "https://l-tike.com/play/mevent/?mid=643840"
+        }
+      ]
+    },
+    {
       "id": "sample-maizuru-hall-0912",
       "sample": true,
       "title": "【サンプル】舞鶴 秋の吹奏楽コンサート",
