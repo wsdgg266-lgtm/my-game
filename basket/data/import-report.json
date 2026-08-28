@@ -1,6 +1,6 @@
 {
   "_readme": "直近の自動取り込みの結果。アプリの「設定 → 診断」からも見られます。",
-  "ranAt": "2026-08-28T07:33:19.618Z",
+  "ranAt": "2026-08-28T07:38:18.589Z",
   "sources": [
     {
       "name": "B.LEAGUE リーグ検索",
@@ -25,12 +25,12 @@
     {
       "name": "B.LEAGUE 順位表(2026-2027)",
       "ok": false,
-      "detail": "Unexpected end of JSON input"
+      "detail": "0件"
     },
     {
       "name": "B.LEAGUE 順位表(2025-2026)",
       "ok": false,
-      "detail": "Unexpected end of JSON input"
+      "detail": "0件"
     },
     {
       "name": "日本代表 チーム検索",
@@ -75,7 +75,7 @@
     {
       "name": "ニュース: Yahoo!ニュース(スポーツ)",
       "ok": true,
-      "detail": "4件(全50件から絞り込み)"
+      "detail": "1件(全50件から絞り込み)"
     },
     {
       "name": "ニュース: NHKニュース(スポーツ)",
