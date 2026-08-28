@@ -1,16 +1,51 @@
 {
   "_readme": "直近の自動取り込みの結果。アプリの「設定 → 診断」からも見られます。",
-  "ranAt": "2026-08-28T07:27:23.414Z",
+  "ranAt": "2026-08-28T07:33:19.618Z",
   "sources": [
     {
       "name": "B.LEAGUE リーグ検索",
+      "ok": true,
+      "detail": "Japanese B1 League(id=4977)"
+    },
+    {
+      "name": "B.LEAGUE 日程(2026-2027)",
+      "ok": true,
+      "detail": "15件"
+    },
+    {
+      "name": "B.LEAGUE 今後の試合",
+      "ok": true,
+      "detail": "1件"
+    },
+    {
+      "name": "B.LEAGUE 直近の試合",
+      "ok": true,
+      "detail": "1件"
+    },
+    {
+      "name": "B.LEAGUE 順位表(2026-2027)",
       "ok": false,
-      "detail": "B.LEAGUE がリーグ一覧に見つかりません"
+      "detail": "Unexpected end of JSON input"
+    },
+    {
+      "name": "B.LEAGUE 順位表(2025-2026)",
+      "ok": false,
+      "detail": "Unexpected end of JSON input"
     },
     {
       "name": "日本代表 チーム検索",
-      "ok": false,
-      "detail": "チームが見つかりませんでした"
+      "ok": true,
+      "detail": "Japan Basketball(id=136746)"
+    },
+    {
+      "name": "日本代表 今後の試合",
+      "ok": true,
+      "detail": "1件"
+    },
+    {
+      "name": "日本代表 直近の試合",
+      "ok": true,
+      "detail": "1件"
     },
     {
       "name": "NBA チーム一覧",
@@ -24,8 +59,8 @@
     },
     {
       "name": "NBA 日本人選手の成績",
-      "ok": false,
-      "detail": "0/1人ぶん取得"
+      "ok": true,
+      "detail": "全員ぶん取得"
     },
     {
       "name": "ニュース: バスケットボールキング",
@@ -33,24 +68,19 @@
       "detail": "10件"
     },
     {
-      "name": "ニュース: 月刊バスケットボール",
-      "ok": false,
-      "detail": "0件"
-    },
-    {
-      "name": "ニュース: B.LEAGUE公式",
-      "ok": false,
-      "detail": "HTTP 404"
+      "name": "ニュース: バスケットカウント",
+      "ok": true,
+      "detail": "10件"
     },
     {
       "name": "ニュース: Yahoo!ニュース(スポーツ)",
       "ok": true,
-      "detail": "5件(全50件から絞り込み)"
+      "detail": "4件(全50件から絞り込み)"
     },
     {
       "name": "ニュース: NHKニュース(スポーツ)",
       "ok": true,
-      "detail": "3件(全71件から絞り込み)"
+      "detail": "1件(全71件から絞り込み)"
     }
   ]
 }
