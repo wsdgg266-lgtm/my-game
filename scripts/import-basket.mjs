@@ -43,7 +43,9 @@ async function get(url) {
   try {
     const res = await fetch(url, { signal: ac.signal, headers: { 'User-Agent': 'basunavi-importer/1.0 (+github actions)' } });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+    const text = await res.text();
+    if (!text.trim()) return null;              // 中身が空の応答(データ未作成)はエラーにしない
+    return JSON.parse(text);
   } finally { clearTimeout(timer); }
 }
 async function getText(url) {
@@ -155,45 +157,74 @@ export function isJapanese(athlete) {
 }
 /** ESPN の成績JSONは形が安定しないので、ラベルと値の組を総当たりで探す */
 export function extractPlayerStats(json) {
-  const want = {
-    ppg:   /^(ppg|pts|avgpoints)$/i,
-    rpg:   /^(rpg|reb|avgrebounds)$/i,
-    apg:   /^(apg|ast|avgassists)$/i,
-    mpg:   /^(mpg|min|avgminutes)$/i,
-    fgPct: /^(fg%|fgpct|fieldgoalpct)$/i,
-    games: /^(gp|g|gamesplayed)$/i,
+  // ESPNは「平均(PPG)」と「合計(PTS)」の両方を返す。取り違えると 780得点/試合 のような値になるので、
+  //   1. カテゴリ名(averages / totals)
+  //   2. ラベルの書き方(PPG は平均、PTS は合計)
+  //   3. 値の大きさ(1試合の平均としてありえるか)
+  // の順に判断する。
+  const KEY = {
+    ppg: { avg: /^(ppg|avgpoints)$/i,    total: /^(pts|points)$/i,               max: 60 },
+    rpg: { avg: /^(rpg|avgrebounds)$/i,  total: /^(reb|rebounds|totalrebounds)$/i, max: 40 },
+    apg: { avg: /^(apg|avgassists)$/i,   total: /^(ast|assists)$/i,              max: 30 },
+    mpg: { avg: /^(mpg|avgminutes)$/i,   total: /^(min|minutes)$/i,              max: 48 },
   };
-  const out = {};
-  const put = (label, value) => {
+  const OTHER = { fgPct: /^(fg%|fgpct|fieldgoalpct)$/i, games: /^(gp|gamesplayed)$/i };
+  const avg = {}, total = {}, maybe = {}, out = {};
+
+  const put = (label, value, ctx) => {
     if (value == null || value === '' || value === '-') return;
-    for (const key in want) {
-      if (out[key] == null && want[key].test(String(label).trim())) { out[key] = String(value); return; }
+    const l = String(label).trim();
+    for (const key in OTHER) if (out[key] == null && OTHER[key].test(l)) { out[key] = String(value); return; }
+    for (const key in KEY) {
+      if (KEY[key].avg.test(l))   { if (avg[key] == null) avg[key] = String(value); return; }
+      if (KEY[key].total.test(l)) {
+        // カテゴリ名で合計だとわかっていれば合計、わからなければ判断を保留する
+        const bucket = ctx === 'total' ? total : ctx === 'avg' ? avg : maybe;
+        if (bucket[key] == null) bucket[key] = String(value);
+        return;
+      }
     }
   };
-  const visit = node => {
+  const visit = (node, ctx) => {
     if (!node || typeof node !== 'object') return;
+    const name = String(node.name || node.displayName || '');
+    if (/average|per\s?game/i.test(name)) ctx = 'avg';
+    else if (/total/i.test(name)) ctx = 'total';
+
     // 形1: ラベルの配列と値の配列が別々に入っている
     const labels = node.names || node.labels || node.displayNames;
     const values = node.stats || node.displayStats || node.values;
     if (Array.isArray(labels) && Array.isArray(values) && labels.length === values.length
         && values.every(v => v == null || typeof v !== 'object')) {
-      labels.forEach((l, i) => put(l, values[i]));
+      labels.forEach((l, i) => put(l, values[i], ctx));
     }
     // 形2: {name, abbreviation, displayValue} の配列
     if (Array.isArray(node.stats)) {
       for (const st of node.stats) {
         if (!st || typeof st !== 'object') continue;
         const v = st.displayValue != null ? st.displayValue : st.value;
-        for (const label of [st.abbreviation, st.shortDisplayName, st.name]) if (label) put(label, v);
+        for (const label of [st.abbreviation, st.shortDisplayName, st.name]) if (label) put(label, v, ctx);
       }
     }
     for (const k in node) {
       const v = node[k];
-      if (Array.isArray(v)) v.forEach(visit);
-      else if (v && typeof v === 'object') visit(v);
+      if (Array.isArray(v)) v.forEach(x => visit(x, ctx));
+      else if (v && typeof v === 'object') visit(v, ctx);
     }
   };
-  visit(json);
+  visit(json, null);
+
+  const games = Number(out.games);
+  for (const key in KEY) {
+    if (avg[key] != null) { out[key] = avg[key]; continue; }
+    const raw = total[key] != null ? total[key] : maybe[key];
+    if (raw == null) continue;
+    const n = Number(raw);
+    if (isNaN(n)) continue;
+    const isTotal = total[key] != null || n > KEY[key].max;    // 1試合の平均としてありえない大きさなら合計とみなす
+    if (!isTotal) out[key] = raw;
+    else if (games > 0) out[key] = (n / games).toFixed(1);
+  }
   return Object.keys(out).length ? out : null;
 }
 
@@ -230,7 +261,7 @@ export function parseFeed(xml) {
     let ts = raw ? Date.parse(raw) : NaN;
     if (isNaN(ts)) ts = null;
     if (!title || !url || !/^https?:\/\//.test(url)) continue;
-    out.push({ title, url, ts, date: ts ? dateKeyJst(ts) : null });
+    out.push({ title, url: cleanUrl(url), ts, date: ts ? dateKeyJst(ts) : null });
   }
   return out;
 }
@@ -243,6 +274,16 @@ export function matchesKeywords(text, keywords) {
  * 同じ記事が配信元と Yahoo! 等の両方から入ってくるので、見出しの末尾に付く
  * 「(媒体名)」を外してから比べる。
  */
+/** utm_* などの計測用パラメータを落とす(リンク先は変わらない) */
+export function cleanUrl(url) {
+  try {
+    const u = new URL(url);
+    for (const k of Array.from(u.searchParams.keys())) {
+      if (/^(utm_|fbclid|gclid|ref$|source$)/i.test(k)) u.searchParams.delete(k);
+    }
+    return u.toString().replace(/\?$/, '');
+  } catch (e) { return url; }
+}
 export function normalizeTitle(title) {
   return String(title || '')
     .replace(/[（(][^（()]{1,24}[)）]\s*$/, '')

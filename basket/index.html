@@ -523,9 +523,22 @@ const COUNTRY_JA = {
   'Serbia':'セルビア','Argentina':'アルゼンチン','Brazil':'ブラジル','Canada':'カナダ','Slovenia':'スロベニア',
   'Finland':'フィンランド','Venezuela':'ベネズエラ','Cape Verde':'カーボベルデ','Angola':'アンゴラ',
 };
+// 大会名は長いので短くする(載っていないものはそのまま)
+const LABEL_JA = {
+  'FIBA Basketball World Cup':'FIBA W杯', 'FIBA World Cup':'FIBA W杯',
+  'FIBA Basketball World Cup Qualifiers':'FIBA W杯予選',
+  'FIBA Asia Cup':'FIBA アジアカップ', 'Olympic Games':'オリンピック',
+};
+const jaLabel = n => LABEL_JA[n] || n;
+
 function jaTeam(name, league) {
   if (!name) return '';
-  if (league === 'jpn' && COUNTRY_JA[name]) return COUNTRY_JA[name];
+  if (league === 'jpn') {
+    // "Japan Basketball" のように競技名が付いて返ってくることがある
+    const country = String(name).replace(/\s+Basketball$/i, '').trim();
+    if (COUNTRY_JA[country]) return COUNTRY_JA[country];
+    return country;
+  }
   if (B_TEAM_JA[name]) return B_TEAM_JA[name];
   if (league === 'nba') {
     for (const nick in NBA_NICK_JA) if (name.endsWith(nick)) return NBA_NICK_JA[nick];
@@ -961,7 +974,7 @@ function gameCard(e) {
 
   return `<div class="g ${e.league === 'jpn' ? 'jp' : ''}">
     <div class="g-head">
-      <span class="g-lg">${esc(e.label || lg.short)}</span>
+      <span class="g-lg">${esc(e.label ? jaLabel(e.label) : lg.short)}</span>
       ${e.venue ? `<span class="g-venue">${esc(e.venue)}</span>` : ''}
       <span class="g-when ${cls} num">${esc(when)}</span>
     </div>
@@ -1355,7 +1368,7 @@ function openTv(lgKey, ev) {
   const memo = ev ? state.bcast.overrides[ev.id] : null;
   const now = memo != null ? memo : ((ev && ev.bcast) || bcastPreset(lgKey));
   const title = ev ? `${jaTeam(ev.home, lgKey)} vs ${jaTeam(ev.away, lgKey)}` : lg.name;
-  const sub = ev ? `${keyToLabel(ev.dateJst || todayKey())} ${ev.timeJst || ''}${ev.label ? ' ・ ' + ev.label : ''}` : '';
+  const sub = ev ? `${keyToLabel(ev.dateJst || todayKey())} ${ev.timeJst || ''}${ev.label ? ' ・ ' + jaLabel(ev.label) : ''}` : '';
   const q = ev ? `${jaTeam(ev.home, lgKey)} ${jaTeam(ev.away, lgKey)} 中継` : `${lg.name} 中継`;
 
   const items = lg.tv(g).map(it =>

@@ -3,7 +3,7 @@
 import { seasonLabel, pickBLeague, pickJapanTeam, normalizeTsdbEvent,
   normalizeStandingRow, isJapanese, extractPlayerStats,
   decodeEntities, parseFeed, matchesKeywords, dedupeNews, normalizeTitle,
-  pickJapanGames } from './import-basket.mjs';
+  pickJapanGames, cleanUrl } from './import-basket.mjs';
 
 let pass = 0, fail = 0;
 const ok = (label, cond, extra = '') => {
@@ -189,6 +189,30 @@ const dup = dedupeNews([
 ], 10, 30);
 ok('同じ記事は1件にまとめる', dup.length === 1, JSON.stringify(dup.map(d => d.source)));
 ok('配信元のほうを残す', dup[0].source === 'バスケットボールキング', dup[0].source);
+
+// ESPNは平均(PPG)と合計(PTS)の両方を返す。合計を1試合平均として出してしまっていた
+const totalsOnly = extractPlayerStats({ categories: [{ name:'totals', stats: [
+  { name:'points', abbreviation:'PTS', displayValue:'780' },
+  { name:'rebounds', abbreviation:'REB', displayValue:'226' },
+  { name:'assists', abbreviation:'AST', displayValue:'57' },
+  { name:'minutes', abbreviation:'MIN', displayValue:'1927' },
+  { name:'gamesPlayed', abbreviation:'GP', displayValue:'68' },
+]}]});
+ok('合計しか無いときは試合数で割る', totalsOnly.ppg === '11.5' && totalsOnly.rpg === '3.3' && totalsOnly.mpg === '28.3',
+  JSON.stringify(totalsOnly));
+const withAvg = extractPlayerStats({ categories: [
+  { name:'averages', stats: [{ name:'avgPoints', abbreviation:'PPG', displayValue:'11.5' }] },
+  { name:'totals',   stats: [{ name:'points', abbreviation:'PTS', displayValue:'780' },
+                             { name:'gamesPlayed', abbreviation:'GP', displayValue:'68' }] },
+]});
+ok('平均があるときは合計に上書きされない', withAvg.ppg === '11.5', JSON.stringify(withAvg));
+
+console.log('--- 記事URLの掃除 ---');
+ok('utm_* を落とす', cleanUrl('https://basket-count.com/a?utm_source=rss&utm_medium=rss') === 'https://basket-count.com/a',
+  cleanUrl('https://basket-count.com/a?utm_source=rss&utm_medium=rss'));
+ok('必要なパラメータは残す', cleanUrl('https://example.com/a?id=5&utm_source=rss') === 'https://example.com/a?id=5',
+  cleanUrl('https://example.com/a?id=5&utm_source=rss'));
+ok('URLでない文字列でも落ちない', cleanUrl('not-a-url') === 'not-a-url');
 
 console.log(`\n${pass} 件成功 / ${fail} 件失敗`);
 process.exit(fail ? 1 : 0);
