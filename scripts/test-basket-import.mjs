@@ -2,7 +2,8 @@
 //   node scripts/test-basket-import.mjs
 import { seasonLabel, pickBLeague, pickJapanTeam, normalizeTsdbEvent,
   normalizeStandingRow, isJapanese, extractPlayerStats,
-  decodeEntities, parseFeed, matchesKeywords, dedupeNews } from './import-basket.mjs';
+  decodeEntities, parseFeed, matchesKeywords, dedupeNews, normalizeTitle,
+  pickJapanGames } from './import-basket.mjs';
 
 let pass = 0, fail = 0;
 const ok = (label, cond, extra = '') => {
@@ -144,6 +145,50 @@ ok('件数の上限が効く', dedupeNews([
   { title:'1', url:'https://e.com/1', ts: Date.now() - H }, { title:'2', url:'https://e.com/2', ts: Date.now() - 2 * H },
   { title:'3', url:'https://e.com/3', ts: Date.now() - 3 * H }], 2, 30).length === 2);
 ok('日時が無い記事も残す', dedupeNews([{ title:'D', url:'https://e.com/d', ts: null }], 10, 30).length === 1);
+
+console.log('--- 実際の取り込みでわかった不具合(再発防止) ---');
+// 2026-08-28の初回実行時、TheSportsDBの応答に strSport が無くて B.LEAGUE を取り逃した
+ok('strSport が無いリーグでも選べる',
+  pickBLeague([{ idLeague:'9', strLeague:'Japanese B.League' }]).idLeague === '9');
+ok('女子リーグ(Wリーグ)は選ばない',
+  pickBLeague([{ idLeague:'1', strLeague:'Japan W.League', strSport:'Basketball' },
+               { idLeague:'2', strLeague:'Japanese B.League', strSport:'Basketball' }]).idLeague === '2');
+
+// 代表チームが引けないときは、大会リーグの試合から日本の分だけ拾う
+const compGames = pickJapanGames([
+  { idEvent:'1', strHomeTeam:'Japan', strAwayTeam:'China' },
+  { idEvent:'2', strHomeTeam:'Korea', strAwayTeam:'Lebanon' },
+  { idEvent:'3', strHomeTeam:'Iran', strAwayTeam:'Japan' },
+]);
+ok('日本が出ている試合だけ拾う', compGames.length === 2 && compGames.map(g => g.idEvent).join() === '1,3',
+  JSON.stringify(compGames.map(g => g.idEvent)));
+
+// ESPNの成績は {name, displayValue} の配列で返ってきていて、取り出せていなかった
+const statsC = extractPlayerStats({ splits: { categories: [{ name:'averages', stats: [
+  { name:'avgPoints', abbreviation:'PPG', displayValue:'13.8' },
+  { name:'avgRebounds', abbreviation:'RPG', displayValue:'4.3' },
+  { name:'avgAssists', abbreviation:'APG', displayValue:'1.2' },
+  { name:'gamesPlayed', abbreviation:'GP', displayValue:'62' },
+]}]}});
+ok('{name, displayValue} の配列から取れる',
+  statsC && statsC.ppg === '13.8' && statsC.rpg === '4.3' && statsC.games === '62', JSON.stringify(statsC));
+
+// 「日本代表」だけを合図にすると、野球・サッカーの記事まで入ってきていた
+const KW2 = ['バスケ', 'Bリーグ', 'NBA', '八村', 'FIBA'];
+ok('サッカーの日本代表は拾わない', matchesKeywords('サッカー日本代表 小川航基 FC町田ゼルビアに移籍決定', KW2) === false);
+ok('野球の日本代表は拾わない', matchesKeywords('野球 18歳以下の日本代表に横浜高校 織田翔希投手など18人', KW2) === false);
+ok('バスケの代表戦は拾う', matchesKeywords('バスケット男子W杯2次予選 日本は八村塁の活躍で快勝', KW2));
+
+// 同じ記事が配信元とYahoo!の両方から入り、二重に並んでいた
+ok('末尾の媒体名を外して比べる',
+  normalizeTitle('長崎ヴェルカが練習生と選手契約(バスケットボールキング)') === normalizeTitle('長崎ヴェルカが練習生と選手契約'),
+  normalizeTitle('長崎ヴェルカが練習生と選手契約(バスケットボールキング)'));
+const dup = dedupeNews([
+  { title:'横浜BCのマスコットが引継ぎ式', url:'https://basketballking.jp/a', ts: Date.now() - H, source:'バスケットボールキング' },
+  { title:'横浜BCのマスコットが引継ぎ式(バスケットボールキング)', url:'https://news.yahoo.co.jp/b', ts: Date.now() - H, source:'Yahoo!' },
+], 10, 30);
+ok('同じ記事は1件にまとめる', dup.length === 1, JSON.stringify(dup.map(d => d.source)));
+ok('配信元のほうを残す', dup[0].source === 'バスケットボールキング', dup[0].source);
 
 console.log(`\n${pass} 件成功 / ${fail} 件失敗`);
 process.exit(fail ? 1 : 0);

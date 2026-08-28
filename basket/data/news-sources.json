@@ -2,15 +2,19 @@
   "_readme": "ニュースの取り込み元。scripts/import-basket.mjs が毎日ここのRSSを読みます。動かないソースは import-report.json(アプリの「設定 → 診断」)に理由が出るので、そこを見て足したり enabled:false にしたりしてください。filter:true のソースはスポーツ全般のフィードなので、keywords に当てはまる記事だけを拾います。",
   "feeds": [
     { "name": "バスケットボールキング", "url": "https://basketballking.jp/feed/", "filter": false, "enabled": true },
-    { "name": "月刊バスケットボール", "url": "https://basketballspirit.com/feed/", "filter": false, "enabled": true },
-    { "name": "B.LEAGUE公式", "url": "https://www.bleague.jp/feed/", "filter": false, "enabled": true },
+    { "name": "バスケットカウント", "url": "https://basket-count.com/feed/", "filter": false, "enabled": true },
     { "name": "Yahoo!ニュース(スポーツ)", "url": "https://news.yahoo.co.jp/rss/categories/sports.xml", "filter": true, "enabled": true },
-    { "name": "NHKニュース(スポーツ)", "url": "https://www.nhk.or.jp/rss/news/cat7.xml", "filter": true, "enabled": true }
+    { "name": "NHKニュース(スポーツ)", "url": "https://www.nhk.or.jp/rss/news/cat7.xml", "filter": true, "enabled": true },
+
+    { "_note": "以下は2026-08-28の実行時に取得できなかったので止めています。復活したら enabled を true に戻してください。",
+      "name": "B.LEAGUE公式", "url": "https://www.bleague.jp/feed/", "filter": false, "enabled": false },
+    { "_note": "RSSとして読めませんでした(0件)。", "name": "月刊バスケットボール", "url": "https://basketballspirit.com/feed/", "filter": false, "enabled": false }
   ],
+  "_keywords_note": "「日本代表」だけだと野球・サッカーの記事まで拾ってしまったので外しました。バスケットボール固有の言葉だけを並べています。",
   "keywords": [
-    "バスケ", "Bリーグ", "B.LEAGUE", "BLEAGUE", "B1", "NBA", "WNBA",
+    "バスケ", "Bリーグ", "B.LEAGUE", "BLEAGUE", "B1", "NBA", "WNBA", "Wリーグ",
     "八村", "河村勇輝", "渡邊雄太", "富永啓生", "馬場雄大", "比江島",
-    "日本代表", "アカツキ", "AKATSUKI", "FIBA", "琉球ゴールデンキングス", "千葉ジェッツ"
+    "アカツキ", "AKATSUKI", "FIBA", "琉球ゴールデンキングス", "千葉ジェッツ", "宇都宮ブレックス"
   ],
   "maxItems": 60,
   "maxAgeDays": 30
