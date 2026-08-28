@@ -79,12 +79,18 @@ export function seasonLabel(date = new Date()) {
 }
 
 /* ================= TheSportsDB の正規化 ================= */
-/** リーグ一覧から B.LEAGUE を選ぶ */
+/** リーグ一覧から B.LEAGUE を選ぶ。strSport が入っていない応答もあるので緩めに見る */
 export function pickBLeague(leagues) {
-  const list = (leagues || []).filter(l => (l.strSport || '') === 'Basketball');
-  const byName = list.find(l => /b\.?\s?league|b1\b/i.test(l.strLeague || '') && !/women|female/i.test(l.strLeague || ''));
+  const list = (leagues || []).filter(l => l && !l.strSport || (l.strSport || '') === 'Basketball');
+  const women = l => /women|female|w\.?league/i.test((l.strLeague || '') + (l.strLeagueAlternate || ''));
+  const byName = list.find(l => /b\.?\s?league|b1\b/i.test((l.strLeague || '') + ' ' + (l.strLeagueAlternate || '')) && !women(l));
   if (byName) return byName;
-  return list.find(l => /japan/i.test(l.strLeague || '') || /japan/i.test(l.strCountry || '')) || null;
+  return list.find(l => /japan/i.test(l.strLeague || '') && !women(l)) || null;
+}
+/** 大会リーグ(FIBA W杯予選など)から、日本が出ている試合だけを拾う */
+export function pickJapanGames(events) {
+  return (events || []).filter(e => e &&
+    (/^japan$/i.test((e.strHomeTeam || '').trim()) || /^japan$/i.test((e.strAwayTeam || '').trim())));
 }
 /** チーム一覧からバスケ日本代表を選ぶ */
 export function pickJapanTeam(teams) {
@@ -150,19 +156,35 @@ export function isJapanese(athlete) {
 /** ESPN の成績JSONは形が安定しないので、ラベルと値の組を総当たりで探す */
 export function extractPlayerStats(json) {
   const want = {
-    ppg: /^(ppg|pts)$/i, rpg: /^(rpg|reb)$/i, apg: /^(apg|ast)$/i,
-    mpg: /^(mpg|min)$/i, fgPct: /^(fg%|fgpct)$/i, games: /^(gp|g)$/i,
+    ppg:   /^(ppg|pts|avgpoints)$/i,
+    rpg:   /^(rpg|reb|avgrebounds)$/i,
+    apg:   /^(apg|ast|avgassists)$/i,
+    mpg:   /^(mpg|min|avgminutes)$/i,
+    fgPct: /^(fg%|fgpct|fieldgoalpct)$/i,
+    games: /^(gp|g|gamesplayed)$/i,
   };
   const out = {};
+  const put = (label, value) => {
+    if (value == null || value === '' || value === '-') return;
+    for (const key in want) {
+      if (out[key] == null && want[key].test(String(label).trim())) { out[key] = String(value); return; }
+    }
+  };
   const visit = node => {
     if (!node || typeof node !== 'object') return;
+    // 形1: ラベルの配列と値の配列が別々に入っている
     const labels = node.names || node.labels || node.displayNames;
     const values = node.stats || node.displayStats || node.values;
-    if (Array.isArray(labels) && Array.isArray(values) && labels.length === values.length) {
-      for (const key in want) {
-        if (out[key] != null) continue;
-        const i = labels.findIndex(l => want[key].test(String(l).trim()));
-        if (i >= 0 && values[i] != null && values[i] !== '') out[key] = String(values[i]);
+    if (Array.isArray(labels) && Array.isArray(values) && labels.length === values.length
+        && values.every(v => v == null || typeof v !== 'object')) {
+      labels.forEach((l, i) => put(l, values[i]));
+    }
+    // 形2: {name, abbreviation, displayValue} の配列
+    if (Array.isArray(node.stats)) {
+      for (const st of node.stats) {
+        if (!st || typeof st !== 'object') continue;
+        const v = st.displayValue != null ? st.displayValue : st.value;
+        for (const label of [st.abbreviation, st.shortDisplayName, st.name]) if (label) put(label, v);
       }
     }
     for (const k in node) {
@@ -217,15 +239,29 @@ export function matchesKeywords(text, keywords) {
   const t = String(text || '');
   return (keywords || []).some(k => k && t.includes(k));
 }
+/**
+ * 同じ記事が配信元と Yahoo! 等の両方から入ってくるので、見出しの末尾に付く
+ * 「(媒体名)」を外してから比べる。
+ */
+export function normalizeTitle(title) {
+  return String(title || '')
+    .replace(/[（(][^（()]{1,24}[)）]\s*$/, '')
+    .replace(/\s+/g, '')
+    .trim();
+}
 /** URLとタイトルの重複を消して、新しい順に並べる */
 export function dedupeNews(items, max, maxAgeDays) {
   const limit = maxAgeDays ? Date.now() - maxAgeDays * 86400000 : null;
   const seen = new Set();
   const out = [];
-  for (const it of items.slice().sort((a, b) => (b.ts || 0) - (a.ts || 0))) {
+  // 同着のときは先に渡された方(専門媒体のフィード)を残したいので、安定した並べ替えにする
+  const sorted = items.map((it, i) => ({ it, i }))
+    .sort((a, b) => (b.it.ts || 0) - (a.it.ts || 0) || a.i - b.i)
+    .map(x => x.it);
+  for (const it of sorted) {
     if (limit && it.ts && it.ts < limit) continue;
     const key = it.url.replace(/[?#].*$/, '');
-    const tkey = 't:' + it.title;
+    const tkey = 't:' + normalizeTitle(it.title);
     if (seen.has(key) || seen.has(tkey)) continue;
     seen.add(key); seen.add(tkey);
     out.push(it);
@@ -260,8 +296,14 @@ async function importBLeague() {
     leagueId: null, games: [], standings: [], source: 'TheSportsDB', note: '' };
   let league = null;
   try {
-    const j = await tsdb('all_leagues.php');
-    league = pickBLeague(j && j.leagues);
+    // 国とスポーツで絞れる専用APIを先に、だめなら全リーグ一覧から探す
+    for (const path of ['search_all_leagues.php?c=Japan&s=Basketball', 'all_leagues.php']) {
+      try {
+        const j = await tsdb(path);
+        league = pickBLeague(j && (j.countries || j.leagues));
+        if (league) break;
+      } catch (e) { /* 次の探し方を試す */ }
+    }
     if (!league) throw new Error('B.LEAGUE がリーグ一覧に見つかりません');
     out.leagueId = league.idLeague;
     out.leagueName = league.strLeague || 'B.LEAGUE';
@@ -312,12 +354,42 @@ async function importBLeague() {
   return out;
 }
 
+/** 代表チームが引けないとき、FIBAなどの大会リーグの試合から日本の分だけ拾う */
+async function japanGamesFromCompetitions() {
+  let leagues = [];
+  try {
+    const j = await tsdb('search_all_leagues.php?c=Japan&s=Basketball');
+    leagues = (j && (j.countries || j.leagues)) || [];
+  } catch (e) { /* 見つからなければ次へ */ }
+  try {
+    const j = await tsdb('all_leagues.php');
+    leagues = leagues.concat((j && j.leagues) || []);
+  } catch (e) { /* 見つからなければ諦める */ }
+  const comps = leagues.filter(l =>
+    /fiba|world cup|olympic|asia cup|qualifier/i.test((l.strLeague || '') + ' ' + (l.strLeagueAlternate || '')));
+  if (!comps.length) { note('日本代表 大会リーグ検索', false, '大会リーグが見つかりませんでした'); return []; }
+
+  const map = new Map();
+  for (const c of comps.slice(0, 3)) {
+    for (const [label, path] of [['今後', `eventsnextleague.php?id=${c.idLeague}`], ['直近', `eventspastleague.php?id=${c.idLeague}`]]) {
+      try {
+        const j = await tsdb(path);
+        const jp = pickJapanGames((j && (j.events || j.results)) || []);
+        for (const raw of jp) if (raw.idEvent) map.set(raw.idEvent, raw);
+        note(`日本代表 ${c.strLeague}(${label})`, jp.length > 0, `${jp.length}件`);
+      } catch (e) { note(`日本代表 ${c.strLeague}(${label})`, false, e.message); }
+    }
+  }
+  return Array.from(map.values()).map(r => normalizeTsdbEvent(r, 'j')).sort((a, b) => (a.ts || 0) - (b.ts || 0));
+}
+
 async function importJapan(prev) {
   const out = { updatedAt: new Date().toISOString(), teamId: null, games: [],
     manualGames: (prev && prev.manualGames) || [], roster: (prev && prev.roster) || [],
     source: 'TheSportsDB', note: '' };
   let team = null;
-  for (const path of ['search_all_teams.php?s=Basketball&c=Japan', 'searchteams.php?t=Japan']) {
+  for (const path of ['search_all_teams.php?s=Basketball&c=Japan', 'searchteams.php?t=Japan',
+                      'searchteams.php?t=Japan%20Basketball']) {
     try {
       const j = await tsdb(path);
       team = pickJapanTeam(j && j.teams);
@@ -325,8 +397,10 @@ async function importJapan(prev) {
     } catch (e) { /* 次の探し方を試す */ }
   }
   if (!team) {
-    note('日本代表 チーム検索', false, 'チームが見つかりませんでした');
-    out.note = '代表チームが見つからないため自動取得できませんでした。manualGames に手で追加できます';
+    note('日本代表 チーム検索', false, 'チームが見つかりませんでした(大会リーグから探します)');
+    const found = await japanGamesFromCompetitions();
+    out.games = found;
+    out.note = found.length ? '' : '代表戦が見つかりませんでした。manualGames に手で追加できます';
     return out;
   }
   out.teamId = team.idTeam;
@@ -384,17 +458,30 @@ async function importNbaJapanese() {
 
   // 見つかった選手の今季平均成績
   let statNg = 0;
+  const y = Number(new Date().getUTCFullYear());
+  const season = new Date().getUTCMonth() + 1 >= 9 ? y + 1 : y;   // NBAは開幕年の翌年がシーズン表記
+  let lastErr = '';
   for (const p of found) {
-    for (const url of [`${ESPN_WEB}athletes/${p.id}/stats`, `${ESPN_WEB}athletes/${p.id}`]) {
+    const urls = [
+      `${ESPN_WEB}athletes/${p.id}/stats`,
+      `${ESPN_WEB}athletes/${p.id}/overview`,
+      `https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/${season}/types/2/athletes/${p.id}/statistics`,
+      `https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/${season - 1}/types/2/athletes/${p.id}/statistics`,
+      `${ESPN_WEB}athletes/${p.id}`,
+    ];
+    for (const url of urls) {
       try {
         p.stats = extractPlayerStats(await get(url));
         if (p.stats) break;
-      } catch (e) { /* 次のURLを試す */ }
+      } catch (e) { lastErr = e.message; }
+      await sleep(200);
     }
     if (!p.stats) statNg++;
-    await sleep(250);
   }
-  if (found.length) note('NBA 日本人選手の成績', statNg < found.length, statNg ? `${found.length - statNg}/${found.length}人ぶん取得` : '全員ぶん取得');
+  if (found.length) {
+    note('NBA 日本人選手の成績', statNg < found.length,
+      statNg ? `${found.length - statNg}/${found.length}人ぶん取得${lastErr ? '(' + lastErr + ')' : '(シーズン前で成績がまだ無い可能性)'}` : '全員ぶん取得');
+  }
   out.players = found;
   if (!found.length) out.note = 'NBAに日本出身の登録選手が見つかりませんでした';
   return out;
