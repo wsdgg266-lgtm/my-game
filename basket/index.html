@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0c11">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="バスナビ">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<title>バスナビ! - B.LEAGUE / NBA / 日本代表</title>
+<script>
+  // 画面がちらつかないように、描画前に保存済みのテーマを当てておく
+  try {
+    var t = localStorage.getItem('bnv_theme');
+    document.documentElement.setAttribute('data-theme', t === '"dark"' || t === 'dark' ? 'dark' : 'light');
+  } catch (e) {}
+</script>
+<style>
+  /* 明るい画面(初期値)。設定タブで暗い画面に切り替えられる */
+  :root {
+    --bg: #eef1f6;
+    --surface: #ffffff;
+    --surface2: #ffffff;
+    --raise: #f1f4f8;
+    --text: #131820;
+    --sub: #5a6474;
+    --dim: #8b95a5;
+    --line: rgba(16,24,40,.09);
+    --line2: rgba(16,24,40,.16);
+    --cut: rgba(16,24,40,.3);
+    --or: #e2620a;
+    --on-or: #ffffff;
+    --or-soft: rgba(226,98,10,.1);
+    --win: #0f9d58;
+    --live: #d92b3d;
+    --glass: rgba(238,241,246,.9);
+    --hero: linear-gradient(160deg, #ffffff, #f4f1ec);
+    --input-bg: #ffffff;
+    --off: #c3cad6;
+    --shadow: 0 1px 2px rgba(16,24,40,.05), 0 2px 8px rgba(16,24,40,.06);
+    --accent-fg: #a34606;
+    --r: 14px;
+  }
+  /* 暗い画面 */
+  :root[data-theme="dark"] {
+    --bg: #0a0c11;
+    --surface: #141821;
+    --surface2: #1b2029;
+    --raise: #11151d;
+    --text: #f2f5fa;
+    --sub: #8a94a6;
+    --dim: #5f6878;
+    --line: rgba(255,255,255,.07);
+    --line2: rgba(255,255,255,.14);
+    --cut: rgba(255,255,255,.22);
+    --or: #ff8a2b;
+    --on-or: #16100a;
+    --or-soft: rgba(255,138,43,.13);
+    --win: #4ade80;
+    --live: #ff4d5e;
+    --glass: rgba(10,12,17,.92);
+    --hero: linear-gradient(160deg, #1d2330, #141821);
+    --input-bg: #0e1219;
+    --off: #2b3240;
+    --shadow: none;
+    --accent-fg: #ffc48a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 90px;
+    overflow-x: hidden;
+    max-width: 100vw;
+    line-height: 1.5;
+  }
+  input, select, textarea {
+    font-size: 16px !important;
+    background: var(--input-bg); color: var(--text);
+    border: 1px solid var(--line2); border-radius: 10px;
+  }
+  button { font-family: inherit; color: inherit; }
+  a { color: var(--or); }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ---------- ヘッダー ---------- */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--line);
+    padding: calc(10px + env(safe-area-inset-top)) 14px 0;
+  }
+  .head-row { display: flex; align-items: center; gap: 10px; }
+  .logo {
+    font-size: 1.22rem; font-weight: 900; font-style: italic; letter-spacing: .01em;
+    color: var(--or);
+  }
+  .logo::after {
+    content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--or); margin-left: 5px; vertical-align: .12em;
+  }
+  .head-date { font-size: .74rem; color: var(--dim); flex: 1; }
+  #refreshBtn, #themeBtn {
+    border: 1px solid var(--line2); background: none; width: 34px; height: 34px;
+    border-radius: 50%; font-size: 16px; cursor: pointer; flex-shrink: 0; line-height: 1;
+  }
+  #themeBtn { font-size: 14px; }
+  #refreshBtn.spin { animation: spin 1s linear infinite; color: var(--or); border-color: var(--or); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .chip-bar {
+    display: flex; gap: 7px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; padding: 10px 0 11px;
+  }
+  .chip-bar::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0; border: 1px solid var(--line2); background: none; color: var(--sub);
+    border-radius: 999px; padding: 6px 13px; font-size: .82rem; cursor: pointer; white-space: nowrap;
+  }
+  .chip.on { background: var(--or); border-color: var(--or); color: var(--on-or); font-weight: 800; }
+
+  #banner {
+    display: none; font-size: .8rem; margin: 0 -14px; padding: 7px 14px;
+    background: var(--or-soft); color: var(--accent-fg); border-top: 1px solid var(--or-soft);
+  }
+  #banner.show { display: block; }
+  #focusBar {
+    display: none; align-items: center; gap: 8px; margin: 0 -14px; padding: 8px 14px;
+    background: var(--or); color: var(--on-or); font-size: .85rem; font-weight: 700;
+  }
+  #focusBar.show { display: flex; }
+  #focusBar b { flex: 1; }
+  #focusBar button {
+    border: none; background: rgba(0,0,0,.18); color: var(--on-or); border-radius: 999px;
+    padding: 3px 12px; font-size: .8rem; cursor: pointer; font-weight: 700;
+  }
+
+  /* ---------- 本文 ---------- */
+  main { padding: 16px 14px 0; max-width: 620px; margin: 0 auto; }
+  .page { display: none; }
+  .page.on { display: block; }
+  h2.sec {
+    font-size: .82rem; font-weight: 800; color: var(--sub); letter-spacing: .08em;
+    margin: 22px 2px 10px; display: flex; align-items: center; gap: 8px;
+  }
+  h2.sec:first-child { margin-top: 0; }
+  h2.sec small { color: var(--dim); font-weight: normal; letter-spacing: 0; }
+  h2.sec .more { margin-left: auto; font-size: .78rem; color: var(--or); cursor: pointer; letter-spacing: 0; }
+  .day {
+    font-size: .78rem; font-weight: 700; color: var(--dim); letter-spacing: .06em;
+    margin: 16px 2px 8px;
+  }
+  .day.today { color: var(--or); }
+  .note {
+    background: var(--surface); border-radius: var(--r); padding: 22px 16px; box-shadow: var(--shadow);
+    text-align: center; color: var(--sub); font-size: .87rem; line-height: 1.9;
+  }
+  .note b { color: var(--text); }
+  .links { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 12px; }
+  .links a, .links button {
+    font-size: .76rem; color: var(--sub); text-decoration: none; cursor: pointer;
+    border: 1px solid var(--line2); border-radius: 999px; padding: 5px 12px; background: none;
+  }
+
+  /* ---------- 試合カード(スコアボード型) ---------- */
+  .g {
+    background: var(--surface); border-radius: var(--r); margin-bottom: 8px;
+    overflow: hidden; position: relative; box-shadow: var(--shadow);
+  }
+  .g-head {
+    display: flex; align-items: center; gap: 8px; padding: 10px 13px 0;
+    font-size: .72rem; color: var(--dim);
+  }
+  .g-lg { font-weight: 800; letter-spacing: .06em; color: var(--sub); }
+  .g-venue { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .g-when { margin-left: auto; font-weight: 800; color: var(--text); white-space: nowrap; }
+  .g-when.live { color: var(--live); }
+  .g-when.live::before {
+    content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--live); margin-right: 5px; animation: pulse 1.3s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { opacity: .25; } }
+  .g-when.fin { color: var(--dim); font-weight: 700; }
+  .g-rows { padding: 7px 13px 10px; }
+  .g-row {
+    display: flex; align-items: center; gap: 9px; padding: 4px 0;
+  }
+  .g-bar { width: 3px; height: 17px; border-radius: 2px; background: var(--dim); flex-shrink: 0; }
+  .g-nm {
+    flex: 1; font-size: .97rem; color: var(--sub); min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .g-nm .rec { color: var(--dim); font-size: .72rem; margin-left: 6px; }
+  .g-pt { font-size: 1.22rem; font-weight: 800; color: var(--dim); min-width: 2.2em; text-align: right; }
+  .g-row.win .g-nm { color: var(--text); font-weight: 800; }
+  .g-row.win .g-pt { color: var(--text); font-weight: 900; }
+  .g-row.lead .g-nm, .g-row.lead .g-pt { color: var(--text); }
+  .g-tip { font-size: 1.05rem; font-weight: 800; color: var(--or); text-align: right; }
+  .g-qs {
+    display: flex; gap: 4px; padding: 0 13px 9px; font-size: .66rem; color: var(--dim);
+  }
+  .g-qs span { background: var(--raise); border-radius: 4px; padding: 1px 6px; }
+  .g-tv {
+    display: flex; align-items: center; gap: 8px; padding: 9px 13px;
+    border-top: 1px solid var(--line); font-size: .78rem; color: var(--sub);
+  }
+  .g-tv .t { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .g-tv .t.memo { color: var(--accent-fg); }
+  .g-tv button {
+    border: 1px solid var(--line2); background: none; border-radius: 999px;
+    padding: 4px 11px; font-size: .74rem; cursor: pointer; flex-shrink: 0; color: var(--sub);
+  }
+  .g.jp .g-tv button { border-color: rgba(255,138,43,.5); color: var(--or); }
+  .g-nores { padding: 0 13px 10px; font-size: .74rem; color: var(--dim); }
+
+  /* ---------- 次の試合(ヒーロー) ---------- */
+  .hero {
+    background: var(--hero);
+    border-radius: var(--r); padding: 15px; margin-bottom: 10px;
+    position: relative; overflow: hidden; box-shadow: var(--shadow);
+  }
+  .hero .court {
+    position: absolute; right: -30px; top: -34px; width: 168px; height: 168px;
+    opacity: .1; pointer-events: none;
+  }
+  .hero .lbl { font-size: .7rem; color: var(--or); font-weight: 800; letter-spacing: .1em; }
+  .hero .cd { display: flex; align-items: baseline; gap: 7px; margin: 5px 0 3px; }
+  .hero .cd b { font-size: 2.5rem; font-weight: 900; line-height: 1; letter-spacing: -.02em; }
+  .hero .cd span { font-size: .85rem; color: var(--sub); }
+  .hero .vs { font-size: .95rem; font-weight: 700; margin-top: 5px; }
+  .hero .meta { font-size: .78rem; color: var(--sub); margin-top: 3px; }
+
+  /* ---------- 順位表 ---------- */
+  .card { background: var(--surface); border-radius: var(--r); padding: 4px 13px; margin-bottom: 10px; box-shadow: var(--shadow); }
+  .card.pad { padding: 14px 13px; }
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -13px; padding: 0 13px; }
+  table.rk { width: 100%; border-collapse: collapse; font-size: .84rem; }
+  table.rk th {
+    font-size: .66rem; color: var(--dim); font-weight: 700; text-align: right;
+    padding: 10px 4px 7px; white-space: nowrap; letter-spacing: .04em;
+  }
+  table.rk th.tm, table.rk td.tm { text-align: left; width: 100%; }
+  table.rk td { padding: 9px 4px; text-align: right; border-top: 1px solid var(--line); white-space: nowrap; }
+  table.rk td.tm { font-weight: 600; }
+  table.rk td.rank { color: var(--dim); width: 2em; text-align: center; font-size: .78rem; }
+  table.rk tr.mine td { background: var(--or-soft); }
+  table.rk tr.mine td.tm { color: var(--or); font-weight: 800; }
+  table.rk tr.cut td { border-top: 2px solid var(--cut); }
+  table.rk td.w { color: var(--text); font-weight: 700; }
+  .zn { display: inline-block; width: 5px; height: 5px; border-radius: 50%; margin-right: 7px; vertical-align: .1em; }
+  .zn.po { background: var(--win); }
+  .zn.pi { background: var(--or); }
+  .zn.no { background: transparent; }
+  .legend { font-size: .72rem; color: var(--dim); padding: 10px 0 12px; line-height: 1.8; }
+  .up { color: var(--win); } .dn { color: var(--live); }
+
+  /* ---------- 選手 ---------- */
+  .pl { background: var(--surface); border-radius: var(--r); padding: 14px 13px; margin-bottom: 8px; box-shadow: var(--shadow); }
+  .pl-nm { font-size: 1.08rem; font-weight: 900; }
+  .pl-nm small { font-size: .72rem; color: var(--sub); font-weight: normal; margin-left: 7px; }
+  .pl-st { display: flex; gap: 14px; margin: 11px 0 3px; }
+  .pl-st div { text-align: left; }
+  .pl-st b { display: block; font-size: 1.25rem; font-weight: 900; line-height: 1.1; }
+  .pl-st span { font-size: .66rem; color: var(--dim); }
+  .pl-sub { font-size: .74rem; color: var(--dim); margin-top: 9px; }
+  .stars { color: var(--or); letter-spacing: 1px; }
+  .stars.low { color: var(--dim); }
+  .ld { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); font-size: .88rem; }
+  .ld:first-of-type { border-top: none; }
+  .ld .n { color: var(--dim); font-size: .74rem; width: 1.2em; }
+  .ld .nm { flex: 1; font-weight: 600; }
+  .ld .nm small { display: block; color: var(--dim); font-size: .7rem; font-weight: normal; }
+  .ld .v { font-weight: 900; color: var(--or); }
+
+  /* ---------- ニュース ---------- */
+  .nw {
+    display: block; background: var(--surface); border-radius: var(--r);
+    padding: 13px; margin-bottom: 8px; text-decoration: none; color: inherit; box-shadow: var(--shadow);
+  }
+  .nw .top { display: flex; align-items: center; gap: 8px; font-size: .7rem; color: var(--dim); margin-bottom: 6px; }
+  .nw .src { color: var(--or); font-weight: 700; }
+  .nw .ttl { font-size: .93rem; font-weight: 700; line-height: 1.55; }
+
+  /* ---------- 設定 ---------- */
+  .row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .row:first-child { border-top: none; }
+  .row .grow { flex: 1; font-size: .9rem; }
+  .row .desc { font-size: .74rem; color: var(--dim); margin-top: 2px; }
+  .sw { position: relative; width: 44px; height: 25px; flex-shrink: 0; }
+  .sw input { opacity: 0; width: 0; height: 0; }
+  .sw .kb { position: absolute; inset: 0; background: var(--off); border-radius: 999px; cursor: pointer; transition: background .15s; }
+  .sw .kb::after {
+    content: ""; position: absolute; top: 3px; left: 3px; width: 19px; height: 19px;
+    background: #fff; border-radius: 50%; transition: left .15s;
+  }
+  .sw input:checked + .kb { background: var(--or); }
+  .sw input:checked + .kb::after { left: 22px; }
+  .diag { font-size: .77rem; color: var(--sub); line-height: 1.95; padding: 12px 0; }
+  .diag .ok { color: var(--win); }
+  .diag .ng { color: var(--live); }
+  .btn {
+    display: block; width: 100%; border: none; border-radius: 11px; padding: 12px;
+    font-size: .9rem; font-weight: 800; background: var(--or); color: var(--on-or); cursor: pointer;
+  }
+  .btn.sub { background: var(--raise); color: var(--text); }
+  .btn.warn { background: none; border: 1px solid var(--live); color: var(--live); }
+  .btn + .btn { margin-top: 8px; }
+  textarea.memo { width: 100%; padding: 10px 11px; line-height: 1.6; }
+
+  /* ---------- 下部ナビ ---------- */
+  nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    border-top: 1px solid var(--line);
+    display: flex; padding-bottom: env(safe-area-inset-bottom);
+  }
+  nav button {
+    flex: 1; border: none; background: none; padding: 8px 0 7px; cursor: pointer;
+    font-size: .62rem; color: var(--dim); display: flex; flex-direction: column;
+    align-items: center; gap: 3px; letter-spacing: .03em;
+  }
+  nav button .ic { width: 21px; height: 21px; }
+  nav button .ic svg { width: 100%; height: 100%; }
+  nav button.on { color: var(--or); font-weight: 700; }
+
+  /* ---------- モーダル ---------- */
+  #mw { display: none; position: fixed; inset: 0; z-index: 40; background: rgba(10,15,25,.55); align-items: flex-end; }
+  #mw.show { display: flex; }
+  #mb {
+    background: var(--surface2); width: 100%; max-width: 620px; margin: 0 auto;
+    border-radius: 18px 18px 0 0; padding: 18px 16px calc(16px + env(safe-area-inset-bottom));
+    max-height: 84vh; overflow-y: auto;
+  }
+  #mb::before {
+    content: ""; display: block; width: 38px; height: 4px; border-radius: 2px;
+    background: var(--line2); margin: -6px auto 14px;
+  }
+  #mb h3 { font-size: 1rem; }
+  #mb .msub { font-size: .8rem; color: var(--sub); margin: 4px 0 14px; line-height: 1.6; }
+  .mlist { display: flex; flex-direction: column; gap: 8px; }
+  .mlist a, .mlist button {
+    display: flex; align-items: center; gap: 10px; text-decoration: none; text-align: left;
+    background: var(--raise); border: none; border-radius: 11px; padding: 13px;
+    font-size: .9rem; color: var(--text); cursor: pointer; width: 100%;
+  }
+  .mlist .ico { font-size: 1.05rem; width: 1.4em; text-align: center; flex-shrink: 0; }
+  .mlist .sub { display: block; font-size: .72rem; color: var(--dim); font-weight: normal; margin-top: 2px; }
+  .mlist b { font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-row">
+    <span class="logo">バスナビ</span>
+    <span class="head-date num" id="headDate"></span>
+    <button id="themeBtn" title="画面の明るさを切り替える">🌙</button>
+    <button id="refreshBtn" title="データを再取得">↻</button>
+  </div>
+  <div id="banner"></div>
+  <div id="focusBar"><b id="focusLabel"></b><button id="focusClear">解除</button></div>
+  <div class="chip-bar" id="chipBar"></div>
+</header>
+
+<main>
+  <div class="page" id="page-home"></div>
+  <div class="page" id="page-games"></div>
+  <div class="page" id="page-rank"></div>
+  <div class="page" id="page-player"></div>
+  <div class="page" id="page-news"></div>
+  <div class="page" id="page-set"></div>
+</main>
+
+<nav id="navBar">
+  <button data-tab="home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3.5l9 7"/><path d="M5.5 9.5V20.5h13V9.5"/></svg></span>ホーム</button>
+  <button data-tab="games"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M3.5 12h17M12 3.4c4.4 4.7 4.4 12.5 0 17.2M12 3.4c-4.4 4.7-4.4 12.5 0 17.2"/></svg></span>試合</button>
+  <button data-tab="rank"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20.5V12M12 20.5V4M19 20.5v-5.5"/></svg></span>順位</button>
+  <button data-tab="player"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5.2 20c1.4-3.4 3.9-5 6.8-5s5.4 1.6 6.8 5"/></svg></span>選手</button>
+  <button data-tab="news"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M7 9.5h6M7 13h10M7 16h7"/></svg></span>ニュース</button>
+  <button data-tab="set"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3.2v2.5M12 18.3v2.5M3.2 12h2.5M18.3 12h2.5M5.8 5.8l1.8 1.8M16.4 16.4l1.8 1.8M18.2 5.8l-1.8 1.8M7.6 16.4l-1.8 1.8"/></svg></span>設定</button>
+</nav>
+
+<div id="mw"><div id="mb"></div></div>
+
+<script>
+'use strict';
+
+/* ================= ユーティリティ ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const enc = encodeURIComponent;
+
+const JST = 'Asia/Tokyo';
+const dateKeyFmt = new Intl.DateTimeFormat('sv-SE', { timeZone: JST, year:'numeric', month:'2-digit', day:'2-digit' });
+const timeFmt = new Intl.DateTimeFormat('ja-JP', { timeZone: JST, hour:'2-digit', minute:'2-digit', hour12:false });
+const wdFmt = new Intl.DateTimeFormat('ja-JP', { timeZone: JST, weekday:'short' });
+const dateKey = d => dateKeyFmt.format(d);
+const todayKey = () => dateKey(new Date());
+function keyToLabel(key) {
+  const [y,m,d] = key.split('-').map(Number);
+  const wd = wdFmt.format(new Date(Date.UTC(y, m-1, d, 3)));      // JST正午相当で曜日を出す
+  return `${m}/${d}(${wd})`;
+}
+function addDaysKey(key, n) {
+  const [y,m,d] = key.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m-1, d, 3));
+  dt.setUTCDate(dt.getUTCDate() + n);
+  return dateKey(dt);
+}
+function daysBetween(a, b) {
+  const p = k => { const [y,m,d] = k.split('-').map(Number); return Date.UTC(y, m-1, d); };
+  return Math.round((p(b) - p(a)) / 86400000);
+}
+function lsGet(k, fb) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch(e) { return fb; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+function fmtAgo(ts) {
+  if (!ts) return '未取得';
+  const m = Math.floor((Date.now() - ts) / 60000);
+  if (m < 1) return 'たった今';
+  if (m < 60) return m + '分前';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + '時間前';
+  const d = Math.floor(h / 24);
+  return d < 30 ? d + '日前' : Math.floor(d / 30) + 'か月前';
+}
+
+/* ================= リーグ定義 ================= */
+// kind: 'espn'  = ブラウザから ESPN の公開APIを直接叩く
+//       'local' = GitHub Actions が取り込んだ同一オリジンのJSONを読む(CORS回避)
+const TV_YAHOO = q => `https://tv.yahoo.co.jp/search/?q=${enc(q)}`;   // テレビ番組表の横断検索
+const LEAGUES = {
+  b1: {
+    name:'B.LEAGUE', short:'B.LEAGUE', icon:'🇯🇵', kind:'local', file:'data/bleague.json',
+    color:'#ff8a2b',
+    bcast:'バスケットLIVE ほか',
+    links:[['B.LEAGUE公式','https://www.bleague.jp/schedule/'],['順位表','https://www.bleague.jp/standings/']],
+    tv: g => [
+      { ico:'📱', label:'バスケットLIVE', sub:'B.LEAGUE全試合のライブ配信', url:'https://basketball-live.bs-sp.jp/' },
+      { ico:'📅', label:'B.LEAGUE公式の日程', sub:'開始時刻と会場の確認はこちら', url:'https://www.bleague.jp/schedule/' },
+      { ico:'📺', label:'テレビ番組表で探す', sub:'地上波・BS・CSの放送予定', url: TV_YAHOO(jaTeam(g.home,'b1') + ' バスケ') },
+    ],
+  },
+  nba: {
+    name:'NBA', short:'NBA', icon:'🏀', kind:'espn', espn:'basketball/nba',
+    color:'#c8102e',
+    bcast:'NBA Rakuten / League Pass',
+    links:[['NBA公式','https://www.nba.com/schedule'],['NBA Rakuten','https://nba.rakuten.co.jp/']],
+    tv: g => [
+      { ico:'📱', label:'NBA Rakuten', sub:'日本向けの公式配信', url:'https://nba.rakuten.co.jp/schedule' },
+      { ico:'🌐', label:'NBA League Pass', sub:'NBA公式の配信サービス', url:'https://www.nba.com/watch' },
+      { ico:'📺', label:'テレビ番組表で探す', sub:'BS・CSでの中継予定', url: TV_YAHOO('NBA') },
+    ],
+  },
+  jpn: {
+    name:'バスケ日本代表', short:'日本代表', icon:'🎌', kind:'local', file:'data/japan.json',
+    color:'#e8433f',
+    bcast:'NHK・民放・配信(大会により変わります)',
+    links:[['JBA公式','https://www.japanbasketball.jp/'],['FIBA','https://www.fiba.basketball/']],
+    // 代表戦は大会ごとに放送局が変わるので、探せる場所をまとめて出す
+    tv: g => [
+      { ico:'📺', label:'テレビ番組表で探す', sub:'地上波・BSの中継を日付から確認できます', url: TV_YAHOO('バスケットボール 日本代表') },
+      { ico:'▶️', label:'TVer で探す', sub:'民放の配信・見逃し', url:'https://tver.jp/search?keyword=' + enc('バスケットボール') },
+      { ico:'📡', label:'NHK の番組表', sub:'NHK総合・BSで中継されることがあります', url:'https://www.nhk.jp/timetable/' },
+      { ico:'🏀', label:'JBA公式(日本バスケットボール協会)', sub:'代表の日程と放送予定の告知', url:'https://www.japanbasketball.jp/' },
+      { ico:'🌍', label:'FIBA公式', sub:'大会の公式ページ', url:'https://www.fiba.basketball/' },
+    ],
+  },
+};
+const LEAGUE_KEYS = Object.keys(LEAGUES);
+
+/* ================= チーム名の日本語化(なければ原文のまま) ================= */
+const NBA_NICK_JA = {
+  'Hawks':'ホークス','Celtics':'セルティックス','Nets':'ネッツ','Hornets':'ホーネッツ',
+  'Bulls':'ブルズ','Cavaliers':'キャバリアーズ','Mavericks':'マーベリックス','Nuggets':'ナゲッツ',
+  'Pistons':'ピストンズ','Warriors':'ウォリアーズ','Rockets':'ロケッツ','Pacers':'ペイサーズ',
+  'Clippers':'クリッパーズ','Lakers':'レイカーズ','Grizzlies':'グリズリーズ','Heat':'ヒート',
+  'Bucks':'バックス','Timberwolves':'ティンバーウルブズ','Pelicans':'ペリカンズ','Knicks':'ニックス',
+  'Thunder':'サンダー','Magic':'マジック','76ers':'76ers','Suns':'サンズ',
+  'Trail Blazers':'トレイルブレイザーズ','Kings':'キングス','Spurs':'スパーズ','Raptors':'ラプターズ',
+  'Jazz':'ジャズ','Wizards':'ウィザーズ',
+};
+const B_TEAM_JA = {
+  'Ryukyu Golden Kings':'琉球ゴールデンキングス','Chiba Jets':'千葉ジェッツ','Chiba Jets Funabashi':'千葉ジェッツ',
+  'Utsunomiya Brex':'宇都宮ブレックス','Alvark Tokyo':'アルバルク東京','Tokyo Alvark':'アルバルク東京',
+  'Kawasaki Brave Thunders':'川崎ブレイブサンダース','Nagoya Diamond Dolphins':'名古屋ダイヤモンドドルフィンズ',
+  'Hiroshima Dragonflies':'広島ドラゴンフライズ','Shimane Susanoo Magic':'島根スサノオマジック',
+  'Osaka Evessa':'大阪エヴェッサ','Levanga Hokkaido':'レバンガ北海道','Hokkaido Levanga':'レバンガ北海道',
+  'Sunrockers Shibuya':'サンロッカーズ渋谷','Yokohama B-Corsairs':'横浜ビー・コルセアーズ',
+  'Shinshu Brave Warriors':'信州ブレイブウォリアーズ','Gunma Crane Thunders':'群馬クレインサンダーズ',
+  'Ibaraki Robots':'茨城ロボッツ','San-en NeoPhoenix':'三遠ネオフェニックス','Sanen Neophoenix':'三遠ネオフェニックス',
+  'Shiga Lakes':'滋賀レイクス','Shiga Lakestars':'滋賀レイクス','Toyama Grouses':'富山グラウジーズ',
+  'Akita Northern Happinets':'秋田ノーザンハピネッツ','Sendai 89ers':'仙台89ers',
+  'Nagasaki Velca':'長崎ヴェルカ','Saga Ballooners':'佐賀バルーナーズ','Fukushima Firebonds':'福島ファイヤーボンズ',
+  'Kyoto Hannaryz':'京都ハンナリーズ','Niigata Albirex BB':'新潟アルビレックスBB',
+  'Seahorses Mikawa':'シーホース三河','Mikawa Seahorses':'シーホース三河',
+  'Kagoshima Rebnise':'鹿児島レブナイズ','Koshigaya Alphas':'越谷アルファーズ',
+  'Kumamoto Volters':'熊本ヴォルターズ','Bambitious Nara':'奈良バンビシャス',
+  'Fighting Eagles Nagoya':'ファイティングイーグルス名古屋','Yamagata Wyverns':'山形ワイヴァンズ',
+  'Aomori Wats':'青森ワッツ','Iwate Big Bulls':'岩手ビッグブルズ',
+  'Earthfriends Tokyo Z':'アースフレンズ東京Z','Rizing Zephyr Fukuoka':'ライジングゼファー福岡',
+  'Ehime Orange Vikings':'愛媛オレンジバイキングス','Kagawa Five Arrows':'香川ファイブアローズ',
+  'Kanazawa Samuraiz':'金沢武士団',
+};
+// 代表戦は相手国も日本語で出す
+const COUNTRY_JA = {
+  'Japan':'日本','China':'中国','Korea':'韓国','South Korea':'韓国','Chinese Taipei':'チャイニーズ・タイペイ',
+  'Australia':'オーストラリア','New Zealand':'ニュージーランド','Philippines':'フィリピン','Iran':'イラン',
+  'Lebanon':'レバノン','Jordan':'ヨルダン','Qatar':'カタール','Syria':'シリア','India':'インド',
+  'Guam':'グアム','Mongolia':'モンゴル','Indonesia':'インドネシア','Kazakhstan':'カザフスタン',
+  'United States':'アメリカ','USA':'アメリカ','Spain':'スペイン','France':'フランス','Germany':'ドイツ',
+  'Serbia':'セルビア','Argentina':'アルゼンチン','Brazil':'ブラジル','Canada':'カナダ','Slovenia':'スロベニア',
+  'Finland':'フィンランド','Venezuela':'ベネズエラ','Cape Verde':'カーボベルデ','Angola':'アンゴラ',
+};
+function jaTeam(name, league) {
+  if (!name) return '';
+  if (league === 'jpn' && COUNTRY_JA[name]) return COUNTRY_JA[name];
+  if (B_TEAM_JA[name]) return B_TEAM_JA[name];
+  if (league === 'nba') {
+    for (const nick in NBA_NICK_JA) if (name.endsWith(nick)) return NBA_NICK_JA[nick];
+  }
+  return name;
+}
+const GROUP_JA = {
+  'Eastern Conference':'イースタン・カンファレンス', 'Western Conference':'ウエスタン・カンファレンス',
+  'Atlantic':'アトランティック地区', 'Central':'セントラル地区', 'Southeast':'サウスイースト地区',
+  'Northwest':'ノースウエスト地区', 'Pacific':'パシフィック地区', 'Southwest':'サウスウエスト地区',
+  'National Basketball Association':'NBA 全体',
+};
+const jaGroup = n => GROUP_JA[n] || GROUP_JA[String(n).replace(/ Division$/, '')] || n;
+const PLAYER_JA = {
+  'Rui Hachimura':'八村塁', 'Yuta Watanabe':'渡邊雄太', 'Yuki Kawamura':'河村勇輝',
+  'Keisei Tominaga':'富永啓生', 'Yudai Baba':'馬場雄大',
+};
+const jaPlayer = n => PLAYER_JA[n] || n;
+
+/* ================= 状態 ================= */
+const state = {
+  settings: lsGet('bnv_settings', { filter:'all', enabled:{ b1:true, nba:true, jpn:true } }),
+  follow:   lsGet('bnv_follow',   { teams:{} }),         // "リーグ|チーム名" → true
+  cache:    lsGet('bnv_cache',    {}),
+  bcast:    lsGet('bnv_bcast',    { presets:{}, overrides:{} }),
+  focus:    lsGet('bnv_focus',    null),                 // {league, team}
+  theme: lsGet('bnv_theme', 'light'),
+  tab: 'home',
+  gamesView: 'next',                                     // 試合タブ: next(これから) / done(結果)
+  rankLeague: 'nba',
+  fetchNote: '',
+};
+for (const k of LEAGUE_KEYS) if (state.settings.enabled[k] === undefined) state.settings.enabled[k] = true;
+if (state.settings.filter !== 'all' && !LEAGUES[state.settings.filter]) state.settings.filter = 'all';
+if (state.focus && !LEAGUES[state.focus.league]) state.focus = null;
+
+function applyTheme() {
+  const dark = state.theme === 'dark';
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', dark ? '#0a0c11' : '#eef1f6');
+  const btn = $('#themeBtn');
+  if (btn) {
+    btn.textContent = dark ? '☀️' : '🌙';
+    btn.title = dark ? '明るい画面にする' : '暗い画面にする';
+  }
+}
+function toggleTheme() {
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  lsSet('bnv_theme', state.theme);
+  applyTheme();
+  render();
+}
+
+function saveAll() {
+  lsSet('bnv_settings', state.settings);
+  lsSet('bnv_follow', state.follow);
+  lsSet('bnv_bcast', state.bcast);
+  lsSet('bnv_focus', state.focus);
+}
+const saveCache = () => lsSet('bnv_cache', state.cache);
+const enabledKeys = () => LEAGUE_KEYS.filter(k => state.settings.enabled[k]);
+const bcastPreset = lg => (state.bcast.presets[lg] != null ? state.bcast.presets[lg] : LEAGUES[lg].bcast);
+const followKey = (lg, team) => lg + '|' + team;
+const isFollowed = (lg, team) => !!state.follow.teams[followKey(lg, team)];
+
+/* ================= データ取得層 ================= */
+async function fetchJson(url, timeoutMs) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), timeoutMs || 12000);
+  try {
+    const res = await fetch(url, { signal: ctl.signal });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return await res.json();
+  } finally { clearTimeout(t); }
+}
+
+/* --- ESPN(APIキー不要): NBAの日程・結果・ライブスコア --- */
+async function espnFetch(lgKey) {
+  const path = LEAGUES[lgKey].espn;
+  const t = todayKey();
+  const from = addDaysKey(t, -7).replace(/-/g, '');
+  const to   = addDaysKey(t, 14).replace(/-/g, '');
+  const base = `https://site.api.espn.com/apis/site/v2/sports/${path}/scoreboard`;
+  let json;
+  try {
+    json = await fetchJson(`${base}?dates=${from}-${to}&limit=400`);
+  } catch(e) {
+    json = await fetchJson(base);            // 期間指定が使えない場合は当日分だけでも
+  }
+  const evs = [];
+  for (const e of (json.events || [])) {
+    const comp = e.competitions && e.competitions[0];
+    if (!comp) continue;
+    const home = (comp.competitors || []).find(c => c.homeAway === 'home');
+    const away = (comp.competitors || []).find(c => c.homeAway === 'away');
+    if (!home || !away) continue;
+    const st = (comp.status && comp.status.type) || {};
+    let status = 'pre';
+    if (st.state === 'in') status = 'in';
+    else if (st.state === 'post') status = 'post';
+    if (/postpon|cancel/i.test(st.name || '') || /postpon|cancel/i.test(st.description || '')) status = 'ppd';
+    const ts = Date.parse(e.date);
+    const rec = c => (c.records && c.records[0] && c.records[0].summary) || '';
+    const line = c => (c.linescores || []).map(q => Number(q.value)).filter(v => !isNaN(v));
+    const col = c => (c.team && c.team.color ? '#' + String(c.team.color).replace('#', '') : null);
+    evs.push({
+      id: lgKey + '_' + e.id,
+      league: lgKey,
+      ts: isNaN(ts) ? null : ts,
+      dateJst: isNaN(ts) ? null : dateKey(new Date(ts)),
+      timeJst: isNaN(ts) ? null : timeFmt.format(new Date(ts)),
+      home: home.team ? (home.team.displayName || home.team.name) : '?',
+      away: away.team ? (away.team.displayName || away.team.name) : '?',
+      hs: status === 'pre' || status === 'ppd' ? null : Number(home.score),
+      as: status === 'pre' || status === 'ppd' ? null : Number(away.score),
+      hrec: rec(home), arec: rec(away),
+      hcol: col(home), acol: col(away),
+      hline: line(home), aline: line(away),
+      detail: status === 'in' ? ((comp.status && comp.status.type && comp.status.type.shortDetail) || '試合中') : '',
+      status,
+      venue: (comp.venue && comp.venue.fullName) || '',
+      bcast: '',
+    });
+  }
+  return { events: evs, note: 'ESPN' };
+}
+
+/* --- 取り込み済みJSON(B.LEAGUE・日本代表)。同一オリジンなのでCORSの心配がない --- */
+async function localFetch(lgKey) {
+  const j = await fetchJson(LEAGUES[lgKey].file + '?t=' + Date.now(), 15000);
+  const raw = [].concat(j.games || [], j.manualGames || []);
+  const seen = new Set();
+  const evs = [];
+  for (const g of raw) {
+    if (!g || !g.home || !g.away) continue;
+    const id = lgKey + '_' + (g.id || (g.dateJst + g.home + g.away));
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const hs = g.hs == null || g.hs === '' ? null : Number(g.hs);
+    const as = g.as == null || g.as === '' ? null : Number(g.as);
+    let status = g.status || 'pre';
+    if (!g.status) {
+      if (hs != null && as != null) status = 'post';
+      else if (g.ts && g.ts < Date.now() - 4 * 3600 * 1000) status = 'nores';
+    }
+    evs.push({
+      id, league: lgKey,
+      ts: g.ts || null,
+      dateJst: g.dateJst || (g.ts ? dateKey(new Date(g.ts)) : null),
+      timeJst: g.timeJst || null,
+      home: g.home, away: g.away, hs, as,
+      hrec: g.hrec || '', arec: g.arec || '',
+      hcol: null, acol: null,
+      hline: [], aline: [], detail: '',
+      status, venue: g.venue || '', label: g.label || '',
+      bcast: g.bcast || '',                       // データ側に放送情報があれば最優先で出す
+    });
+  }
+  return {
+    events: evs,
+    standings: j.standings || [],
+    roster: j.roster || [],
+    bcastNote: j.bcastNote || '',
+    updatedAt: j.updatedAt || null,
+    note: (j.source || '自動取り込み') + (j.updatedAt ? '(' + j.updatedAt.slice(0, 10) + '更新)' : ''),
+    warn: j.note || '',
+  };
+}
+
+async function refreshLeague(lgKey, force) {
+  const c = state.cache[lgKey];
+  const maxAge = LEAGUES[lgKey].kind === 'espn' ? 5 * 60 * 1000 : 30 * 60 * 1000;
+  if (!force && c && c.fetchedAt && Date.now() - c.fetchedAt < maxAge) return;
+  let result = null, error = null;
+  try {
+    result = LEAGUES[lgKey].kind === 'espn' ? await espnFetch(lgKey) : await localFetch(lgKey);
+  } catch(e) {
+    error = '取得失敗(' + e.message + ')';
+  }
+  state.cache[lgKey] = {
+    events: result ? result.events : ((c && c.events) || []),
+    standings: result ? (result.standings || []) : ((c && c.standings) || []),
+    roster: result ? (result.roster || []) : ((c && c.roster) || []),
+    bcastNote: result ? (result.bcastNote || '') : ((c && c.bcastNote) || ''),
+    fetchedAt: result ? Date.now() : ((c && c.fetchedAt) || null),
+    source: result ? result.note : ((c && c.source) || null),
+    error: error || (result && result.events.length === 0
+      ? (result.warn || 'この期間の試合はありませんでした(オフシーズンの可能性があります)') : null),
+  };
+  saveCache();
+}
+
+/* --- NBA順位表。返ってくる形が変わっても拾えるように entries を再帰的に探す --- */
+function walkStandings(node, groupName, out, depth) {
+  if (!node || typeof node !== 'object' || depth > 6) return;
+  const name = node.name || node.displayName || node.abbreviation || groupName;
+  if (node.standings && Array.isArray(node.standings.entries)) {
+    const rows = node.standings.entries.map(en => {
+      const stat = key => {
+        const s = (en.stats || []).find(x => x.name === key || x.abbreviation === key || x.shortDisplayName === key);
+        return s ? (s.displayValue != null ? s.displayValue : s.value) : null;
+      };
+      return {
+        team: (en.team && (en.team.displayName || en.team.name)) || '?',
+        abbr: (en.team && en.team.abbreviation) || '',
+        color: (en.team && en.team.color) ? '#' + String(en.team.color).replace('#', '') : null,
+        w: stat('wins'), l: stat('losses'),
+        pct: stat('winPercent'), gb: stat('gamesBehind'),
+        streak: stat('streak'), l10: stat('lasttengames') || stat('L10'),
+        seed: Number(stat('playoffSeed')) || null,
+      };
+    }).filter(r => r.w != null || r.l != null);
+    if (rows.length) out.push({ group: name || '順位表', rows });
+  }
+  for (const key of ['children', 'groups']) {
+    if (Array.isArray(node[key])) for (const ch of node[key]) walkStandings(ch, name, out, depth + 1);
+  }
+}
+async function refreshNbaRank(force) {
+  const c = state.cache.nbaRank;
+  if (!force && c && c.fetchedAt && Date.now() - c.fetchedAt < 30 * 60 * 1000) return;
+  const urls = [
+    'https://site.api.espn.com/apis/v2/sports/basketball/nba/standings?level=3',
+    'https://site.web.api.espn.com/apis/v2/sports/basketball/nba/standings?level=3',
+  ];
+  let groups = [], error = null;
+  for (const u of urls) {
+    try {
+      const j = await fetchJson(u, 15000);
+      const out = [];
+      walkStandings(j, null, out, 0);
+      if (out.length) { groups = out; error = null; break; }
+      error = '順位表のデータが空でした';
+    } catch(e) { error = '取得失敗(' + e.message + ')'; }
+  }
+  for (const g of groups) {
+    for (const r of g.rows) {
+      const w = Number(r.w), l = Number(r.l);
+      if ((r.pct == null || r.pct === '') && !isNaN(w) && !isNaN(l) && w + l > 0) r.pct = (w / (w + l)).toFixed(3);
+    }
+    g.rows.sort((a, b) => (a.seed || 99) - (b.seed || 99) || parseFloat(b.pct || 0) - parseFloat(a.pct || 0));
+    g.rows.forEach((r, i) => { if (!r.seed) r.seed = i + 1; });
+  }
+  state.cache.nbaRank = {
+    groups: groups.length ? groups : ((c && c.groups) || []),
+    fetchedAt: groups.length ? Date.now() : ((c && c.fetchedAt) || null),
+    error: groups.length ? null : (error || '取得できませんでした'),
+  };
+  saveCache();
+}
+
+/* --- NBAの部門別リーダー --- */
+const LEADER_WANT = [
+  { keys:['avgPoints','points'],     label:'得点' },
+  { keys:['avgRebounds','rebounds'], label:'リバウンド' },
+  { keys:['avgAssists','assists'],   label:'アシスト' },
+];
+function pickLeaders(json) {
+  const cats = (json && (json.categories || (json.leaders && json.leaders.categories))) || [];
+  const out = [];
+  for (const want of LEADER_WANT) {
+    const cat = cats.find(c => want.keys.includes(c.name) || want.keys.includes(c.abbreviation));
+    if (!cat) continue;
+    const rows = (cat.leaders || []).slice(0, 5).map(ld => ({
+      name: (ld.athlete && (ld.athlete.displayName || ld.athlete.fullName)) || '?',
+      team: (ld.team && (ld.team.abbreviation || ld.team.displayName)) || '',
+      value: ld.displayValue || (ld.value != null ? String(ld.value) : ''),
+    })).filter(r => r.name !== '?');
+    if (rows.length) out.push({ label: want.label, rows });
+  }
+  return out;
+}
+async function refreshNbaLeaders(force) {
+  const c = state.cache.nbaLeaders;
+  if (!force && c && c.fetchedAt && Date.now() - c.fetchedAt < 6 * 3600 * 1000) return;
+  const y = Number(todayKey().slice(0, 4));
+  const season = Number(todayKey().slice(5, 7)) >= 9 ? y + 1 : y;   // NBAは開幕年の翌年がシーズン表記
+  const urls = [
+    `https://site.web.api.espn.com/apis/site/v3/sports/basketball/nba/leaders?season=${season}&seasontype=2`,
+    `https://site.web.api.espn.com/apis/site/v3/sports/basketball/nba/leaders?season=${season - 1}&seasontype=2`,
+  ];
+  let cats = [], error = null;
+  for (const u of urls) {
+    try {
+      const j = await fetchJson(u, 15000);
+      cats = pickLeaders(j);
+      if (cats.length) { error = null; break; }
+      error = 'リーダーのデータが空でした';
+    } catch(e) { error = '取得失敗(' + e.message + ')'; }
+  }
+  state.cache.nbaLeaders = {
+    cats: cats.length ? cats : ((c && c.cats) || []),
+    fetchedAt: cats.length ? Date.now() : ((c && c.fetchedAt) || null),
+    error: cats.length ? null : (error || '取得できませんでした'),
+  };
+  saveCache();
+}
+
+/* --- 同一オリジンのJSON(日本人選手・ニュース・診断) --- */
+async function refreshLocalFile(key, file, field, maxAge) {
+  const c = state.cache[key];
+  if (c && c.fetchedAt && Date.now() - c.fetchedAt < maxAge) return;
+  try {
+    const j = await fetchJson(file + '?t=' + Date.now(), 15000);
+    const list = j[field] || [];
+    state.cache[key] = { list, updatedAt: j.updatedAt || null, fetchedAt: Date.now(),
+      error: list.length ? null : (j.note || 'まだ取り込まれていません') };
+  } catch(e) {
+    state.cache[key] = { list: (c && c.list) || [], updatedAt: (c && c.updatedAt) || null,
+      fetchedAt: (c && c.fetchedAt) || null, error: '取得失敗(' + e.message + ')' };
+  }
+  saveCache();
+}
+const refreshJp   = force => refreshLocalFile('jp',   'data/nba-jp.json', 'players', force ? 0 : 60 * 60 * 1000);
+const refreshNews = force => refreshLocalFile('news', 'data/news.json',   'items',   force ? 0 : 20 * 60 * 1000);
+async function refreshReport() {
+  try { state.cache.report = await fetchJson('data/import-report.json?t=' + Date.now(), 10000); }
+  catch(e) { state.cache.report = null; }
+}
+
+// 出場時間あたりの働きから機械的に★をつける(公式の評価ではありません)
+function ratePlayer(st) {
+  if (!st) return null;
+  const ppg = parseFloat(st.ppg), mpg = parseFloat(st.mpg), g = Number(st.games || 0);
+  if (isNaN(ppg)) return null;
+  const eff = ppg + parseFloat(st.rpg || 0) + parseFloat(st.apg || 0);
+  const s = eff >= 30 ? 5 : eff >= 20 ? 4 : eff >= 12 ? 3 : eff >= 6 ? 2 : 1;
+  return { stars: s, low: g < 5 || (!isNaN(mpg) && mpg < 8) };
+}
+const RATE_LABEL = { 5:'エース級', 4:'主力', 3:'ローテーション', 2:'出場機会あり', 1:'控え' };
+
+let refreshing = false;
+async function refreshAll(force) {
+  if (refreshing) return;
+  refreshing = true;
+  $('#refreshBtn').classList.add('spin');
+  try {
+    for (const k of enabledKeys()) {
+      state.fetchNote = LEAGUES[k].name + ' を取得中…';
+      renderBanner();
+      try { await refreshLeague(k, force); } catch(e) {}
+      render();
+    }
+    if (state.settings.enabled.nba) {
+      state.fetchNote = 'NBAの順位表と選手成績を取得中…'; renderBanner();
+      try { await refreshNbaRank(force); } catch(e) {}
+      try { await refreshNbaLeaders(force); } catch(e) {}
+      try { await refreshJp(force); } catch(e) {}
+    }
+    state.fetchNote = 'ニュースを取得中…'; renderBanner();
+    try { await refreshNews(force); } catch(e) {}
+    await refreshReport();
+  } finally {
+    refreshing = false;
+    state.fetchNote = '';
+    $('#refreshBtn').classList.remove('spin');
+    renderBanner();
+    render();
+  }
+}
+
+/* ================= 試合の抽出 ================= */
+function allEvents() {
+  const out = [];
+  for (const k of enabledKeys()) {
+    const c = state.cache[k];
+    if (c && c.events) out.push(...c.events);
+  }
+  return out;
+}
+function applyFilter(evs) {
+  let r = evs;
+  if (state.settings.filter !== 'all') r = r.filter(e => e.league === state.settings.filter);
+  if (state.focus) r = r.filter(e => e.league === state.focus.league && (e.home === state.focus.team || e.away === state.focus.team));
+  return r;
+}
+function followedList() {
+  return Object.keys(state.follow.teams)
+    .filter(k => state.follow.teams[k])
+    .map(k => { const i = k.indexOf('|'); return { league: k.slice(0, i), team: k.slice(i + 1) }; })
+    .filter(f => LEAGUES[f.league]);
+}
+const byTime = evs => evs.slice().sort((a, b) => (a.ts || 0) - (b.ts || 0));
+function groupByDate(evs) {
+  const map = new Map();
+  for (const e of evs) {
+    const k = e.dateJst || '日程未定';
+    if (!map.has(k)) map.set(k, []);
+    map.get(k).push(e);
+  }
+  return Array.from(map.entries()).sort((a, b) => (a[0] < b[0] ? -1 : 1));
+}
+
+/* ================= 描画:共通パーツ ================= */
+const BALL_SVG = `<svg class="court" viewBox="0 0 100 100" fill="none" stroke="#ff8a2b" stroke-width="2.4">
+  <circle cx="50" cy="50" r="46"/><path d="M50 4v92M4 50h92"/>
+  <path d="M50 4a52 52 0 0 0 0 92M50 4a52 52 0 0 1 0 92"/>
+</svg>`;
+
+/** 試合カード(スコアボードのように上下2段) */
+function gameCard(e) {
+  const lg = LEAGUES[e.league];
+  const fin = e.status === 'post';
+  const live = e.status === 'in';
+  const done = e.hs != null && e.as != null;
+  const hWin = fin && e.hs > e.as, aWin = fin && e.as > e.hs;
+  const memo = state.bcast.overrides[e.id];
+  const tv = memo != null ? memo : (e.bcast || bcastPreset(e.league));
+
+  let when, cls = '';
+  if (live) { when = e.detail || 'LIVE'; cls = 'live'; }
+  else if (fin) { when = '終了'; cls = 'fin'; }
+  else if (e.status === 'ppd') { when = '中止・延期'; cls = 'fin'; }
+  else if (e.status === 'nores') { when = '結果待ち'; cls = 'fin'; }
+  else when = e.timeJst || '時刻未定';
+
+  const row = (side) => {
+    const name = e[side];
+    const score = side === 'home' ? e.hs : e.as;
+    const rec = side === 'home' ? e.hrec : e.arec;
+    const col = (side === 'home' ? e.hcol : e.acol) || lg.color;
+    const win = side === 'home' ? hWin : aWin;
+    const lead = live && done && (side === 'home' ? e.hs > e.as : e.as > e.hs);
+    return `<div class="g-row ${win ? 'win' : ''} ${lead ? 'lead' : ''}" data-focus-lg="${e.league}" data-focus-team="${esc(name)}">
+      <span class="g-bar" style="background:${esc(col)}"></span>
+      <span class="g-nm">${esc(jaTeam(name, e.league))}${rec ? `<span class="rec num">${esc(rec)}</span>` : ''}</span>
+      ${done ? `<span class="g-pt num">${score}</span>` : ''}
+    </div>`;
+  };
+  const qs = (e.hline && e.hline.length && e.hline.length === e.aline.length)
+    ? `<div class="g-qs num">${e.hline.map((v, i) => `<span>${e.aline[i]}-${v}</span>`).join('')}</div>` : '';
+
+  return `<div class="g ${e.league === 'jpn' ? 'jp' : ''}">
+    <div class="g-head">
+      <span class="g-lg">${esc(e.label || lg.short)}</span>
+      ${e.venue ? `<span class="g-venue">${esc(e.venue)}</span>` : ''}
+      <span class="g-when ${cls} num">${esc(when)}</span>
+    </div>
+    <div class="g-rows">${row('home')}${row('away')}</div>
+    ${qs}
+    ${e.status === 'nores' ? '<div class="g-nores">結果がまだ反映されていません</div>' : ''}
+    <div class="g-tv">
+      <span>📺</span>
+      <span class="t ${memo != null ? 'memo' : ''}">${esc(tv || '放送・配信は未設定')}</span>
+      <button class="tv-btn" data-id="${esc(e.id)}">放送を探す</button>
+    </div>
+  </div>`;
+}
+function daySection(key, evs) {
+  const today = key === todayKey();
+  const label = key === '日程未定' ? '日程未定' : keyToLabel(key) + (today ? ' 今日' : '');
+  return `<div class="day ${today ? 'today' : ''}">${esc(label)}</div>` + byTime(evs).map(gameCard).join('');
+}
+function note(msg, links) {
+  return `<div class="note">${msg}
+    ${links && links.length ? `<div class="links">${links.map(l => `<a href="${l[1]}" target="_blank" rel="noopener">${esc(l[0])}</a>`).join('')}</div>` : ''}
+  </div>`;
+}
+function allLinks() {
+  const out = [];
+  for (const k of enabledKeys()) for (const l of LEAGUES[k].links) out.push(l);
+  return out;
+}
+
+/* ================= 描画:ホーム ================= */
+function heroCard(e, lblText) {
+  const t = todayKey();
+  const live = e.status === 'in';
+  const d = e.dateJst ? daysBetween(t, e.dateJst) : null;
+  const when = d === 0 ? '今日' : d === 1 ? '明日' : d != null ? `あと${d}日` : '日程未定';
+  const big = !live && d != null && d > 1;
+  let cd;
+  if (live) cd = `<b style="font-size:1.7rem;color:var(--live)">試合中</b><span class="num">${e.hs}-${e.as} ${esc(e.detail || '')}</span>`;
+  else if (big) cd = `<b class="num">${d}</b><span>日後</span>`;
+  else cd = `<b style="font-size:1.7rem">${esc(when)}</b><span class="num">${esc(e.timeJst || '')}</span>`;
+  return `<div class="hero">${BALL_SVG}
+    <div class="lbl">${esc(lblText)}</div>
+    <div class="cd">${cd}</div>
+    <div class="vs">${esc(jaTeam(e.home, e.league))} <span style="color:var(--dim)">vs</span> ${esc(jaTeam(e.away, e.league))}</div>
+    <div class="meta">${esc(keyToLabel(e.dateJst || t))} ${esc(e.timeJst || '')} ${e.venue ? '・' + esc(e.venue) : ''}</div>
+  </div>`;
+}
+function renderHome() {
+  const t = todayKey();
+  const evs = applyFilter(allEvents());
+  let html = '';
+
+  // フォロー中チームの次戦(なければ日本代表の次戦)をヒーローに
+  const follows = followedList();
+  let hero = null, heroLabel = '';
+  for (const f of follows) {
+    const next = byTime(allEvents().filter(e =>
+      e.league === f.league && (e.home === f.team || e.away === f.team) &&
+      e.status !== 'post' && (e.dateJst || '9999') >= t))[0];
+    if (next && (!hero || (next.ts || 0) < (hero.ts || 0))) { hero = next; heroLabel = jaTeam(f.team, f.league) + 'の次の試合'; }
+  }
+  if (hero) html += heroCard(hero, heroLabel);
+
+  const today = evs.filter(e => e.dateJst === t);
+  html += `<h2 class="sec">今日の試合 <small>${keyToLabel(t)}</small></h2>`;
+  html += today.length ? byTime(today).map(gameCard).join('')
+    : note('今日の試合はありません。<br>「試合」タブでこれからの日程を確認できます。');
+
+  if (!follows.length) {
+    html += `<h2 class="sec">応援するチームを登録</h2>`;
+    html += note('チーム名をタップすると<b>フォロー</b>できます。<br>次の試合までの日数がここに大きく出ます。');
+  }
+
+  // 日本代表(放送の探し方まで1タップで届くようにする)
+  if (state.settings.enabled.jpn) {
+    const jp = byTime(allEvents().filter(e => e.league === 'jpn' && e.status !== 'post' && (e.dateJst || '9999') >= t))[0];
+    html += `<h2 class="sec">🎌 バスケ日本代表</h2>`;
+    if (jp) {
+      if (!hero) html += heroCard(jp, '日本代表の次の試合');
+      html += gameCard(jp);
+    } else {
+      const bn = (state.cache.jpn && state.cache.jpn.bcastNote) || '';
+      html += note('次の代表戦の日程はまだ取り込まれていません。' + (bn ? '<br>' + esc(bn) : ''), LEAGUES.jpn.links);
+      html += `<button class="btn sub" id="jpnTvBtn" style="margin-top:8px">📺 代表戦の放送・配信を探す</button>`;
+    }
+  }
+
+  // 最新ニュース
+  const nw = state.cache.news;
+  if (nw && nw.list && nw.list.length) {
+    html += `<h2 class="sec">ニュース <span class="more" data-goto="news">すべて見る →</span></h2>`;
+    html += nw.list.slice(0, 3).map(newsCard).join('');
+  }
+
+  // 取得できていないものがあれば知らせる
+  const errs = [];
+  for (const k of enabledKeys()) {
+    const c = state.cache[k];
+    if (c && c.error) errs.push(`${LEAGUES[k].short}: ${c.error}`);
+  }
+  if (errs.length) {
+    html += `<h2 class="sec">データの状況</h2>`;
+    html += `<div class="card pad"><div class="diag" style="padding:0">${errs.map(e => '・' + esc(e)).join('<br>')}</div>
+      <div class="links" style="justify-content:flex-start">${allLinks().map(l => `<a href="${l[1]}" target="_blank" rel="noopener">${esc(l[0])}</a>`).join('')}</div></div>`;
+  }
+  $('#page-home').innerHTML = html;
+}
+
+/* ================= 描画:試合(これから / 結果) ================= */
+function renderGames() {
+  const t = todayKey();
+  const next = state.gamesView === 'next';
+  let html = `<div class="chip-bar" style="padding:0 0 12px">
+    <button class="chip ${next ? 'on' : ''}" data-gv="next">これから</button>
+    <button class="chip ${!next ? 'on' : ''}" data-gv="done">結果</button>
+  </div>`;
+
+  if (next) {
+    const evs = applyFilter(allEvents()).filter(e => e.status !== 'post' && (e.dateJst || '9999') >= t);
+    const groups = groupByDate(evs).slice(0, 30);
+    html += groups.length ? groups.map(([k, v]) => daySection(k, v)).join('')
+      : note('これからの試合が見つかりませんでした。<br>オフシーズンか、まだデータが取り込まれていない可能性があります。', allLinks());
+  } else {
+    const evs = applyFilter(allEvents()).filter(e => e.status === 'post');
+    const groups = groupByDate(evs).reverse().slice(0, 20);
+    html += groups.length ? groups.map(([k, v]) => daySection(k, v)).join('')
+      : note('結果のある試合がまだありません。', allLinks());
+  }
+  $('#page-games').innerHTML = html;
+}
+
+/* ================= 描画:順位 ================= */
+function rankTable(group, lgKey, withLines) {
+  const rows = group.rows;
+  const conf = withLines && rows.length >= 10;
+  let html = `<h2 class="sec">${esc(jaGroup(group.group))}</h2><div class="card"><div class="scroll">
+    <table class="rk"><tr><th class="rank">#</th><th class="tm">チーム</th><th>勝</th><th>敗</th><th>勝率</th><th>差</th><th>直近10</th><th>連続</th></tr>`;
+  rows.forEach((r, i) => {
+    const mine = isFollowed(lgKey, r.team);
+    const zn = conf ? (i < 6 ? 'po' : i < 10 ? 'pi' : 'no') : 'no';
+    const st = String(r.streak || '');
+    const stCls = /^W|勝/.test(st) ? 'up' : /^L|敗/.test(st) ? 'dn' : '';
+    html += `<tr class="${mine ? 'mine' : ''} ${conf && (i === 6 || i === 10) ? 'cut' : ''}">
+      <td class="rank num">${i + 1}</td>
+      <td class="tm"><span class="zn ${zn}"></span><span data-focus-lg="${lgKey}" data-focus-team="${esc(r.team)}">${esc(jaTeam(r.team, lgKey))}</span></td>
+      <td class="w num">${esc(r.w != null ? r.w : '-')}</td>
+      <td class="num">${esc(r.l != null ? r.l : '-')}</td>
+      <td class="num">${esc(r.pct != null ? String(r.pct).replace(/^0/, '') : '-')}</td>
+      <td class="num">${esc(r.gb != null && r.gb !== '' ? r.gb : '-')}</td>
+      <td class="num">${esc(r.l10 || '-')}</td>
+      <td class="num ${stCls}">${esc(r.streak || '-')}</td>
+    </tr>`;
+  });
+  html += `</table></div>`;
+  if (conf) html += `<div class="legend"><span class="zn po"></span>上位6 = プレーオフ進出圏　<span class="zn pi"></span>7〜10位 = プレーイン圏</div>`;
+  return html + `</div>`;
+}
+function renderRank() {
+  const chips = ['nba', 'b1'].filter(k => state.settings.enabled[k]);
+  if (!chips.includes(state.rankLeague)) state.rankLeague = chips[0] || 'nba';
+  let html = `<div class="chip-bar" style="padding:0 0 4px">`
+    + chips.map(k => `<button class="chip ${state.rankLeague === k ? 'on' : ''}" data-rank="${k}">${LEAGUES[k].short}</button>`).join('')
+    + `</div>`;
+
+  if (state.rankLeague === 'nba') {
+    const c = state.cache.nbaRank;
+    if (c && c.groups && c.groups.length) {
+      html += c.groups.map(g => rankTable(g, 'nba', true)).join('');
+      html += `<div class="legend" style="padding:0 2px 16px">ESPN より ${esc(fmtAgo(c.fetchedAt))}</div>`;
+    } else {
+      html += note('NBAの順位表を取得できませんでした。' + (c && c.error ? `<br><small>${esc(c.error)}</small>` : ''), LEAGUES.nba.links);
+    }
+  } else {
+    const c = state.cache.b1;
+    const st = (c && c.standings) || [];
+    if (st.length) {
+      const groups = new Map();
+      for (const r of st) {
+        const g = r.group || 'B.LEAGUE';
+        if (!groups.has(g)) groups.set(g, []);
+        groups.get(g).push(r);
+      }
+      for (const [name, rows] of groups) {
+        rows.sort((a, b) => (a.rank || 99) - (b.rank || 99) || parseFloat(b.pct || 0) - parseFloat(a.pct || 0));
+        html += rankTable({ group: name, rows }, 'b1', false);
+      }
+      html += `<div class="legend" style="padding:0 2px 16px">${esc((c && c.source) || '自動取り込み')}</div>`;
+    } else {
+      html += note('B.LEAGUEの順位表はまだ取り込まれていません。<br>公式サイトで確認できます。', LEAGUES.b1.links);
+    }
+  }
+  $('#page-rank').innerHTML = html;
+}
+
+/* ================= 描画:選手 ================= */
+function playerCard(p) {
+  const st = p.stats || {};
+  const rate = ratePlayer(st);
+  const cell = (v, label) => v == null || v === '' ? '' : `<div><b class="num">${esc(v)}</b><span>${label}</span></div>`;
+  return `<div class="pl">
+    <div class="pl-nm">${esc(jaPlayer(p.name))}<small>${esc(jaTeam(p.team || '', 'nba'))}${p.pos ? ' / ' + esc(p.pos) : ''}</small></div>
+    <div class="pl-st">${cell(st.ppg, '得点')}${cell(st.rpg, 'リバウンド')}${cell(st.apg, 'アシスト')}${cell(st.mpg, '出場分')}</div>
+    ${rate ? `<div class="pl-sub"><span class="stars ${rate.low ? 'low' : ''}">${'★'.repeat(rate.stars)}${'☆'.repeat(5 - rate.stars)}</span>
+      ${RATE_LABEL[rate.stars]}${rate.low ? '(出場が少ないため参考値)' : ''}</div>` : ''}
+    <div class="links" style="justify-content:flex-start;margin-top:10px">
+      <button class="focus-btn" data-lg="nba" data-team="${esc(p.team || '')}">チームの試合を見る</button>
+      <a href="https://www.google.com/search?q=${enc(jaPlayer(p.name) + ' NBA 成績')}" target="_blank" rel="noopener">検索</a>
+    </div>
+  </div>`;
+}
+function renderPlayer() {
+  let html = '';
+  if (state.settings.enabled.nba) {
+    const c = state.cache.jp;
+    const list = (c && c.list) || [];
+    html += `<h2 class="sec">🇯🇵 NBAの日本人選手 <small>${list.length ? list.length + '人' : ''}</small></h2>`;
+    html += list.length ? list.map(playerCard).join('')
+      : note('日本人選手のデータがまだありません。' + (c && c.error ? `<br><small>${esc(c.error)}</small>` : '')
+        + '<br>毎日サーバー側で自動更新されます。', [['NBA公式(選手)', 'https://www.nba.com/players']]);
+
+    const l = state.cache.nbaLeaders;
+    html += `<h2 class="sec">NBA 部門別リーダー</h2>`;
+    if (l && l.cats && l.cats.length) {
+      for (const cat of l.cats) {
+        html += `<div class="card pad"><div style="font-size:.8rem;font-weight:800;color:var(--sub);margin-bottom:6px">${esc(cat.label)}</div>`
+          + cat.rows.map((r, i) => `<div class="ld"><span class="n num">${i + 1}</span>
+              <span class="nm">${esc(jaPlayer(r.name))}<small>${esc(r.team)}</small></span>
+              <span class="v num">${esc(r.value)}</span></div>`).join('') + `</div>`;
+      }
+    } else {
+      html += note('部門別リーダーを取得できませんでした。' + (l && l.error ? `<br><small>${esc(l.error)}</small>` : ''),
+        [['NBA公式(スタッツ)', 'https://www.nba.com/stats']]);
+    }
+  }
+  if (state.settings.enabled.jpn) {
+    const roster = (state.cache.jpn && state.cache.jpn.roster) || [];
+    html += `<h2 class="sec">🎌 日本代表メンバー</h2>`;
+    html += roster.length
+      ? `<div class="card pad">` + roster.map((p, i) => `<div class="ld">
+          <span class="n num">${p.no != null ? esc(p.no) : i + 1}</span>
+          <span class="nm">${esc(p.name)}<small>${esc(p.team || '')}${p.pos ? ' / ' + esc(p.pos) : ''}</small></span></div>`).join('') + `</div>`
+      : note('招集メンバーはまだ取り込まれていません。<br>大会期間に入ると更新されます。', LEAGUES.jpn.links);
+  }
+  if (state.settings.enabled.b1) {
+    html += `<h2 class="sec">B.LEAGUEの選手成績</h2>`;
+    html += note('B.LEAGUEの個人成績は公開APIが無いため、公式サイトで確認できます。',
+      [['B.LEAGUE スタッツ', 'https://www.bleague.jp/stats/'], ['選手一覧', 'https://www.bleague.jp/player_list/']]);
+  }
+  $('#page-player').innerHTML = html;
+}
+
+/* ================= 描画:ニュース ================= */
+function newsCard(n) {
+  return `<a class="nw" href="${esc(n.url)}" target="_blank" rel="noopener">
+    <div class="top"><span class="src">${esc(n.source || '')}</span><span class="num">${esc(n.ts ? fmtAgo(n.ts) : (n.date || ''))}</span></div>
+    <div class="ttl">${esc(n.title)}</div>
+  </a>`;
+}
+function renderNews() {
+  const c = state.cache.news;
+  const list = (c && c.list) || [];
+  let html = `<h2 class="sec">バスケットボールのニュース <small>${list.length ? list.length + '件' : ''}</small></h2>`;
+  if (list.length) {
+    html += list.slice(0, 60).map(newsCard).join('');
+    html += `<div class="legend" style="padding:8px 2px 16px">各社のRSSから毎日集めています${c.updatedAt ? '(' + esc(c.updatedAt.slice(0, 10)) + '更新)' : ''}。見出しをタップすると配信元の記事が開きます。</div>`;
+  } else {
+    html += note('ニュースがまだ取り込まれていません。' + (c && c.error ? `<br><small>${esc(c.error)}</small>` : '')
+      + '<br>毎日サーバー側で自動更新されます。', [
+        ['バスケットボールキング', 'https://basketballking.jp/'],
+        ['B.LEAGUE公式', 'https://www.bleague.jp/news/'],
+        ['JBA公式', 'https://www.japanbasketball.jp/'],
+      ]);
+  }
+  $('#page-news').innerHTML = html;
+}
+
+/* ================= 描画:設定 ================= */
+function renderSet() {
+  let html = `<h2 class="sec">画面</h2><div class="card pad">
+    <div class="row"><div class="grow">暗い画面にする<div class="desc">夜や暗い場所で見やすくなります</div></div>
+      <label class="sw"><input type="checkbox" id="darkSw" ${state.theme === 'dark' ? 'checked' : ''}><span class="kb"></span></label></div>
+  </div>`;
+  html += `<h2 class="sec">表示するリーグ</h2><div class="card pad">`;
+  for (const k of LEAGUE_KEYS) {
+    html += `<div class="row"><div class="grow">${LEAGUES[k].icon} ${esc(LEAGUES[k].name)}</div>
+      <label class="sw"><input type="checkbox" data-en="${k}" ${state.settings.enabled[k] ? 'checked' : ''}><span class="kb"></span></label></div>`;
+  }
+  html += `</div>`;
+
+  html += `<h2 class="sec">放送・配信の初期表示</h2><div class="card pad">
+    <div class="row" style="padding-top:0"><div class="grow" style="font-size:.78rem;color:var(--dim)">
+      試合カードの「放送を探す」から、試合ごとのメモで上書きできます。</div></div>`;
+  for (const k of LEAGUE_KEYS) {
+    html += `<div style="padding:10px 0 0"><div style="font-size:.8rem;font-weight:700">${LEAGUES[k].icon} ${esc(LEAGUES[k].name)}</div>
+      <textarea class="memo" data-bcast="${k}" rows="2" style="margin-top:6px">${esc(bcastPreset(k))}</textarea></div>`;
+  }
+  html += `</div>`;
+
+  const follows = followedList();
+  html += `<h2 class="sec">フォロー中のチーム <small>${follows.length}件</small></h2><div class="card pad">`;
+  html += follows.length
+    ? `<div class="links" style="justify-content:flex-start">` + follows.map(f =>
+        `<button data-unfollow="${esc(followKey(f.league, f.team))}">${esc(jaTeam(f.team, f.league))} ✕</button>`).join('') + `</div>`
+    : `<div style="font-size:.8rem;color:var(--dim)">試合カードや順位表のチーム名をタップすると登録できます。</div>`;
+  html += `</div>`;
+
+  html += `<h2 class="sec">診断 <small>データの取得状況</small></h2><div class="card pad"><div class="diag" style="padding:0">`;
+  for (const k of LEAGUE_KEYS) {
+    const c = state.cache[k];
+    if (!state.settings.enabled[k]) { html += `<div><b>${esc(LEAGUES[k].short)}</b>: 非表示</div>`; continue; }
+    if (!c || !c.fetchedAt) { html += `<div><b>${esc(LEAGUES[k].short)}</b>: <span class="ng">未取得</span></div>`; continue; }
+    html += `<div><b>${esc(LEAGUES[k].short)}</b>: `
+      + (c.error ? `<span class="ng">${esc(c.error)}</span>` : `<span class="ok">${c.events.length}試合</span>`)
+      + ` <span style="color:var(--dim)">${esc(c.source || '')} / ${fmtAgo(c.fetchedAt)}</span></div>`;
+  }
+  const pair = (label, c, unit) => `<div><b>${label}</b>: `
+    + (c && c.list && c.list.length ? `<span class="ok">${c.list.length}${unit}</span>` : `<span class="ng">${esc((c && c.error) || '未取得')}</span>`) + `</div>`;
+  if (state.settings.enabled.nba) {
+    const nr = state.cache.nbaRank, nl = state.cache.nbaLeaders;
+    html += `<div><b>NBA順位表</b>: ` + (nr && nr.groups && nr.groups.length ? `<span class="ok">${nr.groups.length}グループ</span>` : `<span class="ng">${esc((nr && nr.error) || '未取得')}</span>`) + `</div>`;
+    html += `<div><b>NBAリーダー</b>: ` + (nl && nl.cats && nl.cats.length ? `<span class="ok">${nl.cats.length}部門</span>` : `<span class="ng">${esc((nl && nl.error) || '未取得')}</span>`) + `</div>`;
+    html += pair('日本人選手', state.cache.jp, '人');
+  }
+  html += pair('ニュース', state.cache.news, '件');
+  const rep = state.cache.report;
+  if (rep && rep.sources && rep.sources.length) {
+    html += `<div style="margin-top:10px"><b>サーバー側の自動取り込み</b> <span style="color:var(--dim)">${esc((rep.ranAt || '').slice(0, 16).replace('T', ' '))}</span></div>`;
+    for (const s of rep.sources) {
+      html += `<div style="color:var(--dim)">・${esc(s.name)}: ` + (s.ok ? `<span class="ok">${esc(s.detail || 'OK')}</span>` : `<span class="ng">${esc(s.detail || '失敗')}</span>`) + `</div>`;
+    }
+  }
+  html += `</div></div>`;
+
+  html += `<h2 class="sec">公式サイト</h2><div class="card pad">`;
+  for (const k of LEAGUE_KEYS) {
+    html += `<div class="row"><div class="grow">${esc(LEAGUES[k].short)}</div>
+      <div class="links">${LEAGUES[k].links.map(l => `<a href="${l[1]}" target="_blank" rel="noopener">${esc(l[0])}</a>`).join('')}</div></div>`;
+  }
+  html += `</div>`;
+
+  html += `<div style="margin:16px 0 24px">
+    <button class="btn sub" id="reloadBtn">データを再取得する</button>
+    <button class="btn warn" id="clearBtn">保存データを消す</button>
+    <div style="font-size:.74rem;color:var(--dim);margin-top:10px;line-height:1.7">
+      取得したデータは端末内(LocalStorage)にだけ保存されます。</div>
+  </div>`;
+  $('#page-set').innerHTML = html;
+}
+
+/* ================= 描画:全体 ================= */
+function renderChips() {
+  let html = `<button class="chip ${state.settings.filter === 'all' ? 'on' : ''}" data-f="all">すべて</button>`;
+  for (const k of enabledKeys()) {
+    html += `<button class="chip ${state.settings.filter === k ? 'on' : ''}" data-f="${k}">${LEAGUES[k].icon} ${esc(LEAGUES[k].short)}</button>`;
+  }
+  $('#chipBar').innerHTML = html;
+}
+function renderBanner() {
+  const b = $('#banner');
+  if (state.fetchNote) { b.textContent = '⏳ ' + state.fetchNote; b.classList.add('show'); }
+  else if (!navigator.onLine) { b.textContent = '📴 オフラインです。最後に取得した内容を表示しています'; b.classList.add('show'); }
+  else b.classList.remove('show');
+}
+function renderFocus() {
+  const f = $('#focusBar');
+  if (state.focus) {
+    $('#focusLabel').textContent = jaTeam(state.focus.team, state.focus.league) + ' だけ表示中';
+    f.classList.add('show');
+  } else f.classList.remove('show');
+}
+function render() {
+  $('#headDate').textContent = keyToLabel(todayKey());
+  renderChips(); renderFocus(); renderBanner();
+  renderHome(); renderGames(); renderRank(); renderPlayer(); renderNews();
+  // 設定タブの入力中に描き直すと入力が消えるので、フォーカス中は触らない
+  const a = document.activeElement;
+  if (!(a && a.closest && a.closest('#page-set'))) renderSet();
+  $$('#navBar button').forEach(b => b.classList.toggle('on', b.dataset.tab === state.tab));
+  $$('.page').forEach(p => p.classList.toggle('on', p.id === 'page-' + state.tab));
+}
+
+/* ================= モーダル ================= */
+const openModal = html => { $('#mb').innerHTML = html; $('#mw').classList.add('show'); };
+const closeModal = () => $('#mw').classList.remove('show');
+$('#mw').addEventListener('click', e => { if (e.target.id === 'mw') closeModal(); });
+
+/** 放送・配信を探す。代表戦は大会ごとに放送局が変わるので、探し先をまとめて出す */
+function openTv(lgKey, ev) {
+  const lg = LEAGUES[lgKey];
+  const g = ev || { home: '', away: '', league: lgKey };
+  const memo = ev ? state.bcast.overrides[ev.id] : null;
+  const now = memo != null ? memo : ((ev && ev.bcast) || bcastPreset(lgKey));
+  const title = ev ? `${jaTeam(ev.home, lgKey)} vs ${jaTeam(ev.away, lgKey)}` : lg.name;
+  const sub = ev ? `${keyToLabel(ev.dateJst || todayKey())} ${ev.timeJst || ''}${ev.label ? ' ・ ' + ev.label : ''}` : '';
+  const q = ev ? `${jaTeam(ev.home, lgKey)} ${jaTeam(ev.away, lgKey)} 中継` : `${lg.name} 中継`;
+
+  const items = lg.tv(g).map(it =>
+    `<a href="${esc(it.url)}" target="_blank" rel="noopener"><span class="ico">${it.ico}</span>
+      <span><b>${esc(it.label)}</b><span class="sub">${esc(it.sub)}</span></span></a>`).join('');
+
+  openModal(`<h3>📺 放送・配信を探す</h3>
+    <div class="msub">${esc(title)}${sub ? '<br>' + esc(sub) : ''}
+      ${now ? `<br><span style="color:var(--or)">いまの表示: ${esc(now)}</span>` : ''}</div>
+    <div class="mlist">
+      ${items}
+      <a href="https://www.google.com/search?q=${enc(q)}" target="_blank" rel="noopener">
+        <span class="ico">🔎</span><span><b>Google で検索</b><span class="sub">${esc(q)}</span></span></a>
+      ${ev ? `<button id="tvMemo"><span class="ico">✏️</span>
+        <span><b>この試合の放送をメモする</b><span class="sub">調べた放送局をカードに表示できます</span></span></button>` : ''}
+    </div>
+    <button class="btn sub" id="tvClose" style="margin-top:14px">閉じる</button>`);
+  $('#tvClose').onclick = closeModal;
+  if (ev) $('#tvMemo').onclick = () => openMemo(ev);
+}
+function openMemo(ev) {
+  const cur = state.bcast.overrides[ev.id];
+  openModal(`<h3>✏️ この試合の放送メモ</h3>
+    <div class="msub">${esc(jaTeam(ev.home, ev.league))} vs ${esc(jaTeam(ev.away, ev.league))}<br>
+      空欄で保存すると初期表示(${esc(ev.bcast || bcastPreset(ev.league))})に戻ります。</div>
+    <textarea class="memo" id="memoBox" rows="3" placeholder="例: NHK BS1 で 20:00〜">${esc(cur != null ? cur : '')}</textarea>
+    <button class="btn" id="memoSave" style="margin-top:12px">保存する</button>
+    <button class="btn sub" id="memoCancel">キャンセル</button>`);
+  $('#memoCancel').onclick = closeModal;
+  $('#memoSave').onclick = () => {
+    const v = $('#memoBox').value.trim();
+    if (v) state.bcast.overrides[ev.id] = v; else delete state.bcast.overrides[ev.id];
+    saveAll(); closeModal(); render();
+  };
+}
+function openTeam(lg, team) {
+  const name = jaTeam(team, lg);
+  const followed = isFollowed(lg, team);
+  openModal(`<h3>${esc(name)}</h3>
+    <div class="msub">${esc(LEAGUES[lg].name)}</div>
+    <div class="mlist">
+      <button id="tFollow"><span class="ico">${followed ? '☆' : '⭐'}</span>
+        <span><b>${followed ? 'フォローを解除する' : 'このチームをフォローする'}</b>
+        <span class="sub">次の試合までの日数がホームに出ます</span></span></button>
+      <button id="tFocus"><span class="ico">🔎</span>
+        <span><b>このチームの試合だけ表示</b><span class="sub">日程・結果を絞り込みます</span></span></button>
+      <a href="https://www.google.com/search?q=${enc(name + ' ニュース')}" target="_blank" rel="noopener">
+        <span class="ico">📰</span><span><b>ニュースを検索</b></span></a>
+    </div>
+    <button class="btn sub" id="tClose" style="margin-top:14px">閉じる</button>`);
+  $('#tClose').onclick = closeModal;
+  $('#tFollow').onclick = () => {
+    if (followed) delete state.follow.teams[followKey(lg, team)];
+    else state.follow.teams[followKey(lg, team)] = true;
+    saveAll(); closeModal(); render();
+  };
+  $('#tFocus').onclick = () => {
+    state.focus = { league: lg, team };
+    saveAll(); closeModal(); state.tab = 'games'; state.gamesView = 'next'; render(); window.scrollTo({ top: 0 });
+  };
+}
+
+/* ================= 操作 ================= */
+$('#navBar').addEventListener('click', e => {
+  const b = e.target.closest('button[data-tab]');
+  if (!b) return;
+  state.tab = b.dataset.tab;
+  render();
+  window.scrollTo({ top: 0 });
+});
+$('#chipBar').addEventListener('click', e => {
+  const b = e.target.closest('[data-f]');
+  if (!b) return;
+  state.settings.filter = b.dataset.f;
+  saveAll(); render();
+});
+$('#refreshBtn').addEventListener('click', () => refreshAll(true));
+$('#themeBtn').addEventListener('click', toggleTheme);
+$('#focusClear').addEventListener('click', () => { state.focus = null; saveAll(); render(); });
+
+document.addEventListener('click', e => {
+  const gv = e.target.closest('[data-gv]');
+  if (gv) { state.gamesView = gv.dataset.gv; renderGames(); return; }
+
+  const rk = e.target.closest('[data-rank]');
+  if (rk) { state.rankLeague = rk.dataset.rank; renderRank(); return; }
+
+  const goto = e.target.closest('[data-goto]');
+  if (goto) { state.tab = goto.dataset.goto; render(); window.scrollTo({ top: 0 }); return; }
+
+  const tv = e.target.closest('.tv-btn');
+  if (tv) {
+    const ev = allEvents().find(x => x.id === tv.dataset.id);
+    if (ev) openTv(ev.league, ev);
+    return;
+  }
+  if (e.target.id === 'jpnTvBtn') { openTv('jpn', null); return; }
+
+  const fb = e.target.closest('.focus-btn');
+  if (fb) {
+    state.focus = { league: fb.dataset.lg, team: fb.dataset.team };
+    saveAll(); state.tab = 'games'; state.gamesView = 'next'; render(); window.scrollTo({ top: 0 });
+    return;
+  }
+  const uf = e.target.closest('[data-unfollow]');
+  if (uf) { delete state.follow.teams[uf.dataset.unfollow]; saveAll(); render(); return; }
+
+  const tm = e.target.closest('[data-focus-lg]');
+  if (tm) { openTeam(tm.dataset.focusLg, tm.dataset.focusTeam); return; }
+
+  if (e.target.id === 'reloadBtn') { refreshAll(true); return; }
+  if (e.target.id === 'clearBtn') {
+    if (confirm('フォロー・放送メモ・取得データをすべて消します。よろしいですか?')) {
+      ['bnv_settings','bnv_follow','bnv_cache','bnv_bcast','bnv_focus'].forEach(k => localStorage.removeItem(k));
+      location.reload();
+    }
+  }
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'darkSw') { toggleTheme(); return; }
+  if (e.target.dataset.en) {
+    state.settings.enabled[e.target.dataset.en] = e.target.checked;
+    if (state.settings.filter !== 'all' && !state.settings.enabled[state.settings.filter]) state.settings.filter = 'all';
+    saveAll(); render(); refreshAll(false);
+  }
+  if (e.target.dataset.bcast) {
+    const lg = e.target.dataset.bcast, v = e.target.value.trim();
+    if (v === LEAGUES[lg].bcast || !v) delete state.bcast.presets[lg];
+    else state.bcast.presets[lg] = v;
+    saveAll(); render();
+  }
+});
+window.addEventListener('online', () => { renderBanner(); refreshAll(false); });
+window.addEventListener('offline', renderBanner);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshAll(false); });
+
+// 試合中は自動で更新する(ライブスコア)
+setInterval(() => {
+  if (document.hidden || !navigator.onLine) return;
+  if (allEvents().some(e => e.status === 'in')) refreshAll(true);
+}, 60000);
+
+/* ================= 起動 ================= */
+applyTheme();
+render();
+refreshAll(false);
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
