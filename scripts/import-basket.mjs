@@ -4,6 +4,7 @@
  *   - B.LEAGUE の日程・結果・順位表   (TheSportsDB)
  *   - バスケ日本代表の試合             (TheSportsDB)
  *   - NBAでプレーする日本出身選手      (ESPN)
+ *   - 日本のバスケットボール関連ニュース (各社のRSS)
  *
  * ブラウザから直接よそのサイトを読むと CORS で弾かれるので、取得はここ
  * (GitHub Actions = サーバー側)で行い、結果をリポジトリに置く。
@@ -18,6 +19,8 @@ const ROOT = new URL('..', import.meta.url);
 const OUT_B    = new URL('basket/data/bleague.json', ROOT);
 const OUT_JPN  = new URL('basket/data/japan.json', ROOT);
 const OUT_NBA  = new URL('basket/data/nba-jp.json', ROOT);
+const OUT_NEWS = new URL('basket/data/news.json', ROOT);
+const NEWS_SRC = new URL('basket/data/news-sources.json', ROOT);
 const OUT_REP  = new URL('basket/data/import-report.json', ROOT);
 
 const TIMEOUT_MS = 20000;
@@ -41,6 +44,15 @@ async function get(url) {
     const res = await fetch(url, { signal: ac.signal, headers: { 'User-Agent': 'basunavi-importer/1.0 (+github actions)' } });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
+  } finally { clearTimeout(timer); }
+}
+async function getText(url) {
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), TIMEOUT_MS);
+  try {
+    const res = await fetch(url, { signal: ac.signal, headers: { 'User-Agent': 'basunavi-importer/1.0 (+github actions)' } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.text();
   } finally { clearTimeout(timer); }
 }
 let tsdbLast = 0;
@@ -161,6 +173,85 @@ export function extractPlayerStats(json) {
   };
   visit(json);
   return Object.keys(out).length ? out : null;
+}
+
+/* ================= ニュース(RSS / Atom) ================= */
+/** &amp; などを元の文字に戻す */
+export function decodeEntities(str) {
+  return String(str == null ? '' : str)
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .trim();
+}
+const tagText = (block, tag) => {
+  const m = block.match(new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</${tag}>`, 'i'));
+  return m ? decodeEntities(m[1]) : null;
+};
+/** RSS 2.0 と Atom のどちらでも記事を取り出せるようにする */
+export function parseFeed(xml) {
+  if (!xml || typeof xml !== 'string') return [];
+  const blocks = xml.match(/<(item|entry)(?:\s[^>]*)?>[\s\S]*?<\/\1>/gi) || [];
+  const out = [];
+  for (const b of blocks) {
+    const title = tagText(b, 'title');
+    // RSS は <link>URL</link>、Atom は <link href="URL"/>
+    let url = tagText(b, 'link');
+    if (!url || /^\s*$/.test(url)) {
+      const m = b.match(/<link[^>]*\shref=["']([^"']+)["'][^>]*>/i);
+      url = m ? decodeEntities(m[1]) : null;
+    }
+    const raw = tagText(b, 'pubDate') || tagText(b, 'published') || tagText(b, 'updated') || tagText(b, 'dc:date');
+    let ts = raw ? Date.parse(raw) : NaN;
+    if (isNaN(ts)) ts = null;
+    if (!title || !url || !/^https?:\/\//.test(url)) continue;
+    out.push({ title, url, ts, date: ts ? dateKeyJst(ts) : null });
+  }
+  return out;
+}
+/** スポーツ全般のフィードから、バスケの記事だけを拾う */
+export function matchesKeywords(text, keywords) {
+  const t = String(text || '');
+  return (keywords || []).some(k => k && t.includes(k));
+}
+/** URLとタイトルの重複を消して、新しい順に並べる */
+export function dedupeNews(items, max, maxAgeDays) {
+  const limit = maxAgeDays ? Date.now() - maxAgeDays * 86400000 : null;
+  const seen = new Set();
+  const out = [];
+  for (const it of items.slice().sort((a, b) => (b.ts || 0) - (a.ts || 0))) {
+    if (limit && it.ts && it.ts < limit) continue;
+    const key = it.url.replace(/[?#].*$/, '');
+    const tkey = 't:' + it.title;
+    if (seen.has(key) || seen.has(tkey)) continue;
+    seen.add(key); seen.add(tkey);
+    out.push(it);
+    if (max && out.length >= max) break;
+  }
+  return out;
+}
+
+async function importNews(conf) {
+  const out = { updatedAt: new Date().toISOString(), items: [], source: 'RSS', note: '' };
+  const feeds = (conf.feeds || []).filter(f => f.enabled !== false);
+  const all = [];
+  for (const f of feeds) {
+    try {
+      const items = parseFeed(await getText(f.url));
+      const picked = (f.filter ? items.filter(i => matchesKeywords(i.title, conf.keywords)) : items)
+        .map(i => ({ ...i, source: f.name }));
+      all.push(...picked);
+      note(`ニュース: ${f.name}`, picked.length > 0, `${picked.length}件${f.filter ? `(全${items.length}件から絞り込み)` : ''}`);
+    } catch (e) {
+      note(`ニュース: ${f.name}`, false, e.message);
+    }
+  }
+  out.items = dedupeNews(all, conf.maxItems || 60, conf.maxAgeDays || 30);
+  if (!out.items.length) out.note = 'ニュースを取得できませんでした';
+  return out;
 }
 
 /* ================= 取り込み本体 ================= */
@@ -321,6 +412,9 @@ async function main() {
   const j = await importJapan(prevJ).catch(e => { note('日本代表', false, e.message); return null; });
   console.log('NBAの日本人選手を取り込みます');
   const n = await importNbaJapanese().catch(e => { note('NBA日本人選手', false, e.message); return null; });
+  console.log('ニュースを取り込みます');
+  const conf = await readJsonOr(NEWS_SRC, { feeds: [], keywords: [] });
+  const w = await importNews(conf).catch(e => { note('ニュース', false, e.message); return null; });
 
   // 取れなかったものは前の内容を残す(空で上書きしない)
   const keep = async (path, next) => {
@@ -333,11 +427,13 @@ async function main() {
     }
     if (Array.isArray(next.standings) && !next.standings.length && prev.standings) merged.standings = prev.standings;
     if (Array.isArray(next.players) && !next.players.length && prev.players && prev.players.length) merged.players = prev.players;
+    if (Array.isArray(next.items) && !next.items.length && prev.items && prev.items.length) merged.items = prev.items;
     await writeFile(path, JSON.stringify(merged, null, 2) + '\n');
   };
   await keep(OUT_B, b);
   await keep(OUT_JPN, j);
   await keep(OUT_NBA, n);
+  await keep(OUT_NEWS, w);
 
   await writeFile(OUT_REP, JSON.stringify({
     _readme: '直近の自動取り込みの結果。アプリの「設定 → 診断」からも見られます。',

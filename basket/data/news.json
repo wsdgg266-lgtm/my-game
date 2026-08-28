@@ -1,0 +1,6 @@
+{
+  "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
+  "updatedAt": null,
+  "items": [],
+  "note": "まだ自動取り込みが実行されていません。"
+}

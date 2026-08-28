@@ -1,7 +1,8 @@
 // 取り込みロジックの単体テスト。ネットワークを使わないのでどこでも実行できる。
 //   node scripts/test-basket-import.mjs
 import { seasonLabel, pickBLeague, pickJapanTeam, normalizeTsdbEvent,
-  normalizeStandingRow, isJapanese, extractPlayerStats } from './import-basket.mjs';
+  normalizeStandingRow, isJapanese, extractPlayerStats,
+  decodeEntities, parseFeed, matchesKeywords, dedupeNews } from './import-basket.mjs';
 
 let pass = 0, fail = 0;
 const ok = (label, cond, extra = '') => {
@@ -89,6 +90,60 @@ const statsB = extractPlayerStats({ splits:{ categories:[
 ok('displayNames/displayStats でも取れる', statsB && statsB.apg === '2.7', JSON.stringify(statsB));
 ok('該当なしは null', extractPlayerStats({ foo:'bar' }) === null);
 ok('壊れたJSONでも落ちない', extractPlayerStats(null) === null);
+
+console.log('--- 文字参照の復元 ---');
+ok('&amp; を戻す', decodeEntities('A&amp;B') === 'A&B', decodeEntities('A&amp;B'));
+ok('CDATA を外す', decodeEntities('<![CDATA[八村塁が30得点]]>') === '八村塁が30得点', decodeEntities('<![CDATA[八村塁が30得点]]>'));
+ok('数値参照を戻す', decodeEntities('&#12496;&#x30B9;') === 'バス', decodeEntities('&#12496;&#x30B9;'));
+ok('null でも落ちない', decodeEntities(null) === '');
+
+console.log('--- RSS / Atom の読み取り ---');
+const rss = `<?xml version="1.0"?><rss version="2.0"><channel>
+  <title>チャンネル名</title>
+  <item><title><![CDATA[Bリーグ開幕、琉球が快勝]]></title>
+    <link>https://example.com/a?utm_source=rss</link>
+    <pubDate>Fri, 03 Oct 2026 10:00:00 +0900</pubDate></item>
+  <item><title>八村塁が今季初の30得点</title>
+    <link>https://example.com/b</link>
+    <pubDate>Sat, 04 Oct 2026 12:30:00 +0900</pubDate></item>
+  <item><title>リンクが無い記事</title><pubDate>Sat, 04 Oct 2026 12:30:00 +0900</pubDate></item>
+</channel></rss>`;
+const rssItems = parseFeed(rss);
+ok('リンクのある記事だけ拾う', rssItems.length === 2, String(rssItems.length));
+ok('CDATA入りのタイトル', rssItems[0].title === 'Bリーグ開幕、琉球が快勝', rssItems[0].title);
+ok('日時を数値にする', typeof rssItems[0].ts === 'number' && rssItems[0].ts > 0);
+ok('チャンネルのtitleを記事にしない', !rssItems.some(i => i.title === 'チャンネル名'));
+
+const atom = `<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom">
+  <entry><title>日本代表がW杯予選に勝利</title>
+    <link rel="alternate" href="https://example.com/c"/>
+    <updated>2026-10-05T09:00:00Z</updated></entry>
+</feed>`;
+const atomItems = parseFeed(atom);
+ok('Atom の href からURLを取る', atomItems.length === 1 && atomItems[0].url === 'https://example.com/c', JSON.stringify(atomItems));
+ok('空文字でも落ちない', parseFeed('').length === 0 && parseFeed(null).length === 0);
+
+console.log('--- キーワードの絞り込み ---');
+const KW = ['バスケ', 'Bリーグ', 'NBA', '八村'];
+ok('該当する見出しは通す', matchesKeywords('八村塁が30得点', KW));
+ok('関係ない見出しは落とす', matchesKeywords('サッカー日本代表が勝利', KW) === false);
+ok('キーワード未設定なら通さない', matchesKeywords('バスケ', []) === false);
+
+console.log('--- ニュースの重複除去と並び替え ---');
+const H = 3600000;
+const news = dedupeNews([
+  { title:'A', url:'https://example.com/a?utm_source=rss', ts: Date.now() - 5 * H },
+  { title:'A', url:'https://example.com/a', ts: Date.now() - 4 * H },
+  { title:'B', url:'https://example.com/b', ts: Date.now() - 1 * H },
+  { title:'C', url:'https://example.com/c', ts: Date.now() - 90 * 86400000 },
+], 10, 30);
+ok('新しい順になる', news[0].title === 'B', JSON.stringify(news.map(n => n.title)));
+ok('クエリ違いの同じURLは1件にする', news.filter(n => n.title === 'A').length === 1, JSON.stringify(news.map(n => n.title)));
+ok('古すぎる記事は落とす', !news.some(n => n.title === 'C'));
+ok('件数の上限が効く', dedupeNews([
+  { title:'1', url:'https://e.com/1', ts: Date.now() - H }, { title:'2', url:'https://e.com/2', ts: Date.now() - 2 * H },
+  { title:'3', url:'https://e.com/3', ts: Date.now() - 3 * H }], 2, 30).length === 2);
+ok('日時が無い記事も残す', dedupeNews([{ title:'D', url:'https://e.com/d', ts: null }], 10, 30).length === 1);
 
 console.log(`\n${pass} 件成功 / ${fail} 件失敗`);
 process.exit(fail ? 1 : 0);
