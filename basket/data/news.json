@@ -1,6 +1,134 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": null,
-  "items": [],
-  "note": "まだ自動取り込みが実行されていません。"
+  "updatedAt": "2026-08-28T07:27:21.007Z",
+  "items": [
+    {
+      "title": "ウルブズのジョシュ・グリーンにトレードの噂…クミンガ獲得でサラリー削減が必要に",
+      "url": "https://basketballking.jp/news/world/20260828/629555.html",
+      "ts": 1787901856000,
+      "date": "2026-08-28",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "ウルブズのジョシュ・グリーンにトレードの噂…クミンガ獲得でサラリー削減が必要に(バスケットボールキング)",
+      "url": "https://news.yahoo.co.jp/articles/92ea4d98ead561bf0d42bf4cfde2fc8aa9a43801?source=rss",
+      "ts": 1787901856000,
+      "date": "2026-08-28",
+      "source": "Yahoo!ニュース(スポーツ)"
+    },
+    {
+      "title": "ドラ1候補の投げ合いが実現！高校日本代表は横浜の156キロ右腕、大学日本代表は東北福祉大の155キロ右腕が先発！【侍ジャパン】(高校野球ドットコム)",
+      "url": "https://news.yahoo.co.jp/articles/6e041e4281dfbe6e50f7b3a78e59ae0597a77b81?source=rss",
+      "ts": 1787900944000,
+      "date": "2026-08-28",
+      "source": "Yahoo!ニュース(スポーツ)"
+    },
+    {
+      "title": "長崎ヴェルカが練習生の大友隆太郎と選手契約…プレシーズンゲーム期間限定の短期契約",
+      "url": "https://basketballking.jp/news/japan/20260828/629606.html",
+      "ts": 1787900751000,
+      "date": "2026-08-28",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "長崎ヴェルカが練習生の大友隆太郎と選手契約…プレシーズンゲーム期間限定の短期契約(バスケットボールキング)",
+      "url": "https://news.yahoo.co.jp/articles/1c5454e9de6afd7e1a4e3ca60b89fea152e5eb95?source=rss",
+      "ts": 1787900751000,
+      "date": "2026-08-28",
+      "source": "Yahoo!ニュース(スポーツ)"
+    },
+    {
+      "title": "横浜ビー・コルセアーズのマスコット「コルス」が“新たな冒険”へ…10月3日のホーム開幕戦で引継ぎ式開催",
+      "url": "https://basketballking.jp/news/japan/20260828/629612.html",
+      "ts": 1787900466000,
+      "date": "2026-08-28",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "横浜ビー・コルセアーズのマスコット「コルス」が“新たな冒険”へ…10月3日のホーム開幕戦で引継ぎ式開催(バスケットボールキング)",
+      "url": "https://news.yahoo.co.jp/articles/d85020226d41731689303fac8a7ec414f6fc8043?source=rss",
+      "ts": 1787900466000,
+      "date": "2026-08-28",
+      "source": "Yahoo!ニュース(スポーツ)"
+    },
+    {
+      "title": "「なぜそれが入る？」八村塁の“怪物フェイダウェイ”に騒然！「バランス崩してたのに…」「もう意味わからん」驚異のタフショット【バスケW杯予選】(ABEMA TIMES)",
+      "url": "https://news.yahoo.co.jp/articles/e6b78f4aecf04c8cb546d6223fb1aea071ac33dc?source=rss",
+      "ts": 1787900436000,
+      "date": "2026-08-28",
+      "source": "Yahoo!ニュース(スポーツ)"
+    },
+    {
+      "title": "ブレイク・グリフィンの冠番組がスタート…Prime Videoで来季開幕時に配信",
+      "url": "https://basketballking.jp/news/world/20260828/629552.html",
+      "ts": 1787899890000,
+      "date": "2026-08-28",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "イヒョンジュン11得点も韓国敗戦…レバノンはBリーグに縁ある選手が活躍しW杯予選首位キープ",
+      "url": "https://basketballking.jp/news/world/20260828/629591.html",
+      "ts": 1787899083000,
+      "date": "2026-08-28",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "長崎ヴェルカが森川正明をインジュアリーリストから抹消…2季ぶりにコートへ",
+      "url": "https://basketballking.jp/news/japan/20260828/629603.html",
+      "ts": 1787897974000,
+      "date": "2026-08-28",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "Wリーグ王者デンソーが国際大会『WBLA』に出場…10月にインド開催、昨年は富士通が準優勝",
+      "url": "https://basketballking.jp/news/japan/20260828/629583.html",
+      "ts": 1787894837000,
+      "date": "2026-08-28",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "ジョーンズカップで女子日本代表がレバノンに大勝スタート…佐藤が23得点を挙げてチームけん引",
+      "url": "https://basketballking.jp/news/japan/20260828/629584.html",
+      "ts": 1787891894000,
+      "date": "2026-08-28",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "福井ブローウィンズに内藤英真が練習生として加入…昨季限りで契約満了も“再合流”",
+      "url": "https://basketballking.jp/news/japan/20260828/629572.html",
+      "ts": 1787888956000,
+      "date": "2026-08-28",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "ジョーダン ブランドが「エア ジョーダン 41」を発表…独自のテクノロジーを搭載し10月発売",
+      "url": "https://basketballking.jp/news/release/20260828/629568.html",
+      "ts": 1787887862000,
+      "date": "2026-08-28",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "バスケット男子W杯2次予選 日本は八村塁の活躍で快勝",
+      "url": "https://news.web.nhk/newsweb/na/nd-20260828de46853",
+      "ts": 1787873940000,
+      "date": "2026-08-28",
+      "source": "NHKニュース(スポーツ)"
+    },
+    {
+      "title": "サッカー日本代表 小川航基 FC町田ゼルビアに移籍決定",
+      "url": "https://news.web.nhk/newsweb/na/nd-20260824de46012",
+      "ts": 1787559300000,
+      "date": "2026-08-24",
+      "source": "NHKニュース(スポーツ)"
+    },
+    {
+      "title": "野球 18歳以下の日本代表に横浜高校 織田翔希投手など18人",
+      "url": "https://news.web.nhk/newsweb/na/nd-20260822de45704",
+      "ts": 1787394349000,
+      "date": "2026-08-22",
+      "source": "NHKニュース(スポーツ)"
+    }
+  ],
+  "note": "",
+  "source": "RSS"
 }
