@@ -12,22 +12,62 @@
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
 <title>バスナビ! - B.LEAGUE / NBA / 日本代表</title>
+<script>
+  // 画面がちらつかないように、描画前に保存済みのテーマを当てておく
+  try {
+    var t = localStorage.getItem('bnv_theme');
+    document.documentElement.setAttribute('data-theme', t === '"dark"' || t === 'dark' ? 'dark' : 'light');
+  } catch (e) {}
+</script>
 <style>
+  /* 明るい画面(初期値)。設定タブで暗い画面に切り替えられる */
   :root {
+    --bg: #eef1f6;
+    --surface: #ffffff;
+    --surface2: #ffffff;
+    --raise: #f1f4f8;
+    --text: #131820;
+    --sub: #5a6474;
+    --dim: #8b95a5;
+    --line: rgba(16,24,40,.09);
+    --line2: rgba(16,24,40,.16);
+    --cut: rgba(16,24,40,.3);
+    --or: #e2620a;
+    --on-or: #ffffff;
+    --or-soft: rgba(226,98,10,.1);
+    --win: #0f9d58;
+    --live: #d92b3d;
+    --glass: rgba(238,241,246,.9);
+    --hero: linear-gradient(160deg, #ffffff, #f4f1ec);
+    --input-bg: #ffffff;
+    --off: #c3cad6;
+    --shadow: 0 1px 2px rgba(16,24,40,.05), 0 2px 8px rgba(16,24,40,.06);
+    --accent-fg: #a34606;
+    --r: 14px;
+  }
+  /* 暗い画面 */
+  :root[data-theme="dark"] {
     --bg: #0a0c11;
     --surface: #141821;
     --surface2: #1b2029;
+    --raise: #11151d;
     --text: #f2f5fa;
     --sub: #8a94a6;
     --dim: #5f6878;
     --line: rgba(255,255,255,.07);
     --line2: rgba(255,255,255,.14);
+    --cut: rgba(255,255,255,.22);
     --or: #ff8a2b;
+    --on-or: #16100a;
     --or-soft: rgba(255,138,43,.13);
     --win: #4ade80;
     --live: #ff4d5e;
-    --jp: #e8433f;
-    --r: 14px;
+    --glass: rgba(10,12,17,.92);
+    --hero: linear-gradient(160deg, #1d2330, #141821);
+    --input-bg: #0e1219;
+    --off: #2b3240;
+    --shadow: none;
+    --accent-fg: #ffc48a;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -43,7 +83,7 @@
   }
   input, select, textarea {
     font-size: 16px !important;
-    background: #0e1219; color: var(--text);
+    background: var(--input-bg); color: var(--text);
     border: 1px solid var(--line2); border-radius: 10px;
   }
   button { font-family: inherit; color: inherit; }
@@ -53,7 +93,7 @@
   /* ---------- ヘッダー ---------- */
   header {
     position: sticky; top: 0; z-index: 10;
-    background: rgba(10,12,17,.92);
+    background: var(--glass);
     -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--line);
     padding: calc(10px + env(safe-area-inset-top)) 14px 0;
@@ -68,10 +108,11 @@
     background: var(--or); margin-left: 5px; vertical-align: .12em;
   }
   .head-date { font-size: .74rem; color: var(--dim); flex: 1; }
-  #refreshBtn {
+  #refreshBtn, #themeBtn {
     border: 1px solid var(--line2); background: none; width: 34px; height: 34px;
     border-radius: 50%; font-size: 16px; cursor: pointer; flex-shrink: 0; line-height: 1;
   }
+  #themeBtn { font-size: 14px; }
   #refreshBtn.spin { animation: spin 1s linear infinite; color: var(--or); border-color: var(--or); }
   @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -84,21 +125,21 @@
     flex-shrink: 0; border: 1px solid var(--line2); background: none; color: var(--sub);
     border-radius: 999px; padding: 6px 13px; font-size: .82rem; cursor: pointer; white-space: nowrap;
   }
-  .chip.on { background: var(--or); border-color: var(--or); color: #16100a; font-weight: 800; }
+  .chip.on { background: var(--or); border-color: var(--or); color: var(--on-or); font-weight: 800; }
 
   #banner {
     display: none; font-size: .8rem; margin: 0 -14px; padding: 7px 14px;
-    background: var(--or-soft); color: #ffc48a; border-top: 1px solid rgba(255,138,43,.2);
+    background: var(--or-soft); color: var(--accent-fg); border-top: 1px solid var(--or-soft);
   }
   #banner.show { display: block; }
   #focusBar {
     display: none; align-items: center; gap: 8px; margin: 0 -14px; padding: 8px 14px;
-    background: var(--or); color: #16100a; font-size: .85rem; font-weight: 700;
+    background: var(--or); color: var(--on-or); font-size: .85rem; font-weight: 700;
   }
   #focusBar.show { display: flex; }
   #focusBar b { flex: 1; }
   #focusBar button {
-    border: none; background: rgba(22,16,10,.2); border-radius: 999px;
+    border: none; background: rgba(0,0,0,.18); color: var(--on-or); border-radius: 999px;
     padding: 3px 12px; font-size: .8rem; cursor: pointer; font-weight: 700;
   }
 
@@ -119,7 +160,7 @@
   }
   .day.today { color: var(--or); }
   .note {
-    background: var(--surface); border-radius: var(--r); padding: 22px 16px;
+    background: var(--surface); border-radius: var(--r); padding: 22px 16px; box-shadow: var(--shadow);
     text-align: center; color: var(--sub); font-size: .87rem; line-height: 1.9;
   }
   .note b { color: var(--text); }
@@ -132,7 +173,7 @@
   /* ---------- 試合カード(スコアボード型) ---------- */
   .g {
     background: var(--surface); border-radius: var(--r); margin-bottom: 8px;
-    overflow: hidden; position: relative;
+    overflow: hidden; position: relative; box-shadow: var(--shadow);
   }
   .g-head {
     display: flex; align-items: center; gap: 8px; padding: 10px 13px 0;
@@ -166,13 +207,13 @@
   .g-qs {
     display: flex; gap: 4px; padding: 0 13px 9px; font-size: .66rem; color: var(--dim);
   }
-  .g-qs span { background: rgba(255,255,255,.04); border-radius: 4px; padding: 1px 6px; }
+  .g-qs span { background: var(--raise); border-radius: 4px; padding: 1px 6px; }
   .g-tv {
     display: flex; align-items: center; gap: 8px; padding: 9px 13px;
     border-top: 1px solid var(--line); font-size: .78rem; color: var(--sub);
   }
   .g-tv .t { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .g-tv .t.memo { color: #ffc48a; }
+  .g-tv .t.memo { color: var(--accent-fg); }
   .g-tv button {
     border: 1px solid var(--line2); background: none; border-radius: 999px;
     padding: 4px 11px; font-size: .74rem; cursor: pointer; flex-shrink: 0; color: var(--sub);
@@ -182,9 +223,9 @@
 
   /* ---------- 次の試合(ヒーロー) ---------- */
   .hero {
-    background: linear-gradient(160deg, #1d2330, var(--surface));
+    background: var(--hero);
     border-radius: var(--r); padding: 15px; margin-bottom: 10px;
-    position: relative; overflow: hidden;
+    position: relative; overflow: hidden; box-shadow: var(--shadow);
   }
   .hero .court {
     position: absolute; right: -30px; top: -34px; width: 168px; height: 168px;
@@ -198,7 +239,7 @@
   .hero .meta { font-size: .78rem; color: var(--sub); margin-top: 3px; }
 
   /* ---------- 順位表 ---------- */
-  .card { background: var(--surface); border-radius: var(--r); padding: 4px 13px; margin-bottom: 10px; }
+  .card { background: var(--surface); border-radius: var(--r); padding: 4px 13px; margin-bottom: 10px; box-shadow: var(--shadow); }
   .card.pad { padding: 14px 13px; }
   .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -13px; padding: 0 13px; }
   table.rk { width: 100%; border-collapse: collapse; font-size: .84rem; }
@@ -212,7 +253,7 @@
   table.rk td.rank { color: var(--dim); width: 2em; text-align: center; font-size: .78rem; }
   table.rk tr.mine td { background: var(--or-soft); }
   table.rk tr.mine td.tm { color: var(--or); font-weight: 800; }
-  table.rk tr.cut td { border-top: 2px solid rgba(255,255,255,.22); }
+  table.rk tr.cut td { border-top: 2px solid var(--cut); }
   table.rk td.w { color: var(--text); font-weight: 700; }
   .zn { display: inline-block; width: 5px; height: 5px; border-radius: 50%; margin-right: 7px; vertical-align: .1em; }
   .zn.po { background: var(--win); }
@@ -222,7 +263,7 @@
   .up { color: var(--win); } .dn { color: var(--live); }
 
   /* ---------- 選手 ---------- */
-  .pl { background: var(--surface); border-radius: var(--r); padding: 14px 13px; margin-bottom: 8px; }
+  .pl { background: var(--surface); border-radius: var(--r); padding: 14px 13px; margin-bottom: 8px; box-shadow: var(--shadow); }
   .pl-nm { font-size: 1.08rem; font-weight: 900; }
   .pl-nm small { font-size: .72rem; color: var(--sub); font-weight: normal; margin-left: 7px; }
   .pl-st { display: flex; gap: 14px; margin: 11px 0 3px; }
@@ -242,7 +283,7 @@
   /* ---------- ニュース ---------- */
   .nw {
     display: block; background: var(--surface); border-radius: var(--r);
-    padding: 13px; margin-bottom: 8px; text-decoration: none; color: inherit;
+    padding: 13px; margin-bottom: 8px; text-decoration: none; color: inherit; box-shadow: var(--shadow);
   }
   .nw .top { display: flex; align-items: center; gap: 8px; font-size: .7rem; color: var(--dim); margin-bottom: 6px; }
   .nw .src { color: var(--or); font-weight: 700; }
@@ -255,7 +296,7 @@
   .row .desc { font-size: .74rem; color: var(--dim); margin-top: 2px; }
   .sw { position: relative; width: 44px; height: 25px; flex-shrink: 0; }
   .sw input { opacity: 0; width: 0; height: 0; }
-  .sw .kb { position: absolute; inset: 0; background: #2b3240; border-radius: 999px; cursor: pointer; transition: background .15s; }
+  .sw .kb { position: absolute; inset: 0; background: var(--off); border-radius: 999px; cursor: pointer; transition: background .15s; }
   .sw .kb::after {
     content: ""; position: absolute; top: 3px; left: 3px; width: 19px; height: 19px;
     background: #fff; border-radius: 50%; transition: left .15s;
@@ -267,17 +308,17 @@
   .diag .ng { color: var(--live); }
   .btn {
     display: block; width: 100%; border: none; border-radius: 11px; padding: 12px;
-    font-size: .9rem; font-weight: 800; background: var(--or); color: #16100a; cursor: pointer;
+    font-size: .9rem; font-weight: 800; background: var(--or); color: var(--on-or); cursor: pointer;
   }
-  .btn.sub { background: var(--surface2); color: var(--text); }
-  .btn.warn { background: none; border: 1px solid rgba(255,77,94,.4); color: var(--live); }
+  .btn.sub { background: var(--raise); color: var(--text); }
+  .btn.warn { background: none; border: 1px solid var(--live); color: var(--live); }
   .btn + .btn { margin-top: 8px; }
   textarea.memo { width: 100%; padding: 10px 11px; line-height: 1.6; }
 
   /* ---------- 下部ナビ ---------- */
   nav {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
-    background: rgba(10,12,17,.94);
+    background: var(--glass);
     -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
     border-top: 1px solid var(--line);
     display: flex; padding-bottom: env(safe-area-inset-bottom);
@@ -292,7 +333,7 @@
   nav button.on { color: var(--or); font-weight: 700; }
 
   /* ---------- モーダル ---------- */
-  #mw { display: none; position: fixed; inset: 0; z-index: 40; background: rgba(4,6,10,.7); align-items: flex-end; }
+  #mw { display: none; position: fixed; inset: 0; z-index: 40; background: rgba(10,15,25,.55); align-items: flex-end; }
   #mw.show { display: flex; }
   #mb {
     background: var(--surface2); width: 100%; max-width: 620px; margin: 0 auto;
@@ -308,7 +349,7 @@
   .mlist { display: flex; flex-direction: column; gap: 8px; }
   .mlist a, .mlist button {
     display: flex; align-items: center; gap: 10px; text-decoration: none; text-align: left;
-    background: var(--surface); border: none; border-radius: 11px; padding: 13px;
+    background: var(--raise); border: none; border-radius: 11px; padding: 13px;
     font-size: .9rem; color: var(--text); cursor: pointer; width: 100%;
   }
   .mlist .ico { font-size: 1.05rem; width: 1.4em; text-align: center; flex-shrink: 0; }
@@ -322,6 +363,7 @@
   <div class="head-row">
     <span class="logo">バスナビ</span>
     <span class="head-date num" id="headDate"></span>
+    <button id="themeBtn" title="画面の明るさを切り替える">🌙</button>
     <button id="refreshBtn" title="データを再取得">↻</button>
   </div>
   <div id="banner"></div>
@@ -510,6 +552,7 @@ const state = {
   cache:    lsGet('bnv_cache',    {}),
   bcast:    lsGet('bnv_bcast',    { presets:{}, overrides:{} }),
   focus:    lsGet('bnv_focus',    null),                 // {league, team}
+  theme: lsGet('bnv_theme', 'light'),
   tab: 'home',
   gamesView: 'next',                                     // 試合タブ: next(これから) / done(結果)
   rankLeague: 'nba',
@@ -518,6 +561,24 @@ const state = {
 for (const k of LEAGUE_KEYS) if (state.settings.enabled[k] === undefined) state.settings.enabled[k] = true;
 if (state.settings.filter !== 'all' && !LEAGUES[state.settings.filter]) state.settings.filter = 'all';
 if (state.focus && !LEAGUES[state.focus.league]) state.focus = null;
+
+function applyTheme() {
+  const dark = state.theme === 'dark';
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', dark ? '#0a0c11' : '#eef1f6');
+  const btn = $('#themeBtn');
+  if (btn) {
+    btn.textContent = dark ? '☀️' : '🌙';
+    btn.title = dark ? '明るい画面にする' : '暗い画面にする';
+  }
+}
+function toggleTheme() {
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  lsSet('bnv_theme', state.theme);
+  applyTheme();
+  render();
+}
 
 function saveAll() {
   lsSet('bnv_settings', state.settings);
@@ -1179,7 +1240,11 @@ function renderNews() {
 
 /* ================= 描画:設定 ================= */
 function renderSet() {
-  let html = `<h2 class="sec">表示するリーグ</h2><div class="card pad">`;
+  let html = `<h2 class="sec">画面</h2><div class="card pad">
+    <div class="row"><div class="grow">暗い画面にする<div class="desc">夜や暗い場所で見やすくなります</div></div>
+      <label class="sw"><input type="checkbox" id="darkSw" ${state.theme === 'dark' ? 'checked' : ''}><span class="kb"></span></label></div>
+  </div>`;
+  html += `<h2 class="sec">表示するリーグ</h2><div class="card pad">`;
   for (const k of LEAGUE_KEYS) {
     html += `<div class="row"><div class="grow">${LEAGUES[k].icon} ${esc(LEAGUES[k].name)}</div>
       <label class="sw"><input type="checkbox" data-en="${k}" ${state.settings.enabled[k] ? 'checked' : ''}><span class="kb"></span></label></div>`;
@@ -1368,6 +1433,7 @@ $('#chipBar').addEventListener('click', e => {
   saveAll(); render();
 });
 $('#refreshBtn').addEventListener('click', () => refreshAll(true));
+$('#themeBtn').addEventListener('click', toggleTheme);
 $('#focusClear').addEventListener('click', () => { state.focus = null; saveAll(); render(); });
 
 document.addEventListener('click', e => {
@@ -1409,6 +1475,7 @@ document.addEventListener('click', e => {
   }
 });
 document.addEventListener('change', e => {
+  if (e.target.id === 'darkSw') { toggleTheme(); return; }
   if (e.target.dataset.en) {
     state.settings.enabled[e.target.dataset.en] = e.target.checked;
     if (state.settings.filter !== 'all' && !state.settings.enabled[state.settings.filter]) state.settings.filter = 'all';
@@ -1432,6 +1499,7 @@ setInterval(() => {
 }, 60000);
 
 /* ================= 起動 ================= */
+applyTheme();
 render();
 refreshAll(false);
 if ('serviceWorker' in navigator) {

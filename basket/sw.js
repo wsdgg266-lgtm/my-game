@@ -1,7 +1,7 @@
 // バスナビ! Service Worker
 // アプリ本体(シェル)だけをキャッシュする。試合データはアプリ側が
 // LocalStorage に保存してオフライン表示するので、ここではキャッシュしない。
-const CACHE = 'bnv-shell-v2';
+const CACHE = 'bnv-shell-v3';
 const SHELL = [
   './',
   './index.html',
