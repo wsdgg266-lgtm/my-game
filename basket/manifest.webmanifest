@@ -1,0 +1,17 @@
+{
+  "name": "バスナビ! - B.LEAGUE / NBA / 日本代表の試合と順位",
+  "short_name": "バスナビ",
+  "description": "B.LEAGUE・NBA・バスケ日本代表の試合日程、結果、順位表、選手成績がわかるアプリ",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0c0f16",
+  "theme_color": "#0c0f16",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -38,6 +38,7 @@
    - ハナビカメラ: `https://<プロジェクト名>.vercel.app/fireworks/`
    - キタイベ!: `https://<プロジェクト名>.vercel.app/events/`
    - ジャマケシ: `https://<プロジェクト名>.vercel.app/retouch/`
+   - バスナビ!: `https://<プロジェクト名>.vercel.app/basket/`
 
 以降はデフォルトブランチ(`claude/shopping-reminder-app-7xpyg5`)への push のたびに
 自動で再デプロイされます。
@@ -109,6 +110,13 @@ GitHub Pages はこのリポジトリの `.github/workflows/deploy-pages.yml` �
 「ジャマケシ」も入っています(`retouch/` フォルダ)。まわりの景色から作り直して
 埋めるので消した跡が残らず、写真は端末の外に一切送信しません。詳しくは
 [retouch/README.md](retouch/README.md) を見てください。
+
+## 🏀 同居アプリ: バスナビ!
+
+B.LEAGUE・NBA・バスケットボール日本代表の試合日程、結果、順位表、選手成績がわかるアプリ
+「バスナビ!」も入っています(`basket/` フォルダ)。NBAの順位表はプレーオフ進出圏と
+プレーイン圏を色分けして表示し、NBAでプレーする日本人選手の成績も一覧できます。詳しくは
+[basket/README.md](basket/README.md) を見てください。
 
 ## 技術構成
 

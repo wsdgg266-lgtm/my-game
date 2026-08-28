@@ -1,0 +1,50 @@
+# バスナビ! のデータ(B.LEAGUE・日本代表・NBAの日本人選手)を取り込み、
+# basket/data/*.json を更新する。
+#
+# ブラウザから直接よそのサイトを読むと CORS で弾かれるので、取得はここ
+# (サーバー側)で行い、結果をリポジトリに置く。アプリは同一オリジンの
+# JSON を読むだけで済む。
+#
+# 初回は Actions タブから手動実行して、basket/data/import-report.json に
+# どのソースが使えたかを確認してください。1件も取れなくてもアプリは動きます
+# (NBAの日程・結果・順位表はブラウザが直接 ESPN から取得するため)。
+name: Import basketball data
+
+on:
+  schedule:
+    - cron: '30 18 * * *'   # UTC 18:30 = 日本時間 翌 3:30
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: basket-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 取り込みロジックのテスト
+        run: node scripts/test-basket-import.mjs
+
+      - name: データを取り込む
+        run: node scripts/import-basket.mjs
+
+      - name: 変更があればコミットする
+        run: |
+          if [ -z "$(git status --porcelain basket/data)" ]; then
+            echo "変更なし"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add basket/data
+          git commit -m "バスケデータを自動更新 ($(TZ=Asia/Tokyo date +%Y-%m-%d))"
+          git push
