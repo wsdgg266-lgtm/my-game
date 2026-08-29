@@ -1,39 +1,81 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": "2026-08-28T07:38:15.218Z",
+  "updatedAt": "2026-08-29T01:51:35.863Z",
   "items": [
     {
-      "title": "ウルブズのジョシュ・グリーンにトレードの噂…クミンガ獲得でサラリー削減が必要に",
-      "url": "https://basketballking.jp/news/world/20260828/629555.html",
-      "ts": 1787901856000,
+      "title": "22歳のフォワード、キャム・ウィットモアがキャバリアーズから放出",
+      "url": "https://basketballking.jp/news/world/20260829/629711.html",
+      "ts": 1787967093000,
+      "date": "2026-08-29",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "元サッカー少年の194cm、U18川崎・ガブリエルゲッツが目指すはプロの道【BリーグU18/バスケ】(月刊バスケットボール)",
+      "url": "https://news.yahoo.co.jp/articles/c6be3930ebb8c991f07e5e631fbd87e4bdaf3ad7",
+      "ts": 1787966323000,
+      "date": "2026-08-29",
+      "source": "Yahoo!ニュース(スポーツ)"
+    },
+    {
+      "title": "2試合が延長戦に突入する激闘…首位のオーストラリアは無傷の7連勝／グループE",
+      "url": "https://basketballking.jp/news/world/20260829/629708.html",
+      "ts": 1787965263000,
+      "date": "2026-08-29",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "横浜BCのコッツァーがW杯予選で先発出場…次戦はトゥオビHC率いるフィンランドと“同僚対決”",
+      "url": "https://basketballking.jp/news/world/20260828/629665.html",
+      "ts": 1787918889000,
       "date": "2026-08-28",
       "source": "バスケットボールキング"
     },
     {
-      "title": "長崎ヴェルカが練習生の大友隆太郎と選手契約…プレシーズンゲーム期間限定の短期契約",
-      "url": "https://basketballking.jp/news/japan/20260828/629606.html",
-      "ts": 1787900751000,
+      "title": "富山加入のアンゴラがW杯予選で31得点…コロンビア代表は4敗目、次戦アメリカと激突",
+      "url": "https://basketballking.jp/news/world/20260828/629649.html",
+      "ts": 1787918072000,
       "date": "2026-08-28",
       "source": "バスケットボールキング"
     },
     {
-      "title": "横浜ビー・コルセアーズのマスコット「コルス」が“新たな冒険”へ…10月3日のホーム開幕戦で引継ぎ式開催",
-      "url": "https://basketballking.jp/news/japan/20260828/629612.html",
-      "ts": 1787900466000,
+      "title": "ラプターズの背番号7の永久欠番式典が決定したラウリー「この瞬間を待ちわびていた」",
+      "url": "https://basketballking.jp/news/world/20260828/629551.html",
+      "ts": 1787915069000,
       "date": "2026-08-28",
       "source": "バスケットボールキング"
     },
     {
-      "title": "ブレイク・グリフィンの冠番組がスタート…Prime Videoで来季開幕時に配信",
-      "url": "https://basketballking.jp/news/world/20260828/629552.html",
-      "ts": 1787899890000,
+      "title": "先日他界したドン・ネルソンへ…ウォリアーズが今季「Nellie」のバンド着用を発表",
+      "url": "https://basketballking.jp/news/world/20260828/629556.html",
+      "ts": 1787912563000,
       "date": "2026-08-28",
       "source": "バスケットボールキング"
     },
     {
-      "title": "イヒョンジュン11得点も韓国敗戦…レバノンはBリーグに縁ある選手が活躍しW杯予選首位キープ",
-      "url": "https://basketballking.jp/news/world/20260828/629591.html",
-      "ts": 1787899083000,
+      "title": "28歳のビッグマン、ニック・リチャーズがヒートとの1年契約に合意",
+      "url": "https://basketballking.jp/news/world/20260828/629549.html",
+      "ts": 1787910407000,
+      "date": "2026-08-28",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "琉球ゴールデンキングスがWキャプテンを継続…松脇圭志とジャック・クーリーが新たに就任",
+      "url": "https://basketballking.jp/news/japan/20260828/629675.html",
+      "ts": 1787909765000,
+      "date": "2026-08-28",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "A東京が新体制を発表…テーブス、安藤、小酒部の3キャプテン体制で8季ぶりのBリーグ制覇へ",
+      "url": "https://basketballking.jp/news/japan/20260828/629667.html",
+      "ts": 1787909704000,
+      "date": "2026-08-28",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "スパーズとサンダーが60勝以上／『ESPN』の2026－27シーズン勝敗予想（ウェスト編）",
+      "url": "https://basketballking.jp/news/world/20260828/629236.html",
+      "ts": 1787908806000,
       "date": "2026-08-28",
       "source": "バスケットボールキング"
     },
@@ -45,27 +87,6 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "長崎ヴェルカが森川正明をインジュアリーリストから抹消…2季ぶりにコートへ",
-      "url": "https://basketballking.jp/news/japan/20260828/629603.html",
-      "ts": 1787897974000,
-      "date": "2026-08-28",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "Wリーグ王者デンソーが国際大会『WBLA』に出場…10月にインド開催、昨年は富士通が準優勝",
-      "url": "https://basketballking.jp/news/japan/20260828/629583.html",
-      "ts": 1787894837000,
-      "date": "2026-08-28",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "ジョーンズカップで女子日本代表がレバノンに大勝スタート…佐藤が23得点を挙げてチームけん引",
-      "url": "https://basketballking.jp/news/japan/20260828/629584.html",
-      "ts": 1787891894000,
-      "date": "2026-08-28",
-      "source": "バスケットボールキング"
-    },
-    {
       "title": "【ワールドカップ2027予選】各国の代表として戦うBリーガーにも注目！富山のコロンビア代表、ブライアン・アンゴラは31得点",
       "url": "https://basket-count.com/article/detail/272171",
       "ts": 1787891508000,
@@ -73,25 +94,11 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "福井ブローウィンズに内藤英真が練習生として加入…昨季限りで契約満了も“再合流”",
-      "url": "https://basketballking.jp/news/japan/20260828/629572.html",
-      "ts": 1787888956000,
-      "date": "2026-08-28",
-      "source": "バスケットボールキング"
-    },
-    {
       "title": "【NBA】派手さはゼロでも『サラリーの健全化』に成功したホークスの今オフ、次なる飛躍に向けた準備が整う",
       "url": "https://basket-count.com/article/detail/272176",
       "ts": 1787887874000,
       "date": "2026-08-28",
       "source": "バスケットカウント"
-    },
-    {
-      "title": "ジョーダン ブランドが「エア ジョーダン 41」を発表…独自のテクノロジーを搭載し10月発売",
-      "url": "https://basketballking.jp/news/release/20260828/629568.html",
-      "ts": 1787887862000,
-      "date": "2026-08-28",
-      "source": "バスケットボールキング"
     },
     {
       "title": "【ワールドカップ2027アジア予選】個に依存せず連動性で快勝の男子日本代表、桶谷大ヘッドコーチ「互いを信頼しながらやってくれた」",
