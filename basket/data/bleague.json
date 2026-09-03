@@ -1,6 +1,6 @@
 {
   "_readme": "B.LEAGUE の日程・結果・順位表。scripts/import-basket.mjs が GitHub Actions で毎日更新します。手で直しても構いませんが、次の自動更新で上書きされます。",
-  "updatedAt": "2026-09-02T21:12:25.777Z",
+  "updatedAt": "2026-09-03T21:14:59.175Z",
   "season": "2026-2027",
   "leagueName": "Japanese B1 League",
   "leagueId": "4977",
