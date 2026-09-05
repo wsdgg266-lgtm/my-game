@@ -1,6 +1,6 @@
 {
   "_readme": "バスケットボール日本代表(AKATSUKI JAPAN)の試合。scripts/import-basket.mjs が GitHub Actions で毎日更新します。自動で取れない大会は manualGames に、招集メンバーは roster に手で書き足してください(自動更新でも消えません)。",
-  "updatedAt": "2026-09-04T20:57:11.580Z",
+  "updatedAt": "2026-09-05T20:37:21.235Z",
   "teamId": "136746",
   "games": [
     {
