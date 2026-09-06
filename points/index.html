@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f5a524">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="おてつだいバンク">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<title>おてつだいバンク - おてつだいと勉強でポイントをためてお小遣いに</title>
+<style>
+  :root {
+    --bg: #fff8ee;
+    --card: #ffffff;
+    --text: #362b1e;
+    --sub: #9c8d7c;
+    --line: #f1e6d6;
+    --line2: #e2d4bf;
+    --ac: #f5a524;
+    --ac-deep: #de8b00;
+    --ac-soft: #fff1d6;
+    --help: #ff8c42;
+    --help-soft: #ffeee2;
+    --study: #4c9be8;
+    --study-soft: #e7f2fd;
+    --ok: #2bb673;
+    --ok-soft: #e3f7ee;
+    --ng: #e8564f;
+    --radius: 18px;
+    --shadow: 0 2px 8px rgba(80, 60, 20, .07);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Hiragino Maru Gothic ProN", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    max-width: 100vw;
+    line-height: 1.5;
+  }
+  button, input, select, textarea { font-family: inherit; font-size: 16px; color: inherit; }
+  button { background: none; border: none; cursor: pointer; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 0 14px; }
+
+  /* ===== ヘッダー ===== */
+  header {
+    background: linear-gradient(160deg, #ffc65c, #f5a524);
+    padding: calc(env(safe-area-inset-top) + 12px) 0 16px;
+    color: #4a3208;
+  }
+  .app-title { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 800; letter-spacing: .02em; }
+  .app-title small { font-size: 11px; font-weight: 600; opacity: .75; letter-spacing: 0; }
+  .kids { display: flex; gap: 8px; overflow-x: auto; padding: 12px 0 2px; scrollbar-width: none; }
+  .kids::-webkit-scrollbar { display: none; }
+  .kid-chip {
+    flex: 0 0 auto; display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.55); border-radius: 999px; padding: 7px 14px 7px 9px;
+    font-size: 14px; font-weight: 700; color: #6b4a10; border: 2px solid transparent;
+  }
+  .kid-chip .em { font-size: 18px; }
+  .kid-chip.on { background: #fff; border-color: #fff; color: var(--text); box-shadow: 0 2px 6px rgba(120,80,0,.18); }
+  .kid-chip .p { font-size: 11px; font-weight: 700; color: var(--ac-deep); }
+  .kid-chip.add { background: rgba(255,255,255,.35); padding: 7px 14px; }
+
+  .balance {
+    background: #fff; border-radius: var(--radius); margin-top: 12px; padding: 16px 18px;
+    box-shadow: 0 4px 14px rgba(140, 96, 10, .16); text-align: center; color: var(--text);
+  }
+  .balance .lbl { font-size: 12px; color: var(--sub); font-weight: 700; }
+  .balance .pt { font-size: 42px; font-weight: 800; line-height: 1.1; color: var(--ac-deep); letter-spacing: -.02em; }
+  .balance .pt span { font-size: 17px; margin-left: 3px; }
+  .balance .yen { font-size: 18px; font-weight: 800; margin-top: 2px; }
+  .balance .yen b { color: var(--ok); }
+  .balance .sub { font-size: 11px; color: var(--sub); margin-top: 6px; }
+  .balance .hold { display: inline-block; margin-top: 8px; font-size: 12px; font-weight: 700;
+    background: var(--ac-soft); color: var(--ac-deep); border-radius: 999px; padding: 4px 12px; }
+
+  /* ===== 共通パーツ ===== */
+  main { padding-top: 16px; }
+  .view { display: none; }
+  .view.on { display: block; }
+  .sec-title { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 800; margin: 20px 2px 9px; }
+  .sec-title .cnt { font-size: 11px; color: var(--sub); font-weight: 700; }
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .empty { text-align: center; color: var(--sub); font-size: 13px; padding: 26px 16px; line-height: 1.8; }
+  .empty .big { font-size: 30px; display: block; margin-bottom: 6px; }
+
+  /* タスクカード */
+  .tasks { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .task {
+    background: var(--card); border-radius: var(--radius); padding: 13px 12px 11px; text-align: left;
+    box-shadow: var(--shadow); border: 2px solid transparent; position: relative;
+    display: flex; flex-direction: column; gap: 6px; min-height: 104px; transition: transform .1s;
+  }
+  .task:active { transform: scale(.96); }
+  .task .em { font-size: 26px; line-height: 1; }
+  .task .ttl { font-size: 14px; font-weight: 700; line-height: 1.35; flex: 1; }
+  .task .pt { font-size: 13px; font-weight: 800; color: var(--ac-deep); }
+  .task.help { border-color: #ffe1c9; }
+  .task.study { border-color: #d8e9fb; }
+  .task.done { opacity: .55; }
+  .task .state { font-size: 11px; font-weight: 800; border-radius: 999px; padding: 3px 8px; align-self: flex-start; }
+  .task .state.wait { background: var(--ac-soft); color: var(--ac-deep); }
+  .task .state.ok { background: var(--ok-soft); color: var(--ok); }
+  .task.add { border: 2px dashed var(--line2); background: #fffdf8; color: var(--sub);
+    align-items: center; justify-content: center; text-align: center; font-size: 13px; font-weight: 800; gap: 4px; }
+  .task.add .em { font-size: 22px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .chips button { background: #fff; border: 2px solid var(--line); border-radius: 10px;
+    padding: 8px 12px; font-size: 13px; font-weight: 800; color: var(--ac-deep); }
+  .chips button.on { border-color: var(--ac); background: var(--ac-soft); }
+
+  /* リスト行 */
+  .row { display: flex; align-items: center; gap: 11px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  .row:last-child { border-bottom: none; }
+  .row .em { font-size: 21px; flex: 0 0 auto; }
+  .row .body { flex: 1; min-width: 0; }
+  .row .t { font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .d { font-size: 11px; color: var(--sub); margin-top: 2px; }
+  .row .pt { font-size: 14px; font-weight: 800; color: var(--ac-deep); flex: 0 0 auto; }
+  .row .pt.minus { color: var(--ng); }
+  .row .pt.muted { color: var(--sub); }
+  .row .acts { display: flex; gap: 6px; flex: 0 0 auto; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    background: var(--ac); color: #fff; font-weight: 800; font-size: 15px;
+    border-radius: 999px; padding: 12px 20px; box-shadow: 0 2px 6px rgba(200,140,20,.3);
+  }
+  .btn:active { transform: scale(.97); }
+  .btn.wide { width: 100%; }
+  .btn.gray { background: #ece2d4; color: #7a6b58; box-shadow: none; }
+  .btn.ok { background: var(--ok); box-shadow: 0 2px 6px rgba(30,150,100,.3); }
+  .btn.ng { background: #fff; color: var(--ng); border: 2px solid #f6d6d4; box-shadow: none; }
+  .btn.sm { font-size: 13px; padding: 8px 14px; }
+  .btn.icon { width: 38px; height: 38px; padding: 0; font-size: 17px; border-radius: 50%; }
+  .btn[disabled] { opacity: .45; pointer-events: none; }
+
+  /* ===== 下タブ ===== */
+  nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+    background: rgba(255,255,255,.96); backdrop-filter: blur(8px);
+    border-top: 1px solid var(--line); display: flex;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  nav button {
+    flex: 1; padding: 9px 1px 8px; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    font-size: 10px; font-weight: 700; color: var(--sub); position: relative; letter-spacing: -.03em;
+  }
+  nav button .ic { font-size: 21px; line-height: 1; }
+  nav button.on { color: var(--ac-deep); }
+  nav .badge {
+    position: absolute; top: 4px; right: 50%; margin-right: -22px;
+    background: var(--ng); color: #fff; font-size: 10px; font-weight: 800;
+    min-width: 18px; height: 18px; border-radius: 9px; padding: 0 5px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  nav .badge[hidden] { display: none; }
+
+  /* ===== きろく ===== */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .stat { background: var(--card); border-radius: 14px; padding: 12px 8px; text-align: center; box-shadow: var(--shadow); }
+  .stat .n { font-size: 22px; font-weight: 800; color: var(--ac-deep); }
+  .stat .l { font-size: 10px; color: var(--sub); font-weight: 700; margin-top: 2px; }
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; padding: 14px; }
+  .cal .h { font-size: 10px; color: var(--sub); text-align: center; font-weight: 700; }
+  .cal .d { aspect-ratio: 1; border-radius: 10px; background: #f7f2e9; display: flex;
+    flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--sub); }
+  .cal .d.has { background: var(--ac-soft); color: var(--ac-deep); font-weight: 800; }
+  .cal .d.today { outline: 2px solid var(--ac); }
+  .cal .d .p { font-size: 9px; font-weight: 800; }
+  .cal .d.blank { background: none; }
+
+  /* ===== こうかん ===== */
+  .presets { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+  .preset {
+    background: var(--card); border-radius: var(--radius); padding: 15px 10px; text-align: center;
+    box-shadow: var(--shadow); border: 2px solid var(--line);
+  }
+  .preset .y { font-size: 21px; font-weight: 800; }
+  .preset .p { font-size: 11px; color: var(--sub); font-weight: 700; margin-top: 2px; }
+  .preset[disabled] { opacity: .4; }
+  .note { font-size: 12px; color: var(--sub); line-height: 1.8; padding: 4px 4px 0; }
+
+  /* ===== 親モード ===== */
+  .lock { text-align: center; padding: 34px 20px; }
+  .lock .big { font-size: 44px; }
+  .lock h2 { font-size: 17px; margin: 10px 0 6px; }
+  .lock p { font-size: 13px; color: var(--sub); line-height: 1.8; margin-bottom: 18px; }
+  .pin-in {
+    width: 190px; text-align: center; letter-spacing: .5em; font-size: 26px; font-weight: 800;
+    border: 2px solid var(--line2); border-radius: 14px; padding: 10px 10px 10px 14px; background: #fff;
+  }
+  .pgroup { margin-bottom: 18px; }
+  .field { padding: 12px 14px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
+  .field:last-child { border-bottom: none; }
+  .field label { font-size: 13px; font-weight: 700; flex: 1; }
+  .field .hint { font-size: 11px; color: var(--sub); font-weight: 500; margin-top: 2px; }
+  .field input[type=text], .field input[type=number], .field select {
+    border: 2px solid var(--line2); border-radius: 10px; padding: 8px 10px; background: #fff; max-width: 150px;
+  }
+  .switch { width: 50px; height: 30px; border-radius: 15px; background: #ddd2c2; position: relative; flex: 0 0 auto; transition: background .15s; }
+  .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: transform .15s; }
+  .switch.on { background: var(--ok); }
+  .switch.on::after { transform: translateX(20px); }
+
+  /* ===== ふりかえり(おこづかい帳) ===== */
+  .sum { display: flex; gap: 10px; }
+  .sum .box { flex: 1; background: var(--card); border-radius: 14px; padding: 12px 6px; text-align: center; box-shadow: var(--shadow); }
+  .sum .box .n { font-size: 18px; font-weight: 800; letter-spacing: -.02em; }
+  .sum .box .l { font-size: 10px; color: var(--sub); font-weight: 700; margin-top: 2px; }
+  .sum .box.in .n { color: var(--ac-deep); }
+  .sum .box.out .n { color: #3f8ed0; }
+  .sum .box.rest .n { color: var(--ok); }
+  .formula { background: var(--ac-soft); border-radius: 14px; padding: 13px 10px; text-align: center;
+    font-size: 13px; font-weight: 800; color: #8a5a00; margin-top: 10px; line-height: 1.9; }
+  .formula b { font-size: 15px; }
+  .mchart { display: flex; align-items: flex-end; gap: 4px; padding: 16px 12px 8px; height: 170px; }
+  .mcol { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; height: 100%; }
+  .mbars { flex: 1; display: flex; align-items: flex-end; gap: 3px; justify-content: center; width: 100%; }
+  .mbars i { width: 13px; border-radius: 4px 4px 0 0; display: block; min-height: 2px; }
+  .mbars i.in { background: linear-gradient(180deg, #ffc65c, #f5a524); }
+  .mbars i.out { background: linear-gradient(180deg, #8ec8f2, #3f8ed0); }
+  .mval { font-size: 9px; font-weight: 800; height: 24px; display: flex; flex-direction: column;
+    justify-content: flex-end; line-height: 1.25; }
+  .mval .i { color: var(--ac-deep); }
+  .mval .o { color: #3f8ed0; }
+  .mlab { font-size: 10px; color: var(--sub); font-weight: 700; }
+  .legend { display: flex; gap: 16px; justify-content: center; font-size: 11px; font-weight: 700; color: var(--sub); padding: 0 0 13px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-right: 5px; }
+  .legend i.in { background: var(--ac); }
+  .legend i.out { background: #3f8ed0; }
+  .brow { padding: 11px 14px; border-bottom: 1px solid var(--line); }
+  .brow:last-child { border-bottom: none; }
+  .brow .top { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; }
+  .brow .top .v { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--sub); }
+  .brow .bar2 { height: 10px; border-radius: 5px; background: #f3ebde; overflow: hidden; margin-top: 7px; }
+  .brow .bar2 span { display: block; height: 100%; border-radius: 5px; }
+  .use-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .use-chips button { background: #fff; border: 2px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 13px; font-weight: 700; }
+  .use-chips button.on { border-color: var(--ac); background: var(--ac-soft); }
+  .tip { font-size: 12px; color: var(--sub); line-height: 1.9; padding: 12px 14px; }
+  .tip b { color: var(--text); }
+
+  /* ===== モーダル ===== */
+  .mask { position: fixed; inset: 0; background: rgba(40,28,10,.45); z-index: 60; display: flex;
+    align-items: flex-end; justify-content: center; padding: 0; }
+  .mask.hide { display: none; }
+  .sheet {
+    background: var(--bg); width: 100%; max-width: 560px; border-radius: 22px 22px 0 0;
+    padding: 18px 16px calc(20px + env(safe-area-inset-bottom)); max-height: 88vh; overflow-y: auto;
+    animation: up .18s ease-out;
+  }
+  @keyframes up { from { transform: translateY(24px); opacity: .5; } to { transform: none; opacity: 1; } }
+  .sheet h2 { font-size: 17px; margin-bottom: 4px; }
+  .sheet .lead { font-size: 12px; color: var(--sub); margin-bottom: 14px; line-height: 1.7; }
+  .sheet .in {
+    width: 100%; border: 2px solid var(--line2); border-radius: 12px; padding: 11px 12px; background: #fff; margin-bottom: 10px;
+  }
+  .emoji-pick { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .emoji-pick button { font-size: 20px; width: 40px; height: 40px; border-radius: 10px; background: #fff; border: 2px solid var(--line); }
+  .emoji-pick button.on { border-color: var(--ac); background: var(--ac-soft); }
+  .seg { display: flex; gap: 6px; margin-bottom: 12px; }
+  .seg button { flex: 1; padding: 10px; border-radius: 12px; background: #fff; border: 2px solid var(--line); font-size: 13px; font-weight: 700; }
+  .seg button.on { border-color: var(--ac); background: var(--ac-soft); color: var(--ac-deep); }
+  .sheet-actions { display: flex; gap: 8px; margin-top: 6px; }
+  .sheet-actions .btn { flex: 1; }
+
+  /* ===== トースト・演出 ===== */
+  #toast {
+    position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+    background: rgba(48,34,14,.94); color: #fff; font-size: 14px; font-weight: 700;
+    padding: 12px 20px; border-radius: 999px; z-index: 80; opacity: 0; pointer-events: none;
+    transition: opacity .2s, transform .2s; max-width: 90vw; text-align: center;
+  }
+  #toast.on { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+  .coin {
+    position: fixed; z-index: 90; font-size: 30px; pointer-events: none;
+    animation: coin 900ms ease-out forwards;
+  }
+  @keyframes coin {
+    0% { transform: translate(-50%, 0) scale(.5); opacity: 0; }
+    25% { transform: translate(-50%, -30px) scale(1.25); opacity: 1; }
+    100% { transform: translate(-50%, -150px) scale(.85); opacity: 0; }
+  }
+  /* ===== めあて(ちょきんの目標) ===== */
+  .goal { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px 15px; margin-bottom: 12px; }
+  .goal.done { background: linear-gradient(150deg, #fff6e0, #ffedbe); }
+  .goal .top { display: flex; align-items: center; gap: 10px; }
+  .goal .em { font-size: 26px; line-height: 1; }
+  .goal .t { font-size: 15px; font-weight: 800; flex: 1; min-width: 0; }
+  .goal .t small { display: block; font-size: 11px; color: var(--sub); font-weight: 700; margin-top: 2px; }
+  .bar { height: 14px; border-radius: 8px; background: #f3ebde; overflow: hidden; margin: 11px 0 7px; }
+  .bar span { display: block; height: 100%; border-radius: 8px; background: linear-gradient(90deg, #ffd270, #f5a524); transition: width .35s; }
+  .goal .now { font-size: 12px; font-weight: 800; display: flex; justify-content: space-between; gap: 8px; }
+  .goal .now .left { color: var(--ac-deep); }
+  .goal-new { width: 100%; text-align: center; padding: 16px; border-radius: var(--radius); background: #fff;
+    border: 2px dashed var(--line2); color: var(--sub); font-size: 13px; font-weight: 800; margin-bottom: 12px; }
+  .footer-note { font-size: 11px; color: var(--sub); text-align: center; padding: 24px 10px 8px; line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="app-title">🪙 おてつだいバンク <small>ためて おこづかいに かえよう</small></div>
+    <div class="kids" id="kids"></div>
+    <div class="balance" id="balance"></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ========== きょう ========== -->
+  <section class="view on" id="view-home">
+    <div id="goal-card"></div>
+    <div id="home-notice"></div>
+    <div class="sec-title">🧹 おてつだい <span class="cnt" id="cnt-help"></span></div>
+    <div class="tasks" id="tasks-help"></div>
+    <div class="sec-title">📚 べんきょう <span class="cnt" id="cnt-study"></span></div>
+    <div class="tasks" id="tasks-study"></div>
+    <div class="sec-title">✅ きょう できたこと</div>
+    <div class="card" id="today-log"></div>
+    <div class="footer-note">タスクを ふやすときは ＋ を おしてね<br>（おうちの人の PINが いるよ）</div>
+  </section>
+
+  <!-- ========== きろく ========== -->
+  <section class="view" id="view-history">
+    <div class="stats" id="stats"></div>
+    <div class="sec-title">🗓 こんげつの スタンプ</div>
+    <div class="card"><div class="cal" id="cal"></div></div>
+    <div class="sec-title">📜 これまでの きろく</div>
+    <div class="card" id="log-list"></div>
+    <div id="log-more" style="text-align:center;padding:12px 0"></div>
+  </section>
+
+  <!-- ========== こうかん ========== -->
+  <section class="view" id="view-cash">
+    <div class="card" style="padding:16px">
+      <div id="cash-head"></div>
+      <div id="cash-goal"></div>
+      <div class="presets" id="cash-presets"></div>
+      <div style="margin-top:12px">
+        <button class="btn wide gray" id="cash-custom">🔢 じぶんで えらぶ</button>
+      </div>
+    </div>
+    <div class="sec-title">💵 かえた きろく</div>
+    <div class="card" id="cash-list"></div>
+    <div class="footer-note">おねがいすると おうちの人に とどくよ。<br>お金を もらったら できあがり!</div>
+  </section>
+
+  <!-- ========== ふりかえり(おこづかい帳) ========== -->
+  <section class="view" id="view-learn">
+    <div id="learn-ask"></div>
+    <div class="sec-title">🧮 こんげつの おこづかい</div>
+    <div class="sum" id="learn-sum"></div>
+    <div class="formula" id="learn-formula"></div>
+    <div class="sec-title">📊 6かげつの ためた・つかった</div>
+    <div class="card">
+      <div class="mchart" id="learn-chart"></div>
+      <div class="legend"><span><i class="in"></i>ためた</span><span><i class="out"></i>つかった</span></div>
+    </div>
+    <div class="sec-title">🛍 なにに つかった?</div>
+    <div class="card" id="learn-use"></div>
+    <div class="sec-title">💪 なにで ためた?</div>
+    <div class="card" id="learn-earn"></div>
+    <div class="card" id="learn-tip" style="margin-top:14px"></div>
+    <div class="footer-note">ためた お金と つかった お金を くらべると、<br>のこりの お金が わかるよ。</div>
+  </section>
+
+  <!-- ========== おうちのひと ========== -->
+  <section class="view" id="view-parent">
+    <div id="parent-locked">
+      <div class="card lock">
+        <div class="big">🔒</div>
+        <h2>おうちのひとモード</h2>
+        <p id="lock-msg"></p>
+        <input class="pin-in" id="pin-input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="････">
+        <div style="margin-top:16px"><button class="btn" id="pin-ok">ひらく</button></div>
+        <p style="margin:14px 0 0;font-size:11px">PINはこの端末の中だけに保存されます。<br>子どもがうっかり触らないための、かんたんな鍵です。</p>
+      </div>
+    </div>
+
+    <div id="parent-body" style="display:none">
+      <div class="pgroup">
+        <div class="sec-title">⏳ OKまち <span class="cnt" id="cnt-pending"></span></div>
+        <div class="card" id="pending-list"></div>
+        <div id="pending-actions" style="margin-top:10px"></div>
+      </div>
+
+      <div class="pgroup">
+        <div class="sec-title">💰 おこづかいに かえる おねがい <span class="cnt" id="cnt-cashreq"></span></div>
+        <div class="card" id="cashreq-list"></div>
+      </div>
+
+      <div class="pgroup">
+        <div class="sec-title">👧 子どもの管理</div>
+        <div class="card" id="parent-kids"></div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn sm gray" style="flex:1" id="add-kid">＋ 子どもをふやす</button>
+          <button class="btn sm gray" style="flex:1" id="add-points">🎁 ポイントをあげる</button>
+        </div>
+      </div>
+
+      <div class="pgroup">
+        <div class="sec-title">📋 タスクの設定 <span class="cnt" id="cnt-tasks"></span></div>
+        <div class="card" id="parent-tasks"></div>
+        <div style="margin-top:10px"><button class="btn wide" id="add-task">＋ 新しいタスクをつくる</button></div>
+        <div class="note">「きょう」の画面にある「＋ ふやす」からも、ここと同じ画面がひらきます。</div>
+      </div>
+
+      <div class="pgroup">
+        <div class="sec-title">⚙️ 設定</div>
+        <div class="card" id="parent-settings"></div>
+      </div>
+
+      <div class="pgroup">
+        <div class="sec-title">💾 バックアップ</div>
+        <div class="card">
+          <div class="field"><div style="flex:1"><label>データを書き出す</label>
+            <div class="hint">機種変更や別の端末に引きつぐときに使います</div></div>
+            <button class="btn sm gray" id="export">書き出す</button></div>
+          <div class="field"><div style="flex:1"><label>データを読みこむ</label>
+            <div class="hint">書き出したファイルを読みこみます(いまのデータは上書き)</div></div>
+            <button class="btn sm gray" id="import">読みこむ</button></div>
+          <div class="field"><div style="flex:1"><label style="color:#e8564f">ぜんぶ消す</label>
+            <div class="hint">ポイント・履歴・タスクをすべて初期状態に戻します</div></div>
+            <button class="btn sm ng" id="reset">消す</button></div>
+        </div>
+      </div>
+      <div style="margin:18px 0 8px"><button class="btn wide gray" id="lock-now">🔒 ロックする</button></div>
+    </div>
+  </section>
+
+</main>
+
+<nav>
+  <button data-view="home" class="on"><span class="ic">🏠</span>きょう</button>
+  <button data-view="history"><span class="ic">📅</span>きろく</button>
+  <button data-view="cash"><span class="ic">💰</span>こうかん<span class="badge" id="badge-cash" hidden></span></button>
+  <button data-view="learn"><span class="ic">📊</span>ふりかえり</button>
+  <button data-view="parent"><span class="ic">👪</span>おうちのひと<span class="badge" id="badge-parent" hidden></span></button>
+</nav>
+
+<div class="mask hide" id="mask"><div class="sheet" id="sheet"></div></div>
+<div id="toast"></div>
+<input type="file" id="import-file" accept="application/json,.json" hidden>
+
+<script>
+(function () {
+'use strict';
+
+/* ===================== データ ===================== */
+var KEY = 'otetsudai-bank-v1';
+var KID_EMOJI = ['🦖','🐰','🐱','🐶','🦊','🐼','🦄','🐯','🐧','🐨','🐵','🌟'];
+/* こうかんしたお金の つかいみち */
+var USE_KINDS = [
+  { id: 'okashi', em: '🍭', name: 'おかし・ジュース' },
+  { id: 'omocha', em: '🧸', name: 'おもちゃ' },
+  { id: 'game', em: '🎮', name: 'ゲーム' },
+  { id: 'book', em: '📚', name: '本・まんが' },
+  { id: 'bungu', em: '✏️', name: 'ぶんぼうぐ' },
+  { id: 'present', em: '🎁', name: 'プレゼント' },
+  { id: 'chokin', em: '🐖', name: 'とっておく' },
+  { id: 'other', em: '❓', name: 'そのほか' }
+];
+function useKind(id) {
+  for (var i = 0; i < USE_KINDS.length; i++) if (USE_KINDS[i].id === id) return USE_KINDS[i];
+  return null;
+}
+var GOAL_EMOJI = ['🎮','🧸','🚲','⚽️','🎧','📚','🎨','🛼','🍰','🐶','🎁','💎'];
+var TASK_EMOJI = ['🍽','🧽','🛁','🧺','🗑','👟','🧹','🛒','🌱','🐕','📖','✏️','📚','🔢','🈯','🎒','⏰','🎹','🏃','💡'];
+
+var DEFAULT_TASKS = [
+  ['🍽', '食器をはこぶ', 3, 'help'],
+  ['🧽', '食器をあらう', 10, 'help'],
+  ['🛁', 'おふろそうじ', 10, 'help'],
+  ['🧺', 'せんたくものをたたむ', 10, 'help'],
+  ['🗑', 'ゴミを出す', 5, 'help'],
+  ['👟', 'くつをそろえる', 3, 'help'],
+  ['🧹', 'つくえの上をかたづける', 5, 'help'],
+  ['🛒', '買い物のおてつだい', 10, 'help'],
+  ['📖', '宿題をやった', 10, 'study'],
+  ['🈯', '音読', 5, 'study'],
+  ['✏️', '漢字ドリル1ページ', 5, 'study'],
+  ['🔢', '計算ドリル1ページ', 5, 'study'],
+  ['📚', '自主学習', 10, 'study'],
+  ['💡', '読書15分', 5, 'study'],
+  ['🎒', '明日のじゅんび', 3, 'study']
+];
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+function seed() {
+  return {
+    version: 1,
+    pin: null,
+    settings: { yenPerPoint: 1, requireApproval: true },
+    kids: [{ id: uid(), name: 'わたし', emoji: '🦖' }],
+    tasks: DEFAULT_TASKS.map(function (t) {
+      return { id: uid(), emoji: t[0], title: t[1], points: t[2], category: t[3], repeat: 'daily', kidIds: null, archived: false };
+    }),
+    logs: [],
+    cashouts: []
+  };
+}
+
+var S = seed();
+var ui = { view: 'home', kidId: null, unlockedAt: 0, logLimit: 25, afterUnlock: null };
+var UNLOCK_MS = 5 * 60 * 1000;
+
+function load() {
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (!raw) { save(); return; }
+    var d = JSON.parse(raw);
+    if (d && d.kids && d.tasks) {
+      S = d;
+      S.settings = S.settings || { yenPerPoint: 1, requireApproval: true };
+      if (typeof S.settings.yenPerPoint !== 'number' || S.settings.yenPerPoint <= 0) S.settings.yenPerPoint = 1;
+      if (typeof S.settings.requireApproval !== 'boolean') S.settings.requireApproval = true;
+      S.logs = S.logs || [];
+      S.cashouts = S.cashouts || [];
+      if (!S.kids.length) S.kids = seed().kids;
+    }
+  } catch (e) { /* 壊れていたら初期状態のまま使う */ }
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { toast('保存できませんでした'); }
+}
+
+/* ===================== 小道具 ===================== */
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function ymd(ts) {
+  var d = new Date(ts);
+  return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+}
+/* 月曜はじまりの週キー */
+function weekKey(ts) {
+  var d = new Date(ts);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return 'w' + ymd(d.getTime());
+}
+function monthKey(ts) { return ymd(ts).slice(0, 7); }
+function fmtDay(ts) {
+  var d = new Date(ts), t = new Date();
+  var s = (d.getMonth() + 1) + '/' + d.getDate();
+  if (ymd(ts) === ymd(t.getTime())) return 'きょう';
+  t.setDate(t.getDate() - 1);
+  if (ymd(ts) === ymd(t.getTime())) return 'きのう';
+  return s;
+}
+function fmtTime(ts) {
+  var d = new Date(ts);
+  return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+}
+function yen(points) { return Math.round(points * S.settings.yenPerPoint); }
+function yenStr(points) { return yen(points).toLocaleString('ja-JP') + '円'; }
+
+var toastTimer = null;
+function toast(msg) {
+  var t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { t.classList.remove('on'); }, 2000);
+}
+function buzz(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
+function coinFx(x, y, text) {
+  var el = document.createElement('div');
+  el.className = 'coin';
+  el.textContent = text;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  document.body.appendChild(el);
+  setTimeout(function () { el.remove(); }, 950);
+}
+
+/* ===================== 計算 ===================== */
+function currentKid() {
+  var k = null, i;
+  for (i = 0; i < S.kids.length; i++) if (S.kids[i].id === ui.kidId) k = S.kids[i];
+  if (!k) { k = S.kids[0]; ui.kidId = k ? k.id : null; }
+  return k;
+}
+/* 残高はすべて履歴から導出する(数値を直接持たないのでズレない) */
+function calc(kidId) {
+  var r = { earned: 0, waiting: 0, held: 0, paid: 0, balance: 0 };
+  S.logs.forEach(function (l) {
+    if (l.kidId !== kidId) return;
+    if (l.status === 'approved') r.earned += l.points;
+    else if (l.status === 'pending') r.waiting += l.points;
+  });
+  S.cashouts.forEach(function (c) {
+    if (c.kidId !== kidId) return;
+    if (c.status === 'paid') r.paid += c.points;
+    else if (c.status === 'pending') r.held += c.points;
+  });
+  r.balance = r.earned - r.paid - r.held;
+  return r;
+}
+function tasksFor(kidId) {
+  return S.tasks.filter(function (t) {
+    if (t.archived) return false;
+    if (!t.kidIds) return true;
+    return t.kidIds.indexOf(kidId) !== -1;
+  });
+}
+/* そのタスクが「もう申告ずみ」か(まいにち=今日/まいしゅう=今週/1回だけ=ずっと) */
+function doneState(task, kidId) {
+  var now = Date.now(), found = null;
+  S.logs.forEach(function (l) {
+    if (l.kidId !== kidId || l.taskId !== task.id) return;
+    if (l.status === 'rejected') return;
+    var same =
+      task.repeat === 'once' ? true :
+      task.repeat === 'weekly' ? weekKey(l.createdAt) === weekKey(now) :
+      ymd(l.createdAt) === ymd(now);
+    if (same && (!found || l.createdAt > found.createdAt)) found = l;
+  });
+  return found;
+}
+function pendingLogs() { return S.logs.filter(function (l) { return l.status === 'pending'; }); }
+function pendingCashouts() { return S.cashouts.filter(function (c) { return c.status === 'pending'; }); }
+
+/* ===================== 表示 ===================== */
+function renderAll() {
+  renderKids();
+  renderBalance();
+  renderGoal();
+  renderHome();
+  renderHistory();
+  renderCash();
+  renderLearn();
+  renderParent();
+  renderBadges();
+}
+
+function renderKids() {
+  var kid = currentKid(), h = '';
+  S.kids.forEach(function (k) {
+    var c = calc(k.id);
+    h += '<button class="kid-chip' + (kid && k.id === kid.id ? ' on' : '') + '" data-kid="' + k.id + '">' +
+      '<span class="em">' + esc(k.emoji) + '</span><span>' + esc(k.name) +
+      '<br><span class="p">' + c.balance + 'P</span></span></button>';
+  });
+  $('kids').innerHTML = h;
+}
+
+function renderBalance() {
+  var kid = currentKid();
+  if (!kid) { $('balance').innerHTML = '<div class="empty">子どもを登録してください</div>'; return; }
+  var c = calc(kid.id);
+  var h = '<div class="lbl">' + esc(kid.name) + 'のポイント</div>' +
+    '<div class="pt">' + c.balance + '<span>P</span></div>' +
+    '<div class="yen">＝ <b>' + yenStr(c.balance) + '</b></div>' +
+    '<div class="sub">1ポイント＝' + S.settings.yenPerPoint + '円 ／ ぜんぶで ' + c.earned + 'P ためたよ</div>';
+  if (c.waiting > 0) h += '<div class="hold">⏳ おうちのひとまち ' + c.waiting + 'P</div> ';
+  if (c.held > 0) h += '<div class="hold">💰 かえてるとちゅう ' + c.held + 'P</div>';
+  $('balance').innerHTML = h;
+}
+
+function taskCard(t, kidId) {
+  var done = doneState(t, kidId);
+  var rep = t.repeat === 'weekly' ? '週1回' : t.repeat === 'once' ? '1回だけ' : '';
+  var state = '';
+  if (done) state = done.status === 'pending'
+    ? '<span class="state wait">⏳ まってね</span>'
+    : '<span class="state ok">✓ できた</span>';
+  return '<button class="task ' + t.category + (done ? ' done' : '') + '" data-task="' + t.id + '"' + (done ? ' disabled' : '') + '>' +
+    '<span class="em">' + esc(t.emoji) + '</span>' +
+    '<span class="ttl">' + esc(t.title) + '</span>' +
+    (state || '<span class="pt">+' + t.points + 'P' + (rep ? ' <span style="color:#9c8d7c;font-weight:700">' + rep + '</span>' : '') + '</span>') +
+    '</button>';
+}
+
+function renderHome() {
+  var kid = currentKid();
+  if (!kid) return;
+  var list = tasksFor(kid.id);
+  var cats = { help: [], study: [] };
+  list.forEach(function (t) { (cats[t.category] || cats.help).push(t); });
+
+  ['help', 'study'].forEach(function (cat) {
+    var arr = cats[cat];
+    var left = arr.filter(function (t) { return !doneState(t, kid.id); }).length;
+    $('cnt-' + cat).textContent = arr.length ? ('あと ' + left + 'こ') : '';
+    var addCard = '<button class="task add" data-addtask="' + cat + '">' +
+      '<span class="em">＋</span><span>' + (cat === 'study' ? 'べんきょうを' : 'おてつだいを') + '<br>ふやす</span></button>';
+    $('tasks-' + cat).innerHTML = arr.map(function (t) { return taskCard(t, kid.id); }).join('') + addCard;
+  });
+
+  var c = calc(kid.id);
+  var msg = '';
+  if (c.waiting > 0) {
+    msg = '<div class="card" style="padding:13px 15px;margin-bottom:6px;background:var(--ac-soft);box-shadow:none">' +
+      '<div style="font-size:13px;font-weight:800;color:#8a5a00">⏳ ' + c.waiting +
+      'P は おうちのひとまち</div><div style="font-size:11px;color:#8a7a63;margin-top:3px">「やったよ、みてー!」って いってみよう</div></div>';
+  }
+  $('home-notice').innerHTML = msg;
+
+  var today = S.logs.filter(function (l) {
+    return l.kidId === kid.id && ymd(l.createdAt) === ymd(Date.now()) && l.status !== 'rejected';
+  }).sort(function (a, b) { return b.createdAt - a.createdAt; });
+  $('today-log').innerHTML = today.length ? today.map(function (l) {
+    return '<div class="row"><span class="em">' + esc(l.emoji || '⭐️') + '</span><div class="body">' +
+      '<div class="t">' + esc(l.title) + '</div><div class="d">' + fmtTime(l.createdAt) + ' ・ ' +
+      (l.status === 'pending' ? 'おうちのひとまち' : 'ポイントに なったよ') + '</div></div>' +
+      '<span class="pt' + (l.status === 'pending' ? ' muted' : '') + '">' + (l.points >= 0 ? '+' : '') + l.points + 'P</span>' +
+      (l.status === 'pending' ? '<button class="btn icon gray" data-cancel="' + l.id + '" title="とりけす">✕</button>' : '') +
+      '</div>';
+  }).join('') : '<div class="empty"><span class="big">🌱</span>きょうは まだ ないよ<br>できたことを タップしてね</div>';
+}
+
+/* めあて(ちょきんの目標) */
+function goalInfo(kid) {
+  if (!kid || !kid.goal || !kid.goal.yen) return null;
+  var now = yen(calc(kid.id).balance), target = kid.goal.yen;
+  return {
+    g: kid.goal, now: now, target: target,
+    rest: Math.max(0, target - now),
+    pct: target > 0 ? Math.max(0, Math.min(100, Math.round(now / target * 100))) : 0,
+    done: now >= target
+  };
+}
+function renderGoal() {
+  var kid = currentKid(), el = $('goal-card');
+  if (!el) return;
+  if (!kid) { el.innerHTML = ''; return; }
+  var g = goalInfo(kid);
+  if (!g) {
+    el.innerHTML = '<button class="goal-new" data-act="edit-goal">🎯 ほしいものを きめる（ちょきんの めあて）</button>';
+    return;
+  }
+  var restP = Math.ceil(g.rest / S.settings.yenPerPoint);
+  el.innerHTML = '<div class="goal' + (g.done ? ' done' : '') + '">' +
+    '<div class="top"><span class="em">' + esc(g.g.emoji) + '</span>' +
+    '<div class="t">' + esc(g.g.title) + '<small>めあて ' + g.target.toLocaleString('ja-JP') + '円</small></div>' +
+    '<button class="btn sm gray" data-act="edit-goal">かえる</button></div>' +
+    '<div class="bar"><span style="width:' + g.pct + '%"></span></div>' +
+    '<div class="now"><span class="left">' +
+    (g.done ? '🎉 たまったよ! こうかんできる' : 'あと ' + g.rest.toLocaleString('ja-JP') + '円（' + restP.toLocaleString('ja-JP') + 'P）') +
+    '</span><span style="color:var(--sub)">' + g.now.toLocaleString('ja-JP') + ' / ' + g.target.toLocaleString('ja-JP') + '円</span></div></div>';
+}
+
+function renderHistory() {
+  var kid = currentKid();
+  if (!kid) return;
+  var now = Date.now(), wk = weekKey(now), mk = monthKey(now);
+  var week = 0, month = 0, days = {};
+  S.logs.forEach(function (l) {
+    if (l.kidId !== kid.id || l.status !== 'approved') return;
+    if (weekKey(l.createdAt) === wk) week += l.points;
+    if (monthKey(l.createdAt) === mk) {
+      month += l.points;
+      var d = new Date(l.createdAt).getDate();
+      days[d] = (days[d] || 0) + l.points;
+    }
+  });
+  var c = calc(kid.id);
+  $('stats').innerHTML =
+    '<div class="stat"><div class="n">' + week + '</div><div class="l">こんしゅう</div></div>' +
+    '<div class="stat"><div class="n">' + month + '</div><div class="l">こんげつ</div></div>' +
+    '<div class="stat"><div class="n">' + yen(c.paid).toLocaleString('ja-JP') + '</div><div class="l">もらった お金</div></div>';
+
+  var d0 = new Date(), y = d0.getFullYear(), m = d0.getMonth();
+  var first = new Date(y, m, 1), last = new Date(y, m + 1, 0).getDate();
+  var lead = (first.getDay() + 6) % 7;
+  var h = ['月', '火', '水', '木', '金', '土', '日'].map(function (w) { return '<div class="h">' + w + '</div>'; }).join('');
+  var i;
+  for (i = 0; i < lead; i++) h += '<div class="d blank"></div>';
+  for (i = 1; i <= last; i++) {
+    var p = days[i] || 0;
+    h += '<div class="d' + (p ? ' has' : '') + (i === d0.getDate() ? ' today' : '') + '">' + i +
+      (p ? '<span class="p">' + p + 'P</span>' : '') + '</div>';
+  }
+  $('cal').innerHTML = h;
+
+  var logs = S.logs.filter(function (l) { return l.kidId === kid.id; })
+    .sort(function (a, b) { return b.createdAt - a.createdAt; });
+  var shown = logs.slice(0, ui.logLimit);
+  $('log-list').innerHTML = shown.length ? shown.map(function (l) {
+    var label = l.status === 'pending' ? '⏳ まってるところ' : l.status === 'rejected' ? '✕ もどされた' : '✓ ポイントに なった';
+    return '<div class="row"><span class="em">' + esc(l.emoji || '⭐️') + '</span><div class="body">' +
+      '<div class="t">' + esc(l.title) + '</div><div class="d">' + fmtDay(l.createdAt) + ' ' + fmtTime(l.createdAt) + ' ・ ' + label +
+      (l.note ? ' ・ ' + esc(l.note) : '') + '</div></div>' +
+      '<span class="pt' + (l.points < 0 ? ' minus' : l.status !== 'approved' ? ' muted' : '') + '">' +
+      (l.points >= 0 ? '+' : '') + l.points + 'P</span></div>';
+  }).join('') : '<div class="empty"><span class="big">📭</span>まだ記録がありません</div>';
+  $('log-more').innerHTML = logs.length > shown.length
+    ? '<button class="btn sm gray" id="more-btn">もっと見る(' + (logs.length - shown.length) + '件)</button>' : '';
+  if ($('more-btn')) $('more-btn').onclick = function () { ui.logLimit += 50; renderHistory(); };
+}
+
+function renderCash() {
+  var kid = currentKid();
+  if (!kid) return;
+  var c = calc(kid.id), rate = S.settings.yenPerPoint;
+  $('cash-head').innerHTML =
+    '<div style="text-align:center">' +
+    '<div style="font-size:12px;color:var(--sub);font-weight:700">つかえるポイント</div>' +
+    '<div style="font-size:34px;font-weight:800;color:var(--ac-deep);line-height:1.2">' + c.balance + 'P</div>' +
+    '<div style="font-size:16px;font-weight:800">＝ ' + yenStr(c.balance) + '</div>' +
+    (c.held ? '<div class="hold" style="margin-top:8px">おねがいちゅう ' + c.held + 'P（' + yenStr(c.held) + '）</div>' : '') +
+    '</div>';
+
+  var gi = goalInfo(kid);
+  $('cash-goal').innerHTML = gi
+    ? '<div class="note" style="text-align:center;padding:10px 0 0">🎯 ' + esc(gi.g.title) + ' まで ' +
+      (gi.done ? '<b style="color:var(--ok)">たまったよ!</b>' : 'あと ' + gi.rest.toLocaleString('ja-JP') + '円') + '</div>'
+    : '';
+
+  var presets = [100, 500, 1000].filter(function (v) { return v % rate === 0; });
+  var h = presets.map(function (v) {
+    var p = v / rate;
+    return '<button class="preset" data-cash="' + p + '"' + (p > c.balance ? ' disabled' : '') + '>' +
+      '<div class="y">' + v.toLocaleString('ja-JP') + '円</div><div class="p">' + p + 'P つかう</div></button>';
+  }).join('');
+  h += '<button class="preset" data-cash="' + c.balance + '"' + (c.balance <= 0 ? ' disabled' : '') + '>' +
+    '<div class="y">ぜんぶ</div><div class="p">' + c.balance + 'P ＝ ' + yenStr(c.balance) + '</div></button>';
+  $('cash-presets').innerHTML = h;
+
+  var list = S.cashouts.filter(function (x) { return x.kidId === kid.id; })
+    .sort(function (a, b) { return b.createdAt - a.createdAt; });
+  $('cash-list').innerHTML = list.length ? list.map(function (x) {
+    var label = x.status === 'pending' ? '⏳ おうちのひとまち' : x.status === 'paid' ? '✓ もらった' : '✕ やめた';
+    var k = x.use ? useKind(x.use) : null;
+    if (k) label += ' ・ ' + k.em + ' ' + k.name;
+    return '<div class="row"><span class="em">' + (x.status === 'paid' ? (k ? k.em : '💵') : x.status === 'pending' ? '⏳' : '↩️') + '</span>' +
+      '<div class="body"><div class="t">' + x.yen.toLocaleString('ja-JP') + '円（' + x.points + 'P）</div>' +
+      '<div class="d">' + fmtDay(x.createdAt) + ' ' + fmtTime(x.createdAt) + ' ・ ' + label + '</div></div>' +
+      (x.status === 'pending' ? '<button class="btn icon gray" data-cancel-cash="' + x.id + '" title="とりけす">✕</button>' : '') +
+      (x.status === 'paid' ? '<button class="btn sm gray" data-use="' + x.id + '">' + (k ? 'かえる' : 'なにに つかった?') + '</button>' : '') +
+      '</div>';
+  }).join('') : '<div class="empty"><span class="big">🐖</span>まだ かえていないよ<br>コツコツ ためよう</div>';
+}
+
+function renderBadges() {
+  var p = pendingLogs().length + pendingCashouts().length;
+  var bp = $('badge-parent');
+  bp.hidden = p === 0; bp.textContent = p;
+  var kid = currentKid();
+  var bc = $('badge-cash');
+  var gi2 = goalInfo(kid);
+  var can = kid ? (gi2 ? gi2.done : calc(kid.id).balance >= (100 / S.settings.yenPerPoint)) : false;
+  bc.hidden = !can; bc.textContent = '!';
+}
+
+/* ===================== ふりかえり(おこづかい帳) ===================== */
+/* 直近 n か月のキー(古い順) */
+function lastMonths(n) {
+  var out = [], d = new Date();
+  d.setDate(1);
+  for (var i = n - 1; i >= 0; i--) {
+    var t = new Date(d.getFullYear(), d.getMonth() - i, 1);
+    out.push({ key: monthKey(t.getTime()), label: (t.getMonth() + 1) + '月' });
+  }
+  return out;
+}
+function renderLearn() {
+  var kid = currentKid();
+  if (!kid) return;
+  var months = lastMonths(6), inM = {}, outM = {};
+  months.forEach(function (m) { inM[m.key] = 0; outM[m.key] = 0; });
+
+  S.logs.forEach(function (l) {
+    if (l.kidId !== kid.id || l.status !== 'approved') return;
+    var k = monthKey(l.createdAt);
+    if (k in inM) inM[k] += yen(l.points);
+  });
+  S.cashouts.forEach(function (c) {
+    if (c.kidId !== kid.id || c.status !== 'paid') return;
+    var k = monthKey(c.decidedAt || c.createdAt);
+    if (k in outM) outM[k] += c.yen;
+  });
+
+  var nowKey = monthKey(Date.now());
+  var got = inM[nowKey] || 0, used = outM[nowKey] || 0;
+  var rest = yen(calc(kid.id).balance);
+
+  /* まとめ */
+  $('learn-sum').innerHTML =
+    '<div class="box in"><div class="n">' + got.toLocaleString('ja-JP') + '</div><div class="l">ためた(円)</div></div>' +
+    '<div class="box out"><div class="n">' + used.toLocaleString('ja-JP') + '</div><div class="l">つかった(円)</div></div>' +
+    '<div class="box rest"><div class="n">' + rest.toLocaleString('ja-JP') + '</div><div class="l">いまの のこり(円)</div></div>';
+  $('learn-formula').innerHTML =
+    'ためた <b>' + got.toLocaleString('ja-JP') + '円</b> − つかった <b>' + used.toLocaleString('ja-JP') + '円</b>' +
+    '<br>＝ こんげつ ふえた ぶん <b>' + (got - used).toLocaleString('ja-JP') + '円</b>';
+
+  /* 6か月のグラフ */
+  var max = 1;
+  months.forEach(function (m) { max = Math.max(max, inM[m.key], outM[m.key]); });
+  $('learn-chart').innerHTML = months.map(function (m) {
+    var a = inM[m.key], b = outM[m.key];
+    return '<div class="mcol">' +
+      '<div class="mval">' + (a ? '<span class="i">' + a.toLocaleString('ja-JP') + '</span>' : '') +
+      (b ? '<span class="o">' + b.toLocaleString('ja-JP') + '</span>' : '') + '</div>' +
+      '<div class="mbars"><i class="in" style="height:' + (a / max * 100) + '%"></i>' +
+      '<i class="out" style="height:' + (b / max * 100) + '%"></i></div>' +
+      '<div class="mlab">' + m.label + '</div></div>';
+  }).join('');
+
+  /* なにに つかった? */
+  var useSum = {}, useTotal = 0, unknown = 0, unknownList = [];
+  S.cashouts.forEach(function (c) {
+    if (c.kidId !== kid.id || c.status !== 'paid') return;
+    if (!(monthKey(c.decidedAt || c.createdAt) in outM)) return;
+    if (c.use) { useSum[c.use] = (useSum[c.use] || 0) + c.yen; useTotal += c.yen; }
+    else { unknown += c.yen; unknownList.push(c); }
+  });
+  var useRows = Object.keys(useSum).sort(function (a, b) { return useSum[b] - useSum[a]; });
+  var total = useTotal + unknown;
+  $('learn-use').innerHTML = total ? (useRows.map(function (id) {
+    var k = useKind(id) || { em: '❓', name: 'そのほか' };
+    var v = useSum[id], pct = Math.round(v / total * 100);
+    return '<div class="brow"><div class="top"><span>' + k.em + '</span><span>' + esc(k.name) + '</span>' +
+      '<span class="v">' + v.toLocaleString('ja-JP') + '円 ・ ' + pct + '%</span></div>' +
+      '<div class="bar2"><span style="width:' + pct + '%;background:linear-gradient(90deg,#8ec8f2,#3f8ed0)"></span></div></div>';
+  }).join('') + (unknown ? '<div class="brow"><div class="top"><span>❔</span><span>まだ かいてない</span>' +
+    '<span class="v">' + unknown.toLocaleString('ja-JP') + '円</span></div>' +
+    '<div class="bar2"><span style="width:' + Math.round(unknown / total * 100) + '%;background:#ddd2c2"></span></div></div>' : ''))
+    : '<div class="empty"><span class="big">🛍</span>まだ つかっていないよ</div>';
+
+  /* なにで ためた? */
+  var catSum = { help: 0, study: 0 }, taskSum = {}, earnTotal = 0;
+  S.logs.forEach(function (l) {
+    if (l.kidId !== kid.id || l.status !== 'approved') return;
+    if (!(monthKey(l.createdAt) in inM)) return;
+    var v = yen(l.points);
+    if (v <= 0) return;
+    catSum[l.category === 'study' ? 'study' : 'help'] += v;
+    var key = (l.emoji || '⭐️') + '|' + l.title;
+    taskSum[key] = (taskSum[key] || 0) + v;
+    earnTotal += v;
+  });
+  var top = Object.keys(taskSum).sort(function (a, b) { return taskSum[b] - taskSum[a]; }).slice(0, 3);
+  $('learn-earn').innerHTML = earnTotal ? (
+    [['help', '🧹', 'おてつだい', '#ffb35c,#ff8c42'], ['study', '📚', 'べんきょう', '#8ec8f2,#4c9be8']].map(function (c) {
+      var v = catSum[c[0]], pct = Math.round(v / earnTotal * 100);
+      return '<div class="brow"><div class="top"><span>' + c[1] + '</span><span>' + c[2] + '</span>' +
+        '<span class="v">' + v.toLocaleString('ja-JP') + '円 ・ ' + pct + '%</span></div>' +
+        '<div class="bar2"><span style="width:' + pct + '%;background:linear-gradient(90deg,' + c[3] + ')"></span></div></div>';
+    }).join('') +
+    '<div class="tip"><b>よく やったこと ベスト3</b><br>' + top.map(function (k, i) {
+      var pr = k.split('|');
+      return (i + 1) + '. ' + esc(pr[0]) + ' ' + esc(pr[1]) + '（' + taskSum[k].toLocaleString('ja-JP') + '円）';
+    }).join('<br>') + '</div>')
+    : '<div class="empty"><span class="big">🌱</span>まだ ポイントが ないよ</div>';
+
+  /* ひとこと */
+  var msg;
+  if (!got && !used) msg = 'まずは おてつだいから はじめよう。ためた お金は ここに でるよ。';
+  else if (!used) msg = 'こんげつは まだ つかっていないね。<b>' + rest.toLocaleString('ja-JP') + '円</b> ぜんぶ のこっているよ。';
+  else if (got > used) msg = 'ためた ほうが おおいね! <b>' + (got - used).toLocaleString('ja-JP') + '円</b> ふえたよ。';
+  else if (got === used) msg = 'ためた ぶんと つかった ぶんが おなじ。のこりは ふえていないよ。';
+  else msg = 'つかった ほうが <b>' + (used - got).toLocaleString('ja-JP') + '円</b> おおいよ。つぎは すこし のこしてみよう。';
+  var gi = goalInfo(kid);
+  if (gi) {
+    msg += '<br>🎯 ' + esc(gi.g.title) + ' まで ' + (gi.done ? 'たまったよ!' : 'あと <b>' + gi.rest.toLocaleString('ja-JP') + '円</b>');
+    if (!gi.done) {
+      /* 30日ぶんの ためかたから、めあてに とどく日数を みつもる */
+      var since = Date.now() - 30 * 86400000, got30 = 0;
+      S.logs.forEach(function (l) {
+        if (l.kidId === kid.id && l.status === 'approved' && l.createdAt >= since && l.points > 0) got30 += yen(l.points);
+      });
+      var perDay = got30 / 30;
+      if (perDay > 0) {
+        var days = Math.ceil(gi.rest / perDay);
+        if (days <= 3650) {
+          msg += '<br>1日 やく <b>' + Math.round(perDay).toLocaleString('ja-JP') + '円</b> の ペースだから、' +
+            'このままだと <b>あと やく ' + days.toLocaleString('ja-JP') + '日</b>（' +
+            (days >= 30 ? 'やく ' + Math.round(days / 30) + 'かげつ' : days >= 7 ? 'やく ' + Math.round(days / 7) + 'しゅうかん' : 'もうすぐ') + '）';
+        }
+      }
+    }
+  }
+  $('learn-tip').innerHTML = '<div class="tip">' + msg + '</div>';
+
+  /* つかいみちが まだのもの */
+  $('learn-ask').innerHTML = unknownList.length
+    ? '<div class="card" style="padding:13px 15px;margin-bottom:6px;background:var(--ac-soft);box-shadow:none">' +
+      '<div style="font-size:13px;font-weight:800;color:#8a5a00">🛍 つかいみちが まだの こうかんが ' + unknownList.length + 'つ あるよ</div>' +
+      '<div style="font-size:11px;color:#8a7a63;margin:3px 0 9px">なにに つかったか かくと、グラフが くわしくなるよ</div>' +
+      unknownList.slice(0, 3).map(function (c) {
+        return '<button class="btn sm gray" style="margin:0 6px 6px 0" data-use="' + c.id + '">' +
+          fmtDay(c.createdAt) + ' ' + c.yen.toLocaleString('ja-JP') + '円 →</button>';
+      }).join('') + '</div>'
+    : '';
+}
+
+/* つかいみちを えらぶ */
+var editingUse = null;
+function openUseSheet(cashId) {
+  var c = null;
+  S.cashouts.forEach(function (x) { if (x.id === cashId) c = x; });
+  if (!c) return;
+  editingUse = { id: c.id, kind: c.use || null };
+  openSheet('<h2>🛍 なにに つかった?</h2>' +
+    '<p class="lead">' + fmtDay(c.createdAt) + 'に かえた <b>' + c.yen.toLocaleString('ja-JP') + '円</b> の つかいみちを えらんでね。<br>' +
+    'まだ つかっていないときは「とっておく」。</p>' +
+    '<div class="use-chips">' + USE_KINDS.map(function (k) {
+      return '<button type="button" data-usekind="' + k.id + '"' + (editingUse.kind === k.id ? ' class="on"' : '') + '>' +
+        k.em + ' ' + k.name + '</button>';
+    }).join('') + '</div>' +
+    '<div class="sheet-actions"><button class="btn gray" data-act="close">やめる</button>' +
+    '<button class="btn" data-act="save-use">きめる</button></div>');
+}
+function saveUse() {
+  if (!editingUse || !editingUse.kind) { toast('つかいみちを えらんでね'); return; }
+  S.cashouts.forEach(function (c) { if (c.id === editingUse.id) c.use = editingUse.kind; });
+  save(); closeSheet(); renderAll();
+  var k = useKind(editingUse.kind);
+  toast('かいたよ: ' + (k ? k.em + ' ' + k.name : ''));
+}
+
+/* ===================== おうちのひと(親モード) ===================== */
+function parentUnlocked() {
+  return ui.unlockedAt > 0 && (Date.now() - ui.unlockedAt) < UNLOCK_MS;
+}
+function kidName(id) {
+  for (var i = 0; i < S.kids.length; i++) if (S.kids[i].id === id) return S.kids[i].name;
+  return '(削除ずみ)';
+}
+function kidEmoji(id) {
+  for (var i = 0; i < S.kids.length; i++) if (S.kids[i].id === id) return S.kids[i].emoji;
+  return '👤';
+}
+
+function renderParent() {
+  var open = parentUnlocked();
+  $('parent-locked').style.display = open ? 'none' : 'block';
+  $('parent-body').style.display = open ? 'block' : 'none';
+  $('lock-msg').innerHTML = S.pin
+    ? 'ポイントのOK・おこづかいのやりとり・設定はここから。<br>4桁のPINを入れてください。'
+    : 'ポイントのOK・おこづかいのやりとり・設定はここから。<br>まだPINがありません。好きな4桁を入れると、それがPINになります。';
+  if (!open) return;
+
+  /* --- 承認まち --- */
+  var pend = pendingLogs().sort(function (a, b) { return a.createdAt - b.createdAt; });
+  $('cnt-pending').textContent = pend.length ? pend.length + '件' : '';
+  $('pending-list').innerHTML = pend.length ? pend.map(function (l) {
+    return '<div class="row"><span class="em">' + esc(l.emoji || '⭐️') + '</span><div class="body">' +
+      '<div class="t">' + esc(l.title) + '</div>' +
+      '<div class="d">' + kidEmoji(l.kidId) + ' ' + esc(kidName(l.kidId)) + ' ・ ' + fmtDay(l.createdAt) + ' ' + fmtTime(l.createdAt) + '</div></div>' +
+      '<span class="pt">+' + l.points + 'P</span><div class="acts">' +
+      '<button class="btn icon ok" data-approve="' + l.id + '">✓</button>' +
+      '<button class="btn icon ng" data-reject="' + l.id + '">✕</button></div></div>';
+  }).join('') : '<div class="empty"><span class="big">🎉</span>OKまちは ありません</div>';
+  $('pending-actions').innerHTML = pend.length > 1
+    ? '<button class="btn ok wide" id="approve-all">✓ ぜんぶ OKする（+' +
+      pend.reduce(function (s, l) { return s + l.points; }, 0) + 'P）</button>' : '';
+
+  /* --- こうかん申請 --- */
+  var reqs = pendingCashouts().sort(function (a, b) { return a.createdAt - b.createdAt; });
+  $('cnt-cashreq').textContent = reqs.length ? reqs.length + '件' : '';
+  $('cashreq-list').innerHTML = reqs.length ? reqs.map(function (x) {
+    return '<div class="row"><span class="em">💰</span><div class="body">' +
+      '<div class="t">' + x.yen.toLocaleString('ja-JP') + '円（' + x.points + 'P）</div>' +
+      '<div class="d">' + kidEmoji(x.kidId) + ' ' + esc(kidName(x.kidId)) + ' ・ ' + fmtDay(x.createdAt) + ' ' + fmtTime(x.createdAt) + '</div></div>' +
+      '<div class="acts"><button class="btn sm ok" data-pay="' + x.id + '">わたした</button>' +
+      '<button class="btn icon ng" data-unpay="' + x.id + '">✕</button></div></div>';
+  }).join('') : '<div class="empty">おねがいは ありません<br><span style="font-size:11px">お金を渡してから「わたした」を押すと、ポイントがへります</span></div>';
+
+  /* --- 子ども --- */
+  $('parent-kids').innerHTML = S.kids.map(function (k) {
+    var c = calc(k.id);
+    return '<div class="row"><span class="em">' + esc(k.emoji) + '</span><div class="body">' +
+      '<div class="t">' + esc(k.name) + '</div><div class="d">' + c.balance + 'P（' + yenStr(c.balance) + '） ・ 累計 ' + c.earned + 'P</div></div>' +
+      '<button class="btn sm gray" data-editkid="' + k.id + '">編集</button></div>';
+  }).join('');
+
+  /* --- タスク --- */
+  var ts = S.tasks.filter(function (t) { return !t.archived; });
+  $('cnt-tasks').textContent = ts.length + '件';
+  $('parent-tasks').innerHTML = ts.length ? ts.map(function (t) {
+    var rep = t.repeat === 'weekly' ? '週1回' : t.repeat === 'once' ? '1回だけ' : '毎日';
+    var who = t.kidIds ? t.kidIds.map(kidName).join('・') : 'ぜんいん';
+    return '<div class="row"><span class="em">' + esc(t.emoji) + '</span><div class="body">' +
+      '<div class="t">' + esc(t.title) + '</div>' +
+      '<div class="d">' + (t.category === 'study' ? '📚 べんきょう' : '🧹 おてつだい') + ' ・ ' + rep + ' ・ ' + esc(who) + '</div></div>' +
+      '<span class="pt">+' + t.points + 'P</span>' +
+      '<button class="btn sm gray" data-edittask="' + t.id + '">編集</button></div>';
+  }).join('') : '<div class="empty">タスクがありません</div>';
+
+  /* --- 設定 --- */
+  $('parent-settings').innerHTML =
+    '<div class="field"><div style="flex:1"><label>1ポイントの金額</label>' +
+    '<div class="hint">この設定で「◯P ＝ ◯円」の表示が決まります</div></div>' +
+    '<input type="number" id="set-rate" min="1" max="1000" step="1" value="' + S.settings.yenPerPoint + '" style="max-width:88px">' +
+    '<span style="font-size:13px;font-weight:700">円</span></div>' +
+    '<div class="field"><div style="flex:1"><label>おうちの人がOKしてからポイントを入れる</label>' +
+    '<div class="hint">OFFにすると、タップしたらすぐポイントが入ります</div></div>' +
+    '<div class="switch' + (S.settings.requireApproval ? ' on' : '') + '" id="set-approval"></div></div>' +
+    '<div class="field"><div style="flex:1"><label>PINを変える</label>' +
+    '<div class="hint">' + (S.pin ? '設定ずみ' : '未設定') + ' ・ 5分さわらないと自動でロックします</div></div>' +
+    '<button class="btn sm gray" id="set-pin">変更</button></div>';
+}
+
+/* ===================== 動き(アクション) ===================== */
+function doTask(taskId, ev) {
+  var kid = currentKid();
+  if (!kid) return;
+  var t = null;
+  S.tasks.forEach(function (x) { if (x.id === taskId) t = x; });
+  if (!t || doneState(t, kid.id)) return;
+  var needApproval = S.settings.requireApproval;
+  S.logs.push({
+    id: uid(), kidId: kid.id, taskId: t.id, title: t.title, emoji: t.emoji,
+    points: t.points, category: t.category, type: 'task',
+    status: needApproval ? 'pending' : 'approved', note: '',
+    createdAt: Date.now(), decidedAt: needApproval ? null : Date.now()
+  });
+  save();
+  if (ev) {
+    var r = ev.currentTarget.getBoundingClientRect();
+    coinFx(r.left + r.width / 2, r.top, '🪙');
+  }
+  buzz(30);
+  toast(needApproval ? 'できた! おうちの人に おしらせしたよ（+' + t.points + 'P）' : 'できた! +' + t.points + 'P');
+  renderAll();
+}
+function cancelLog(id) {
+  S.logs = S.logs.filter(function (l) { return !(l.id === id && l.status === 'pending'); });
+  save(); renderAll(); toast('やめました');
+}
+function decide(id, ok) {
+  S.logs.forEach(function (l) {
+    if (l.id === id && l.status === 'pending') { l.status = ok ? 'approved' : 'rejected'; l.decidedAt = Date.now(); }
+  });
+  save(); touchUnlock(); renderAll();
+  toast(ok ? 'OKしました' : 'もどしました');
+}
+function approveAll() {
+  var n = 0, p = 0;
+  S.logs.forEach(function (l) {
+    if (l.status === 'pending') { l.status = 'approved'; l.decidedAt = Date.now(); n++; p += l.points; }
+  });
+  save(); touchUnlock(); renderAll();
+  toast(n + '件を OKしました（+' + p + 'P）');
+}
+function requestCash(points) {
+  var kid = currentKid();
+  if (!kid) return;
+  var c = calc(kid.id);
+  points = Math.floor(points);
+  if (points <= 0) { toast('ポイントが足りません'); return; }
+  if (points > c.balance) { toast('つかえるのは ' + c.balance + 'P までです'); return; }
+  S.cashouts.push({
+    id: uid(), kidId: kid.id, points: points, yen: yen(points),
+    status: 'pending', createdAt: Date.now(), decidedAt: null
+  });
+  save(); renderAll(); buzz(40);
+  toast('おねがいしたよ（' + yenStr(points) + '）');
+}
+function cancelCash(id) {
+  S.cashouts = S.cashouts.filter(function (c) { return !(c.id === id && c.status === 'pending'); });
+  save(); renderAll(); toast('おねがいを やめたよ');
+}
+function decideCash(id, paid) {
+  S.cashouts.forEach(function (c) {
+    if (c.id === id && c.status === 'pending') { c.status = paid ? 'paid' : 'rejected'; c.decidedAt = Date.now(); }
+  });
+  save(); touchUnlock(); renderAll();
+  toast(paid ? 'わたしました' : 'おねがいを もどしました');
+}
+function adjust(kidId, points, note) {
+  S.logs.push({
+    id: uid(), kidId: kidId, taskId: null, title: note || (points >= 0 ? 'ボーナス' : 'ポイントを引いた'),
+    emoji: points >= 0 ? '🎁' : '⚠️', points: points, category: 'help', type: 'adjust',
+    status: 'approved', note: 'おうちの人の調整', createdAt: Date.now(), decidedAt: Date.now()
+  });
+  save(); touchUnlock(); renderAll();
+  toast((points >= 0 ? '+' : '') + points + 'P しました');
+}
+function touchUnlock() { if (ui.unlockedAt) ui.unlockedAt = Date.now(); }
+
+/* ===================== シート(ポップアップ) ===================== */
+function openSheet(html) {
+  $('sheet').innerHTML = html;
+  $('mask').classList.remove('hide');
+  $('sheet').scrollTop = 0;
+}
+function closeSheet() { $('mask').classList.add('hide'); $('sheet').innerHTML = ''; }
+
+var confirmCb = null;
+function confirmSheet(title, lead, okLabel, cb, danger) {
+  confirmCb = cb;
+  openSheet('<h2>' + esc(title) + '</h2><p class="lead">' + lead + '</p>' +
+    '<div class="sheet-actions"><button class="btn gray" data-act="close">やめる</button>' +
+    '<button class="btn' + (danger ? ' ng' : '') + '" data-act="confirm-ok">' + esc(okLabel) + '</button></div>');
+}
+
+function emojiPick(list, cur) {
+  return '<div class="emoji-pick">' + list.map(function (e) {
+    return '<button type="button" data-emoji="' + esc(e) + '"' + (e === cur ? ' class="on"' : '') + '>' + e + '</button>';
+  }).join('') + '</div>';
+}
+
+var editingTask = null;
+function openTaskSheet(taskId, presetCat) {
+  var t = null;
+  S.tasks.forEach(function (x) { if (x.id === taskId) t = x; });
+  editingTask = t ? JSON.parse(JSON.stringify(t))
+    : { id: null, emoji: presetCat === 'study' ? '📖' : '🍽', title: '', points: 5,
+        category: presetCat === 'study' ? 'study' : 'help', repeat: 'daily', kidIds: null, archived: false };
+  var e = editingTask;
+  var kidsChips = '<div class="seg" style="flex-wrap:wrap">' +
+    '<button type="button" data-who="all"' + (!e.kidIds ? ' class="on"' : '') + '>ぜんいん</button>' +
+    S.kids.map(function (k) {
+      var on = e.kidIds && e.kidIds.indexOf(k.id) !== -1;
+      return '<button type="button" data-who="' + k.id + '"' + (on ? ' class="on"' : '') + '>' + esc(k.emoji) + ' ' + esc(k.name) + '</button>';
+    }).join('') + '</div>';
+  openSheet(
+    '<h2>' + (t ? 'タスクを編集' : 'タスクをつくる') + '</h2>' +
+    '<p class="lead">子どもが「できた!」とタップする項目です。</p>' +
+    emojiPick(TASK_EMOJI, e.emoji) +
+    '<input class="in" id="t-title" type="text" maxlength="24" placeholder="なにをする?（例: おふろそうじ）" value="' + esc(e.title) + '">' +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
+    '<input class="in" id="t-points" type="number" min="1" max="9999" step="1" style="margin:0;max-width:110px" value="' + e.points + '">' +
+    '<span style="font-size:14px;font-weight:700" id="t-yen">ポイント（' + yenStr(e.points) + '）</span></div>' +
+    '<div class="chips">' + [3, 5, 10, 20, 50].map(function (v) {
+      return '<button type="button" data-pts="' + v + '"' + (v === e.points ? ' class="on"' : '') + '>' + v + 'P</button>';
+    }).join('') + '</div>' +
+    '<div style="font-size:12px;font-weight:800;margin:2px 2px 6px">しゅるい</div>' +
+    '<div class="seg"><button type="button" data-cat="help"' + (e.category === 'help' ? ' class="on"' : '') + '>🧹 おてつだい</button>' +
+    '<button type="button" data-cat="study"' + (e.category === 'study' ? ' class="on"' : '') + '>📚 べんきょう</button></div>' +
+    '<div style="font-size:12px;font-weight:800;margin:2px 2px 6px">くり返し</div>' +
+    '<div class="seg"><button type="button" data-rep="daily"' + (e.repeat === 'daily' ? ' class="on"' : '') + '>まいにち</button>' +
+    '<button type="button" data-rep="weekly"' + (e.repeat === 'weekly' ? ' class="on"' : '') + '>まいしゅう</button>' +
+    '<button type="button" data-rep="once"' + (e.repeat === 'once' ? ' class="on"' : '') + '>1回だけ</button></div>' +
+    '<div style="font-size:12px;font-weight:800;margin:2px 2px 6px">だれの?</div>' + kidsChips +
+    '<div class="sheet-actions"><button class="btn gray" data-act="close">やめる</button>' +
+    '<button class="btn" data-act="save-task">保存する</button></div>' +
+    (t ? '<div style="margin-top:10px"><button class="btn ng wide" data-act="del-task">このタスクを消す</button></div>' : ''));
+}
+function saveTask() {
+  var e = editingTask;
+  e.title = ($('t-title').value || '').trim();
+  e.points = Math.max(1, Math.min(9999, parseInt($('t-points').value, 10) || 1));
+  if (!e.title) { toast('なまえを入れてください'); return; }
+  if (e.kidIds && !e.kidIds.length) e.kidIds = null;
+  if (e.id) {
+    S.tasks.forEach(function (t, i) { if (t.id === e.id) S.tasks[i] = e; });
+  } else {
+    e.id = uid();
+    S.tasks.push(e);
+  }
+  save(); closeSheet(); touchUnlock(); renderAll(); toast('保存しました');
+}
+
+var editingKid = null;
+function openKidSheet(kidId) {
+  var k = null;
+  S.kids.forEach(function (x) { if (x.id === kidId) k = x; });
+  editingKid = k ? JSON.parse(JSON.stringify(k)) : { id: null, name: '', emoji: KID_EMOJI[S.kids.length % KID_EMOJI.length] };
+  var c = k ? calc(k.id) : null;
+  openSheet(
+    '<h2>' + (k ? '子どもの設定' : '子どもをふやす') + '</h2>' +
+    '<p class="lead">名前とアイコンを決めてください。</p>' +
+    emojiPick(KID_EMOJI, editingKid.emoji) +
+    '<input class="in" id="k-name" type="text" maxlength="12" placeholder="なまえ" value="' + esc(editingKid.name) + '">' +
+    (k ? '<div class="card" style="padding:12px 14px;margin:6px 0 12px">' +
+      '<div style="font-size:12px;font-weight:800;margin-bottom:8px">ポイントを手であげる/引く</div>' +
+      '<div style="font-size:11px;color:var(--sub);margin-bottom:8px">いまの残高 ' + c.balance + 'P（' + yenStr(c.balance) + '）</div>' +
+      '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">' +
+      '<input class="in" id="k-adj" type="number" min="1" max="9999" step="1" value="10" style="margin:0;max-width:90px">' +
+      '<span style="font-size:13px;font-weight:700">ポイント</span></div>' +
+      '<input class="in" id="k-adj-note" type="text" maxlength="20" placeholder="りゆう（例: おてつだいボーナス）">' +
+      '<div class="sheet-actions"><button class="btn ok" data-act="adj-plus">＋ あげる</button>' +
+      '<button class="btn ng" data-act="adj-minus">− 引く</button></div></div>' : '') +
+    '<div class="sheet-actions"><button class="btn gray" data-act="close">やめる</button>' +
+    '<button class="btn" data-act="save-kid">保存する</button></div>' +
+    (k && S.kids.length > 1 ? '<div style="margin-top:10px"><button class="btn ng wide" data-act="del-kid">この子を消す</button></div>' : ''));
+}
+function saveKid() {
+  var e = editingKid;
+  e.name = ($('k-name').value || '').trim();
+  if (!e.name) { toast('なまえを入れてください'); return; }
+  if (e.id) {
+    S.kids.forEach(function (k, i) { if (k.id === e.id) S.kids[i] = e; });
+  } else {
+    e.id = uid();
+    S.kids.push(e);
+    ui.kidId = e.id;
+  }
+  save(); closeSheet(); touchUnlock(); renderAll(); toast('保存しました');
+}
+
+function openCashSheet() {
+  var kid = currentKid();
+  if (!kid) return;
+  var c = calc(kid.id), rate = S.settings.yenPerPoint;
+  openSheet('<h2>いくら こうかんする?</h2>' +
+    '<p class="lead">つかえるのは ' + c.balance + 'P（' + yenStr(c.balance) + '）まで。<br>' +
+    '1ポイント＝' + rate + '円 だから、' + rate + '円ずつ えらべるよ。</p>' +
+    '<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">' +
+    '<input class="in" id="c-yen" type="number" min="' + rate + '" max="' + yen(c.balance) + '" step="' + rate + '" ' +
+    'style="margin:0;max-width:130px" value="' + Math.min(yen(c.balance), 100 - (100 % rate) || rate) + '">' +
+    '<span style="font-size:16px;font-weight:800">円</span></div>' +
+    '<div id="c-info" class="note"></div>' +
+    '<div class="sheet-actions"><button class="btn gray" data-act="close">やめる</button>' +
+    '<button class="btn" data-act="do-cash">これで おねがいする</button></div>');
+  updateCashInfo();
+}
+function updateCashInfo() {
+  var el = $('c-info');
+  if (!el) return;
+  var rate = S.settings.yenPerPoint;
+  var v = parseInt($('c-yen').value, 10) || 0;
+  var p = Math.floor(v / rate);
+  el.textContent = p > 0 ? '→ ' + p + 'ポイント つかうよ' + (v % rate ? '（' + (v % rate) + '円の はんぱは きりすて）' : '') : 'いくらか いれてね';
+}
+
+var editingGoal = null;
+function openGoalSheet() {
+  var kid = currentKid();
+  if (!kid) return;
+  editingGoal = kid.goal ? JSON.parse(JSON.stringify(kid.goal)) : { emoji: '🎮', title: '', yen: 1000 };
+  openSheet('<h2>🎯 ちょきんの めあて</h2>' +
+    '<p class="lead">ほしいものと ねだんを きめると、<br>あと いくら ためればいいか わかるよ。</p>' +
+    emojiPick(GOAL_EMOJI, editingGoal.emoji) +
+    '<input class="in" id="g-title" type="text" maxlength="20" placeholder="なにが ほしい?（れい: ゲームソフト）" value="' + esc(editingGoal.title) + '">' +
+    '<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">' +
+    '<input class="in" id="g-yen" type="number" min="1" max="1000000" step="10" style="margin:0;max-width:130px" value="' + editingGoal.yen + '">' +
+    '<span style="font-size:16px;font-weight:800">円</span></div>' +
+    '<div id="g-info" class="note"></div>' +
+    '<div class="sheet-actions"><button class="btn gray" data-act="close">やめる</button>' +
+    '<button class="btn" data-act="save-goal">これに きめる</button></div>' +
+    (kid.goal ? '<div style="margin-top:10px"><button class="btn ng wide" data-act="del-goal">めあてを けす</button></div>' : ''));
+  updateGoalInfo();
+}
+function updateGoalInfo() {
+  var el = $('g-info');
+  if (!el) return;
+  var kid = currentKid();
+  var v = parseInt($('g-yen').value, 10) || 0;
+  var now = yen(calc(kid.id).balance);
+  el.textContent = v > 0
+    ? (now >= v ? 'いまの ' + now.toLocaleString('ja-JP') + '円で もう たりるよ!'
+                : 'いまは ' + now.toLocaleString('ja-JP') + '円。あと ' + (v - now).toLocaleString('ja-JP') + '円')
+    : 'ねだんを いれてね';
+}
+function saveGoal() {
+  var kid = currentKid();
+  var title = ($('g-title').value || '').trim();
+  var v = Math.max(1, Math.min(1000000, parseInt($('g-yen').value, 10) || 0));
+  if (!title) { toast('ほしいものを いれてね'); return; }
+  kid.goal = { emoji: editingGoal.emoji, title: title, yen: v };
+  save(); closeSheet(); renderAll(); buzz(30);
+  toast('めあてを きめたよ: ' + title + ' ' + v.toLocaleString('ja-JP') + '円');
+}
+
+var adjustKidId = null;
+function openAdjustSheet() {
+  adjustKidId = currentKid() ? currentKid().id : (S.kids[0] && S.kids[0].id);
+  openSheet('<h2>🎁 ポイントをあげる／ひく</h2>' +
+    '<p class="lead">タスクにないことをがんばった時のボーナスや、<br>約束を破った時の調整に使います。理由は記録に残ります。</p>' +
+    '<div style="font-size:12px;font-weight:800;margin:2px 2px 6px">だれに?</div>' +
+    '<div class="seg" style="flex-wrap:wrap">' + S.kids.map(function (k) {
+      return '<button type="button" data-adjkid="' + k.id + '"' + (k.id === adjustKidId ? ' class="on"' : '') + '>' +
+        esc(k.emoji) + ' ' + esc(k.name) + '</button>';
+    }).join('') + '</div>' +
+    '<div style="font-size:12px;font-weight:800;margin:2px 2px 6px">なんポイント?</div>' +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
+    '<input class="in" id="a-points" type="number" min="1" max="9999" step="1" style="margin:0;max-width:110px" value="10">' +
+    '<span style="font-size:14px;font-weight:700">ポイント</span></div>' +
+    '<div class="chips">' + [5, 10, 20, 50, 100].map(function (v) {
+      return '<button type="button" data-pts="' + v + '"' + (v === 10 ? ' class="on"' : '') + '>' + v + 'P</button>';
+    }).join('') + '</div>' +
+    '<input class="in" id="a-note" type="text" maxlength="20" placeholder="りゆう（れい: おてつだいボーナス）">' +
+    '<div class="sheet-actions"><button class="btn ok" data-act="adjust-plus">＋ あげる</button>' +
+    '<button class="btn ng" data-act="adjust-minus">− ひく</button></div>' +
+    '<div style="margin-top:10px"><button class="btn gray wide" data-act="close">やめる</button></div>');
+}
+
+function openPinSheet() {
+  openSheet('<h2>PINを変える</h2>' +
+    '<p class="lead">おうちのひとモードに入るための4桁の数字です。<br>空のまま保存するとPINなし（だれでも入れる）になります。</p>' +
+    '<input class="in" id="pin-new" type="password" inputmode="numeric" maxlength="4" placeholder="4桁の数字">' +
+    '<div class="sheet-actions"><button class="btn gray" data-act="close">やめる</button>' +
+    '<button class="btn" data-act="save-pin">保存する</button></div>');
+}
+
+/* ===================== バックアップ ===================== */
+function exportData() {
+  try {
+    var blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'otetsudai-bank-' + ymd(Date.now()) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    toast('書き出しました');
+  } catch (e) { toast('書き出せませんでした'); }
+}
+function importData(file) {
+  var r = new FileReader();
+  r.onload = function () {
+    try {
+      var d = JSON.parse(r.result);
+      if (!d || !d.kids || !d.tasks) throw new Error('形式がちがいます');
+      S = d;
+      S.settings = S.settings || { yenPerPoint: 1, requireApproval: true };
+      S.logs = S.logs || [];
+      S.cashouts = S.cashouts || [];
+      ui.kidId = S.kids[0] ? S.kids[0].id : null;
+      save(); renderAll(); toast('読みこみました');
+    } catch (e) { toast('読みこめませんでした'); }
+  };
+  r.readAsText(file);
+}
+
+/* ===================== 画面きりかえ ===================== */
+function setView(name) {
+  ui.view = name;
+  ['home', 'history', 'cash', 'learn', 'parent'].forEach(function (v) {
+    $('view-' + v).classList.toggle('on', v === name);
+  });
+  var btns = document.querySelectorAll('nav button');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('on', btns[i].dataset.view === name);
+  window.scrollTo(0, 0);
+  if (name === 'parent') { renderParent(); if (!parentUnlocked() && $('pin-input')) $('pin-input').value = ''; }
+  if (name === 'history') renderHistory();
+  if (name === 'cash') renderCash();
+  if (name === 'learn') renderLearn();
+}
+
+function tryUnlock() {
+  var v = ($('pin-input').value || '').trim();
+  if (!S.pin) {
+    if (!/^\d{4}$/.test(v)) { toast('4桁の数字を決めてください'); return; }
+    S.pin = v; save();
+    toast('PINを設定しました');
+  } else if (v !== S.pin) {
+    toast('PINがちがいます'); buzz(120);
+    $('pin-input').value = '';
+    return;
+  }
+  ui.unlockedAt = Date.now();
+  $('pin-input').value = '';
+  renderParent();
+  if (ui.afterUnlock) { var fn = ui.afterUnlock; ui.afterUnlock = null; fn(); }
+}
+
+/* ===================== イベント ===================== */
+document.addEventListener('click', function (e) {
+  var el;
+
+  /* 下タブ */
+  el = e.target.closest('nav button');
+  if (el) { setView(el.dataset.view); return; }
+
+  /* 子ども切り替え */
+  el = e.target.closest('[data-kid]');
+  if (el) { ui.kidId = el.dataset.kid; ui.logLimit = 25; renderAll(); return; }
+
+  /* タスクを「できた!」 */
+  el = e.target.closest('[data-task]');
+  if (el) {
+    var rect = el.getBoundingClientRect();
+    coinFx(rect.left + rect.width / 2, rect.top, '🪙');
+    doTask(el.dataset.task, null);
+    return;
+  }
+
+  /* タスクをふやす(きょうの画面から) */
+  el = e.target.closest('[data-addtask]');
+  if (el) {
+    var cat = el.dataset.addtask;
+    if (parentUnlocked()) { openTaskSheet(null, cat); }
+    else {
+      ui.afterUnlock = function () { openTaskSheet(null, cat); };
+      setView('parent');
+      toast(S.pin ? 'おうちの人に PINを 入れてもらってね' : 'まず PINを きめてね');
+    }
+    return;
+  }
+
+  /* 申告のとりけし */
+  el = e.target.closest('[data-cancel]');
+  if (el) { cancelLog(el.dataset.cancel); return; }
+
+  /* こうかん */
+  el = e.target.closest('[data-cash]');
+  if (el) {
+    var pts = parseInt(el.dataset.cash, 10);
+    var kidC = currentKid(), gAfter = '';
+    if (kidC && kidC.goal && kidC.goal.yen) {
+      var after = yen(calc(kidC.id).balance - pts);
+      var restAfter = Math.max(0, kidC.goal.yen - after);
+      gAfter = '<br><span style="color:#8a5a00">🎯 ' + esc(kidC.goal.title) + ' までは ' +
+        (restAfter ? 'あと ' + restAfter.toLocaleString('ja-JP') + '円 に なるよ' : 'まだ たりてるよ') + '</span>';
+    }
+    confirmSheet('おこづかいに かえる', pts + 'ポイントを <b>' + yenStr(pts) + '</b> に かえるよ。<br>' +
+      'おうちの人から お金を もらったら かんりょう!' + gAfter, 'これでOK', function () { requestCash(pts); });
+    return;
+  }
+  if (e.target.closest('#cash-custom')) { openCashSheet(); return; }
+  el = e.target.closest('[data-use]');
+  if (el) { openUseSheet(el.dataset.use); return; }
+  el = e.target.closest('[data-cancel-cash]');
+  if (el) { cancelCash(el.dataset.cancelCash); return; }
+
+  /* 親モード */
+  if (e.target.closest('#pin-ok')) { tryUnlock(); return; }
+  if (e.target.closest('#lock-now')) { ui.unlockedAt = 0; renderParent(); toast('ロックしました'); return; }
+  el = e.target.closest('[data-approve]');
+  if (el) { decide(el.dataset.approve, true); return; }
+  el = e.target.closest('[data-reject]');
+  if (el) { decide(el.dataset.reject, false); return; }
+  if (e.target.closest('#approve-all')) { approveAll(); return; }
+  el = e.target.closest('[data-pay]');
+  if (el) {
+    var cid = el.dataset.pay, co = null;
+    S.cashouts.forEach(function (c) { if (c.id === cid) co = c; });
+    if (!co) return;
+    confirmSheet('おこづかいを わたす', '<b>' + esc(kidName(co.kidId)) + '</b> に <b>' + co.yen.toLocaleString('ja-JP') + '円</b> を渡しましたか?<br>' +
+      'OKすると ' + co.points + 'P が残高からへります。', 'わたした', function () { decideCash(cid, true); });
+    return;
+  }
+  el = e.target.closest('[data-unpay]');
+  if (el) { decideCash(el.dataset.unpay, false); return; }
+  el = e.target.closest('[data-editkid]');
+  if (el) { openKidSheet(el.dataset.editkid); return; }
+  el = e.target.closest('[data-edittask]');
+  if (el) { openTaskSheet(el.dataset.edittask); return; }
+  if (e.target.closest('#add-kid')) { openKidSheet(null); return; }
+  if (e.target.closest('#add-task')) { openTaskSheet(null); return; }
+  if (e.target.closest('#add-points')) { openAdjustSheet(); return; }
+  if (e.target.closest('#set-pin')) { openPinSheet(); return; }
+  if (e.target.closest('#set-approval')) {
+    S.settings.requireApproval = !S.settings.requireApproval;
+    save(); touchUnlock(); renderParent();
+    toast(S.settings.requireApproval ? 'おうちの人のOKが いるようにしました' : 'タップしたら すぐポイントが入ります');
+    return;
+  }
+  if (e.target.closest('#export')) { exportData(); touchUnlock(); return; }
+  if (e.target.closest('#import')) { $('import-file').click(); touchUnlock(); return; }
+  if (e.target.closest('#reset')) {
+    confirmSheet('ぜんぶ消しますか?', 'ポイント・履歴・タスク・子どもの設定が<b>すべて消えて元に戻ります</b>。<br>この操作は取り消せません。',
+      'ぜんぶ消す', function () {
+        try { localStorage.removeItem(KEY); } catch (err) {}
+        S = seed(); ui.kidId = S.kids[0].id; ui.unlockedAt = Date.now();
+        save(); renderAll(); toast('初期状態に戻しました');
+      }, true);
+    return;
+  }
+
+  /* シートの中 */
+  el = e.target.closest('[data-emoji]');
+  if (el) {
+    var box = el.parentNode;
+    var bs = box.querySelectorAll('button');
+    for (var i = 0; i < bs.length; i++) bs[i].classList.remove('on');
+    el.classList.add('on');
+    if (editingKid && $('k-name')) editingKid.emoji = el.dataset.emoji;
+    if (editingTask && $('t-title')) editingTask.emoji = el.dataset.emoji;
+    if (editingGoal && $('g-title')) editingGoal.emoji = el.dataset.emoji;
+    return;
+  }
+  el = e.target.closest('[data-adjkid]');
+  if (el) { adjustKidId = el.dataset.adjkid; segOn(el); return; }
+  el = e.target.closest('[data-usekind]');
+  if (el) { editingUse.kind = el.dataset.usekind; segOn(el); return; }
+  el = e.target.closest('[data-pts]');
+  if (el) {
+    var pv = parseInt(el.dataset.pts, 10);
+    if ($('t-points')) {
+      $('t-points').value = pv;
+      editingTask.points = pv;
+      if ($('t-yen')) $('t-yen').textContent = 'ポイント（' + yenStr(pv) + '）';
+    }
+    if ($('a-points')) $('a-points').value = pv;
+    segOn(el);
+    return;
+  }
+  el = e.target.closest('[data-cat]');
+  if (el) { editingTask.category = el.dataset.cat; segOn(el); return; }
+  el = e.target.closest('[data-rep]');
+  if (el) { editingTask.repeat = el.dataset.rep; segOn(el); return; }
+  el = e.target.closest('[data-who]');
+  if (el) {
+    var w = el.dataset.who;
+    if (w === 'all') { editingTask.kidIds = null; }
+    else {
+      var ids = editingTask.kidIds ? editingTask.kidIds.slice() : [];
+      var at = ids.indexOf(w);
+      if (at === -1) ids.push(w); else ids.splice(at, 1);
+      editingTask.kidIds = ids.length ? ids : null;
+    }
+    var group = el.parentNode.querySelectorAll('button');
+    for (var j = 0; j < group.length; j++) {
+      var id = group[j].dataset.who;
+      var on = id === 'all' ? !editingTask.kidIds : (editingTask.kidIds && editingTask.kidIds.indexOf(id) !== -1);
+      group[j].classList.toggle('on', !!on);
+    }
+    return;
+  }
+
+  el = e.target.closest('[data-act]');
+  if (el) {
+    var act = el.dataset.act;
+    if (act === 'close') closeSheet();
+    else if (act === 'confirm-ok') { var cb = confirmCb; confirmCb = null; closeSheet(); if (cb) cb(); }
+    else if (act === 'save-task') saveTask();
+    else if (act === 'del-task') {
+      var tid = editingTask.id;
+      confirmSheet('このタスクを消しますか?', 'これまでの記録は残ります。', '消す', function () {
+        S.tasks = S.tasks.filter(function (t) { return t.id !== tid; });
+        save(); touchUnlock(); renderAll(); toast('消しました');
+      }, true);
+    }
+    else if (act === 'adjust-plus' || act === 'adjust-minus') {
+      var av = Math.max(1, parseInt($('a-points').value, 10) || 0);
+      var anote = ($('a-note').value || '').trim();
+      var atarget = adjustKidId;
+      closeSheet();
+      adjust(atarget, act === 'adjust-plus' ? av : -av, anote);
+    }
+    else if (act === 'save-use') saveUse();
+    else if (act === 'edit-goal') openGoalSheet();
+    else if (act === 'save-goal') saveGoal();
+    else if (act === 'del-goal') {
+      var kidG = currentKid();
+      confirmSheet('めあてを けす?', 'ためたポイントは そのまま のこるよ。', 'けす', function () {
+        if (kidG) { kidG.goal = null; save(); renderAll(); toast('めあてを けしたよ'); }
+      }, true);
+    }
+    else if (act === 'save-kid') saveKid();
+    else if (act === 'del-kid') {
+      var kid2 = editingKid.id;
+      confirmSheet('この子を消しますか?', '<b>' + esc(kidName(kid2)) + '</b> のポイント・記録もすべて消えます。', '消す', function () {
+        S.kids = S.kids.filter(function (k) { return k.id !== kid2; });
+        S.logs = S.logs.filter(function (l) { return l.kidId !== kid2; });
+        S.cashouts = S.cashouts.filter(function (c) { return c.kidId !== kid2; });
+        S.tasks.forEach(function (t) {
+          if (t.kidIds) { t.kidIds = t.kidIds.filter(function (x) { return x !== kid2; }); if (!t.kidIds.length) t.kidIds = null; }
+        });
+        if (ui.kidId === kid2) ui.kidId = S.kids[0] ? S.kids[0].id : null;
+        save(); touchUnlock(); renderAll(); toast('消しました');
+      }, true);
+    }
+    else if (act === 'adj-plus' || act === 'adj-minus') {
+      var v = Math.max(1, parseInt($('k-adj').value, 10) || 0);
+      var note = ($('k-adj-note').value || '').trim();
+      var target = editingKid.id;
+      closeSheet();
+      adjust(target, act === 'adj-plus' ? v : -v, note);
+    }
+    else if (act === 'do-cash') {
+      var rate = S.settings.yenPerPoint;
+      var p = Math.floor((parseInt($('c-yen').value, 10) || 0) / rate);
+      closeSheet();
+      requestCash(p);
+    }
+    else if (act === 'save-pin') {
+      var np = ($('pin-new').value || '').trim();
+      if (np && !/^\d{4}$/.test(np)) { toast('4桁の数字を入れてください'); return; }
+      S.pin = np || null;
+      save(); closeSheet(); touchUnlock(); renderParent();
+      toast(np ? 'PINを変えました' : 'PINをなくしました');
+    }
+    return;
+  }
+
+  /* シートの外side をタップで閉じる */
+  if (e.target.id === 'mask') closeSheet();
+});
+
+function segOn(el) {
+  var g = el.parentNode.querySelectorAll('button');
+  for (var i = 0; i < g.length; i++) g[i].classList.remove('on');
+  el.classList.add('on');
+}
+
+document.addEventListener('input', function (e) {
+  if (e.target.id === 'c-yen') updateCashInfo();
+  if (e.target.id === 'g-yen') updateGoalInfo();
+  if (e.target.id === 't-points' && $('t-yen')) {
+    var tv = Math.max(1, parseInt(e.target.value, 10) || 1);
+    $('t-yen').textContent = 'ポイント（' + yenStr(tv) + '）';
+  }
+  if (e.target.id === 'set-rate') {
+    var v = Math.max(1, Math.min(1000, parseInt(e.target.value, 10) || 1));
+    S.settings.yenPerPoint = v;
+    save(); touchUnlock();
+    renderKids(); renderBalance(); renderCash(); renderBadges();
+  }
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter' && e.target.id === 'pin-input') tryUnlock();
+});
+
+/* 5分さわらなければ自動でロック */
+setInterval(function () {
+  if (ui.unlockedAt && (Date.now() - ui.unlockedAt) >= UNLOCK_MS) {
+    ui.unlockedAt = 0;
+    if (ui.view === 'parent') renderParent();
+  }
+}, 15000);
+
+$('import-file').addEventListener('change', function (e) {
+  if (e.target.files && e.target.files[0]) importData(e.target.files[0]);
+  e.target.value = '';
+});
+
+/* ===================== 起動 ===================== */
+load();
+if (S.kids[0]) ui.kidId = S.kids[0].id;
+renderAll();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+  });
+}
+})();
+</script>
+</body>
+</html>
