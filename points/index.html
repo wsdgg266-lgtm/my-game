@@ -109,6 +109,13 @@
   .task .state { font-size: 11px; font-weight: 800; border-radius: 999px; padding: 3px 8px; align-self: flex-start; }
   .task .state.wait { background: var(--ac-soft); color: var(--ac-deep); }
   .task .state.ok { background: var(--ok-soft); color: var(--ok); }
+  .task.add { border: 2px dashed var(--line2); background: #fffdf8; color: var(--sub);
+    align-items: center; justify-content: center; text-align: center; font-size: 13px; font-weight: 800; gap: 4px; }
+  .task.add .em { font-size: 22px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .chips button { background: #fff; border: 2px solid var(--line); border-radius: 10px;
+    padding: 8px 12px; font-size: 13px; font-weight: 800; color: var(--ac-deep); }
+  .chips button.on { border-color: var(--ac); background: var(--ac-soft); }
 
   /* リスト行 */
   .row { display: flex; align-items: center; gap: 11px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
@@ -321,7 +328,7 @@
     <div class="tasks" id="tasks-study"></div>
     <div class="sec-title">✅ きょう できたこと</div>
     <div class="card" id="today-log"></div>
-    <div class="footer-note">タスクを ふやすのは したの「おうちのひと」から</div>
+    <div class="footer-note">タスクを ふやすときは ＋ を おしてね<br>（おうちの人の PINが いるよ）</div>
   </section>
 
   <!-- ========== きろく ========== -->
@@ -396,13 +403,17 @@
       <div class="pgroup">
         <div class="sec-title">👧 子どもの管理</div>
         <div class="card" id="parent-kids"></div>
-        <div style="margin-top:10px"><button class="btn sm gray wide" id="add-kid">＋ 子どもをふやす</button></div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn sm gray" style="flex:1" id="add-kid">＋ 子どもをふやす</button>
+          <button class="btn sm gray" style="flex:1" id="add-points">🎁 ポイントをあげる</button>
+        </div>
       </div>
 
       <div class="pgroup">
         <div class="sec-title">📋 タスクの設定 <span class="cnt" id="cnt-tasks"></span></div>
         <div class="card" id="parent-tasks"></div>
-        <div style="margin-top:10px"><button class="btn sm gray wide" id="add-task">＋ タスクをつくる</button></div>
+        <div style="margin-top:10px"><button class="btn wide" id="add-task">＋ 新しいタスクをつくる</button></div>
+        <div class="note">「きょう」の画面にある「＋ ふやす」からも、ここと同じ画面がひらきます。</div>
       </div>
 
       <div class="pgroup">
@@ -502,7 +513,7 @@ function seed() {
 }
 
 var S = seed();
-var ui = { view: 'home', kidId: null, unlockedAt: 0, logLimit: 25 };
+var ui = { view: 'home', kidId: null, unlockedAt: 0, logLimit: 25, afterUnlock: null };
 var UNLOCK_MS = 5 * 60 * 1000;
 
 function load() {
@@ -688,9 +699,9 @@ function renderHome() {
     var arr = cats[cat];
     var left = arr.filter(function (t) { return !doneState(t, kid.id); }).length;
     $('cnt-' + cat).textContent = arr.length ? ('あと ' + left + 'こ') : '';
-    $('tasks-' + cat).innerHTML = arr.length
-      ? arr.map(function (t) { return taskCard(t, kid.id); }).join('')
-      : '<div class="card empty" style="grid-column:1/-1"><span class="big">📝</span>タスクがまだありません<br>「おうちのひと」からつくれます</div>';
+    var addCard = '<button class="task add" data-addtask="' + cat + '">' +
+      '<span class="em">＋</span><span>' + (cat === 'study' ? 'べんきょうを' : 'おてつだいを') + '<br>ふやす</span></button>';
+    $('tasks-' + cat).innerHTML = arr.map(function (t) { return taskCard(t, kid.id); }).join('') + addCard;
   });
 
   var c = calc(kid.id);
@@ -1200,11 +1211,12 @@ function emojiPick(list, cur) {
 }
 
 var editingTask = null;
-function openTaskSheet(taskId) {
+function openTaskSheet(taskId, presetCat) {
   var t = null;
   S.tasks.forEach(function (x) { if (x.id === taskId) t = x; });
   editingTask = t ? JSON.parse(JSON.stringify(t))
-    : { id: null, emoji: '🍽', title: '', points: 5, category: 'help', repeat: 'daily', kidIds: null, archived: false };
+    : { id: null, emoji: presetCat === 'study' ? '📖' : '🍽', title: '', points: 5,
+        category: presetCat === 'study' ? 'study' : 'help', repeat: 'daily', kidIds: null, archived: false };
   var e = editingTask;
   var kidsChips = '<div class="seg" style="flex-wrap:wrap">' +
     '<button type="button" data-who="all"' + (!e.kidIds ? ' class="on"' : '') + '>ぜんいん</button>' +
@@ -1217,9 +1229,12 @@ function openTaskSheet(taskId) {
     '<p class="lead">子どもが「できた!」とタップする項目です。</p>' +
     emojiPick(TASK_EMOJI, e.emoji) +
     '<input class="in" id="t-title" type="text" maxlength="24" placeholder="なにをする?（例: おふろそうじ）" value="' + esc(e.title) + '">' +
-    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">' +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
     '<input class="in" id="t-points" type="number" min="1" max="9999" step="1" style="margin:0;max-width:110px" value="' + e.points + '">' +
-    '<span style="font-size:14px;font-weight:700">ポイント（' + yenStr(e.points) + '）</span></div>' +
+    '<span style="font-size:14px;font-weight:700" id="t-yen">ポイント（' + yenStr(e.points) + '）</span></div>' +
+    '<div class="chips">' + [3, 5, 10, 20, 50].map(function (v) {
+      return '<button type="button" data-pts="' + v + '"' + (v === e.points ? ' class="on"' : '') + '>' + v + 'P</button>';
+    }).join('') + '</div>' +
     '<div style="font-size:12px;font-weight:800;margin:2px 2px 6px">しゅるい</div>' +
     '<div class="seg"><button type="button" data-cat="help"' + (e.category === 'help' ? ' class="on"' : '') + '>🧹 おてつだい</button>' +
     '<button type="button" data-cat="study"' + (e.category === 'study' ? ' class="on"' : '') + '>📚 べんきょう</button></div>' +
@@ -1349,6 +1364,29 @@ function saveGoal() {
   toast('めあてを きめたよ: ' + title + ' ' + v.toLocaleString('ja-JP') + '円');
 }
 
+var adjustKidId = null;
+function openAdjustSheet() {
+  adjustKidId = currentKid() ? currentKid().id : (S.kids[0] && S.kids[0].id);
+  openSheet('<h2>🎁 ポイントをあげる／ひく</h2>' +
+    '<p class="lead">タスクにないことをがんばった時のボーナスや、<br>約束を破った時の調整に使います。理由は記録に残ります。</p>' +
+    '<div style="font-size:12px;font-weight:800;margin:2px 2px 6px">だれに?</div>' +
+    '<div class="seg" style="flex-wrap:wrap">' + S.kids.map(function (k) {
+      return '<button type="button" data-adjkid="' + k.id + '"' + (k.id === adjustKidId ? ' class="on"' : '') + '>' +
+        esc(k.emoji) + ' ' + esc(k.name) + '</button>';
+    }).join('') + '</div>' +
+    '<div style="font-size:12px;font-weight:800;margin:2px 2px 6px">なんポイント?</div>' +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
+    '<input class="in" id="a-points" type="number" min="1" max="9999" step="1" style="margin:0;max-width:110px" value="10">' +
+    '<span style="font-size:14px;font-weight:700">ポイント</span></div>' +
+    '<div class="chips">' + [5, 10, 20, 50, 100].map(function (v) {
+      return '<button type="button" data-pts="' + v + '"' + (v === 10 ? ' class="on"' : '') + '>' + v + 'P</button>';
+    }).join('') + '</div>' +
+    '<input class="in" id="a-note" type="text" maxlength="20" placeholder="りゆう（れい: おてつだいボーナス）">' +
+    '<div class="sheet-actions"><button class="btn ok" data-act="adjust-plus">＋ あげる</button>' +
+    '<button class="btn ng" data-act="adjust-minus">− ひく</button></div>' +
+    '<div style="margin-top:10px"><button class="btn gray wide" data-act="close">やめる</button></div>');
+}
+
 function openPinSheet() {
   openSheet('<h2>PINを変える</h2>' +
     '<p class="lead">おうちのひとモードに入るための4桁の数字です。<br>空のまま保存するとPINなし（だれでも入れる）になります。</p>' +
@@ -1418,6 +1456,7 @@ function tryUnlock() {
   ui.unlockedAt = Date.now();
   $('pin-input').value = '';
   renderParent();
+  if (ui.afterUnlock) { var fn = ui.afterUnlock; ui.afterUnlock = null; fn(); }
 }
 
 /* ===================== イベント ===================== */
@@ -1438,6 +1477,19 @@ document.addEventListener('click', function (e) {
     var rect = el.getBoundingClientRect();
     coinFx(rect.left + rect.width / 2, rect.top, '🪙');
     doTask(el.dataset.task, null);
+    return;
+  }
+
+  /* タスクをふやす(きょうの画面から) */
+  el = e.target.closest('[data-addtask]');
+  if (el) {
+    var cat = el.dataset.addtask;
+    if (parentUnlocked()) { openTaskSheet(null, cat); }
+    else {
+      ui.afterUnlock = function () { openTaskSheet(null, cat); };
+      setView('parent');
+      toast(S.pin ? 'おうちの人に PINを 入れてもらってね' : 'まず PINを きめてね');
+    }
     return;
   }
 
@@ -1491,6 +1543,7 @@ document.addEventListener('click', function (e) {
   if (el) { openTaskSheet(el.dataset.edittask); return; }
   if (e.target.closest('#add-kid')) { openKidSheet(null); return; }
   if (e.target.closest('#add-task')) { openTaskSheet(null); return; }
+  if (e.target.closest('#add-points')) { openAdjustSheet(); return; }
   if (e.target.closest('#set-pin')) { openPinSheet(); return; }
   if (e.target.closest('#set-approval')) {
     S.settings.requireApproval = !S.settings.requireApproval;
@@ -1522,8 +1575,22 @@ document.addEventListener('click', function (e) {
     if (editingGoal && $('g-title')) editingGoal.emoji = el.dataset.emoji;
     return;
   }
+  el = e.target.closest('[data-adjkid]');
+  if (el) { adjustKidId = el.dataset.adjkid; segOn(el); return; }
   el = e.target.closest('[data-usekind]');
   if (el) { editingUse.kind = el.dataset.usekind; segOn(el); return; }
+  el = e.target.closest('[data-pts]');
+  if (el) {
+    var pv = parseInt(el.dataset.pts, 10);
+    if ($('t-points')) {
+      $('t-points').value = pv;
+      editingTask.points = pv;
+      if ($('t-yen')) $('t-yen').textContent = 'ポイント（' + yenStr(pv) + '）';
+    }
+    if ($('a-points')) $('a-points').value = pv;
+    segOn(el);
+    return;
+  }
   el = e.target.closest('[data-cat]');
   if (el) { editingTask.category = el.dataset.cat; segOn(el); return; }
   el = e.target.closest('[data-rep]');
@@ -1559,6 +1626,13 @@ document.addEventListener('click', function (e) {
         S.tasks = S.tasks.filter(function (t) { return t.id !== tid; });
         save(); touchUnlock(); renderAll(); toast('消しました');
       }, true);
+    }
+    else if (act === 'adjust-plus' || act === 'adjust-minus') {
+      var av = Math.max(1, parseInt($('a-points').value, 10) || 0);
+      var anote = ($('a-note').value || '').trim();
+      var atarget = adjustKidId;
+      closeSheet();
+      adjust(atarget, act === 'adjust-plus' ? av : -av, anote);
     }
     else if (act === 'save-use') saveUse();
     else if (act === 'edit-goal') openGoalSheet();
@@ -1619,6 +1693,10 @@ function segOn(el) {
 document.addEventListener('input', function (e) {
   if (e.target.id === 'c-yen') updateCashInfo();
   if (e.target.id === 'g-yen') updateGoalInfo();
+  if (e.target.id === 't-points' && $('t-yen')) {
+    var tv = Math.max(1, parseInt(e.target.value, 10) || 1);
+    $('t-yen').textContent = 'ポイント（' + yenStr(tv) + '）';
+  }
   if (e.target.id === 'set-rate') {
     var v = Math.max(1, Math.min(1000, parseInt(e.target.value, 10) || 1));
     S.settings.yenPerPoint = v;
