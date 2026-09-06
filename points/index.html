@@ -144,8 +144,8 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
   nav button {
-    flex: 1; padding: 9px 2px 8px; display: flex; flex-direction: column; align-items: center; gap: 2px;
-    font-size: 10px; font-weight: 700; color: var(--sub); position: relative;
+    flex: 1; padding: 9px 1px 8px; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    font-size: 10px; font-weight: 700; color: var(--sub); position: relative; letter-spacing: -.03em;
   }
   nav button .ic { font-size: 21px; line-height: 1; }
   nav button.on { color: var(--ac-deep); }
@@ -203,6 +203,44 @@
   .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: transform .15s; }
   .switch.on { background: var(--ok); }
   .switch.on::after { transform: translateX(20px); }
+
+  /* ===== ふりかえり(おこづかい帳) ===== */
+  .sum { display: flex; gap: 10px; }
+  .sum .box { flex: 1; background: var(--card); border-radius: 14px; padding: 12px 6px; text-align: center; box-shadow: var(--shadow); }
+  .sum .box .n { font-size: 18px; font-weight: 800; letter-spacing: -.02em; }
+  .sum .box .l { font-size: 10px; color: var(--sub); font-weight: 700; margin-top: 2px; }
+  .sum .box.in .n { color: var(--ac-deep); }
+  .sum .box.out .n { color: #3f8ed0; }
+  .sum .box.rest .n { color: var(--ok); }
+  .formula { background: var(--ac-soft); border-radius: 14px; padding: 13px 10px; text-align: center;
+    font-size: 13px; font-weight: 800; color: #8a5a00; margin-top: 10px; line-height: 1.9; }
+  .formula b { font-size: 15px; }
+  .mchart { display: flex; align-items: flex-end; gap: 4px; padding: 16px 12px 8px; height: 170px; }
+  .mcol { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; height: 100%; }
+  .mbars { flex: 1; display: flex; align-items: flex-end; gap: 3px; justify-content: center; width: 100%; }
+  .mbars i { width: 13px; border-radius: 4px 4px 0 0; display: block; min-height: 2px; }
+  .mbars i.in { background: linear-gradient(180deg, #ffc65c, #f5a524); }
+  .mbars i.out { background: linear-gradient(180deg, #8ec8f2, #3f8ed0); }
+  .mval { font-size: 9px; font-weight: 800; height: 24px; display: flex; flex-direction: column;
+    justify-content: flex-end; line-height: 1.25; }
+  .mval .i { color: var(--ac-deep); }
+  .mval .o { color: #3f8ed0; }
+  .mlab { font-size: 10px; color: var(--sub); font-weight: 700; }
+  .legend { display: flex; gap: 16px; justify-content: center; font-size: 11px; font-weight: 700; color: var(--sub); padding: 0 0 13px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-right: 5px; }
+  .legend i.in { background: var(--ac); }
+  .legend i.out { background: #3f8ed0; }
+  .brow { padding: 11px 14px; border-bottom: 1px solid var(--line); }
+  .brow:last-child { border-bottom: none; }
+  .brow .top { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; }
+  .brow .top .v { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--sub); }
+  .brow .bar2 { height: 10px; border-radius: 5px; background: #f3ebde; overflow: hidden; margin-top: 7px; }
+  .brow .bar2 span { display: block; height: 100%; border-radius: 5px; }
+  .use-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .use-chips button { background: #fff; border: 2px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 13px; font-weight: 700; }
+  .use-chips button.on { border-color: var(--ac); background: var(--ac-soft); }
+  .tip { font-size: 12px; color: var(--sub); line-height: 1.9; padding: 12px 14px; }
+  .tip b { color: var(--text); }
 
   /* ===== モーダル ===== */
   .mask { position: fixed; inset: 0; background: rgba(40,28,10,.45); z-index: 60; display: flex;
@@ -311,6 +349,25 @@
     <div class="footer-note">おねがいすると おうちの人に とどくよ。<br>お金を もらったら できあがり!</div>
   </section>
 
+  <!-- ========== ふりかえり(おこづかい帳) ========== -->
+  <section class="view" id="view-learn">
+    <div id="learn-ask"></div>
+    <div class="sec-title">🧮 こんげつの おこづかい</div>
+    <div class="sum" id="learn-sum"></div>
+    <div class="formula" id="learn-formula"></div>
+    <div class="sec-title">📊 6かげつの ためた・つかった</div>
+    <div class="card">
+      <div class="mchart" id="learn-chart"></div>
+      <div class="legend"><span><i class="in"></i>ためた</span><span><i class="out"></i>つかった</span></div>
+    </div>
+    <div class="sec-title">🛍 なにに つかった?</div>
+    <div class="card" id="learn-use"></div>
+    <div class="sec-title">💪 なにで ためた?</div>
+    <div class="card" id="learn-earn"></div>
+    <div class="card" id="learn-tip" style="margin-top:14px"></div>
+    <div class="footer-note">ためた お金と つかった お金を くらべると、<br>のこりの お金が わかるよ。</div>
+  </section>
+
   <!-- ========== おうちのひと ========== -->
   <section class="view" id="view-parent">
     <div id="parent-locked">
@@ -377,6 +434,7 @@
   <button data-view="home" class="on"><span class="ic">🏠</span>きょう</button>
   <button data-view="history"><span class="ic">📅</span>きろく</button>
   <button data-view="cash"><span class="ic">💰</span>こうかん<span class="badge" id="badge-cash" hidden></span></button>
+  <button data-view="learn"><span class="ic">📊</span>ふりかえり</button>
   <button data-view="parent"><span class="ic">👪</span>おうちのひと<span class="badge" id="badge-parent" hidden></span></button>
 </nav>
 
@@ -391,6 +449,21 @@
 /* ===================== データ ===================== */
 var KEY = 'otetsudai-bank-v1';
 var KID_EMOJI = ['🦖','🐰','🐱','🐶','🦊','🐼','🦄','🐯','🐧','🐨','🐵','🌟'];
+/* こうかんしたお金の つかいみち */
+var USE_KINDS = [
+  { id: 'okashi', em: '🍭', name: 'おかし・ジュース' },
+  { id: 'omocha', em: '🧸', name: 'おもちゃ' },
+  { id: 'game', em: '🎮', name: 'ゲーム' },
+  { id: 'book', em: '📚', name: '本・まんが' },
+  { id: 'bungu', em: '✏️', name: 'ぶんぼうぐ' },
+  { id: 'present', em: '🎁', name: 'プレゼント' },
+  { id: 'chokin', em: '🐖', name: 'とっておく' },
+  { id: 'other', em: '❓', name: 'そのほか' }
+];
+function useKind(id) {
+  for (var i = 0; i < USE_KINDS.length; i++) if (USE_KINDS[i].id === id) return USE_KINDS[i];
+  return null;
+}
 var GOAL_EMOJI = ['🎮','🧸','🚲','⚽️','🎧','📚','🎨','🛼','🍰','🐶','🎁','💎'];
 var TASK_EMOJI = ['🍽','🧽','🛁','🧺','🗑','👟','🧹','🛒','🌱','🐕','📖','✏️','📚','🔢','🈯','🎒','⏰','🎹','🏃','💡'];
 
@@ -561,6 +634,7 @@ function renderAll() {
   renderHome();
   renderHistory();
   renderCash();
+  renderLearn();
   renderParent();
   renderBadges();
 }
@@ -753,10 +827,13 @@ function renderCash() {
     .sort(function (a, b) { return b.createdAt - a.createdAt; });
   $('cash-list').innerHTML = list.length ? list.map(function (x) {
     var label = x.status === 'pending' ? '⏳ おうちのひとまち' : x.status === 'paid' ? '✓ もらった' : '✕ やめた';
-    return '<div class="row"><span class="em">' + (x.status === 'paid' ? '💵' : x.status === 'pending' ? '⏳' : '↩️') + '</span>' +
+    var k = x.use ? useKind(x.use) : null;
+    if (k) label += ' ・ ' + k.em + ' ' + k.name;
+    return '<div class="row"><span class="em">' + (x.status === 'paid' ? (k ? k.em : '💵') : x.status === 'pending' ? '⏳' : '↩️') + '</span>' +
       '<div class="body"><div class="t">' + x.yen.toLocaleString('ja-JP') + '円（' + x.points + 'P）</div>' +
       '<div class="d">' + fmtDay(x.createdAt) + ' ' + fmtTime(x.createdAt) + ' ・ ' + label + '</div></div>' +
       (x.status === 'pending' ? '<button class="btn icon gray" data-cancel-cash="' + x.id + '" title="とりけす">✕</button>' : '') +
+      (x.status === 'paid' ? '<button class="btn sm gray" data-use="' + x.id + '">' + (k ? 'かえる' : 'なにに つかった?') + '</button>' : '') +
       '</div>';
   }).join('') : '<div class="empty"><span class="big">🐖</span>まだ かえていないよ<br>コツコツ ためよう</div>';
 }
@@ -770,6 +847,173 @@ function renderBadges() {
   var gi2 = goalInfo(kid);
   var can = kid ? (gi2 ? gi2.done : calc(kid.id).balance >= (100 / S.settings.yenPerPoint)) : false;
   bc.hidden = !can; bc.textContent = '!';
+}
+
+/* ===================== ふりかえり(おこづかい帳) ===================== */
+/* 直近 n か月のキー(古い順) */
+function lastMonths(n) {
+  var out = [], d = new Date();
+  d.setDate(1);
+  for (var i = n - 1; i >= 0; i--) {
+    var t = new Date(d.getFullYear(), d.getMonth() - i, 1);
+    out.push({ key: monthKey(t.getTime()), label: (t.getMonth() + 1) + '月' });
+  }
+  return out;
+}
+function renderLearn() {
+  var kid = currentKid();
+  if (!kid) return;
+  var months = lastMonths(6), inM = {}, outM = {};
+  months.forEach(function (m) { inM[m.key] = 0; outM[m.key] = 0; });
+
+  S.logs.forEach(function (l) {
+    if (l.kidId !== kid.id || l.status !== 'approved') return;
+    var k = monthKey(l.createdAt);
+    if (k in inM) inM[k] += yen(l.points);
+  });
+  S.cashouts.forEach(function (c) {
+    if (c.kidId !== kid.id || c.status !== 'paid') return;
+    var k = monthKey(c.decidedAt || c.createdAt);
+    if (k in outM) outM[k] += c.yen;
+  });
+
+  var nowKey = monthKey(Date.now());
+  var got = inM[nowKey] || 0, used = outM[nowKey] || 0;
+  var rest = yen(calc(kid.id).balance);
+
+  /* まとめ */
+  $('learn-sum').innerHTML =
+    '<div class="box in"><div class="n">' + got.toLocaleString('ja-JP') + '</div><div class="l">ためた(円)</div></div>' +
+    '<div class="box out"><div class="n">' + used.toLocaleString('ja-JP') + '</div><div class="l">つかった(円)</div></div>' +
+    '<div class="box rest"><div class="n">' + rest.toLocaleString('ja-JP') + '</div><div class="l">いまの のこり(円)</div></div>';
+  $('learn-formula').innerHTML =
+    'ためた <b>' + got.toLocaleString('ja-JP') + '円</b> − つかった <b>' + used.toLocaleString('ja-JP') + '円</b>' +
+    '<br>＝ こんげつ ふえた ぶん <b>' + (got - used).toLocaleString('ja-JP') + '円</b>';
+
+  /* 6か月のグラフ */
+  var max = 1;
+  months.forEach(function (m) { max = Math.max(max, inM[m.key], outM[m.key]); });
+  $('learn-chart').innerHTML = months.map(function (m) {
+    var a = inM[m.key], b = outM[m.key];
+    return '<div class="mcol">' +
+      '<div class="mval">' + (a ? '<span class="i">' + a.toLocaleString('ja-JP') + '</span>' : '') +
+      (b ? '<span class="o">' + b.toLocaleString('ja-JP') + '</span>' : '') + '</div>' +
+      '<div class="mbars"><i class="in" style="height:' + (a / max * 100) + '%"></i>' +
+      '<i class="out" style="height:' + (b / max * 100) + '%"></i></div>' +
+      '<div class="mlab">' + m.label + '</div></div>';
+  }).join('');
+
+  /* なにに つかった? */
+  var useSum = {}, useTotal = 0, unknown = 0, unknownList = [];
+  S.cashouts.forEach(function (c) {
+    if (c.kidId !== kid.id || c.status !== 'paid') return;
+    if (!(monthKey(c.decidedAt || c.createdAt) in outM)) return;
+    if (c.use) { useSum[c.use] = (useSum[c.use] || 0) + c.yen; useTotal += c.yen; }
+    else { unknown += c.yen; unknownList.push(c); }
+  });
+  var useRows = Object.keys(useSum).sort(function (a, b) { return useSum[b] - useSum[a]; });
+  var total = useTotal + unknown;
+  $('learn-use').innerHTML = total ? (useRows.map(function (id) {
+    var k = useKind(id) || { em: '❓', name: 'そのほか' };
+    var v = useSum[id], pct = Math.round(v / total * 100);
+    return '<div class="brow"><div class="top"><span>' + k.em + '</span><span>' + esc(k.name) + '</span>' +
+      '<span class="v">' + v.toLocaleString('ja-JP') + '円 ・ ' + pct + '%</span></div>' +
+      '<div class="bar2"><span style="width:' + pct + '%;background:linear-gradient(90deg,#8ec8f2,#3f8ed0)"></span></div></div>';
+  }).join('') + (unknown ? '<div class="brow"><div class="top"><span>❔</span><span>まだ かいてない</span>' +
+    '<span class="v">' + unknown.toLocaleString('ja-JP') + '円</span></div>' +
+    '<div class="bar2"><span style="width:' + Math.round(unknown / total * 100) + '%;background:#ddd2c2"></span></div></div>' : ''))
+    : '<div class="empty"><span class="big">🛍</span>まだ つかっていないよ</div>';
+
+  /* なにで ためた? */
+  var catSum = { help: 0, study: 0 }, taskSum = {}, earnTotal = 0;
+  S.logs.forEach(function (l) {
+    if (l.kidId !== kid.id || l.status !== 'approved') return;
+    if (!(monthKey(l.createdAt) in inM)) return;
+    var v = yen(l.points);
+    if (v <= 0) return;
+    catSum[l.category === 'study' ? 'study' : 'help'] += v;
+    var key = (l.emoji || '⭐️') + '|' + l.title;
+    taskSum[key] = (taskSum[key] || 0) + v;
+    earnTotal += v;
+  });
+  var top = Object.keys(taskSum).sort(function (a, b) { return taskSum[b] - taskSum[a]; }).slice(0, 3);
+  $('learn-earn').innerHTML = earnTotal ? (
+    [['help', '🧹', 'おてつだい', '#ffb35c,#ff8c42'], ['study', '📚', 'べんきょう', '#8ec8f2,#4c9be8']].map(function (c) {
+      var v = catSum[c[0]], pct = Math.round(v / earnTotal * 100);
+      return '<div class="brow"><div class="top"><span>' + c[1] + '</span><span>' + c[2] + '</span>' +
+        '<span class="v">' + v.toLocaleString('ja-JP') + '円 ・ ' + pct + '%</span></div>' +
+        '<div class="bar2"><span style="width:' + pct + '%;background:linear-gradient(90deg,' + c[3] + ')"></span></div></div>';
+    }).join('') +
+    '<div class="tip"><b>よく やったこと ベスト3</b><br>' + top.map(function (k, i) {
+      var pr = k.split('|');
+      return (i + 1) + '. ' + esc(pr[0]) + ' ' + esc(pr[1]) + '（' + taskSum[k].toLocaleString('ja-JP') + '円）';
+    }).join('<br>') + '</div>')
+    : '<div class="empty"><span class="big">🌱</span>まだ ポイントが ないよ</div>';
+
+  /* ひとこと */
+  var msg;
+  if (!got && !used) msg = 'まずは おてつだいから はじめよう。ためた お金は ここに でるよ。';
+  else if (!used) msg = 'こんげつは まだ つかっていないね。<b>' + rest.toLocaleString('ja-JP') + '円</b> ぜんぶ のこっているよ。';
+  else if (got > used) msg = 'ためた ほうが おおいね! <b>' + (got - used).toLocaleString('ja-JP') + '円</b> ふえたよ。';
+  else if (got === used) msg = 'ためた ぶんと つかった ぶんが おなじ。のこりは ふえていないよ。';
+  else msg = 'つかった ほうが <b>' + (used - got).toLocaleString('ja-JP') + '円</b> おおいよ。つぎは すこし のこしてみよう。';
+  var gi = goalInfo(kid);
+  if (gi) {
+    msg += '<br>🎯 ' + esc(gi.g.title) + ' まで ' + (gi.done ? 'たまったよ!' : 'あと <b>' + gi.rest.toLocaleString('ja-JP') + '円</b>');
+    if (!gi.done) {
+      /* 30日ぶんの ためかたから、めあてに とどく日数を みつもる */
+      var since = Date.now() - 30 * 86400000, got30 = 0;
+      S.logs.forEach(function (l) {
+        if (l.kidId === kid.id && l.status === 'approved' && l.createdAt >= since && l.points > 0) got30 += yen(l.points);
+      });
+      var perDay = got30 / 30;
+      if (perDay > 0) {
+        var days = Math.ceil(gi.rest / perDay);
+        if (days <= 3650) {
+          msg += '<br>1日 やく <b>' + Math.round(perDay).toLocaleString('ja-JP') + '円</b> の ペースだから、' +
+            'このままだと <b>あと やく ' + days.toLocaleString('ja-JP') + '日</b>（' +
+            (days >= 30 ? 'やく ' + Math.round(days / 30) + 'かげつ' : days >= 7 ? 'やく ' + Math.round(days / 7) + 'しゅうかん' : 'もうすぐ') + '）';
+        }
+      }
+    }
+  }
+  $('learn-tip').innerHTML = '<div class="tip">' + msg + '</div>';
+
+  /* つかいみちが まだのもの */
+  $('learn-ask').innerHTML = unknownList.length
+    ? '<div class="card" style="padding:13px 15px;margin-bottom:6px;background:var(--ac-soft);box-shadow:none">' +
+      '<div style="font-size:13px;font-weight:800;color:#8a5a00">🛍 つかいみちが まだの こうかんが ' + unknownList.length + 'つ あるよ</div>' +
+      '<div style="font-size:11px;color:#8a7a63;margin:3px 0 9px">なにに つかったか かくと、グラフが くわしくなるよ</div>' +
+      unknownList.slice(0, 3).map(function (c) {
+        return '<button class="btn sm gray" style="margin:0 6px 6px 0" data-use="' + c.id + '">' +
+          fmtDay(c.createdAt) + ' ' + c.yen.toLocaleString('ja-JP') + '円 →</button>';
+      }).join('') + '</div>'
+    : '';
+}
+
+/* つかいみちを えらぶ */
+var editingUse = null;
+function openUseSheet(cashId) {
+  var c = null;
+  S.cashouts.forEach(function (x) { if (x.id === cashId) c = x; });
+  if (!c) return;
+  editingUse = { id: c.id, kind: c.use || null };
+  openSheet('<h2>🛍 なにに つかった?</h2>' +
+    '<p class="lead">' + fmtDay(c.createdAt) + 'に かえた <b>' + c.yen.toLocaleString('ja-JP') + '円</b> の つかいみちを えらんでね。<br>' +
+    'まだ つかっていないときは「とっておく」。</p>' +
+    '<div class="use-chips">' + USE_KINDS.map(function (k) {
+      return '<button type="button" data-usekind="' + k.id + '"' + (editingUse.kind === k.id ? ' class="on"' : '') + '>' +
+        k.em + ' ' + k.name + '</button>';
+    }).join('') + '</div>' +
+    '<div class="sheet-actions"><button class="btn gray" data-act="close">やめる</button>' +
+    '<button class="btn" data-act="save-use">きめる</button></div>');
+}
+function saveUse() {
+  if (!editingUse || !editingUse.kind) { toast('つかいみちを えらんでね'); return; }
+  S.cashouts.forEach(function (c) { if (c.id === editingUse.id) c.use = editingUse.kind; });
+  save(); closeSheet(); renderAll();
+  var k = useKind(editingUse.kind);
+  toast('かいたよ: ' + (k ? k.em + ' ' + k.name : ''));
 }
 
 /* ===================== おうちのひと(親モード) ===================== */
@@ -1148,7 +1392,7 @@ function importData(file) {
 /* ===================== 画面きりかえ ===================== */
 function setView(name) {
   ui.view = name;
-  ['home', 'history', 'cash', 'parent'].forEach(function (v) {
+  ['home', 'history', 'cash', 'learn', 'parent'].forEach(function (v) {
     $('view-' + v).classList.toggle('on', v === name);
   });
   var btns = document.querySelectorAll('nav button');
@@ -1157,6 +1401,7 @@ function setView(name) {
   if (name === 'parent') { renderParent(); if (!parentUnlocked() && $('pin-input')) $('pin-input').value = ''; }
   if (name === 'history') renderHistory();
   if (name === 'cash') renderCash();
+  if (name === 'learn') renderLearn();
 }
 
 function tryUnlock() {
@@ -1216,6 +1461,8 @@ document.addEventListener('click', function (e) {
     return;
   }
   if (e.target.closest('#cash-custom')) { openCashSheet(); return; }
+  el = e.target.closest('[data-use]');
+  if (el) { openUseSheet(el.dataset.use); return; }
   el = e.target.closest('[data-cancel-cash]');
   if (el) { cancelCash(el.dataset.cancelCash); return; }
 
@@ -1275,6 +1522,8 @@ document.addEventListener('click', function (e) {
     if (editingGoal && $('g-title')) editingGoal.emoji = el.dataset.emoji;
     return;
   }
+  el = e.target.closest('[data-usekind]');
+  if (el) { editingUse.kind = el.dataset.usekind; segOn(el); return; }
   el = e.target.closest('[data-cat]');
   if (el) { editingTask.category = el.dataset.cat; segOn(el); return; }
   el = e.target.closest('[data-rep]');
@@ -1311,6 +1560,7 @@ document.addEventListener('click', function (e) {
         save(); touchUnlock(); renderAll(); toast('消しました');
       }, true);
     }
+    else if (act === 'save-use') saveUse();
     else if (act === 'edit-goal') openGoalSheet();
     else if (act === 'save-goal') saveGoal();
     else if (act === 'del-goal') {
