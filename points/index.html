@@ -245,6 +245,19 @@
     25% { transform: translate(-50%, -30px) scale(1.25); opacity: 1; }
     100% { transform: translate(-50%, -150px) scale(.85); opacity: 0; }
   }
+  /* ===== めあて(ちょきんの目標) ===== */
+  .goal { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px 15px; margin-bottom: 12px; }
+  .goal.done { background: linear-gradient(150deg, #fff6e0, #ffedbe); }
+  .goal .top { display: flex; align-items: center; gap: 10px; }
+  .goal .em { font-size: 26px; line-height: 1; }
+  .goal .t { font-size: 15px; font-weight: 800; flex: 1; min-width: 0; }
+  .goal .t small { display: block; font-size: 11px; color: var(--sub); font-weight: 700; margin-top: 2px; }
+  .bar { height: 14px; border-radius: 8px; background: #f3ebde; overflow: hidden; margin: 11px 0 7px; }
+  .bar span { display: block; height: 100%; border-radius: 8px; background: linear-gradient(90deg, #ffd270, #f5a524); transition: width .35s; }
+  .goal .now { font-size: 12px; font-weight: 800; display: flex; justify-content: space-between; gap: 8px; }
+  .goal .now .left { color: var(--ac-deep); }
+  .goal-new { width: 100%; text-align: center; padding: 16px; border-radius: var(--radius); background: #fff;
+    border: 2px dashed var(--line2); color: var(--sub); font-size: 13px; font-weight: 800; margin-bottom: 12px; }
   .footer-note { font-size: 11px; color: var(--sub); text-align: center; padding: 24px 10px 8px; line-height: 1.8; }
 </style>
 </head>
@@ -252,7 +265,7 @@
 
 <header>
   <div class="wrap">
-    <div class="app-title">🪙 おてつだいバンク <small>ためて、おこづかいにかえよう</small></div>
+    <div class="app-title">🪙 おてつだいバンク <small>ためて おこづかいに かえよう</small></div>
     <div class="kids" id="kids"></div>
     <div class="balance" id="balance"></div>
   </div>
@@ -262,22 +275,23 @@
 
   <!-- ========== きょう ========== -->
   <section class="view on" id="view-home">
+    <div id="goal-card"></div>
     <div id="home-notice"></div>
     <div class="sec-title">🧹 おてつだい <span class="cnt" id="cnt-help"></span></div>
     <div class="tasks" id="tasks-help"></div>
     <div class="sec-title">📚 べんきょう <span class="cnt" id="cnt-study"></span></div>
     <div class="tasks" id="tasks-study"></div>
-    <div class="sec-title">✅ きょうやったこと</div>
+    <div class="sec-title">✅ きょう できたこと</div>
     <div class="card" id="today-log"></div>
-    <div class="footer-note">タスクをふやしたり、ポイントをかえるのは<br>下の「おうちのひと」から。</div>
+    <div class="footer-note">タスクを ふやすのは したの「おうちのひと」から</div>
   </section>
 
   <!-- ========== きろく ========== -->
   <section class="view" id="view-history">
     <div class="stats" id="stats"></div>
-    <div class="sec-title">🗓 今月のスタンプ</div>
+    <div class="sec-title">🗓 こんげつの スタンプ</div>
     <div class="card"><div class="cal" id="cal"></div></div>
-    <div class="sec-title">📜 これまでのきろく</div>
+    <div class="sec-title">📜 これまでの きろく</div>
     <div class="card" id="log-list"></div>
     <div id="log-more" style="text-align:center;padding:12px 0"></div>
   </section>
@@ -286,14 +300,15 @@
   <section class="view" id="view-cash">
     <div class="card" style="padding:16px">
       <div id="cash-head"></div>
+      <div id="cash-goal"></div>
       <div class="presets" id="cash-presets"></div>
       <div style="margin-top:12px">
-        <button class="btn wide gray" id="cash-custom">🔢 じぶんで金額をきめる</button>
+        <button class="btn wide gray" id="cash-custom">🔢 じぶんで えらぶ</button>
       </div>
     </div>
-    <div class="sec-title">💵 こうかんのきろく</div>
+    <div class="sec-title">💵 かえた きろく</div>
     <div class="card" id="cash-list"></div>
-    <div class="footer-note">「こうかんする」をおすと、おうちの人のところに<br>お知らせがとどきます。お金をもらったら完了です。</div>
+    <div class="footer-note">おねがいすると おうちの人に とどくよ。<br>お金を もらったら できあがり!</div>
   </section>
 
   <!-- ========== おうちのひと ========== -->
@@ -305,19 +320,19 @@
         <p id="lock-msg"></p>
         <input class="pin-in" id="pin-input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="････">
         <div style="margin-top:16px"><button class="btn" id="pin-ok">ひらく</button></div>
-        <p style="margin:14px 0 0;font-size:11px">PINはこの端末の中だけに保存される簡易ロックです。<br>子どもが誤って触らないための鍵と考えてください。</p>
+        <p style="margin:14px 0 0;font-size:11px">PINはこの端末の中だけに保存されます。<br>子どもがうっかり触らないための、かんたんな鍵です。</p>
       </div>
     </div>
 
     <div id="parent-body" style="display:none">
       <div class="pgroup">
-        <div class="sec-title">⏳ 承認まち <span class="cnt" id="cnt-pending"></span></div>
+        <div class="sec-title">⏳ OKまち <span class="cnt" id="cnt-pending"></span></div>
         <div class="card" id="pending-list"></div>
         <div id="pending-actions" style="margin-top:10px"></div>
       </div>
 
       <div class="pgroup">
-        <div class="sec-title">💰 こうかんの申請 <span class="cnt" id="cnt-cashreq"></span></div>
+        <div class="sec-title">💰 おこづかいに かえる おねがい <span class="cnt" id="cnt-cashreq"></span></div>
         <div class="card" id="cashreq-list"></div>
       </div>
 
@@ -376,6 +391,7 @@
 /* ===================== データ ===================== */
 var KEY = 'otetsudai-bank-v1';
 var KID_EMOJI = ['🦖','🐰','🐱','🐶','🦊','🐼','🦄','🐯','🐧','🐨','🐵','🌟'];
+var GOAL_EMOJI = ['🎮','🧸','🚲','⚽️','🎧','📚','🎨','🛼','🍰','🐶','🎁','💎'];
 var TASK_EMOJI = ['🍽','🧽','🛁','🧺','🗑','👟','🧹','🛒','🌱','🐕','📖','✏️','📚','🔢','🈯','🎒','⏰','🎹','🏃','💡'];
 
 var DEFAULT_TASKS = [
@@ -541,6 +557,7 @@ function pendingCashouts() { return S.cashouts.filter(function (c) { return c.st
 function renderAll() {
   renderKids();
   renderBalance();
+  renderGoal();
   renderHome();
   renderHistory();
   renderCash();
@@ -566,9 +583,9 @@ function renderBalance() {
   var h = '<div class="lbl">' + esc(kid.name) + 'のポイント</div>' +
     '<div class="pt">' + c.balance + '<span>P</span></div>' +
     '<div class="yen">＝ <b>' + yenStr(c.balance) + '</b></div>' +
-    '<div class="sub">1ポイント = ' + S.settings.yenPerPoint + '円 ／ いままでに ' + c.earned + 'P ためた</div>';
-  if (c.waiting > 0) h += '<div class="hold">⏳ 承認まち ' + c.waiting + 'P</div> ';
-  if (c.held > 0) h += '<div class="hold">💰 こうかん申請中 ' + c.held + 'P</div>';
+    '<div class="sub">1ポイント＝' + S.settings.yenPerPoint + '円 ／ ぜんぶで ' + c.earned + 'P ためたよ</div>';
+  if (c.waiting > 0) h += '<div class="hold">⏳ おうちのひとまち ' + c.waiting + 'P</div> ';
+  if (c.held > 0) h += '<div class="hold">💰 かえてるとちゅう ' + c.held + 'P</div>';
   $('balance').innerHTML = h;
 }
 
@@ -596,7 +613,7 @@ function renderHome() {
   ['help', 'study'].forEach(function (cat) {
     var arr = cats[cat];
     var left = arr.filter(function (t) { return !doneState(t, kid.id); }).length;
-    $('cnt-' + cat).textContent = arr.length ? ('のこり ' + left + '/' + arr.length) : '';
+    $('cnt-' + cat).textContent = arr.length ? ('あと ' + left + 'こ') : '';
     $('tasks-' + cat).innerHTML = arr.length
       ? arr.map(function (t) { return taskCard(t, kid.id); }).join('')
       : '<div class="card empty" style="grid-column:1/-1"><span class="big">📝</span>タスクがまだありません<br>「おうちのひと」からつくれます</div>';
@@ -607,7 +624,7 @@ function renderHome() {
   if (c.waiting > 0) {
     msg = '<div class="card" style="padding:13px 15px;margin-bottom:6px;background:var(--ac-soft);box-shadow:none">' +
       '<div style="font-size:13px;font-weight:800;color:#8a5a00">⏳ ' + c.waiting +
-      'P が承認まちです</div><div style="font-size:11px;color:#8a7a63;margin-top:3px">おうちの人に「みてー!」と伝えよう</div></div>';
+      'P は おうちのひとまち</div><div style="font-size:11px;color:#8a7a63;margin-top:3px">「やったよ、みてー!」って いってみよう</div></div>';
   }
   $('home-notice').innerHTML = msg;
 
@@ -617,11 +634,42 @@ function renderHome() {
   $('today-log').innerHTML = today.length ? today.map(function (l) {
     return '<div class="row"><span class="em">' + esc(l.emoji || '⭐️') + '</span><div class="body">' +
       '<div class="t">' + esc(l.title) + '</div><div class="d">' + fmtTime(l.createdAt) + ' ・ ' +
-      (l.status === 'pending' ? '承認まち' : '承認ずみ') + '</div></div>' +
+      (l.status === 'pending' ? 'おうちのひとまち' : 'ポイントに なったよ') + '</div></div>' +
       '<span class="pt' + (l.status === 'pending' ? ' muted' : '') + '">' + (l.points >= 0 ? '+' : '') + l.points + 'P</span>' +
       (l.status === 'pending' ? '<button class="btn icon gray" data-cancel="' + l.id + '" title="とりけす">✕</button>' : '') +
       '</div>';
-  }).join('') : '<div class="empty"><span class="big">🌱</span>まだきょうの記録はありません<br>できたことをタップしよう</div>';
+  }).join('') : '<div class="empty"><span class="big">🌱</span>きょうは まだ ないよ<br>できたことを タップしてね</div>';
+}
+
+/* めあて(ちょきんの目標) */
+function goalInfo(kid) {
+  if (!kid || !kid.goal || !kid.goal.yen) return null;
+  var now = yen(calc(kid.id).balance), target = kid.goal.yen;
+  return {
+    g: kid.goal, now: now, target: target,
+    rest: Math.max(0, target - now),
+    pct: target > 0 ? Math.max(0, Math.min(100, Math.round(now / target * 100))) : 0,
+    done: now >= target
+  };
+}
+function renderGoal() {
+  var kid = currentKid(), el = $('goal-card');
+  if (!el) return;
+  if (!kid) { el.innerHTML = ''; return; }
+  var g = goalInfo(kid);
+  if (!g) {
+    el.innerHTML = '<button class="goal-new" data-act="edit-goal">🎯 ほしいものを きめる（ちょきんの めあて）</button>';
+    return;
+  }
+  var restP = Math.ceil(g.rest / S.settings.yenPerPoint);
+  el.innerHTML = '<div class="goal' + (g.done ? ' done' : '') + '">' +
+    '<div class="top"><span class="em">' + esc(g.g.emoji) + '</span>' +
+    '<div class="t">' + esc(g.g.title) + '<small>めあて ' + g.target.toLocaleString('ja-JP') + '円</small></div>' +
+    '<button class="btn sm gray" data-act="edit-goal">かえる</button></div>' +
+    '<div class="bar"><span style="width:' + g.pct + '%"></span></div>' +
+    '<div class="now"><span class="left">' +
+    (g.done ? '🎉 たまったよ! こうかんできる' : 'あと ' + g.rest.toLocaleString('ja-JP') + '円（' + restP.toLocaleString('ja-JP') + 'P）') +
+    '</span><span style="color:var(--sub)">' + g.now.toLocaleString('ja-JP') + ' / ' + g.target.toLocaleString('ja-JP') + '円</span></div></div>';
 }
 
 function renderHistory() {
@@ -640,9 +688,9 @@ function renderHistory() {
   });
   var c = calc(kid.id);
   $('stats').innerHTML =
-    '<div class="stat"><div class="n">' + week + '</div><div class="l">今週のポイント</div></div>' +
-    '<div class="stat"><div class="n">' + month + '</div><div class="l">今月のポイント</div></div>' +
-    '<div class="stat"><div class="n">' + yen(c.paid).toLocaleString('ja-JP') + '</div><div class="l">これまでもらった円</div></div>';
+    '<div class="stat"><div class="n">' + week + '</div><div class="l">こんしゅう</div></div>' +
+    '<div class="stat"><div class="n">' + month + '</div><div class="l">こんげつ</div></div>' +
+    '<div class="stat"><div class="n">' + yen(c.paid).toLocaleString('ja-JP') + '</div><div class="l">もらった お金</div></div>';
 
   var d0 = new Date(), y = d0.getFullYear(), m = d0.getMonth();
   var first = new Date(y, m, 1), last = new Date(y, m + 1, 0).getDate();
@@ -661,7 +709,7 @@ function renderHistory() {
     .sort(function (a, b) { return b.createdAt - a.createdAt; });
   var shown = logs.slice(0, ui.logLimit);
   $('log-list').innerHTML = shown.length ? shown.map(function (l) {
-    var label = l.status === 'pending' ? '⏳ 承認まち' : l.status === 'rejected' ? '✕ みとめられなかった' : '✓ 承認ずみ';
+    var label = l.status === 'pending' ? '⏳ まってるところ' : l.status === 'rejected' ? '✕ もどされた' : '✓ ポイントに なった';
     return '<div class="row"><span class="em">' + esc(l.emoji || '⭐️') + '</span><div class="body">' +
       '<div class="t">' + esc(l.title) + '</div><div class="d">' + fmtDay(l.createdAt) + ' ' + fmtTime(l.createdAt) + ' ・ ' + label +
       (l.note ? ' ・ ' + esc(l.note) : '') + '</div></div>' +
@@ -682,8 +730,14 @@ function renderCash() {
     '<div style="font-size:12px;color:var(--sub);font-weight:700">つかえるポイント</div>' +
     '<div style="font-size:34px;font-weight:800;color:var(--ac-deep);line-height:1.2">' + c.balance + 'P</div>' +
     '<div style="font-size:16px;font-weight:800">＝ ' + yenStr(c.balance) + '</div>' +
-    (c.held ? '<div class="hold" style="margin-top:8px">申請中 ' + c.held + 'P（' + yenStr(c.held) + '）</div>' : '') +
+    (c.held ? '<div class="hold" style="margin-top:8px">おねがいちゅう ' + c.held + 'P（' + yenStr(c.held) + '）</div>' : '') +
     '</div>';
+
+  var gi = goalInfo(kid);
+  $('cash-goal').innerHTML = gi
+    ? '<div class="note" style="text-align:center;padding:10px 0 0">🎯 ' + esc(gi.g.title) + ' まで ' +
+      (gi.done ? '<b style="color:var(--ok)">たまったよ!</b>' : 'あと ' + gi.rest.toLocaleString('ja-JP') + '円') + '</div>'
+    : '';
 
   var presets = [100, 500, 1000].filter(function (v) { return v % rate === 0; });
   var h = presets.map(function (v) {
@@ -698,13 +752,13 @@ function renderCash() {
   var list = S.cashouts.filter(function (x) { return x.kidId === kid.id; })
     .sort(function (a, b) { return b.createdAt - a.createdAt; });
   $('cash-list').innerHTML = list.length ? list.map(function (x) {
-    var label = x.status === 'pending' ? '⏳ おうちの人まち' : x.status === 'paid' ? '✓ うけとった' : '✕ とりけし';
+    var label = x.status === 'pending' ? '⏳ おうちのひとまち' : x.status === 'paid' ? '✓ もらった' : '✕ やめた';
     return '<div class="row"><span class="em">' + (x.status === 'paid' ? '💵' : x.status === 'pending' ? '⏳' : '↩️') + '</span>' +
       '<div class="body"><div class="t">' + x.yen.toLocaleString('ja-JP') + '円（' + x.points + 'P）</div>' +
       '<div class="d">' + fmtDay(x.createdAt) + ' ' + fmtTime(x.createdAt) + ' ・ ' + label + '</div></div>' +
       (x.status === 'pending' ? '<button class="btn icon gray" data-cancel-cash="' + x.id + '" title="とりけす">✕</button>' : '') +
       '</div>';
-  }).join('') : '<div class="empty"><span class="big">🐖</span>まだこうかんしていません<br>コツコツためよう</div>';
+  }).join('') : '<div class="empty"><span class="big">🐖</span>まだ かえていないよ<br>コツコツ ためよう</div>';
 }
 
 function renderBadges() {
@@ -713,7 +767,8 @@ function renderBadges() {
   bp.hidden = p === 0; bp.textContent = p;
   var kid = currentKid();
   var bc = $('badge-cash');
-  var can = kid ? calc(kid.id).balance >= (100 / S.settings.yenPerPoint) : false;
+  var gi2 = goalInfo(kid);
+  var can = kid ? (gi2 ? gi2.done : calc(kid.id).balance >= (100 / S.settings.yenPerPoint)) : false;
   bc.hidden = !can; bc.textContent = '!';
 }
 
@@ -735,8 +790,8 @@ function renderParent() {
   $('parent-locked').style.display = open ? 'none' : 'block';
   $('parent-body').style.display = open ? 'block' : 'none';
   $('lock-msg').innerHTML = S.pin
-    ? 'ポイントの承認・こうかん・設定はここから行います。<br>4桁のPINを入れてください。'
-    : 'ポイントの承認・こうかん・設定はここから行います。<br>まだPINが未設定です。好きな4桁を入れると、それがPINになります。';
+    ? 'ポイントのOK・おこづかいのやりとり・設定はここから。<br>4桁のPINを入れてください。'
+    : 'ポイントのOK・おこづかいのやりとり・設定はここから。<br>まだPINがありません。好きな4桁を入れると、それがPINになります。';
   if (!open) return;
 
   /* --- 承認まち --- */
@@ -749,9 +804,9 @@ function renderParent() {
       '<span class="pt">+' + l.points + 'P</span><div class="acts">' +
       '<button class="btn icon ok" data-approve="' + l.id + '">✓</button>' +
       '<button class="btn icon ng" data-reject="' + l.id + '">✕</button></div></div>';
-  }).join('') : '<div class="empty"><span class="big">🎉</span>承認まちはありません</div>';
+  }).join('') : '<div class="empty"><span class="big">🎉</span>OKまちは ありません</div>';
   $('pending-actions').innerHTML = pend.length > 1
-    ? '<button class="btn ok wide" id="approve-all">✓ ぜんぶ承認する（+' +
+    ? '<button class="btn ok wide" id="approve-all">✓ ぜんぶ OKする（+' +
       pend.reduce(function (s, l) { return s + l.points; }, 0) + 'P）</button>' : '';
 
   /* --- こうかん申請 --- */
@@ -763,7 +818,7 @@ function renderParent() {
       '<div class="d">' + kidEmoji(x.kidId) + ' ' + esc(kidName(x.kidId)) + ' ・ ' + fmtDay(x.createdAt) + ' ' + fmtTime(x.createdAt) + '</div></div>' +
       '<div class="acts"><button class="btn sm ok" data-pay="' + x.id + '">わたした</button>' +
       '<button class="btn icon ng" data-unpay="' + x.id + '">✕</button></div></div>';
-  }).join('') : '<div class="empty">こうかんの申請はありません<br><span style="font-size:11px">現金を渡してから「わたした」を押すと、ポイントが引かれます</span></div>';
+  }).join('') : '<div class="empty">おねがいは ありません<br><span style="font-size:11px">お金を渡してから「わたした」を押すと、ポイントがへります</span></div>';
 
   /* --- 子ども --- */
   $('parent-kids').innerHTML = S.kids.map(function (k) {
@@ -792,8 +847,8 @@ function renderParent() {
     '<div class="hint">この設定で「◯P ＝ ◯円」の表示が決まります</div></div>' +
     '<input type="number" id="set-rate" min="1" max="1000" step="1" value="' + S.settings.yenPerPoint + '" style="max-width:88px">' +
     '<span style="font-size:13px;font-weight:700">円</span></div>' +
-    '<div class="field"><div style="flex:1"><label>親の承認を必須にする</label>' +
-    '<div class="hint">OFFにすると、子がタップした時点でポイントが入ります</div></div>' +
+    '<div class="field"><div style="flex:1"><label>おうちの人がOKしてからポイントを入れる</label>' +
+    '<div class="hint">OFFにすると、タップしたらすぐポイントが入ります</div></div>' +
     '<div class="switch' + (S.settings.requireApproval ? ' on' : '') + '" id="set-approval"></div></div>' +
     '<div class="field"><div style="flex:1"><label>PINを変える</label>' +
     '<div class="hint">' + (S.pin ? '設定ずみ' : '未設定') + ' ・ 5分さわらないと自動でロックします</div></div>' +
@@ -820,19 +875,19 @@ function doTask(taskId, ev) {
     coinFx(r.left + r.width / 2, r.top, '🪙');
   }
   buzz(30);
-  toast(needApproval ? 'できた! おうちの人にお知らせしたよ（+' + t.points + 'P）' : 'できた! +' + t.points + 'P');
+  toast(needApproval ? 'できた! おうちの人に おしらせしたよ（+' + t.points + 'P）' : 'できた! +' + t.points + 'P');
   renderAll();
 }
 function cancelLog(id) {
   S.logs = S.logs.filter(function (l) { return !(l.id === id && l.status === 'pending'); });
-  save(); renderAll(); toast('とりけしました');
+  save(); renderAll(); toast('やめました');
 }
 function decide(id, ok) {
   S.logs.forEach(function (l) {
     if (l.id === id && l.status === 'pending') { l.status = ok ? 'approved' : 'rejected'; l.decidedAt = Date.now(); }
   });
   save(); touchUnlock(); renderAll();
-  toast(ok ? '承認しました' : 'もどしました');
+  toast(ok ? 'OKしました' : 'もどしました');
 }
 function approveAll() {
   var n = 0, p = 0;
@@ -840,7 +895,7 @@ function approveAll() {
     if (l.status === 'pending') { l.status = 'approved'; l.decidedAt = Date.now(); n++; p += l.points; }
   });
   save(); touchUnlock(); renderAll();
-  toast(n + '件を承認しました（+' + p + 'P）');
+  toast(n + '件を OKしました（+' + p + 'P）');
 }
 function requestCash(points) {
   var kid = currentKid();
@@ -854,18 +909,18 @@ function requestCash(points) {
     status: 'pending', createdAt: Date.now(), decidedAt: null
   });
   save(); renderAll(); buzz(40);
-  toast('こうかんを申請しました（' + yenStr(points) + '）');
+  toast('おねがいしたよ（' + yenStr(points) + '）');
 }
 function cancelCash(id) {
   S.cashouts = S.cashouts.filter(function (c) { return !(c.id === id && c.status === 'pending'); });
-  save(); renderAll(); toast('申請をとりけしました');
+  save(); renderAll(); toast('おねがいを やめたよ');
 }
 function decideCash(id, paid) {
   S.cashouts.forEach(function (c) {
     if (c.id === id && c.status === 'pending') { c.status = paid ? 'paid' : 'rejected'; c.decidedAt = Date.now(); }
   });
   save(); touchUnlock(); renderAll();
-  toast(paid ? 'こうかんを完了しました' : '申請をもどしました');
+  toast(paid ? 'わたしました' : 'おねがいを もどしました');
 }
 function adjust(kidId, points, note) {
   S.logs.push({
@@ -992,14 +1047,14 @@ function openCashSheet() {
   var c = calc(kid.id), rate = S.settings.yenPerPoint;
   openSheet('<h2>いくら こうかんする?</h2>' +
     '<p class="lead">つかえるのは ' + c.balance + 'P（' + yenStr(c.balance) + '）まで。<br>' +
-    '1ポイント = ' + rate + '円 なので、' + rate + '円 きざみで えらべます。</p>' +
+    '1ポイント＝' + rate + '円 だから、' + rate + '円ずつ えらべるよ。</p>' +
     '<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">' +
     '<input class="in" id="c-yen" type="number" min="' + rate + '" max="' + yen(c.balance) + '" step="' + rate + '" ' +
     'style="margin:0;max-width:130px" value="' + Math.min(yen(c.balance), 100 - (100 % rate) || rate) + '">' +
     '<span style="font-size:16px;font-weight:800">円</span></div>' +
     '<div id="c-info" class="note"></div>' +
     '<div class="sheet-actions"><button class="btn gray" data-act="close">やめる</button>' +
-    '<button class="btn" data-act="do-cash">こうかんを申請する</button></div>');
+    '<button class="btn" data-act="do-cash">これで おねがいする</button></div>');
   updateCashInfo();
 }
 function updateCashInfo() {
@@ -1008,7 +1063,46 @@ function updateCashInfo() {
   var rate = S.settings.yenPerPoint;
   var v = parseInt($('c-yen').value, 10) || 0;
   var p = Math.floor(v / rate);
-  el.textContent = p > 0 ? '→ ' + p + 'ポイント つかいます' + (v % rate ? '（' + (v % rate) + '円のはんぱは切りすてます）' : '') : '金額を入れてください';
+  el.textContent = p > 0 ? '→ ' + p + 'ポイント つかうよ' + (v % rate ? '（' + (v % rate) + '円の はんぱは きりすて）' : '') : 'いくらか いれてね';
+}
+
+var editingGoal = null;
+function openGoalSheet() {
+  var kid = currentKid();
+  if (!kid) return;
+  editingGoal = kid.goal ? JSON.parse(JSON.stringify(kid.goal)) : { emoji: '🎮', title: '', yen: 1000 };
+  openSheet('<h2>🎯 ちょきんの めあて</h2>' +
+    '<p class="lead">ほしいものと ねだんを きめると、<br>あと いくら ためればいいか わかるよ。</p>' +
+    emojiPick(GOAL_EMOJI, editingGoal.emoji) +
+    '<input class="in" id="g-title" type="text" maxlength="20" placeholder="なにが ほしい?（れい: ゲームソフト）" value="' + esc(editingGoal.title) + '">' +
+    '<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">' +
+    '<input class="in" id="g-yen" type="number" min="1" max="1000000" step="10" style="margin:0;max-width:130px" value="' + editingGoal.yen + '">' +
+    '<span style="font-size:16px;font-weight:800">円</span></div>' +
+    '<div id="g-info" class="note"></div>' +
+    '<div class="sheet-actions"><button class="btn gray" data-act="close">やめる</button>' +
+    '<button class="btn" data-act="save-goal">これに きめる</button></div>' +
+    (kid.goal ? '<div style="margin-top:10px"><button class="btn ng wide" data-act="del-goal">めあてを けす</button></div>' : ''));
+  updateGoalInfo();
+}
+function updateGoalInfo() {
+  var el = $('g-info');
+  if (!el) return;
+  var kid = currentKid();
+  var v = parseInt($('g-yen').value, 10) || 0;
+  var now = yen(calc(kid.id).balance);
+  el.textContent = v > 0
+    ? (now >= v ? 'いまの ' + now.toLocaleString('ja-JP') + '円で もう たりるよ!'
+                : 'いまは ' + now.toLocaleString('ja-JP') + '円。あと ' + (v - now).toLocaleString('ja-JP') + '円')
+    : 'ねだんを いれてね';
+}
+function saveGoal() {
+  var kid = currentKid();
+  var title = ($('g-title').value || '').trim();
+  var v = Math.max(1, Math.min(1000000, parseInt($('g-yen').value, 10) || 0));
+  if (!title) { toast('ほしいものを いれてね'); return; }
+  kid.goal = { emoji: editingGoal.emoji, title: title, yen: v };
+  save(); closeSheet(); renderAll(); buzz(30);
+  toast('めあてを きめたよ: ' + title + ' ' + v.toLocaleString('ja-JP') + '円');
 }
 
 function openPinSheet() {
@@ -1110,8 +1204,15 @@ document.addEventListener('click', function (e) {
   el = e.target.closest('[data-cash]');
   if (el) {
     var pts = parseInt(el.dataset.cash, 10);
-    confirmSheet('こうかんの申請', pts + 'ポイントを <b>' + yenStr(pts) + '</b> にかえます。<br>' +
-      'おうちの人が「わたした」を押すとポイントが引かれます。', 'これでOK', function () { requestCash(pts); });
+    var kidC = currentKid(), gAfter = '';
+    if (kidC && kidC.goal && kidC.goal.yen) {
+      var after = yen(calc(kidC.id).balance - pts);
+      var restAfter = Math.max(0, kidC.goal.yen - after);
+      gAfter = '<br><span style="color:#8a5a00">🎯 ' + esc(kidC.goal.title) + ' までは ' +
+        (restAfter ? 'あと ' + restAfter.toLocaleString('ja-JP') + '円 に なるよ' : 'まだ たりてるよ') + '</span>';
+    }
+    confirmSheet('おこづかいに かえる', pts + 'ポイントを <b>' + yenStr(pts) + '</b> に かえるよ。<br>' +
+      'おうちの人から お金を もらったら かんりょう!' + gAfter, 'これでOK', function () { requestCash(pts); });
     return;
   }
   if (e.target.closest('#cash-custom')) { openCashSheet(); return; }
@@ -1131,8 +1232,8 @@ document.addEventListener('click', function (e) {
     var cid = el.dataset.pay, co = null;
     S.cashouts.forEach(function (c) { if (c.id === cid) co = c; });
     if (!co) return;
-    confirmSheet('こうかんを完了する', '<b>' + esc(kidName(co.kidId)) + '</b> さんに <b>' + co.yen.toLocaleString('ja-JP') + '円</b> を渡しましたか?<br>' +
-      'OKすると ' + co.points + 'P が残高から引かれます。', 'わたした', function () { decideCash(cid, true); });
+    confirmSheet('おこづかいを わたす', '<b>' + esc(kidName(co.kidId)) + '</b> に <b>' + co.yen.toLocaleString('ja-JP') + '円</b> を渡しましたか?<br>' +
+      'OKすると ' + co.points + 'P が残高からへります。', 'わたした', function () { decideCash(cid, true); });
     return;
   }
   el = e.target.closest('[data-unpay]');
@@ -1147,7 +1248,7 @@ document.addEventListener('click', function (e) {
   if (e.target.closest('#set-approval')) {
     S.settings.requireApproval = !S.settings.requireApproval;
     save(); touchUnlock(); renderParent();
-    toast(S.settings.requireApproval ? '承認を必須にしました' : 'タップですぐポイントが入ります');
+    toast(S.settings.requireApproval ? 'おうちの人のOKが いるようにしました' : 'タップしたら すぐポイントが入ります');
     return;
   }
   if (e.target.closest('#export')) { exportData(); touchUnlock(); return; }
@@ -1171,6 +1272,7 @@ document.addEventListener('click', function (e) {
     el.classList.add('on');
     if (editingKid && $('k-name')) editingKid.emoji = el.dataset.emoji;
     if (editingTask && $('t-title')) editingTask.emoji = el.dataset.emoji;
+    if (editingGoal && $('g-title')) editingGoal.emoji = el.dataset.emoji;
     return;
   }
   el = e.target.closest('[data-cat]');
@@ -1207,6 +1309,14 @@ document.addEventListener('click', function (e) {
       confirmSheet('このタスクを消しますか?', 'これまでの記録は残ります。', '消す', function () {
         S.tasks = S.tasks.filter(function (t) { return t.id !== tid; });
         save(); touchUnlock(); renderAll(); toast('消しました');
+      }, true);
+    }
+    else if (act === 'edit-goal') openGoalSheet();
+    else if (act === 'save-goal') saveGoal();
+    else if (act === 'del-goal') {
+      var kidG = currentKid();
+      confirmSheet('めあてを けす?', 'ためたポイントは そのまま のこるよ。', 'けす', function () {
+        if (kidG) { kidG.goal = null; save(); renderAll(); toast('めあてを けしたよ'); }
       }, true);
     }
     else if (act === 'save-kid') saveKid();
@@ -1258,6 +1368,7 @@ function segOn(el) {
 
 document.addEventListener('input', function (e) {
   if (e.target.id === 'c-yen') updateCashInfo();
+  if (e.target.id === 'g-yen') updateGoalInfo();
   if (e.target.id === 'set-rate') {
     var v = Math.max(1, Math.min(1000, parseInt(e.target.value, 10) || 1));
     S.settings.yenPerPoint = v;
