@@ -40,6 +40,7 @@
    - ジャマケシ: `https://<プロジェクト名>.vercel.app/retouch/`
    - バスナビ!: `https://<プロジェクト名>.vercel.app/basket/`
    - おてつだいバンク: `https://<プロジェクト名>.vercel.app/points/`
+   - まなクエ!: `https://<プロジェクト名>.vercel.app/study/`
 
 以降はデフォルトブランチ(`claude/shopping-reminder-app-7xpyg5`)への push のたびに
 自動で再デプロイされます。
@@ -127,6 +128,15 @@ B.LEAGUE・NBA・バスケットボール日本代表の試合日程、結果、
 「バスナビ!」も入っています(`basket/` フォルダ)。試合カードの「放送を探す」から、
 その試合をどこで見られるか(番組表・TVer・バスケットLIVE・NBA Rakutenなど)を探せます。詳しくは
 [basket/README.md](basket/README.md) を見てください。
+
+## 🎓 同居アプリ: まなクエ!
+
+小学3年生が、さんすう・こくご(3年生の漢字200字)・りか・しゃかいを
+ゲームのように遊びながら練習できる学習アプリ「まなクエ!」も入っています(`study/` フォルダ)。
+1ステージ10問のチャレンジ形式で、★・レベル・バッジ・れんぞく日数がたまり、
+まちがえた問題は自動で「まちがえ直し」にたまります。おうちの人向けの見まもり画面では、
+正答率や「7の だん」などのつまずきが一目でわかります。詳しくは
+[study/README.md](study/README.md)、仕様は [docs/SPEC-study.md](docs/SPEC-study.md) を見てください。
 
 ## 技術構成
 
