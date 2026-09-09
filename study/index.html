@@ -145,6 +145,7 @@
   .big-card .bc-t { font-size: 14.5px; font-weight: 800; }
   .big-card .bc-d { font-size: 11.5px; color: var(--sub); font-weight: 600; }
   .big-card .bc-go { margin-left: auto; font-size: 18px; color: var(--line2); }
+  .big-card .bc-em img { width: 100%; height: 100%; border-radius: 13px; display: block; object-fit: cover; }
 
   /* ===== クイズ画面 ===== */
   #view-quiz { position: fixed; inset: 0; background: var(--bg); z-index: 50; display: flex; flex-direction: column; }
@@ -294,6 +295,62 @@
   .pin-dots i.on { background: var(--ac); }
   .danger, .btn.sub.danger { color: var(--ng); font-weight: 800; }
 
+
+  /* ===== 四神バトル ===== */
+  .party { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .party-card { background: #fff; border-radius: 16px; box-shadow: var(--shadow); padding: 10px; text-align: left; }
+  .party-card.on { box-shadow: 0 0 0 3px var(--ac) inset, var(--shadow); }
+  .party-card:active { transform: scale(.98); }
+  .party-card .pc-top { display: flex; gap: 8px; align-items: center; margin-bottom: 2px; }
+  .party-card .pc-top > span { min-width: 0; }
+  .party-card img { width: 50px; height: 50px; border-radius: 12px; flex: 0 0 auto; }
+  .party-card .pc-n { display: block; font-size: 15px; font-weight: 800; line-height: 1.2; }
+  .party-card .pc-y { display: block; font-size: 10px; color: var(--sub); font-weight: 700; }
+  .party-card .pc-s { display: block; font-size: 11.5px; font-weight: 800; margin-top: 7px; }
+  .party-card .pc-d { display: block; font-size: 10.5px; color: var(--sub); line-height: 1.35; min-height: 28px; }
+  .party-card .pc-b { display: block; font-size: 10px; font-weight: 800; color: var(--sub); margin-top: 6px; }
+  .bond-bar { display: block; height: 5px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 3px; }
+  .bond-bar > i { display: block; height: 100%; border-radius: 99px; }
+  .boss-card { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 16px; box-shadow: var(--shadow); padding: 12px; width: 100%; text-align: left; margin-bottom: 10px; }
+  .boss-card:active { transform: scale(.99); }
+  .boss-card.locked { opacity: .5; }
+  .boss-card .bo-em { width: 46px; height: 46px; border-radius: 14px; background: var(--ac-soft); display: flex; align-items: center; justify-content: center; font-size: 25px; flex: 0 0 auto; }
+  .boss-card > span:nth-child(2) { flex: 1; min-width: 0; }
+  .boss-card .bo-n { display: block; font-size: 14.5px; font-weight: 800; }
+  .boss-card .bo-d { display: block; font-size: 11px; color: var(--sub); font-weight: 600; }
+  .boss-card .bo-s { margin-left: auto; text-align: right; font-size: 13px; color: var(--gold); letter-spacing: 1px; flex: 0 0 auto; }
+  .boss-card .bo-s .off { color: var(--line2); }
+
+  /* バトル中のHUD */
+  .bt-hud { max-width: 560px; margin: 9px auto 0; }
+  .bt-row { display: flex; align-items: center; gap: 10px; }
+  .bt-me { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+  .bt-me img { width: 42px; height: 42px; border-radius: 11px; box-shadow: 0 0 0 2px var(--line2); }
+  .bt-me.atk img { animation: atk .45s; }
+  @keyframes atk { 0% { transform: none; } 40% { transform: translateX(12px) scale(1.14); } 100% { transform: none; } }
+  .hearts { font-size: 13px; letter-spacing: 0; white-space: nowrap; flex: 0 0 auto; }
+  .hearts .off { opacity: .25; filter: grayscale(1); }
+  .bt-boss { flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .bt-boss-em { font-size: 26px; flex: 0 0 auto; }
+  .bt-boss.hit .bt-boss-em { animation: shake .4s; }
+  @keyframes shake { 0%, 100% { transform: none; } 20% { transform: translateX(-6px) rotate(-9deg); } 55% { transform: translateX(6px) rotate(9deg); } 80% { transform: translateX(-3px); } }
+  .bt-boss-b { flex: 1; min-width: 0; }
+  .bt-hpbar { height: 9px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 3px; }
+  .bt-hpbar > i { display: block; height: 100%; background: linear-gradient(90deg, #ff9f43, #e8564f); border-radius: 99px; transition: width .45s; }
+  .bt-hpnum { font-size: 10px; font-weight: 800; color: var(--sub); text-align: right; }
+  .bt-gauge { position: relative; height: 16px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 7px; }
+  .bt-gauge > i { display: block; height: 100%; background: linear-gradient(90deg, #7c5cff, #f7b731); transition: width .4s; }
+  .bt-gauge > span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #4a3f7a; }
+  .bt-gauge.full > i { animation: pulse 1s infinite; }
+  @keyframes pulse { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.4); } }
+  .dmg { font-size: 46px; font-weight: 800; color: #ff6f3c; text-shadow: 0 2px 0 #fff, 0 0 14px rgba(255, 120, 60, .6); animation: pop .35s; }
+  .dmg.crit { color: #ffb300; font-size: 56px; }
+  .skill-name { font-size: 20px; font-weight: 800; color: #fff; background: linear-gradient(90deg, #7c5cff, #f7b731); padding: 8px 20px; border-radius: 99px; animation: pop .3s; }
+  .bt-result { text-align: center; }
+  .bt-result img { width: 160px; border-radius: 20px; box-shadow: var(--shadow); }
+  .bt-result .br-t { font-size: 22px; font-weight: 800; margin-top: 8px; }
+  .bt-result .br-d { font-size: 13px; color: var(--sub); font-weight: 700; }
+
   /* ===== 下タブ ===== */
   nav.tabbar {
     position: fixed; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,.96);
@@ -342,6 +399,15 @@
         <div class="sec-title">🎯 きょうの ミッション <span class="note" id="missionNote"></span></div>
         <div id="missionList"></div>
       </div>
+
+      <button class="big-card" id="btnBattle">
+        <span class="bc-em" style="background:#efeaff" id="battleFace">⚔️</span>
+        <span>
+          <span class="bc-t">四神バトル</span>
+          <span class="bc-d" id="battleDesc">守護神と ボスに いどもう</span>
+        </span>
+        <span class="bc-go">›</span>
+      </button>
 
       <button class="big-card" id="btnReview">
         <span class="bc-em" style="background:var(--ng-soft)">🩹</span>
@@ -486,9 +552,22 @@
     </div>
   </section>
 
+  <!-- ===== 四神バトル ===== -->
+  <section id="view-battle" class="view hidden">
+    <div class="wrap">
+      <div class="sec-title">🐉 あいぼうを えらぶ <span class="note">タップで こうたい</span></div>
+      <div class="party" id="partyList"></div>
+      <div class="sec-title" style="margin-top:18px">⚔️ ボス <span class="note" id="battleNote"></span></div>
+      <div id="bossList"></div>
+      <button class="btn sub" id="btnBattleBack">マップへ もどる</button>
+      <div style="height:14px"></div>
+    </div>
+  </section>
+
   <!-- ===== 結果 ===== -->
   <section id="view-result" class="view hidden">
     <div class="wrap">
+      <div id="rsBattle"></div>
       <div class="card">
         <div class="result-hero">
           <div class="result-stars" id="rsStars"></div>
@@ -520,6 +599,20 @@
       <div class="q-name" id="qName"></div>
       <div class="q-combo" id="qCombo"></div>
       <div class="q-count" id="qCount"></div>
+    </div>
+    <div class="bt-hud hidden" id="qBattle">
+      <div class="bt-row">
+        <div class="bt-me" id="btMe"><img id="btImg" alt=""></div>
+        <div class="bt-boss" id="btBoss">
+          <div class="bt-boss-em" id="btBossEm"></div>
+          <div class="bt-boss-b">
+            <div class="bt-hpbar"><i id="btHpBar" style="width:100%"></i></div>
+            <div class="bt-hpnum" id="btHpNum"></div>
+          </div>
+        </div>
+        <div class="hearts" id="btHearts"></div>
+      </div>
+      <div class="bt-gauge" id="btGaugeWrap"><i id="btGauge" style="width:0%"></i><span id="btGaugeT">ひっさつ 0%</span></div>
     </div>
     <div class="q-prog" id="qProg"></div>
     <div class="q-time hidden" id="qTime"><i style="width:100%"></i></div>
@@ -949,6 +1042,48 @@ UNITS.push(
 const UNIT = Object.fromEntries(UNITS.map(u => [u.id, u]));
 
 /* =========================================================
+   四神(しじん)バトル: 守護神と ボス
+   ========================================================= */
+const GUARDIANS = [
+  {
+    id: 'seiryu', name: '青龍', yomi: 'せいりゅう', dir: '東の守護神', color: '#2f7ff0',
+    skill: 'かぜのはやさ', sdesc: 'こたえる時間が 10秒 ふえる', hissatsu: '蒼天龍撃!',
+    word: '風を操り、未来を切り拓く。',
+  },
+  {
+    id: 'byakko', name: '白虎', yomi: 'びゃっこ', dir: '西の守護神', color: '#8b7bd8',
+    skill: 'まもりのキバ', sdesc: 'ハートが 2つ ふえる', hissatsu: '白牙烈斬!',
+    word: '守るために、強くなる。',
+  },
+  {
+    id: 'suzaku', name: '朱雀', yomi: 'すざく', dir: '南の守護神', color: '#e8433f',
+    skill: 'ほのおのちから', sdesc: 'こうげき力が 1.3倍', hissatsu: '紅蓮鳳舞!',
+    word: '燃える想いが、世界を照らす。',
+  },
+  {
+    id: 'genbu', name: '玄武', yomi: 'げんぶ', dir: '北の守護神', color: '#1f9d6b',
+    skill: 'ときのめぐみ', sdesc: 'たおれても 1回だけ 復活する', hissatsu: '玄氷永盾!',
+    word: '時を重ねて、永遠に守る。',
+  },
+];
+GUARDIANS.forEach(g => { g.img = `characters/${g.id}.webp`; g.icon = `characters/${g.id}-icon.webp`; });
+const G = Object.fromEntries(GUARDIANS.map(g => [g.id, g]));
+
+const BOSSES = [
+  { id: 'b1', name: 'スライムこぞう', em: '🫧', hp: 1000, lv: 1, subs: ['math'], d: 'さんすう' },
+  { id: 'b2', name: 'かんじオバケ', em: '👻', hp: 1300, lv: 2, subs: ['kokugo'], d: 'こくご' },
+  { id: 'b3', name: 'むしむしキング', em: '🐛', hp: 1600, lv: 3, subs: ['rika'], d: 'りか' },
+  { id: 'b4', name: 'まいごマップ', em: '🗺️', hp: 1800, lv: 4, subs: ['shakai'], d: 'しゃかい' },
+  { id: 'b5', name: 'けいさんゴーレム', em: '🗿', hp: 2200, lv: 5, subs: ['math'], d: 'さんすう' },
+  { id: 'b6', name: 'ものしりフクロウ', em: '🦉', hp: 2600, lv: 6, subs: ['kokugo', 'rika'], d: 'こくご・りか' },
+  { id: 'b7', name: 'カミナリオオカミ', em: '⚡', hp: 3000, lv: 7, subs: ['rika', 'shakai'], d: 'りか・しゃかい' },
+  { id: 'b8', name: 'まなクエ王', em: '👑', hp: 4000, lv: 8, subs: ['math', 'kokugo', 'rika', 'shakai'], d: 'ぜんぶの教科' },
+];
+const bossOpen = i => i === 0 || !!S.battle.cleared[BOSSES[i - 1].id];
+const bondLv = id => Math.min(10, Math.floor((S.battle.bond[id] || 0) / 10));
+const bondNext = id => 10 - ((S.battle.bond[id] || 0) % 10);
+
+/* =========================================================
    バッジ
    ========================================================= */
 const BADGES = [
@@ -972,6 +1107,12 @@ const BADGES = [
   { id: 'review10', e: '🩹', t: 'なおし名人', d: 'まちがえ直しを 10回', ok: t => t.review >= 10 },
   { id: 'chal20', e: '⏱️', t: 'はやとき', d: '60びょうチャレンジで 20もん', ok: (t, s) => (s.best.challenge || 0) >= 20 },
   { id: 'star30', e: '🌈', t: '★を30こ', d: '★を ぜんぶで 30こ あつめた', ok: (t, s) => Object.values(s.stars).reduce((a, b) => a + b, 0) >= 30 },
+  { id: 'bt1', e: '⚔️', t: 'はじめての しょうり', d: 'ボスを 1体 たおした', ok: (t, s) => s.battle.wins >= 1 },
+  { id: 'bt4', e: '🛡️', t: 'ボスハンター', d: 'ボスを 4体 たおした', ok: (t, s) => Object.keys(s.battle.cleared).length >= 4 },
+  { id: 'btking', e: '👑', t: 'まなクエ王', d: 'さいごの ボスを たおした', ok: (t, s) => !!s.battle.cleared.b8 },
+  { id: 'bt4g', e: '🐉', t: '四神づかい', d: '4人 ぜんいんで しょうりした', ok: (t, s) => GUARDIANS.every(g => (s.battle.winBy || {})[g.id]) },
+  { id: 'btnd', e: '💎', t: 'むきず', d: 'ハートを へらさずに しょうり', ok: (t, s) => (s.battle.noDamage || 0) >= 1 },
+  { id: 'bond10', e: '💞', t: 'きずなレベル10', d: 'だれかと きずなレベル10', ok: (t, s) => GUARDIANS.some(g => bondLv(g.id) >= 10) },
 ];
 
 /* =========================================================
@@ -989,6 +1130,7 @@ const MISSIONS = [
   { id: 'rika1', t: 'りか か しゃかいを 1ステージ やる', n: 1, p: d => (d.subj.rika || 0) + (d.subj.shakai || 0) },
   { id: 'review1', t: 'まちがえ直しを やる', n: 1, p: d => d.review },
   { id: 'chal1', t: '60びょうチャレンジを やる', n: 1, p: d => d.challenge || 0 },
+  { id: 'battle1', t: '四神バトルで 1回 かつ', n: 1, p: d => d.battleWin || 0 },
 ];
 /* 日付から その日の3つを きめる(毎日 同じ端末なら 同じ内容) */
 function todayMissions() {
@@ -1021,6 +1163,7 @@ function blankState() {
     settings: { difficulty: 'normal', count: 10, timeLimit: 30, sound: true, subjects: { math: true, kokugo: true, rika: true, shakai: true }, pin: '' },
     stars: {}, units: {}, items: {}, daily: {}, wrongs: [], badges: [],
     streak: { last: '', count: 0, best: 0 }, best: { challenge: 0 },
+    battle: { partner: 'seiryu', cleared: {}, bond: {}, winBy: {}, wins: 0, noDamage: 0 },
   };
 }
 function load() {
@@ -1034,6 +1177,9 @@ function load() {
       stars: o.stars || {}, units: o.units || {}, items: o.items || {}, daily: o.daily || {},
       wrongs: o.wrongs || [], badges: o.badges || [],
       streak: Object.assign(b.streak, o.streak || {}), best: Object.assign(b.best, o.best || {}),
+      battle: Object.assign(b.battle, o.battle || {}, {
+        cleared: (o.battle || {}).cleared || {}, bond: (o.battle || {}).bond || {}, winBy: (o.battle || {}).winBy || {},
+      }),
     };
   } catch (e) { return blankState(); }
 }
@@ -1041,7 +1187,7 @@ let S = load();
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast('ほぞんできませんでした'); } }
 function day(k) {
   const key = k || todayKey();
-  if (!S.daily[key]) S.daily[key] = { q: 0, c: 0, sec: 0, clears: 0, perfect: 0, review: 0, challenge: 0, maxCombo: 0, subj: {}, claimed: [] };
+  if (!S.daily[key]) S.daily[key] = { q: 0, c: 0, sec: 0, clears: 0, perfect: 0, review: 0, challenge: 0, battleWin: 0, maxCombo: 0, subj: {}, claimed: [] };
   const d = S.daily[key];
   if (!d.subj) d.subj = {}; if (!d.claimed) d.claimed = [];
   return d;
@@ -1083,7 +1229,7 @@ function beep(kind) {
   } catch (e) { /* 音が出せない端末では 何もしない */ }
 }
 
-const VIEWS = ['map', 'record', 'badge', 'parent', 'result'];
+const VIEWS = ['map', 'record', 'badge', 'parent', 'result', 'battle'];
 let currentTab = 'map';
 function showView(name) {
   VIEWS.forEach(v => $('view-' + v).classList.toggle('hidden', v !== name));
@@ -1130,6 +1276,14 @@ function renderMap() {
   }).join('');
   const doneCount = ms.filter(m => m.p(d) >= m.n).length;
   $('missionNote').textContent = doneCount === 3 ? 'ぜんぶ たっせい!' : `${doneCount}/3 たっせい`;
+
+  /* バトル */
+  const nextBoss = BOSSES.find((b, i) => bossOpen(i) && !S.battle.cleared[b.id] && b.subs.some(x => S.settings.subjects[x] !== false));
+  const allCleared = BOSSES.every(b => S.battle.cleared[b.id]);
+  const pg = G[S.battle.partner] || GUARDIANS[0];
+  $('battleFace').innerHTML = `<img src="${pg.icon}" alt="${esc(pg.name)}">`;
+  $('battleDesc').textContent = `あいぼう ${pg.name} ・ ` + (
+    allCleared ? 'ボスを ぜんぶ たおした!' : nextBoss ? `つぎは ${nextBoss.name}` : 'ボスに いどもう');
 
   /* まちがえ直し・チャレンジ */
   $('reviewDesc').textContent = S.wrongs.length ? `${S.wrongs.length}もん たまってるよ` : 'いまは からっぽ! えらい!';
@@ -1179,18 +1333,18 @@ function buildQuestions(unit, n) {
 }
 function startStage(unitId) {
   const u = UNIT[unitId];
-  Q = { sid: ++sessionSeq, mode: 'stage', unitId, name: u.name, em: u.em, list: buildQuestions(u, S.settings.count), idx: 0, correct: 0, combo: 0, maxCombo: 0, xp: 0, results: [], start: Date.now() };
+  Q = { sid: ++sessionSeq, mode: 'stage', unitId, name: u.name, em: u.em, list: buildQuestions(u, S.settings.count), idx: 0, correct: 0, combo: 0, maxCombo: 0, xp: 0, results: [], start: Date.now(), limit: S.settings.timeLimit };
   enterQuiz();
 }
 function startReview() {
   if (!S.wrongs.length) { toast('まちがえた もんだいは ないよ!'); return; }
   const list = shuffle(S.wrongs).slice(0, Math.min(S.settings.count, S.wrongs.length)).map(w => ({ u: w.u, q: w.q, review: true }));
-  Q = { sid: ++sessionSeq, mode: 'review', unitId: null, name: 'まちがえ直し', em: '🩹', list, idx: 0, correct: 0, combo: 0, maxCombo: 0, xp: 0, results: [], start: Date.now() };
+  Q = { sid: ++sessionSeq, mode: 'review', unitId: null, name: 'まちがえ直し', em: '🩹', list, idx: 0, correct: 0, combo: 0, maxCombo: 0, xp: 0, results: [], start: Date.now(), limit: S.settings.timeLimit };
   enterQuiz();
 }
 function startChallenge() {
   const pool = UNITS.filter(u => u.s === 'math' && ['m-tashi', 'm-hiki', 'm-kuku', 'm-wari'].includes(u.id));
-  Q = { sid: ++sessionSeq, mode: 'challenge', unitId: null, name: '60びょうチャレンジ', em: '⏱️', pool, list: [], idx: 0, correct: 0, combo: 0, maxCombo: 0, xp: 0, results: [], start: Date.now(), endAt: Date.now() + 60000 };
+  Q = { sid: ++sessionSeq, mode: 'challenge', unitId: null, name: '60びょうチャレンジ', em: '⏱️', pool, list: [], idx: 0, correct: 0, combo: 0, maxCombo: 0, xp: 0, results: [], start: Date.now(), endAt: Date.now() + 60000, limit: 0 };
   enterQuiz();
 }
 function enterQuiz() {
@@ -1207,7 +1361,7 @@ function exitQuiz() {
   switchTab('map');
 }
 function currentQ() {
-  if (Q.mode === 'challenge') {
+  if (Q.mode === 'challenge' || Q.mode === 'battle') {
     while (Q.list.length <= Q.idx) { const u = pick(Q.pool); Q.list.push({ u: u.id, q: u.gen(S.settings.difficulty) }); }
   }
   return Q.list[Q.idx];
@@ -1215,6 +1369,7 @@ function currentQ() {
 function nextQuestion() {
   judging = false;
   if (Q.mode === 'challenge') { if (Date.now() >= Q.endAt) return finish(); }
+  else if (Q.mode === 'battle') { if (Q.bossHp <= 0 || Q.hearts <= 0) return finish(); }
   else if (Q.idx >= Q.list.length) return finish();
   const item = currentQ(), q = item.q;
   const u = UNIT[item.u];
@@ -1225,14 +1380,20 @@ function nextQuestion() {
   $('qSub').classList.toggle('hidden', !q.sub);
   $('qCombo').textContent = Q.combo >= 3 ? `🔥${Q.combo}コンボ` : '';
 
-  if (Q.mode === 'challenge') {
+  $('qBattle').classList.toggle('hidden', Q.mode !== 'battle');
+  if (Q.mode === 'battle') {
+    $('qCount').textContent = `${Q.idx + 1}もんめ`;
+    $('qProg').innerHTML = '';
+    $('qTime').classList.toggle('hidden', !Q.limit);
+    renderHud();
+  } else if (Q.mode === 'challenge') {
     $('qCount').textContent = `のこり ${Math.max(0, Math.ceil((Q.endAt - Date.now()) / 1000))}秒`;
     $('qProg').innerHTML = '';
     $('qTime').classList.remove('hidden');
   } else {
     $('qCount').textContent = `${Q.idx + 1} / ${Q.list.length}`;
     $('qProg').innerHTML = Q.list.map((_, i) => `<i class="${Q.results[i] === true ? 'c' : Q.results[i] === false ? 'w' : ''}"></i>`).join('');
-    $('qTime').classList.toggle('hidden', !S.settings.timeLimit);
+    $('qTime').classList.toggle('hidden', !Q.limit);
   }
   buildAnswerArea(q);
   startTick();
@@ -1312,7 +1473,7 @@ const numEq = (a, b) => (a !== '' && b !== '' && !isNaN(Number(a)) && !isNaN(Num
 /* --- 時間の バー --- */
 function startTick() {
   stopTick();
-  const limit = S.settings.timeLimit;
+  const limit = Q.limit;
   const bar = $('qTime').firstElementChild;
   if (Q.mode !== 'challenge' && !limit) return;
   const qStart = Date.now();
@@ -1350,18 +1511,31 @@ function judge(ok, ansText, timeup) {
   recordAnswer(item, ok);
   beep(ok ? 'ok' : 'ng');
 
+  if (Q.mode === 'battle') battleTurn(ok);
+
   const praise = ok
     ? (Q.combo >= 8 ? 'すごすぎる!!' : Q.combo >= 5 ? `${Q.combo}コンボ!` : pick(['せいかい!', 'やったね!', 'いいね!', 'そのちょうし!']))
     : (timeup ? 'じかんぎれ!' : 'おしい!');
   const sid = Q.sid;
   const div = document.createElement('div');
   div.className = 'judge';
-  div.innerHTML = `<div class="mark">${ok ? '⭕' : '❌'}</div><div class="msg" style="color:${ok ? 'var(--ok)' : 'var(--ng)'}">${praise}</div>` +
-    (ok ? '' : `<div class="ans">こたえ: <b>${esc(String(ansText))}</b></div>`);
+  if (Q.mode === 'battle' && ok) {
+    div.innerHTML = (Q.crit ? `<div class="skill-name">${esc(G[Q.partner].hissatsu)}</div>` : '') +
+      `<div class="dmg ${Q.crit ? 'crit' : ''}">${Q.lastDmg}</div>` +
+      `<div class="msg" style="color:var(--ok)">${praise}</div>`;
+  } else if (Q.mode === 'battle') {
+    div.innerHTML = `<div class="mark">💥</div>` +
+      `<div class="msg" style="color:var(--ng)">${Q.revived ? '💚 ふっかつ した!' : praise}</div>` +
+      `<div class="ans">こたえ: <b>${esc(String(ansText))}</b></div>`;
+  } else {
+    div.innerHTML = `<div class="mark">${ok ? '⭕' : '❌'}</div><div class="msg" style="color:${ok ? 'var(--ok)' : 'var(--ng)'}">${praise}</div>` +
+      (ok ? '' : `<div class="ans">こたえ: <b>${esc(String(ansText))}</b></div>`);
+  }
   document.body.appendChild(div);
   setTimeout(() => {
     div.remove();
     if (!Q || Q.sid !== sid || Q.done) return;   // 途中でやめた/おわった ときは すすめない
+    if (Q.mode === 'battle' && (Q.bossHp <= 0 || Q.hearts <= 0)) return finish();
     Q.idx++;
     nextQuestion();
   }, ok ? 700 : 1900);
@@ -1423,12 +1597,29 @@ function finish() {
     d.challenge = (d.challenge || 0) + 1;
     if (Q.correct > (S.best.challenge || 0)) S.best.challenge = Q.correct;
   }
-  if (perfect && Q.mode !== 'challenge') d.perfect++;
+  let win = false, firstClear = false;
+  if (Q.mode === 'battle' && answered) {
+    win = Q.bossHp <= 0;
+    const b = Q.boss;
+    if (win) {
+      stars = Q.hearts >= Q.heartsMax ? 3 : Q.hearts > Q.heartsMax / 2 ? 2 : 1;
+      firstClear = !S.battle.cleared[b.id];
+      S.battle.cleared[b.id] = Math.max(S.battle.cleared[b.id] || 0, stars);
+      S.battle.wins = (S.battle.wins || 0) + 1;
+      S.battle.winBy[Q.partner] = (S.battle.winBy[Q.partner] || 0) + 1;
+      if (!Q.damaged) S.battle.noDamage = (S.battle.noDamage || 0) + 1;
+      d.battleWin = (d.battleWin || 0) + 1;
+      d.clears++;
+    }
+  }
+  const isStage = Q.mode === 'stage' || Q.mode === 'review';
+  if (perfect && isStage) d.perfect++;
   if (answered) updateStreak();
 
   /* けいけんち */
   let xp = Q.xp;
-  if (perfect && Q.mode !== 'challenge' && answered >= 5) xp += 50;
+  if (perfect && isStage && answered >= 5) xp += 50;
+  if (win) xp += (50 + Q.boss.lv * 30) * (firstClear ? 2 : 1);
   const missionMsg = [];
   const ms = todayMissions();
   for (const m of ms) {
@@ -1449,12 +1640,24 @@ function finish() {
   /* 画面 */
   document.body.classList.remove('quiz-mode');
   $('view-quiz').classList.add('hidden');
-  const isChal = Q.mode === 'challenge';
-  $('rsStars').innerHTML = isChal ? '⏱️' : '★'.repeat(stars) + `<span class="off">${'★'.repeat(3 - stars)}</span>`;
+  const isChal = Q.mode === 'challenge', isBattle = Q.mode === 'battle';
+  const g = isBattle ? G[Q.partner] : null;
+  $('rsBattle').innerHTML = isBattle ? `<div class="card bt-result">
+      <img src="${g.img}" alt="${esc(g.name)}">
+      <div class="br-t">${win ? '🎉 ' + esc(Q.boss.name) + ' を たおした!' : 'まけちゃった…'}</div>
+      <div class="br-d">${win
+        ? `${esc(g.name)}(${esc(g.yomi)})と いっしょに しょうり!` + (firstClear ? '<br>はじめての しょうり ボーナス!' : '')
+        : `${esc(Q.boss.name)}の のこりHP ${Q.bossHp} / ${Q.bossMax}`}</div>
+    </div>` : '';
+  $('rsStars').innerHTML = isChal ? '⏱️'
+    : (isBattle && !win) ? '💥'
+    : '★'.repeat(stars) + `<span class="off">${'★'.repeat(3 - stars)}</span>`;
   $('rsScore').innerHTML = isChal ? `${Q.correct}<small>もん せいかい</small>` : `${Q.correct}<small> / ${answered}</small>`;
   $('rsMsg').textContent = isChal
     ? (Q.correct >= (S.best.challenge || 0) ? '🎉 じこベスト こうしん!' : `じこベストは ${S.best.challenge}もん`)
-    : perfect ? '🎉 パーフェクト!!' : rate >= 0.8 ? 'すごい! あと ちょっと!' : rate >= 0.5 ? 'いいちょうし!' : 'つぎは できる!';
+    : isBattle
+      ? (win ? (Q.damaged ? 'よく たたかった!' : '💎 むきずの しょうり!') : 'もういちど いどもう!')
+      : perfect ? '🎉 パーフェクト!!' : rate >= 0.8 ? 'すごい! あと ちょっと!' : rate >= 0.5 ? 'いいちょうし!' : 'つぎは できる!';
   $('rsXp').innerHTML = `けいけんち <b>+${xp}</b>` + (Q.maxCombo >= 3 ? ` ・ さいこう <b>${Q.maxCombo}コンボ</b>` : '') +
     (missionMsg.length ? `<div style="font-size:12px;margin-top:6px">🎯 ${missionMsg.map(esc).join(' / ')}</div>` : '');
   $('rsLvup').innerHTML = after > before ? `<div class="lvup">🎉 レベルアップ! Lv.${before} → <b>Lv.${after}</b></div>` : '';
@@ -1473,10 +1676,115 @@ function finish() {
   $('btnAgain').onclick = () => {
     if (Q.mode === 'stage') startStage(Q.unitId);
     else if (Q.mode === 'review') startReview();
+    else if (Q.mode === 'battle') startBattle(Q.boss.id);
     else startChallenge();
   };
+  $('btnBackMap').textContent = isBattle ? 'ボスえらびへ' : 'マップへ';
+  $('btnBackMap').onclick = isBattle ? openBattle : () => switchTab('map');
   showView('result');
   renderHeader();
+}
+
+
+/* =========================================================
+   四神バトル
+   ========================================================= */
+function battlePool(boss) {
+  const on = UNITS.filter(u => boss.subs.includes(u.s) && S.settings.subjects[u.s] !== false);
+  if (on.length) return on;
+  const any = UNITS.filter(u => S.settings.subjects[u.s] !== false);
+  return any.length ? any : UNITS;
+}
+function openBattle() { showView('battle'); renderBattle(); }
+function renderBattle() {
+  /* あいぼう */
+  $('partyList').innerHTML = GUARDIANS.map(g => {
+    const lv = bondLv(g.id);
+    return `<button class="party-card ${g.id === S.battle.partner ? 'on' : ''}" data-g="${g.id}">
+      <span class="pc-top">
+        <img src="${g.icon}" alt="${esc(g.name)}">
+        <span><span class="pc-n" style="color:${g.color}">${esc(g.name)}</span>
+        <span class="pc-y">${esc(g.yomi)} ・ ${esc(g.dir)}</span></span>
+      </span>
+      <span class="pc-s" style="color:${g.color}">✨ ${esc(g.skill)}</span>
+      <span class="pc-d">${esc(g.sdesc)}</span>
+      <span class="pc-b">きずな Lv.${lv}${lv >= 10 ? ' (MAX)' : ` ・ こうげき +${lv * 5}%`}</span>
+      <span class="bond-bar"><i style="width:${lv >= 10 ? 100 : (10 - bondNext(g.id)) * 10}%;background:${g.color}"></i></span>
+    </button>`;
+  }).join('');
+  $('partyList').querySelectorAll('.party-card').forEach(b => b.onclick = () => {
+    S.battle.partner = b.dataset.g; save(); renderBattle();
+  });
+
+  /* ボス */
+  const cleared = Object.keys(S.battle.cleared).length;
+  $('battleNote').textContent = `${cleared} / ${BOSSES.length} たおした`;
+  $('bossList').innerHTML = BOSSES.map((b, i) => {
+    const unlocked = bossOpen(i), st = S.battle.cleared[b.id] || 0;
+    const subjOn = b.subs.some(x => S.settings.subjects[x] !== false);
+    const open = unlocked && subjOn;
+    const desc = !unlocked ? 'まえの ボスを たおすと あらわれる'
+      : !subjOn ? 'この教科は いま 出題オフに なっています'
+      : `${esc(b.d)} ・ HP ${b.hp}`;
+    return `<button class="boss-card ${open ? '' : 'locked'}" data-b="${b.id}" ${open ? '' : 'disabled'}>
+      <span class="bo-em">${unlocked ? b.em : '🔒'}</span>
+      <span>
+        <span class="bo-n">${unlocked ? esc(b.name) : '???'}</span>
+        <span class="bo-d">${desc}</span>
+      </span>
+      <span class="bo-s">${st ? '★'.repeat(st) + `<span class="off">${'★'.repeat(3 - st)}</span>` : open ? '▶' : ''}</span>
+    </button>`;
+  }).join('');
+  $('bossList').querySelectorAll('.boss-card').forEach(b => { if (!b.disabled) b.onclick = () => startBattle(b.dataset.b); });
+  renderHeader();
+}
+function startBattle(bossId) {
+  const boss = BOSSES.find(b => b.id === bossId);
+  const g = G[S.battle.partner] || GUARDIANS[0];
+  const hearts = 5 + (g.id === 'byakko' ? 2 : 0);
+  Q = {
+    sid: ++sessionSeq, mode: 'battle', unitId: null, name: boss.name, em: boss.em,
+    boss, bossHp: boss.hp, bossMax: boss.hp, hearts, heartsMax: hearts, gauge: 0,
+    revive: g.id === 'genbu', partner: g.id, pool: battlePool(boss), list: [],
+    idx: 0, correct: 0, combo: 0, maxCombo: 0, xp: 0, results: [], start: Date.now(),
+    limit: S.settings.timeLimit ? S.settings.timeLimit + (g.id === 'seiryu' ? 10 : 0) : 0,
+    damaged: false, lastDmg: 0, crit: false, revived: false,
+  };
+  enterQuiz();
+}
+function renderHud() {
+  const g = G[Q.partner];
+  $('btImg').src = g.icon;
+  $('btImg').alt = g.name;
+  $('btHearts').innerHTML = '❤️'.repeat(Q.hearts) + `<span class="off">${'❤️'.repeat(Math.max(0, Q.heartsMax - Q.hearts))}</span>`;
+  $('btBossEm').textContent = Q.boss.em;
+  $('btHpBar').style.width = Math.max(0, Q.bossHp / Q.bossMax * 100) + '%';
+  $('btHpNum').textContent = `HP ${Q.bossHp} / ${Q.bossMax}`;
+  $('btGauge').style.width = Q.gauge + '%';
+  $('btGaugeT').textContent = Q.gauge >= 100 ? `⚡ ${g.hissatsu} うてる!` : `ひっさつ ${Q.gauge}%`;
+  $('btGaugeWrap').classList.toggle('full', Q.gauge >= 100);
+}
+function battleTurn(ok) {
+  const g = G[Q.partner];
+  Q.revived = false;
+  if (ok) {
+    const crit = Q.gauge >= 100;
+    const comboMul = Q.combo >= 10 ? 2 : Q.combo >= 5 ? 1.5 : Q.combo >= 3 ? 1.2 : 1;
+    let dmg = 100 * comboMul * (1 + bondLv(g.id) * 0.05) * (g.id === 'suzaku' ? 1.3 : 1);
+    if (crit) { dmg *= 3; beep('lv'); }
+    dmg = Math.max(10, Math.round(dmg / 10) * 10);
+    Q.lastDmg = dmg; Q.crit = crit;
+    Q.bossHp = Math.max(0, Q.bossHp - dmg);
+    Q.gauge = crit ? 0 : Math.min(100, Q.gauge + 20);
+    S.battle.bond[g.id] = (S.battle.bond[g.id] || 0) + 1;
+    $('btMe').classList.add('atk'); $('btBoss').classList.add('hit');
+    setTimeout(() => { $('btMe').classList.remove('atk'); $('btBoss').classList.remove('hit'); }, 480);
+  } else {
+    Q.hearts--; Q.damaged = true;
+    if (Q.hearts <= 0 && Q.revive) { Q.revive = false; Q.hearts = 2; Q.revived = true; }
+  }
+  renderHud();
+  save();
 }
 
 /* =========================================================
@@ -1642,6 +1950,8 @@ function segSet(id, val) {
    イベント と 起動
    ========================================================= */
 document.querySelectorAll('nav.tabbar button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+$('btnBattle').onclick = openBattle;
+$('btnBattleBack').onclick = () => switchTab('map');
 $('btnReview').onclick = startReview;
 $('btnChallenge').onclick = startChallenge;
 $('btnBackMap').onclick = () => switchTab('map');

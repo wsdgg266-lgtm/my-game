@@ -10,6 +10,14 @@ const SHELL = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
+  './characters/seiryu.webp',
+  './characters/byakko.webp',
+  './characters/suzaku.webp',
+  './characters/genbu.webp',
+  './characters/seiryu-icon.webp',
+  './characters/byakko-icon.webp',
+  './characters/suzaku-icon.webp',
+  './characters/genbu-icon.webp',
 ];
 
 self.addEventListener('install', e => {
