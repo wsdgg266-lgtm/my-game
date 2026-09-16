@@ -40,6 +40,7 @@
    - ジャマケシ: `https://<プロジェクト名>.vercel.app/retouch/`
    - バスナビ!: `https://<プロジェクト名>.vercel.app/basket/`
    - おてつだいバンク: `https://<プロジェクト名>.vercel.app/points/`
+   - シールアルバム: `https://<プロジェクト名>.vercel.app/seal/`
 
 以降はデフォルトブランチ(`claude/shopping-reminder-app-7xpyg5`)への push のたびに
 自動で再デプロイされます。
@@ -128,8 +129,18 @@ B.LEAGUE・NBA・バスケットボール日本代表の試合日程、結果、
 その試合をどこで見られるか(番組表・TVer・バスケットLIVE・NBA Rakutenなど)を探せます。詳しくは
 [basket/README.md](basket/README.md) を見てください。
 
+## 🃏 同居アプリ: シールアルバム
+
+鬼滅の刃 ディフォルメシールウエハース 其ノ十五 のシールを、写真に撮って集めていく
+コレクションアプリ「シールアルバム」も入っています(`seal/` フォルダ)。
+撮るだけで四隅を自動検出してななめの写真を正面の形に直し、台紙の白を消して
+シールの形どおりに切り抜きます。ダブりの枚数・交換リスト・レアリティ別のコンプ率も出せます。
+写真は端末の外に一切送信しません。詳しくは
+[seal/README.md](seal/README.md)、仕様は [docs/SPEC-seal.md](docs/SPEC-seal.md) を見てください。
+(カメラを使うため https の公開URLで開く必要があります)
+
 ## 技術構成
 
 - HTML / CSS / JavaScript のみの単一ファイル構成(依存ライブラリなし)
-- LocalStorage によるデータ永続化
+- LocalStorage / IndexedDB によるデータ永続化
 - モバイルファーストのレスポンシブデザイン

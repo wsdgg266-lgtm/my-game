@@ -1,0 +1,2184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f1412">
+<title>シールアルバム - シールを撮ってコレクション</title>
+<meta name="description" content="鬼滅の刃 ディフォルメシールウエハース 其ノ十五 のシールを写真に撮って集めるコレクションアプリ。自動で切り抜き・台形補正、ダブり枚数と交換リスト、レアリティ別のコンプ率がわかります。写真は端末の外に送信しません。">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  :root{
+    --bg:#0f1412; --panel:#18211d; --panel2:#1f2b25; --line:#2a3a32;
+    --fg:#eef6f1; --sub:#8fa79b;
+    --accent:#3ddc84; --accent2:#ff7ab6; --fire:#ffb03a;
+    --ok:#4ade80; --ng:#f87171;
+    --top: env(safe-area-inset-top); --bot: env(safe-area-inset-bottom);
+  }
+  html,body{ width:100%; height:100%; background:var(--bg); color:var(--fg);
+    font-family:'Hiragino Kaku Gothic ProN','BIZ UDPGothic','Yu Gothic',sans-serif;
+    -webkit-user-select:none; user-select:none; overscroll-behavior:none; }
+  body{ display:flex; flex-direction:column; position:fixed; inset:0; overflow:hidden; }
+  button{ font:inherit; color:inherit; background:none; border:none; cursor:pointer; }
+  button:disabled{ opacity:.35; }
+  input,select,textarea{ font:inherit; color:inherit; background:var(--panel2);
+    border:1px solid var(--line); border-radius:10px; padding:10px 12px; width:100%;
+    -webkit-user-select:text; user-select:text; }
+  input:focus,textarea:focus{ outline:2px solid var(--accent); outline-offset:-2px; }
+  .hide{ display:none !important; }
+
+  /* ===== ヘッダー ===== */
+  header{ flex:none; padding:calc(var(--top) + 9px) 12px 9px; display:flex; align-items:center; gap:9px;
+    background:linear-gradient(#141c18,#0f1412); border-bottom:1px solid var(--line); z-index:20; }
+  .logo{ font-size:15px; font-weight:bold; white-space:nowrap;
+    background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text;
+    background-clip:text; color:transparent; }
+  .albumname{ font-size:11px; color:var(--sub); margin-right:auto; overflow:hidden;
+    text-overflow:ellipsis; white-space:nowrap; }
+  .iconbtn{ width:36px; height:34px; border-radius:9px; background:var(--panel2); font-size:15px;
+    display:flex; align-items:center; justify-content:center; flex:none; }
+  .iconbtn:active{ background:#2c3d34; }
+
+  /* ===== 進捗バー ===== */
+  #progress{ flex:none; padding:9px 12px; background:var(--panel); border-bottom:1px solid var(--line);
+    display:flex; align-items:center; gap:11px; }
+  .ring{ width:46px; height:46px; flex:none; border-radius:50%; display:grid; place-items:center;
+    font-size:11.5px; font-weight:bold; position:relative; }
+  .ring::after{ content:''; position:absolute; inset:5px; border-radius:50%; background:var(--panel); }
+  .ring span{ position:relative; z-index:1; }
+  .pinfo{ min-width:0; flex:1; }
+  .pinfo b{ font-size:14px; }
+  .pinfo .psub{ font-size:11px; color:var(--sub); margin-top:3px; line-height:1.6; }
+
+  /* ===== 本文 ===== */
+  main{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    padding:10px 10px calc(var(--bot) + 92px); }
+
+  /* フィルタ */
+  .chips{ display:flex; gap:6px; overflow-x:auto; padding-bottom:9px; scrollbar-width:none; }
+  .chips::-webkit-scrollbar{ display:none; }
+  .chip{ flex:none; padding:7px 12px; border-radius:999px; background:var(--panel2);
+    border:1px solid var(--line); font-size:12px; color:var(--sub); white-space:nowrap; }
+  .chip.on{ background:var(--accent); border-color:var(--accent); color:#062514; font-weight:bold; }
+  .chip .n{ opacity:.75; margin-left:4px; font-size:11px; }
+
+  /* アルバムのマス目 */
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(92px,1fr)); gap:8px; }
+  .cell{ position:relative; border-radius:12px; overflow:hidden; background:var(--panel);
+    border:1px solid var(--line); display:flex; flex-direction:column; }
+  .cell.got{ border-color:#38584a; }
+  .cell.empty .thumbwrap{ background:
+      repeating-linear-gradient(45deg,#18211d 0 7px,#1c261f 7px 14px); }
+  .thumbwrap{ position:relative; width:100%; aspect-ratio:1/1; display:grid; place-items:center;
+    background:#0b100d; }
+  .thumbwrap img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .ph{ font-size:22px; opacity:.28; }
+  .cell .no{ position:absolute; top:4px; left:5px; font-size:10px; font-weight:bold;
+    padding:2px 5px; border-radius:6px; background:#000a; color:#dff3e8; z-index:2; }
+  .cell .cnt{ position:absolute; top:4px; right:5px; font-size:10px; font-weight:bold;
+    padding:2px 6px; border-radius:6px; background:var(--accent2); color:#3a0c22; z-index:2; }
+  .cell .nm{ padding:5px 6px 6px; font-size:10.5px; line-height:1.35; height:32px;
+    overflow:hidden; color:var(--fg); }
+  .cell.empty .nm{ color:var(--sub); }
+  .cell .rb{ height:3px; width:100%; flex:none; }
+  .cell:active{ transform:scale(.97); }
+
+  /* レアリティの色 */
+  .r-normal{ background:#6b7f75; }
+  .r-rare{ background:linear-gradient(90deg,#4aa3ff,#7ad0ff); }
+  .r-fifth{ background:linear-gradient(90deg,#a78bfa,#e879f9); }
+  .r-mugen{ background:linear-gradient(90deg,#ffd24a,#ff7ab6,#4aa3ff); }
+  .r-secret{ background:linear-gradient(90deg,#f87171,#1b1b1b); }
+  .r-none{ background:#2a3a32; }
+
+  /* ===== セクション見出し・カード ===== */
+  h2.sec{ font-size:13px; margin:14px 2px 8px; display:flex; align-items:center; gap:7px; }
+  h2.sec:first-child{ margin-top:2px; }
+  h2.sec .cntbadge{ font-size:11px; font-weight:normal; color:var(--sub); }
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:13px;
+    padding:13px; margin-bottom:10px; }
+  .card p{ font-size:12px; color:var(--sub); line-height:1.8; }
+  .card p + p{ margin-top:8px; }
+  .btn{ display:block; width:100%; padding:13px; border-radius:12px; font-size:14px; font-weight:bold;
+    background:linear-gradient(90deg,var(--accent),#7de6a8); color:#062514; text-align:center; }
+  .btn.sub{ background:var(--panel2); border:1px solid var(--line); color:var(--fg); font-weight:normal; }
+  .btn.danger{ background:var(--panel2); border:1px solid #6b2b2b; color:#ff9e9e; font-weight:normal; }
+  .btn + .btn{ margin-top:8px; }
+  .row2{ display:flex; gap:8px; }
+  .row2 .btn{ margin-top:0; }
+  .field{ margin-bottom:12px; }
+  .field label{ display:block; font-size:11.5px; color:var(--sub); margin-bottom:6px; }
+
+  /* 交換リスト */
+  .tradelist{ display:flex; flex-wrap:wrap; gap:6px; }
+  .tag{ font-size:11.5px; padding:6px 9px; border-radius:9px; background:var(--panel2);
+    border:1px solid var(--line); display:flex; align-items:center; gap:5px; }
+  .tag b{ color:var(--accent); font-size:11px; }
+  .tag.want b{ color:var(--accent2); }
+  .empty-note{ font-size:12px; color:var(--sub); line-height:1.8; }
+  .copybox{ width:100%; height:130px; font-size:11.5px; line-height:1.7; resize:none;
+    font-family:ui-monospace,Menlo,monospace; margin-top:9px; }
+
+  /* レアリティ内訳 */
+  .rbar{ margin-bottom:9px; }
+  .rbar .rl{ display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:4px; }
+  .rbar .rl .rn{ color:var(--sub); }
+  .rtrack{ height:8px; border-radius:999px; background:var(--panel2); overflow:hidden; }
+  .rtrack i{ display:block; height:100%; border-radius:999px; }
+
+  /* ===== 下タブ ===== */
+  nav.tabbar{ flex:none; display:flex; background:#121a16; border-top:1px solid var(--line);
+    padding-bottom:var(--bot); z-index:20; }
+  nav.tabbar button{ flex:1; padding:8px 2px 9px; font-size:10px; color:var(--sub);
+    display:flex; flex-direction:column; align-items:center; gap:3px; }
+  nav.tabbar button .ic{ font-size:18px; }
+  nav.tabbar button.on{ color:var(--accent); }
+
+  /* FAB */
+  #fab{ position:fixed; right:16px; bottom:calc(var(--bot) + 68px); width:60px; height:60px;
+    border-radius:50%; background:linear-gradient(145deg,var(--accent),#22b26a);
+    color:#062514; font-size:26px; display:grid; place-items:center; z-index:30;
+    box-shadow:0 8px 22px #000a, 0 0 0 4px #0f1412; }
+  #fab:active{ transform:scale(.93); }
+
+  /* ===== オーバーレイ共通 ===== */
+  .ov{ position:fixed; inset:0; z-index:60; background:#000d; display:flex; flex-direction:column; }
+  .sheet{ position:fixed; inset:0; z-index:70; background:#000c; display:flex; align-items:flex-end; }
+  .sheet .inner{ width:100%; max-height:88%; overflow-y:auto; background:var(--bg);
+    border-radius:18px 18px 0 0; border-top:1px solid var(--line);
+    padding:14px 14px calc(var(--bot) + 16px); animation:up .18s ease-out; }
+  @keyframes up{ from{ transform:translateY(24px); opacity:.4 } to{ transform:none; opacity:1 } }
+  .sheet h3{ font-size:15px; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .sheet h3 .x{ margin-left:auto; font-size:20px; color:var(--sub); width:32px; height:32px;
+    display:grid; place-items:center; }
+
+  /* 詳細シート */
+  #dPhoto{ width:100%; aspect-ratio:1/1; border-radius:13px; background:#0b100d;
+    border:1px solid var(--line); object-fit:contain; display:block; margin-bottom:12px; }
+  #dPhotoEmpty{ width:100%; aspect-ratio:1/1; border-radius:13px; margin-bottom:12px;
+    border:1px dashed var(--line); display:grid; place-items:center; gap:7px;
+    color:var(--sub); font-size:12px; text-align:center; line-height:1.7; }
+  #dPhotoEmpty .em{ font-size:32px; opacity:.5; }
+  .counter{ display:flex; align-items:center; gap:12px; }
+  .counter button{ width:44px; height:44px; border-radius:12px; background:var(--panel2);
+    border:1px solid var(--line); font-size:20px; display:grid; place-items:center; flex:none; }
+  .counter .v{ flex:1; text-align:center; font-size:15px; font-weight:bold; }
+  .counter .v small{ display:block; font-size:11px; color:var(--sub); font-weight:normal; margin-top:2px; }
+  .sugg{ display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; max-height:96px; overflow-y:auto; }
+  .sugg button{ font-size:11.5px; padding:6px 9px; border-radius:8px; background:var(--panel2);
+    border:1px solid var(--line); color:var(--sub); }
+  .rchips{ display:flex; flex-wrap:wrap; gap:6px; }
+  .rchips button{ font-size:11.5px; padding:7px 11px; border-radius:9px; background:var(--panel2);
+    border:1px solid var(--line); color:var(--sub); display:flex; align-items:center; gap:6px; }
+  .rchips button i{ width:9px; height:9px; border-radius:50%; display:block; }
+  .rchips button.on{ color:var(--fg); border-color:var(--accent); background:#20342a; }
+
+  /* ===== カメラ ===== */
+  #camera{ background:#000; }
+  #camVideo{ flex:1; min-height:0; width:100%; object-fit:cover; background:#000; }
+  .camtop{ position:absolute; top:0; left:0; right:0; padding:calc(var(--top) + 10px) 12px 10px;
+    display:flex; align-items:center; gap:10px; background:linear-gradient(#000b,#0000); z-index:2; }
+  .camtop .t{ font-size:12.5px; color:#fff; margin-right:auto; }
+  .camtop .iconbtn{ background:#fff2; color:#fff; }
+  .cambot{ flex:none; padding:14px 18px calc(var(--bot) + 18px); display:flex; align-items:center;
+    gap:14px; background:#000; }
+  #shutter{ width:68px; height:68px; border-radius:50%; background:#fff; margin:0 auto;
+    box-shadow:0 0 0 4px #fff3; flex:none; }
+  #shutter:active{ transform:scale(.92); }
+  .cambot .side{ width:48px; height:48px; border-radius:12px; background:#ffffff1a; color:#fff;
+    font-size:19px; display:grid; place-items:center; flex:none; }
+  #camGuide{ position:absolute; inset:0; pointer-events:none; z-index:1; }
+  #camGuide div{ position:absolute; border:2px dashed #ffffff4d; border-radius:12px;
+    inset:16% 10%; }
+  .camerr{ flex:1; min-height:0; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:16px; padding:30px; text-align:center; font-size:13px; color:#fff;
+    line-height:1.9; background:#000; }
+  .camerr .btn{ max-width:260px; }
+  #camera.err #camVideo, #camera.err #camGuide{ display:none; }
+
+  /* ===== 切り抜き編集 ===== */
+  #cropper{ background:#07100c; }
+  .croptop{ flex:none; padding:calc(var(--top) + 10px) 12px 10px; display:flex; align-items:center;
+    gap:9px; border-bottom:1px solid var(--line); }
+  .croptop .t{ font-size:13px; margin-right:auto; font-weight:bold; }
+  #cropStage{ flex:1; min-height:0; position:relative; overflow:hidden; touch-action:none; }
+  #cropCanvas{ position:absolute; inset:0; width:100%; height:100%; }
+  #cropPrev{ position:absolute; top:10px; right:10px; width:88px; z-index:4; text-align:center;
+    background:#0f1412e6; border:1px solid var(--line); border-radius:12px; padding:5px; }
+  #cropPrev canvas{ width:78px; height:78px; display:block; border-radius:8px;
+    background-color:#20272400;
+    background-image:
+      linear-gradient(45deg,#2a3a32 25%,transparent 25%,transparent 75%,#2a3a32 75%),
+      linear-gradient(45deg,#2a3a32 25%,transparent 25%,transparent 75%,#2a3a32 75%);
+    background-size:12px 12px; background-position:0 0,6px 6px; }
+  #cropPrev .pl{ font-size:9.5px; color:var(--sub); margin-top:3px; }
+  #loupe{ position:absolute; width:104px; height:104px; border-radius:50%; overflow:hidden;
+    border:2px solid #fff9; box-shadow:0 4px 14px #000a; pointer-events:none; z-index:5; display:none; }
+  #loupe canvas{ width:100%; height:100%; display:block; }
+  .cropbot{ flex:none; padding:11px 12px calc(var(--bot) + 12px); border-top:1px solid var(--line);
+    background:var(--bg); }
+  .cropopts{ display:flex; gap:7px; margin-bottom:10px; overflow-x:auto; scrollbar-width:none; }
+  .cropopts::-webkit-scrollbar{ display:none; }
+  .toggle{ flex:none; padding:8px 12px; border-radius:10px; background:var(--panel2);
+    border:1px solid var(--line); font-size:12px; color:var(--sub); white-space:nowrap; }
+  .toggle.on{ background:#20342a; border-color:var(--accent); color:var(--fg); }
+  .crophint{ font-size:11px; color:var(--sub); line-height:1.7; margin-bottom:10px; }
+
+  /* ===== 保存先えらび ===== */
+  #picker .inner{ max-height:88%; }
+  #pickGrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(74px,1fr)); gap:7px; }
+  .pcell{ border-radius:10px; border:1px solid var(--line); background:var(--panel);
+    padding:6px 4px; font-size:10px; text-align:center; line-height:1.4; min-height:58px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; }
+  .pcell b{ font-size:12px; }
+  .pcell.used{ opacity:.55; }
+  .pcell.used b{ color:var(--sub); }
+
+  /* ===== 写真ビューア ===== */
+  #viewer{ background:#000e; align-items:center; justify-content:center; padding:20px; }
+  #viewer img{ max-width:100%; max-height:76%; object-fit:contain; }
+  #viewer .cap{ margin-top:14px; font-size:13px; text-align:center; line-height:1.8; }
+  #viewer .cap small{ display:block; color:var(--sub); font-size:11.5px; margin-top:5px; }
+
+  /* ===== トースト ===== */
+  #toast{ position:fixed; left:50%; bottom:calc(var(--bot) + 84px); transform:translateX(-50%);
+    background:#0b1a13f2; border:1px solid var(--accent); color:var(--fg); font-size:12.5px;
+    padding:10px 16px; border-radius:12px; z-index:90; opacity:0; pointer-events:none;
+    transition:opacity .2s; max-width:86%; text-align:center; line-height:1.6; }
+  #toast.show{ opacity:1; }
+
+  /* ローディング */
+  #busy{ position:fixed; inset:0; background:#000a; z-index:95; display:grid; place-items:center;
+    gap:12px; font-size:13px; color:var(--fg); }
+  #busy .sp{ width:38px; height:38px; border-radius:50%; border:3px solid #ffffff22;
+    border-top-color:var(--accent); animation:spin .8s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg) } }
+  #busy .col{ display:flex; flex-direction:column; align-items:center; gap:12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">シールアルバム</div>
+  <div class="albumname" id="albumName">其ノ十五</div>
+  <button class="iconbtn" id="btnHelp" aria-label="使い方">？</button>
+</header>
+
+<div id="progress">
+  <div class="ring" id="ring"><span id="ringTxt">0%</span></div>
+  <div class="pinfo">
+    <b id="pMain">0 / 39 種</b>
+    <div class="psub" id="pSub">まだ1枚も登録されていません</div>
+  </div>
+</div>
+
+<main>
+  <!-- ========== アルバム ========== -->
+  <section id="viewAlbum">
+    <div class="chips" id="filters"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- ========== こうかん ========== -->
+  <section id="viewTrade" class="hide">
+    <h2 class="sec">🔁 ダブり（出せる）<span class="cntbadge" id="dupCnt"></span></h2>
+    <div class="card"><div class="tradelist" id="dupList"></div></div>
+
+    <h2 class="sec">🙏 未所持（ほしい）<span class="cntbadge" id="wantCnt"></span></h2>
+    <div class="card"><div class="tradelist" id="wantList"></div></div>
+
+    <h2 class="sec">📋 交換募集の文面</h2>
+    <div class="card">
+      <p>下の文面をコピーして、交換相手へのメッセージや投稿にそのまま使えます。</p>
+      <textarea class="copybox" id="tradeText" readonly></textarea>
+      <div class="row2" style="margin-top:9px">
+        <button class="btn sub" id="btnCopyTrade">コピー</button>
+        <button class="btn sub" id="btnShareTrade">共有</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== しんちょく ========== -->
+  <section id="viewStat" class="hide">
+    <h2 class="sec">📊 レアリティ別のコンプ率</h2>
+    <div class="card" id="rarityStats"></div>
+
+    <h2 class="sec">🗓 集めた記録</h2>
+    <div class="card" id="historyCard"></div>
+  </section>
+
+  <!-- ========== データ ========== -->
+  <section id="viewData" class="hide">
+    <h2 class="sec">📒 アルバムの設定</h2>
+    <div class="card">
+      <div class="field">
+        <label>アルバム名</label>
+        <input id="inpAlbum" type="text" placeholder="例）鬼滅の刃 ディフォルメシールウエハース 其ノ十五">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>シールの枠の数（全何種）</label>
+        <div class="counter">
+          <button id="slotMinus">−</button>
+          <div class="v"><span id="slotCount">39</span><small>枠を減らすと後ろの枠のデータが消えます</small></div>
+          <button id="slotPlus">＋</button>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="sec">💾 バックアップ</h2>
+    <div class="card">
+      <p>データは<strong>この端末の中だけ</strong>に保存されます。機種変更やブラウザのデータ消去に備えて、ときどき書き出しておくと安心です。</p>
+      <button class="btn sub" id="btnExport" style="margin-top:10px">写真ごと書き出す（.json）</button>
+      <button class="btn sub" id="btnExportLite">文字データだけ書き出す（軽い）</button>
+      <button class="btn sub" id="btnImport">書き出したファイルを読み込む</button>
+      <input type="file" id="fileImport" accept="application/json,.json" class="hide">
+      <p id="storageInfo" style="margin-top:10px"></p>
+    </div>
+
+    <h2 class="sec">🧹 やりなおし</h2>
+    <div class="card">
+      <button class="btn danger" id="btnResetPhotos">写真だけ全部消す</button>
+      <button class="btn danger" id="btnResetAll">全部消して最初から</button>
+    </div>
+
+    <h2 class="sec">ℹ️ このアプリについて</h2>
+    <div class="card">
+      <p>写真・名前・枚数などはすべて端末内（IndexedDB）に保存され、外部のサーバーには一切送信されません。</p>
+      <p>シールの名前とレアリティは<strong>自分で入力する方式</strong>です。実物のパッケージや台紙を見ながら埋めてください。名前の入力候補は作品の登場人物名で、公式のラインナップ表ではありません。</p>
+      <p id="verInfo" style="margin-top:8px"></p>
+    </div>
+  </section>
+</main>
+
+<nav class="tabbar" id="tabbar">
+  <button data-view="Album" class="on"><span class="ic">📒</span>アルバム</button>
+  <button data-view="Trade"><span class="ic">🔁</span>こうかん</button>
+  <button data-view="Stat"><span class="ic">📊</span>しんちょく</button>
+  <button data-view="Data"><span class="ic">⚙️</span>データ</button>
+</nav>
+
+<button id="fab" aria-label="シールを撮る">📷</button>
+
+<!-- ===== 詳細シート ===== -->
+<div class="sheet hide" id="detail">
+  <div class="inner">
+    <h3><span id="dTitle">No.1</span><button class="x" id="dClose">✕</button></h3>
+    <img id="dPhoto" class="hide" alt="">
+    <div id="dPhotoEmpty">
+      <div class="em">🃏</div>
+      <div>まだ写真がありません<br>下のボタンで撮影・選択できます</div>
+    </div>
+    <div class="row2" style="margin-bottom:12px">
+      <button class="btn sub" id="dShoot">📷 撮る</button>
+      <button class="btn sub" id="dPick">🖼 選ぶ</button>
+      <button class="btn sub hide" id="dDelPhoto">🗑</button>
+    </div>
+    <div class="field">
+      <label>シールの名前</label>
+      <input id="dName" type="text" placeholder="例）竈門炭治郎">
+      <div class="sugg" id="dSugg"></div>
+    </div>
+    <div class="field">
+      <label>レアリティ</label>
+      <div class="rchips" id="dRarity"></div>
+    </div>
+    <div class="field">
+      <label>持っている枚数</label>
+      <div class="counter">
+        <button id="dMinus">−</button>
+        <div class="v"><span id="dCount">0</span> 枚<small id="dCountNote">未所持</small></div>
+        <button id="dPlus">＋</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>メモ（任意）</label>
+      <input id="dMemo" type="text" placeholder="例）8/5 イオンで購入">
+    </div>
+    <button class="btn" id="dSave">保存する</button>
+  </div>
+</div>
+
+<!-- ===== カメラ ===== -->
+<div class="ov hide" id="camera">
+  <video id="camVideo" playsinline muted autoplay></video>
+  <div id="camGuide"><div></div></div>
+  <div class="camtop">
+    <button class="iconbtn" id="camClose">✕</button>
+    <div class="t" id="camTitle">シールを枠の中におさめて撮影</div>
+    <button class="iconbtn" id="camSwitch">🔄</button>
+  </div>
+  <div class="camerr hide" id="camErr">
+    <div id="camErrMsg"></div>
+    <button class="btn" id="camErrPick">🖼 写真から選ぶ</button>
+  </div>
+  <div class="cambot">
+    <button class="side" id="camLib">🖼</button>
+    <button id="shutter" aria-label="撮影"></button>
+    <button class="side" id="camTorch">🔦</button>
+  </div>
+</div>
+
+<!-- ===== 切り抜き編集 ===== -->
+<div class="ov hide" id="cropper">
+  <div class="croptop">
+    <button class="iconbtn" id="cropCancel">✕</button>
+    <div class="t">切り抜きの調整</div>
+    <button class="iconbtn" id="cropAuto" title="自動検出をやり直す">🪄</button>
+    <button class="iconbtn" id="cropFull" title="写真全体にする">⛶</button>
+  </div>
+  <div id="cropStage">
+    <canvas id="cropCanvas"></canvas>
+    <div id="cropPrev"><canvas id="cropPrevCanvas" width="156" height="156"></canvas><div class="pl">できあがり</div></div>
+    <div id="loupe"><canvas id="loupeCanvas" width="104" height="104"></canvas></div>
+  </div>
+  <div class="cropbot">
+    <div class="cropopts">
+      <button class="toggle on" id="tgTrans">✂️ まわりを透明に</button>
+      <button class="toggle" id="tgRotL">↺ 左90°</button>
+      <button class="toggle" id="tgRotR">↻ 右90°</button>
+    </div>
+    <div class="crophint">白い丸をドラッグしてシールの四隅に合わせます。ななめから撮っても正面から見た形に直します。</div>
+    <button class="btn" id="cropOk">この形で登録する</button>
+  </div>
+</div>
+
+<!-- ===== 保存先えらび ===== -->
+<div class="sheet hide" id="picker">
+  <div class="inner">
+    <h3><span>どの番号のシール？</span><button class="x" id="pickClose">✕</button></h3>
+    <div class="chips" id="pickFilters">
+      <button class="chip on" data-pf="empty">空いている枠</button>
+      <button class="chip" data-pf="all">すべての枠</button>
+    </div>
+    <div id="pickGrid"></div>
+  </div>
+</div>
+
+<!-- ===== 写真ビューア ===== -->
+<div class="ov hide" id="viewer">
+  <img id="viewerImg" alt="">
+  <div class="cap" id="viewerCap"></div>
+</div>
+
+<!-- ===== 使い方 ===== -->
+<div class="sheet hide" id="help">
+  <div class="inner">
+    <h3><span>使い方</span><button class="x" id="helpClose">✕</button></h3>
+    <div class="card">
+      <p><strong>1.</strong> 右下の 📷 を押してシールを撮ります。台紙ごと撮ると四隅を見つけやすいです。</p>
+      <p><strong>2.</strong> 自動で四隅を検出して、ななめの写真も正面の形に直します。ずれていれば白い丸をドラッグして直せます。</p>
+      <p><strong>3.</strong> 「まわりを透明に」を押しておくと、背景を消してシールの形だけを切り抜きます。</p>
+      <p><strong>4.</strong> 何番のシールかを選ぶとアルバムに入ります。名前・レアリティ・枚数はマスをタップして入力します。</p>
+      <p><strong>5.</strong> 同じシールが出たら枚数を＋するだけ。ダブりと未所持は「こうかん」タブで一覧になります。</p>
+    </div>
+    <div class="card">
+      <p>📱 ホーム画面に追加すると、アプリのように全画面で使えてオフラインでも開けます。</p>
+      <p>🔒 写真は端末の中だけに保存され、外部に送信されません。</p>
+    </div>
+    <button class="btn" id="helpOk">とじる</button>
+  </div>
+</div>
+
+<input type="file" id="fileShot" accept="image/*" class="hide">
+<div id="toast"></div>
+<div id="busy" class="hide"><div class="col"><div class="sp"></div><div id="busyTxt">処理中…</div></div></div>
+
+<script>
+'use strict';
+/* =====================================================================
+ * シールアルバム
+ * 鬼滅の刃 ディフォルメシールウエハース 其ノ十五 のシールを
+ * 写真に撮って集めるためのコレクションアプリ。
+ *
+ * ・状態(名前/レアリティ/枚数/メモ)と写真(Blob)はどちらも IndexedDB に保存する。
+ *   写真は数MBになるので localStorage は使わない。
+ * ・写真は撮ったあと「四隅の自動検出 → 台形補正 → 背景を透明に」を
+ *   すべて端末内の canvas 処理で行う。外部には一切送信しない。
+ * ===================================================================== */
+
+/* ---------------------------------------------------------------
+ * 定数
+ * ------------------------------------------------------------- */
+const APP_VER = '1.0.0';
+const DB_NAME = 'sealalbum';
+const DB_VER = 1;
+const STORE_KV = 'kv';        // 状態(JSON)
+const STORE_PHOTO = 'photos'; // { id, full:Blob, thumb:Blob }
+
+const DEFAULT_TITLE = '鬼滅の刃 ディフォルメシールウエハース 其ノ十五';
+const DEFAULT_SLOTS = 39;     // 全39種(シークレット3種を含む)
+const MAX_SLOTS = 120;
+
+/** レアリティ。id は保存用、cls は色バーの CSS クラス。 */
+const RARITIES = [
+  { id: '',        label: '未設定',    cls: 'r-none',   color: '#2a3a32' },
+  { id: 'normal',  label: 'ノーマル',  cls: 'r-normal', color: '#6b7f75' },
+  { id: 'rare',    label: 'レア',      cls: 'r-rare',   color: '#4aa3ff' },
+  { id: 'fifth',   label: '5thレア',   cls: 'r-fifth',  color: '#a78bfa' },
+  { id: 'mugen',   label: '無限レア',  cls: 'r-mugen',  color: '#ffd24a' },
+  { id: 'secret',  label: 'シークレット', cls: 'r-secret', color: '#f87171' },
+];
+const rarityOf = id => RARITIES.find(r => r.id === (id || '')) || RARITIES[0];
+
+/** 名前入力の候補(作品の登場人物名)。公式のラインナップ表ではなく、入力を楽にするためのもの。 */
+const NAME_SUGGEST = [
+  '竈門炭治郎', '竈門禰豆子', '我妻善逸', '嘴平伊之助', '栗花落カナヲ',
+  '冨岡義勇', '胡蝶しのぶ', '煉獄杏寿郎', '宇髄天元', '時透無一郎',
+  '甘露寺蜜璃', '伊黒小芭内', '不死川実弥', '悲鳴嶼行冥', '産屋敷耀哉',
+  '鱗滝左近次', '錆兎', '真菰', '桑島慈悟郎', '煉獄槇寿郎', '煉獄千寿郎',
+  '神崎アオイ', '珠世', '愈史郎', '不死川玄弥', '村田',
+  '鬼舞辻無惨', '童磨', '猗窩座', '黒死牟', '半天狗', '玉壺',
+  '堕姫', '妓夫太郎', '累', '魘夢', '響凱',
+];
+
+/* ---------------------------------------------------------------
+ * ちいさな道具
+ * ------------------------------------------------------------- */
+const $ = id => document.getElementById(id);
+const el = (tag, cls, txt) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (txt != null) n.textContent = txt;
+  return n;
+};
+let toastTimer = 0;
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+function busy(on, txt) {
+  $('busyTxt').textContent = txt || '処理中…';
+  $('busy').classList.toggle('hide', !on);
+}
+/** busy 表示を実際に描画させてから重い処理を始めるための待ち */
+const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+/* ---------------------------------------------------------------
+ * IndexedDB
+ * ------------------------------------------------------------- */
+let db = null;
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = () => {
+      const d = req.result;
+      if (!d.objectStoreNames.contains(STORE_KV)) d.createObjectStore(STORE_KV);
+      if (!d.objectStoreNames.contains(STORE_PHOTO)) d.createObjectStore(STORE_PHOTO, { keyPath: 'id' });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function idbGet(store, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const r = tx.objectStore(store).get(key);
+    r.onsuccess = () => resolve(r.result);
+    r.onerror = () => reject(r.error);
+  });
+}
+function idbPut(store, value, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const r = key === undefined ? tx.objectStore(store).put(value) : tx.objectStore(store).put(value, key);
+    r.onsuccess = () => resolve(r.result);
+    r.onerror = () => reject(r.error);
+  });
+}
+function idbDel(store, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const r = tx.objectStore(store).delete(key);
+    r.onsuccess = () => resolve();
+    r.onerror = () => reject(r.error);
+  });
+}
+function idbClear(store) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const r = tx.objectStore(store).clear();
+    r.onsuccess = () => resolve();
+    r.onerror = () => reject(r.error);
+  });
+}
+function idbAll(store) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const r = tx.objectStore(store).getAll();
+    r.onsuccess = () => resolve(r.result || []);
+    r.onerror = () => reject(r.error);
+  });
+}
+
+/* ---------------------------------------------------------------
+ * 状態
+ * ------------------------------------------------------------- */
+/**
+ * state = {
+ *   version, title,
+ *   slots: [{ no, name, rarity, count, memo, photoId, gotAt }]
+ * }
+ */
+let state = null;
+let saveTimer = 0;
+
+function makeSlot(no) {
+  return { no, name: '', rarity: '', count: 0, memo: '', photoId: null, gotAt: null };
+}
+function freshState() {
+  return {
+    version: 1,
+    title: DEFAULT_TITLE,
+    slots: Array.from({ length: DEFAULT_SLOTS }, (_, i) => makeSlot(i + 1)),
+  };
+}
+async function loadState() {
+  const saved = await idbGet(STORE_KV, 'state');
+  state = saved && saved.slots ? saved : freshState();
+  // 古い/壊れたデータでも落ちないように整える
+  state.title = String(state.title || DEFAULT_TITLE);
+  state.slots = (state.slots || []).map((s, i) => Object.assign(makeSlot(i + 1), s, { no: i + 1 }));
+  if (!state.slots.length) state.slots = freshState().slots;
+}
+function saveState(immediate) {
+  clearTimeout(saveTimer);
+  const run = () => idbPut(STORE_KV, state, 'state').catch(() => toast('保存に失敗しました'));
+  if (immediate) return run();
+  saveTimer = setTimeout(run, 200);
+  return Promise.resolve();
+}
+
+/* 表示中の ObjectURL をまとめて後片付けする */
+const urlPool = new Set();
+function objURL(blob) {
+  const u = URL.createObjectURL(blob);
+  urlPool.add(u);
+  return u;
+}
+function releaseURLs() {
+  for (const u of urlPool) URL.revokeObjectURL(u);
+  urlPool.clear();
+}
+
+/* =====================================================================
+ * 画像処理（すべて端末内の canvas で完結）
+ * ===================================================================== */
+
+/** 画像(またはcanvas)を、長辺 maxSide に収まる canvas に描き直す */
+function drawToCanvas(src, maxSide) {
+  const sw = src.naturalWidth || src.videoWidth || src.width;
+  const sh = src.naturalHeight || src.videoHeight || src.height;
+  const k = Math.min(1, maxSide / Math.max(sw, sh));
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(sw * k));
+  c.height = Math.max(1, Math.round(sh * k));
+  const g = c.getContext('2d', { willReadFrequently: true });
+  g.drawImage(src, 0, 0, c.width, c.height);
+  return c;
+}
+
+/** canvas を 90度単位で回す */
+function rotateCanvas(src, deg) {
+  const c = document.createElement('canvas');
+  const swap = deg % 180 !== 0;
+  c.width = swap ? src.height : src.width;
+  c.height = swap ? src.width : src.height;
+  const g = c.getContext('2d');
+  g.translate(c.width / 2, c.height / 2);
+  g.rotate(deg * Math.PI / 180);
+  g.drawImage(src, -src.width / 2, -src.height / 2);
+  return c;
+}
+
+/** 外周の帯から背景色を推定する（チャンネルごとの中央値） */
+function estimateBg(data, w, h, ratio) {
+  const band = Math.max(2, Math.round(Math.min(w, h) * (ratio || 0.055)));
+  const rs = [], gs = [], bs = [];
+  for (let y = 0; y < h; y++) {
+    const edgeRow = y < band || y >= h - band;
+    for (let x = 0; x < w; x++) {
+      if (!edgeRow && x === band) { x = w - band - 1; continue; }
+      const i = (y * w + x) * 4;
+      if (data[i + 3] < 8) continue;
+      rs.push(data[i]); gs.push(data[i + 1]); bs.push(data[i + 2]);
+    }
+  }
+  if (!rs.length) return [255, 255, 255];
+  const med = a => { a.sort((p, q) => p - q); return a[a.length >> 1]; };
+  return [med(rs), med(gs), med(bs)];
+}
+
+/**
+ * ふちに写っている背景の色を最大2色まで求める。
+ * 「濃い机の上に白い台紙」のように背景が2色写っていても両方を拾えるよう、
+ * ふちの画素を k-means(k=2) で2つに分ける。似た色なら1色にまとめる。
+ */
+function ringColors(data, w, h, ratio) {
+  const band = Math.max(2, Math.round(Math.min(w, h) * (ratio || 0.02)));
+  const samples = [];
+  const step = Math.max(1, Math.round((w + h) / 400));
+  for (let y = 0; y < h; y += step) {
+    const edgeRow = y < band || y >= h - band;
+    for (let x = 0; x < w; x += step) {
+      if (!edgeRow && x >= band && x < w - band) continue;
+      const i = (y * w + x) * 4;
+      if (data[i + 3] < 8) continue;
+      samples.push([data[i], data[i + 1], data[i + 2]]);
+    }
+  }
+  if (!samples.length) return [[255, 255, 255]];
+  const lum = c => c[0] * 0.3 + c[1] * 0.59 + c[2] * 0.11;
+  let cs = [samples[0], samples[0]];
+  let lo = Infinity, hi = -Infinity;
+  for (const c of samples) {
+    const l = lum(c);
+    if (l < lo) { lo = l; cs[0] = c; }
+    if (l > hi) { hi = l; cs[1] = c; }
+  }
+  cs = [cs[0].slice(), cs[1].slice()];
+  let counts = [0, 0];
+  for (let it = 0; it < 10; it++) {
+    const sum = [[0, 0, 0], [0, 0, 0]];
+    counts = [0, 0];
+    for (const c of samples) {
+      const d0 = (c[0] - cs[0][0]) ** 2 + (c[1] - cs[0][1]) ** 2 + (c[2] - cs[0][2]) ** 2;
+      const d1 = (c[0] - cs[1][0]) ** 2 + (c[1] - cs[1][1]) ** 2 + (c[2] - cs[1][2]) ** 2;
+      const k = d0 <= d1 ? 0 : 1;
+      sum[k][0] += c[0]; sum[k][1] += c[1]; sum[k][2] += c[2];
+      counts[k]++;
+    }
+    for (const k of [0, 1]) if (counts[k]) cs[k] = sum[k].map(v => v / counts[k]);
+  }
+  const gap = Math.sqrt(((cs[0][0] - cs[1][0]) ** 2 + (cs[0][1] - cs[1][1]) ** 2 + (cs[0][2] - cs[1][2]) ** 2) / 3);
+  const minor = Math.min(counts[0], counts[1]) / samples.length;
+  const major = counts[0] >= counts[1] ? 0 : 1;
+  // 色が近い、または片方がごく少数なら1色として扱う
+  if (gap < 26 || minor < 0.12) return [cs[major]];
+  return [cs[major], cs[1 - major]];   // 多い順
+}
+
+/** いちばん近い背景色との差（0〜255相当）の配列をつくる */
+function bgDistanceMapMulti(data, w, h, cols) {
+  const d = new Uint8ClampedArray(w * h);
+  for (let p = 0, i = 0; p < w * h; p++, i += 4) {
+    let best = Infinity;
+    for (const c of cols) {
+      const dr = data[i] - c[0], dg = data[i + 1] - c[1], dbv = data[i + 2] - c[2];
+      const v = (dr * dr + dg * dg + dbv * dbv) / 3;
+      if (v < best) best = v;
+    }
+    d[p] = Math.sqrt(best);
+  }
+  return d;
+}
+
+/** 背景色との差（0〜255相当）の配列をつくる */
+function bgDistanceMap(data, w, h, bg) {
+  const d = new Uint8ClampedArray(w * h);
+  for (let p = 0, i = 0; p < w * h; p++, i += 4) {
+    const dr = data[i] - bg[0], dg = data[i + 1] - bg[1], dbv = data[i + 2] - bg[2];
+    d[p] = Math.sqrt((dr * dr + dg * dg + dbv * dbv) / 3);
+  }
+  return d;
+}
+
+/** 大津の二値化でしきい値を決める */
+function otsu(dist) {
+  const hist = new Float64Array(256);
+  for (let i = 0; i < dist.length; i++) hist[dist[i]]++;
+  const total = dist.length;
+  let sum = 0;
+  for (let t = 0; t < 256; t++) sum += t * hist[t];
+  let sumB = 0, wB = 0, best = 0, thr = 40;
+  for (let t = 0; t < 256; t++) {
+    wB += hist[t];
+    if (!wB) continue;
+    const wF = total - wB;
+    if (!wF) break;
+    sumB += t * hist[t];
+    const mB = sumB / wB, mF = (sum - sumB) / wF;
+    const v = wB * wF * (mB - mF) * (mB - mF);
+    if (v > best) { best = v; thr = t; }
+  }
+  return thr;
+}
+
+/** 孤立した点を消してから膨らませる（ノイズ取り） */
+function cleanMask(mask, w, h) {
+  const tmp = new Uint8Array(w * h);
+  const count = (m, x, y) => {
+    let n = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      if (!dx && !dy) continue;
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+      if (m[ny * w + nx]) n++;
+    }
+    return n;
+  };
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const p = y * w + x;
+    tmp[p] = mask[p] && count(mask, x, y) >= 3 ? 1 : 0;
+  }
+  const out = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const p = y * w + x;
+    out[p] = tmp[p] || count(tmp, x, y) >= 4 ? 1 : 0;
+  }
+  return out;
+}
+
+/** いちばん大きなかたまり（連結成分）の画素を返す */
+function largestBlob(mask, w, h) {
+  const label = new Int32Array(w * h).fill(-1);
+  const stack = new Int32Array(w * h);
+  let best = null, id = 0;
+  for (let start = 0; start < w * h; start++) {
+    if (!mask[start] || label[start] >= 0) continue;
+    let sp = 0, size = 0, touches = false;
+    let minX = w, minY = h, maxX = -1, maxY = -1;
+    stack[sp++] = start; label[start] = id;
+    const pixels = [];
+    while (sp) {
+      const p = stack[--sp];
+      const x = p % w, y = (p / w) | 0;
+      size++; pixels.push(p);
+      if (x === 0 || y === 0 || x === w - 1 || y === h - 1) touches = true;
+      if (x < minX) minX = x; if (x > maxX) maxX = x;
+      if (y < minY) minY = y; if (y > maxY) maxY = y;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+        const np = ny * w + nx;
+        if (mask[np] && label[np] < 0) { label[np] = id; stack[sp++] = np; }
+      }
+    }
+    const cand = { size, touches, pixels, box: [minX, minY, maxX, maxY] };
+    // 画面のほぼ全面を覆うかたまりは「背景そのもの」とみなして採用しない
+    const coversAll = (maxX - minX) > w * 0.97 && (maxY - minY) > h * 0.97;
+    if (!coversAll && (!best || score(cand) > score(best))) best = cand;
+    id++;
+  }
+  function score(c) { return c.size * (c.touches ? 0.55 : 1); }
+  return best;
+}
+
+/** 凸包（Andrew's monotone chain） */
+function convexHull(pts) {
+  if (pts.length < 4) return pts.slice();
+  const p = pts.slice().sort((a, b) => a.x - b.x || a.y - b.y);
+  const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+  const lower = [];
+  for (const q of p) {
+    while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], q) <= 0) lower.pop();
+    lower.push(q);
+  }
+  const upper = [];
+  for (let i = p.length - 1; i >= 0; i--) {
+    const q = p[i];
+    while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], q) <= 0) upper.pop();
+    upper.push(q);
+  }
+  lower.pop(); upper.pop();
+  return lower.concat(upper);
+}
+
+const polyArea = q => Math.abs(
+  q.reduce((s, p, i) => {
+    const n = q[(i + 1) % q.length];
+    return s + (p.x * n.y - n.x * p.y);
+  }, 0) / 2
+);
+
+/** 凸包から「面積が最大の四角形」を選ぶ */
+function hullToQuad(hull) {
+  if (hull.length < 4) return null;
+  // まず四隅の目安（斜め方向の端）から始めて、1点ずつ面積が増える方へ動かす
+  const key = [p => p.x + p.y, p => p.x - p.y, p => -(p.x + p.y), p => p.y - p.x];
+  let idx = key.map(f => {
+    let bi = 0, bv = -Infinity;
+    hull.forEach((p, i) => { const v = f(p); if (v > bv) { bv = v; bi = i; } });
+    return bi;
+  });
+  idx = [...new Set(idx)];
+  while (idx.length < 4) idx.push((idx[idx.length - 1] + 1) % hull.length);
+  idx.sort((a, b) => a - b);
+  let cur = idx.map(i => hull[i]);
+  let area = polyArea(cur);
+  for (let iter = 0; iter < 24; iter++) {
+    let improved = false;
+    for (let k = 0; k < 4; k++) {
+      for (let i = 0; i < hull.length; i++) {
+        if (idx.includes(i)) continue;
+        const trial = idx.slice();
+        trial[k] = i;
+        const sorted = trial.slice().sort((a, b) => a - b);
+        if (new Set(sorted).size < 4) continue;
+        const a2 = polyArea(sorted.map(j => hull[j]));
+        if (a2 > area + 0.5) { area = a2; idx = sorted; cur = idx.map(j => hull[j]); improved = true; }
+      }
+    }
+    if (!improved) break;
+  }
+  return orderQuad(cur);
+}
+
+/** 左上→右上→右下→左下 の順に並べ替える */
+function orderQuad(q) {
+  const cx = q.reduce((s, p) => s + p.x, 0) / q.length;
+  const cy = q.reduce((s, p) => s + p.y, 0) / q.length;
+  const sorted = q.slice().sort((a, b) =>
+    Math.atan2(a.y - cy, a.x - cx) - Math.atan2(b.y - cy, b.x - cx));
+  let bi = 0, bv = Infinity;
+  sorted.forEach((p, i) => { const v = p.x + p.y; if (v < bv) { bv = v; bi = i; } });
+  return [0, 1, 2, 3].map(i => sorted[(bi + i) % 4]);
+}
+
+/**
+ * 写真からシール（または台紙）の四隅を自動で見つける。
+ * 見つからなければ中央 84% の長方形を返す。
+ */
+function detectQuad(canvas) {
+  const W = canvas.width, H = canvas.height;
+  const fallback = () => {
+    const mx = W * 0.08, my = H * 0.08;
+    return [{ x: mx, y: my }, { x: W - mx, y: my }, { x: W - mx, y: H - my }, { x: mx, y: H - my }];
+  };
+  try {
+    const small = drawToCanvas(canvas, 200);
+    const w = small.width, h = small.height;
+    const img = small.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h);
+    const bg = estimateBg(img.data, w, h);
+    const dist = bgDistanceMap(img.data, w, h, bg);
+    const thr = Math.min(96, Math.max(20, otsu(dist)));
+    const mask = new Uint8Array(w * h);
+    for (let p = 0; p < w * h; p++) mask[p] = dist[p] > thr ? 1 : 0;
+    const blob = largestBlob(cleanMask(mask, w, h), w, h);
+    if (!blob || blob.size < w * h * 0.02) return fallback();
+
+    const pts = blob.pixels.map(p => ({ x: p % w, y: (p / w) | 0 }));
+    const quad = hullToQuad(convexHull(pts));
+    if (!quad || polyArea(quad) < w * h * 0.02) return fallback();
+
+    // 縮小した座標を元のサイズに戻し、ふちが欠けないよう少しだけ外へ広げる
+    const kx = W / w, ky = H / h;
+    const cx = quad.reduce((s, p) => s + p.x, 0) / 4;
+    const cy = quad.reduce((s, p) => s + p.y, 0) / 4;
+    return quad.map(p => ({
+      x: Math.max(0, Math.min(W, (cx + (p.x - cx) * 1.02) * kx)),
+      y: Math.max(0, Math.min(H, (cy + (p.y - cy) * 1.02) * ky)),
+    }));
+  } catch (e) {
+    return fallback();
+  }
+}
+
+/**
+ * 四隅を指定して台形補正（射影変換）する。
+ * 単位正方形 → 四角形 の写像を閉じた式で求め、出力の各画素から逆に引く。
+ */
+function warpQuad(canvas, quad, maxSide) {
+  const [p0, p1, p2, p3] = quad;
+  const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  let outW = Math.round(Math.max(dist(p0, p1), dist(p3, p2)));
+  let outH = Math.round(Math.max(dist(p0, p3), dist(p1, p2)));
+  outW = Math.max(16, outW); outH = Math.max(16, outH);
+  const k = Math.min(1, maxSide / Math.max(outW, outH));
+  outW = Math.max(16, Math.round(outW * k));
+  outH = Math.max(16, Math.round(outH * k));
+
+  // (0,0)->p0, (1,0)->p1, (1,1)->p2, (0,1)->p3
+  const x0 = p0.x, y0 = p0.y, x1 = p1.x, y1 = p1.y, x2 = p2.x, y2 = p2.y, x3 = p3.x, y3 = p3.y;
+  const dx1 = x1 - x2, dx2 = x3 - x2, dx3 = x0 - x1 + x2 - x3;
+  const dy1 = y1 - y2, dy2 = y3 - y2, dy3 = y0 - y1 + y2 - y3;
+  let a, b, c, d, e, f, g, hh;
+  if (Math.abs(dx3) < 1e-9 && Math.abs(dy3) < 1e-9) {
+    a = x1 - x0; b = x2 - x1; c = x0;
+    d = y1 - y0; e = y2 - y1; f = y0;
+    g = 0; hh = 0;
+  } else {
+    const den = dx1 * dy2 - dy1 * dx2 || 1e-9;
+    g = (dx3 * dy2 - dy3 * dx2) / den;
+    hh = (dx1 * dy3 - dy1 * dx3) / den;
+    a = x1 - x0 + g * x1; b = x3 - x0 + hh * x3; c = x0;
+    d = y1 - y0 + g * y1; e = y3 - y0 + hh * y3; f = y0;
+  }
+
+  const sw = canvas.width, sh = canvas.height;
+  const src = canvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, sw, sh).data;
+  const out = document.createElement('canvas');
+  out.width = outW; out.height = outH;
+  const octx = out.getContext('2d', { willReadFrequently: true });
+  const dst = octx.createImageData(outW, outH);
+  const o = dst.data;
+
+  for (let yy = 0; yy < outH; yy++) {
+    const v = (yy + 0.5) / outH;
+    for (let xx = 0; xx < outW; xx++) {
+      const u = (xx + 0.5) / outW;
+      const den = g * u + hh * v + 1;
+      const sx = (a * u + b * v + c) / den;
+      const sy = (d * u + e * v + f) / den;
+      const di = (yy * outW + xx) * 4;
+      if (sx < 0 || sy < 0 || sx > sw - 1 || sy > sh - 1) { o[di + 3] = 0; continue; }
+      // バイリニア補間
+      const ix = sx | 0, iy = sy | 0;
+      const fx = sx - ix, fy = sy - iy;
+      const ix2 = Math.min(sw - 1, ix + 1), iy2 = Math.min(sh - 1, iy + 1);
+      const i00 = (iy * sw + ix) * 4, i10 = (iy * sw + ix2) * 4;
+      const i01 = (iy2 * sw + ix) * 4, i11 = (iy2 * sw + ix2) * 4;
+      for (let ch = 0; ch < 3; ch++) {
+        const top = src[i00 + ch] + (src[i10 + ch] - src[i00 + ch]) * fx;
+        const bot = src[i01 + ch] + (src[i11 + ch] - src[i01 + ch]) * fx;
+        o[di + ch] = top + (bot - top) * fy;
+      }
+      o[di + 3] = 255;
+    }
+  }
+  octx.putImageData(dst, 0, 0);
+  return out;
+}
+
+/**
+ * つながっている部分(連結成分)ごとに番号を振る。
+ * @param {number} margin ふちとみなす幅。にじみは1〜数px内側に輪として残るので少し広めに取る。
+ * @returns {{labels:Int32Array, sizes:number[], touches:boolean[]}}
+ *          labels は画素ごとの成分番号(背景は -1)、touches は画像のふちに掛かっているか。
+ */
+function components(mask, w, h, margin) {
+  const m = Math.max(1, margin || 1);
+  const labels = new Int32Array(w * h).fill(-1);
+  const stack = new Int32Array(w * h);
+  const sizes = [], touches = [];
+  for (let start = 0; start < w * h; start++) {
+    if (!mask[start] || labels[start] >= 0) continue;
+    const id = sizes.length;
+    let sp = 0, size = 0, touch = false;
+    stack[sp++] = start; labels[start] = id;
+    while (sp) {
+      const q = stack[--sp];
+      const x = q % w, y = (q / w) | 0;
+      size++;
+      if (x < m || y < m || x >= w - m || y >= h - m) touch = true;
+      const tryPush = n => { if (mask[n] && labels[n] < 0) { labels[n] = id; stack[sp++] = n; } };
+      if (x > 0) tryPush(q - 1);
+      if (x < w - 1) tryPush(q + 1);
+      if (y > 0) tryPush(q - w);
+      if (y < h - 1) tryPush(q + w);
+    }
+    sizes.push(size); touches.push(touch);
+  }
+  return { labels, sizes, touches };
+}
+
+/**
+ * まわりの背景を透明にする。
+ * ふちから背景色に近い画素をたどって消すので、シールの内側の白は残る。
+ *
+ * ふちに背景が写っていない（シールぴったりに切り抜いた）写真で消しすぎないよう、
+ * 次のどちらかに当てはまるときは切り抜きをあきらめて元の四角いままにする。
+ *   ・消したあとに残る面積が小さすぎる
+ *   ・残った部分がバラバラに割れている（模様だけが残った状態）
+ *
+ * @returns {{canvas:HTMLCanvasElement, applied:boolean}}
+ */
+function removeBackground(canvas) {
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  // ごく外側だけを見て背景色を決める(内側の絵柄を混ぜないため)
+  const bgs = ringColors(img.data, canvas.width, canvas.height, 0.02);
+  // まず見つかった色ぜんぶで試し、消しすぎたら いちばん多い色だけでやり直す
+  let r = tryRemoveBackground(canvas, ctx, img, bgs);
+  if (!r && bgs.length > 1) r = tryRemoveBackground(canvas, ctx, img, [bgs[0]]);
+  if (!r && bgs.length > 1) r = tryRemoveBackground(canvas, ctx, img, [bgs[1]]);
+  return r || { canvas, applied: false };
+}
+
+/**
+ * 指定した背景色で透明化を試す。消しすぎたと判断したら null を返す。
+ * @returns {{canvas:HTMLCanvasElement, applied:boolean}|null}
+ */
+function tryRemoveBackground(canvas, ctx, img, bgs) {
+  const w = canvas.width, h = canvas.height;
+  const data = img.data;
+  const dist = bgDistanceMapMulti(data, w, h, bgs);
+
+  // ふち沿いの画素のばらつきから、背景と呼べるか・どこまで消してよいかを決める
+  const edge = [];
+  const band = Math.max(2, Math.round(Math.min(w, h) * 0.02));
+  for (let y = 0; y < h; y++) {
+    const edgeRow = y < band || y >= h - band;
+    for (let x = 0; x < w; x++) {
+      if (!edgeRow && x === band) { x = w - band - 1; continue; }
+      edge.push(dist[y * w + x]);
+    }
+  }
+  edge.sort((p, q) => p - q);
+  const at = f => edge[Math.min(edge.length - 1, Math.floor(edge.length * f))] || 0;
+  const tol = Math.min(60, Math.max(18, at(0.8) * 1.5 + 12));
+  const tolHi = Math.min(70, tol * 2);  // 地続き判定を許す上限（これ以上ちがう色へは広げない）
+  const LOCAL = 22;                     // となり合う画素が「地続き」とみなせる色の近さ
+
+  const colorDist = (p, q) => {
+    const i = p * 4, j = q * 4;
+    const dr = data[i] - data[j], dg = data[i + 1] - data[j + 1], dbv = data[i + 2] - data[j + 2];
+    return Math.sqrt((dr * dr + dg * dg + dbv * dbv) / 3);
+  };
+
+  // ふちから塗りつぶす。
+  // ふちの画素はまず全部を背景の種にして、そこから
+  //   ・背景色に近い(tol) か
+  //   ・そこそこ近く(tolHi)、かつとなりの背景画素と地続き(LOCAL)
+  // のどちらかを満たす画素へ広げる。
+  // 2つめは、ふちのぼけや影をたどるための逃げ道。上限(tolHi)を付けておかないと
+  // にじんだ境目づたいにシール本体まで食い込んでしまう。
+  const bgMask = new Uint8Array(w * h);
+  const stack = new Int32Array(w * h);
+  let sp = 0;
+  const seed = p => { if (!bgMask[p]) { bgMask[p] = 1; stack[sp++] = p; } };
+  const grow = (q, from) => {
+    if (bgMask[q]) return;
+    if (dist[q] <= tol || (dist[q] <= tolHi && colorDist(q, from) <= LOCAL)) {
+      bgMask[q] = 1; stack[sp++] = q;
+    }
+  };
+  for (let x = 0; x < w; x++) { seed(x); seed((h - 1) * w + x); }
+  for (let y = 0; y < h; y++) { seed(y * w); seed(y * w + w - 1); }
+  while (sp) {
+    const p = stack[--sp];
+    const x = p % w, y = (p / w) | 0;
+    if (x > 0) grow(p - 1, p);
+    if (x < w - 1) grow(p + 1, p);
+    if (y > 0) grow(p - w, p);
+    if (y < h - 1) grow(p + w, p);
+  }
+  // 元から透明だった余白も背景あつかい
+  for (let p = 0; p < w * h; p++) if (data[p * 4 + 3] < 8) bgMask[p] = 1;
+
+  // 残った部分を連結成分に分けて、ふちに残ったにじみのかけらを捨てる。
+  // (台紙のふちのぼけは、背景色のどちらにも当てはまらず細い輪になって残りやすい)
+  const keepMask = new Uint8Array(w * h);
+  for (let p = 0; p < w * h; p++) keepMask[p] = bgMask[p] ? 0 : 1;
+  const { labels, sizes, touches } = components(keepMask, w, h, Math.max(2, Math.round(Math.min(w, h) * 0.01)));
+  const maxSize = sizes.length ? Math.max.apply(null, sizes) : 0;
+  let keep = 0;
+  let minX = w, minY = h, maxX = -1, maxY = -1;
+  for (let p = 0; p < w * h; p++) {
+    const l = labels[p];
+    if (l < 0) continue;
+    // ごく小さなかけら(ノイズ)と、ふちに残ったにじみの輪を捨てる
+    const tiny = sizes[l] < Math.max(maxSize * 0.02, 64);
+    if (tiny || (touches[l] && sizes[l] < maxSize * 0.3)) { keepMask[p] = 0; bgMask[p] = 1; continue; }
+    keep++;
+    const x = p % w, y = (p / w) | 0;
+    if (x < minX) minX = x; if (x > maxX) maxX = x;
+    if (y < minY) minY = y; if (y > maxY) maxY = y;
+  }
+
+  // 消しすぎ防止のチェック
+  if (maxX < 0 || keep < w * h * 0.05) return null;
+  if (maxSize < keep * 0.65) return null;
+
+  // ふちをなめらかに（3x3 の平均でアルファをぼかす）
+  const alpha = new Float32Array(w * h);
+  for (let p = 0; p < w * h; p++) alpha[p] = bgMask[p] ? 0 : 255;
+  const soft = new Float32Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let sum = 0, n = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+      sum += alpha[ny * w + nx]; n++;
+    }
+    soft[y * w + x] = sum / n;
+  }
+
+  for (let p = 0; p < w * h; p++) data[p * 4 + 3] = Math.round(soft[p]);
+  ctx.putImageData(img, 0, 0);
+
+  // 余白を少し残して切り詰める
+  const pad = Math.round(Math.min(w, h) * 0.02);
+  minX = Math.max(0, minX - pad); minY = Math.max(0, minY - pad);
+  maxX = Math.min(w - 1, maxX + pad); maxY = Math.min(h - 1, maxY + pad);
+  const out = document.createElement('canvas');
+  out.width = maxX - minX + 1; out.height = maxY - minY + 1;
+  out.getContext('2d').drawImage(canvas, minX, minY, out.width, out.height, 0, 0, out.width, out.height);
+  return { canvas: out, applied: true };
+}
+
+/* ---- 書き出し ---------------------------------------------------- */
+let webpOK = null;
+function supportsWebp() {
+  if (webpOK === null) {
+    const c = document.createElement('canvas');
+    c.width = c.height = 1;
+    webpOK = c.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+  }
+  return webpOK;
+}
+function canvasToBlob(canvas, hasAlpha) {
+  const type = hasAlpha ? (supportsWebp() ? 'image/webp' : 'image/png') : 'image/jpeg';
+  const q = hasAlpha ? 0.9 : 0.86;
+  return new Promise(resolve => {
+    if (canvas.toBlob) canvas.toBlob(b => resolve(b), type, q);
+    else resolve(dataURLtoBlob(canvas.toDataURL(type, q)));
+  });
+}
+function dataURLtoBlob(url) {
+  const [head, body] = url.split(',');
+  const mime = head.match(/:(.*?);/)[1];
+  const bin = atob(body);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
+function blobToDataURL(blob) {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => resolve(fr.result);
+    fr.onerror = () => reject(fr.error);
+    fr.readAsDataURL(blob);
+  });
+}
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('画像を読み込めませんでした'));
+    img.src = src;
+  });
+}
+
+/* =====================================================================
+ * 表示
+ * ===================================================================== */
+const photoCache = new Map();   // photoId -> { thumb, full }
+
+async function photoURLs(id) {
+  if (!id) return null;
+  if (photoCache.has(id)) return photoCache.get(id);
+  const rec = await idbGet(STORE_PHOTO, id);
+  if (!rec) return null;
+  const urls = { thumb: objURL(rec.thumb || rec.full), full: objURL(rec.full) };
+  photoCache.set(id, urls);
+  return urls;
+}
+function forgetPhoto(id) {
+  const u = photoCache.get(id);
+  if (u) { URL.revokeObjectURL(u.thumb); URL.revokeObjectURL(u.full); urlPool.delete(u.thumb); urlPool.delete(u.full); }
+  photoCache.delete(id);
+}
+
+let filter = 'all';
+
+/** フィルタごとに、その条件に合う枠を返す */
+function slotsFor(f) {
+  const s = state.slots;
+  if (f === 'all') return s;
+  if (f === 'missing') return s.filter(x => x.count <= 0);
+  if (f === 'have') return s.filter(x => x.count > 0);
+  if (f === 'dup') return s.filter(x => x.count >= 2);
+  if (f === 'nophoto') return s.filter(x => !x.photoId);
+  return s.filter(x => (x.rarity || '') === f);
+}
+
+function renderFilters() {
+  const box = $('filters');
+  box.textContent = '';
+  const defs = [
+    ['all', 'すべて'], ['missing', '未所持'], ['have', '所持ずみ'],
+    ['dup', 'ダブり'], ['nophoto', '写真なし'],
+  ];
+  for (const r of RARITIES) if (r.id) defs.push([r.id, r.label]);
+  for (const [id, label] of defs) {
+    const n = slotsFor(id).length;
+    const b = el('button', 'chip' + (filter === id ? ' on' : ''), label);
+    const cnt = el('span', 'n', String(n));
+    b.appendChild(cnt);
+    b.onclick = () => { filter = id; renderFilters(); renderGrid(); };
+    box.appendChild(b);
+  }
+}
+
+function renderGrid() {
+  const grid = $('grid');
+  grid.textContent = '';
+  const list = slotsFor(filter);
+  if (!list.length) {
+    const p = el('p', 'empty-note', 'この条件に当てはまるシールはありません。');
+    p.style.padding = '18px 4px';
+    grid.appendChild(p);
+    return;
+  }
+  for (const slot of list) {
+    const cell = el('button', 'cell ' + (slot.count > 0 ? 'got' : 'empty'));
+    const wrap = el('div', 'thumbwrap');
+    const no = el('span', 'no', 'No.' + slot.no);
+    wrap.appendChild(no);
+    if (slot.count >= 2) wrap.appendChild(el('span', 'cnt', '×' + slot.count));
+    const ph = el('div', 'ph', slot.count > 0 ? '🃏' : '？');
+    wrap.appendChild(ph);
+    if (slot.photoId) {
+      const img = el('img');
+      img.alt = slot.name || ('No.' + slot.no);
+      img.loading = 'lazy';
+      photoURLs(slot.photoId).then(u => { if (u) { img.src = u.thumb; ph.remove(); } });
+      wrap.appendChild(img);
+    }
+    cell.appendChild(wrap);
+    cell.appendChild(el('div', 'nm', slot.name || '（名前を入力）'));
+    cell.appendChild(el('div', 'rb ' + rarityOf(slot.rarity).cls));
+    cell.onclick = () => openDetail(slot.no);
+    grid.appendChild(cell);
+  }
+}
+
+function renderProgress() {
+  const total = state.slots.length;
+  const got = state.slots.filter(s => s.count > 0).length;
+  const pct = total ? Math.round(got / total * 100) : 0;
+  const ring = $('ring');
+  ring.style.background = `conic-gradient(var(--accent) 0 ${pct}%, #2a3a32 ${pct}% 100%)`;
+  $('ringTxt').textContent = pct + '%';
+  $('pMain').textContent = `${got} / ${total} 種`;
+  const dup = state.slots.reduce((s, x) => s + Math.max(0, x.count - 1), 0);
+  const sheets = state.slots.reduce((s, x) => s + x.count, 0);
+  $('pSub').textContent = got === 0
+    ? 'まだ1枚も登録されていません。📷 から始めましょう'
+    : `のこり ${total - got} 種 ／ 手持ち ${sheets} 枚（ダブり ${dup} 枚）`;
+  $('albumName').textContent = state.title;
+}
+
+function renderTrade() {
+  const dups = state.slots.filter(s => s.count >= 2);
+  const wants = state.slots.filter(s => s.count <= 0);
+  const label = s => (s.name ? `No.${s.no} ${s.name}` : `No.${s.no}`);
+
+  const fill = (box, arr, cls, extra) => {
+    box.textContent = '';
+    if (!arr.length) {
+      box.appendChild(el('p', 'empty-note', cls === 'want'
+        ? 'すべてそろっています！おめでとうございます🎉'
+        : 'いまダブっているシールはありません。'));
+      return;
+    }
+    for (const s of arr) {
+      const t = el('div', 'tag' + (cls === 'want' ? ' want' : ''));
+      t.appendChild(el('span', null, label(s)));
+      if (extra) t.appendChild(el('b', null, extra(s)));
+      box.appendChild(t);
+    }
+  };
+  fill($('dupList'), dups, 'dup', s => '×' + (s.count - 1));
+  fill($('wantList'), wants, 'want', null);
+  $('dupCnt').textContent = dups.length ? `${dups.length}種 / ${dups.reduce((a, s) => a + s.count - 1, 0)}枚` : '';
+  $('wantCnt').textContent = wants.length ? `${wants.length}種` : '';
+
+  const lines = [];
+  lines.push(`【${state.title}】シール交換`);
+  lines.push('');
+  lines.push(`◆出せます（${dups.length}種）`);
+  lines.push(dups.length ? dups.map(s => `${label(s)}×${s.count - 1}`).join('/ ') : 'なし');
+  lines.push('');
+  lines.push(`◆探しています（${wants.length}種）`);
+  lines.push(wants.length ? wants.map(label).join('/ ') : 'なし（コンプ済み）');
+  $('tradeText').value = lines.join('\n');
+}
+
+function renderStat() {
+  const box = $('rarityStats');
+  box.textContent = '';
+  const used = RARITIES.filter(r => state.slots.some(s => (s.rarity || '') === r.id));
+  if (!used.length) {
+    box.appendChild(el('p', 'empty-note', 'まだレアリティが登録されていません。マスをタップして設定すると、ここに種類別の集まり具合が出ます。'));
+  }
+  for (const r of used) {
+    const mine = state.slots.filter(s => (s.rarity || '') === r.id);
+    const got = mine.filter(s => s.count > 0).length;
+    const pct = mine.length ? Math.round(got / mine.length * 100) : 0;
+    const row = el('div', 'rbar');
+    const l = el('div', 'rl');
+    l.appendChild(el('span', null, r.label));
+    l.appendChild(el('span', 'rn', `${got} / ${mine.length}（${pct}%）`));
+    row.appendChild(l);
+    const track = el('div', 'rtrack');
+    const bar = el('i');
+    bar.style.width = pct + '%';
+    bar.style.background = r.id ? r.color : 'var(--sub)';
+    if (r.id === 'mugen') bar.style.background = 'linear-gradient(90deg,#ffd24a,#ff7ab6,#4aa3ff)';
+    track.appendChild(bar);
+    row.appendChild(track);
+    box.appendChild(row);
+  }
+
+  const hist = $('historyCard');
+  hist.textContent = '';
+  const got = state.slots.filter(s => s.gotAt).sort((a, b) => b.gotAt - a.gotAt);
+  if (!got.length) {
+    hist.appendChild(el('p', 'empty-note', 'シールを登録すると、手に入れた日がここに並びます。'));
+  } else {
+    const byDay = new Map();
+    for (const s of got) {
+      const d = new Date(s.gotAt);
+      const key = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+      if (!byDay.has(key)) byDay.set(key, []);
+      byDay.get(key).push(s);
+    }
+    for (const [day, arr] of byDay) {
+      const h = el('div', 'rbar');
+      const l = el('div', 'rl');
+      l.appendChild(el('span', null, day));
+      l.appendChild(el('span', 'rn', `${arr.length}種`));
+      h.appendChild(l);
+      const tags = el('div', 'tradelist');
+      for (const s of arr) tags.appendChild(el('div', 'tag', s.name ? `No.${s.no} ${s.name}` : `No.${s.no}`));
+      h.appendChild(tags);
+      hist.appendChild(h);
+    }
+  }
+}
+
+function renderData() {
+  $('inpAlbum').value = state.title;
+  $('slotCount').textContent = String(state.slots.length);
+  $('verInfo').textContent = `バージョン ${APP_VER}`;
+  if (navigator.storage && navigator.storage.estimate) {
+    navigator.storage.estimate().then(e => {
+      const mb = (e.usage || 0) / 1024 / 1024;
+      $('storageInfo').textContent = `いま使っている容量：約 ${mb.toFixed(1)} MB`;
+    }).catch(() => {});
+  }
+}
+
+function renderAll() {
+  renderProgress();
+  renderFilters();
+  renderGrid();
+  renderTrade();
+  renderStat();
+  renderData();
+}
+
+/* ---- タブ ---- */
+let view = 'Album';
+function switchView(v) {
+  view = v;
+  for (const id of ['Album', 'Trade', 'Stat', 'Data']) $('view' + id).classList.toggle('hide', id !== v);
+  for (const b of $('tabbar').children) b.classList.toggle('on', b.dataset.view === v);
+  document.querySelector('main').scrollTop = 0;
+  $('fab').classList.toggle('hide', v !== 'Album');
+}
+
+/* =====================================================================
+ * 1枚ぶんの詳細シート
+ * ===================================================================== */
+let detailNo = 0;
+
+async function openDetail(no) {
+  const slot = state.slots.find(s => s.no === no);
+  if (!slot) return;
+  detailNo = no;
+  $('dTitle').textContent = 'No.' + slot.no;
+  $('dName').value = slot.name || '';
+  $('dMemo').value = slot.memo || '';
+  $('dCount').textContent = String(slot.count);
+  $('dCountNote').textContent = slot.count === 0 ? '未所持' : slot.count === 1 ? '所持ずみ' : `ダブり ${slot.count - 1} 枚`;
+
+  const rbox = $('dRarity');
+  rbox.textContent = '';
+  for (const r of RARITIES) {
+    const b = el('button', (slot.rarity || '') === r.id ? 'on' : '');
+    const dot = el('i');
+    dot.style.background = r.color;
+    b.appendChild(dot);
+    b.appendChild(el('span', null, r.label));
+    b.onclick = () => {
+      // ここで開き直すと入力途中の名前が消えてしまうので、印だけ付けかえる
+      slot.rarity = r.id;
+      for (const c of rbox.children) c.classList.remove('on');
+      b.classList.add('on');
+    };
+    rbox.appendChild(b);
+  }
+
+  const sbox = $('dSugg');
+  sbox.textContent = '';
+  const usedNames = new Set(state.slots.filter(s => s.no !== no && s.name).map(s => s.name));
+  for (const nm of NAME_SUGGEST) {
+    if (usedNames.has(nm)) continue;
+    const b = el('button', null, nm);
+    b.onclick = () => { $('dName').value = nm; };
+    sbox.appendChild(b);
+  }
+
+  const urls = await photoURLs(slot.photoId);
+  $('dPhoto').classList.toggle('hide', !urls);
+  $('dPhotoEmpty').classList.toggle('hide', !!urls);
+  $('dDelPhoto').classList.toggle('hide', !urls);
+  if (urls) {
+    $('dPhoto').src = urls.full;
+    $('dPhoto').onclick = () => showViewer(urls.full, slot);
+  }
+  $('detail').classList.remove('hide');
+}
+
+function closeDetail() { $('detail').classList.add('hide'); detailNo = 0; }
+
+function applyDetail() {
+  const slot = state.slots.find(s => s.no === detailNo);
+  if (!slot) return;
+  slot.name = $('dName').value.trim();
+  slot.memo = $('dMemo').value.trim();
+  if (slot.count > 0 && !slot.gotAt) slot.gotAt = Date.now();
+  if (slot.count <= 0) slot.gotAt = null;
+}
+
+function bumpCount(d) {
+  const slot = state.slots.find(s => s.no === detailNo);
+  if (!slot) return;
+  slot.count = Math.max(0, Math.min(99, slot.count + d));
+  $('dCount').textContent = String(slot.count);
+  $('dCountNote').textContent = slot.count === 0 ? '未所持' : slot.count === 1 ? '所持ずみ' : `ダブり ${slot.count - 1} 枚`;
+}
+
+function showViewer(url, slot) {
+  $('viewerImg').src = url;
+  const name = slot.name ? `No.${slot.no} ${slot.name}` : `No.${slot.no}`;
+  $('viewerCap').textContent = name;
+  const small = el('small', null,
+    [rarityOf(slot.rarity).id ? rarityOf(slot.rarity).label : null,
+     slot.count > 0 ? `${slot.count}枚` : '未所持',
+     slot.memo || null].filter(Boolean).join(' ／ '));
+  $('viewerCap').appendChild(small);
+  $('viewer').classList.remove('hide');
+}
+
+/* =====================================================================
+ * カメラ
+ * ===================================================================== */
+let stream = null, facing = 'environment', targetSlot = 0, torchOn = false;
+
+async function openCamera(slotNo) {
+  targetSlot = slotNo || 0;
+  $('camTitle').textContent = slotNo ? `No.${slotNo} のシールを撮る` : 'シールを枠の中におさめて撮影';
+  $('camera').classList.remove('hide');
+  clearCamError();
+  await startStream();
+}
+
+async function startStream() {
+  stopStream();
+  clearCamError();
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    return showCamError('このブラウザではカメラを使えません。🖼 から写真を選んでください。');
+  }
+  if (!window.isSecureContext) {
+    return showCamError('カメラは https のページでしか使えません。🖼 から撮影済みの写真を選んでください。');
+  }
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1440 } },
+      audio: false,
+    });
+    const v = $('camVideo');
+    v.srcObject = stream;
+    await v.play().catch(() => {});
+    torchOn = false;
+  } catch (e) {
+    showCamError('カメラを使えませんでした。ブラウザの設定でカメラを許可するか、🖼 から写真を選んでください。');
+  }
+}
+function showCamError(msg) {
+  $('camErrMsg').textContent = msg;
+  $('camErr').classList.remove('hide');
+  $('camera').classList.add('err');
+}
+function clearCamError() {
+  $('camErr').classList.add('hide');
+  $('camera').classList.remove('err');
+}
+function stopStream() {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  $('camVideo').srcObject = null;
+}
+function closeCamera() { stopStream(); $('camera').classList.add('hide'); }
+
+async function toggleTorch() {
+  if (!stream) return;
+  const track = stream.getVideoTracks()[0];
+  const caps = track.getCapabilities ? track.getCapabilities() : {};
+  if (!caps || !caps.torch) return toast('この端末ではライトを使えません');
+  torchOn = !torchOn;
+  try { await track.applyConstraints({ advanced: [{ torch: torchOn }] }); }
+  catch (e) { toast('ライトを切り替えられませんでした'); }
+}
+
+function shoot() {
+  const v = $('camVideo');
+  if (!v.videoWidth) return toast('カメラの準備中です');
+  const c = drawToCanvas(v, 1600);
+  closeCamera();
+  openCropper(c, targetSlot);
+}
+
+/* =====================================================================
+ * 切り抜き・台形補正の画面
+ * ===================================================================== */
+let cropSrc = null, cropQuad = null, cropTarget = 0, cropTrans = true;
+let cropPrevSrc = null, cropPrevK = 1;   // できあがりプレビュー用の縮小画像
+let cropFit = { s: 1, ox: 0, oy: 0 };
+let dragIdx = -1;
+
+function openCropper(canvas, slotNo) {
+  cropSrc = canvas;
+  cropTarget = slotNo || 0;
+  cropQuad = detectQuad(cropSrc);
+  buildPrevSrc();
+  $('tgTrans').classList.toggle('on', cropTrans);
+  $('cropper').classList.remove('hide');
+  requestAnimationFrame(() => { drawCrop(); renderPreview(); });
+}
+
+function buildPrevSrc() {
+  cropPrevSrc = drawToCanvas(cropSrc, 420);
+  cropPrevK = cropPrevSrc.width / cropSrc.width;
+}
+
+/** 「できあがり」の小さな見本を描く（毎回そのまま作ると重いので縮小画像から作る） */
+function renderPreview() {
+  if (!cropSrc || !cropPrevSrc) return;
+  const cv = $('cropPrevCanvas');
+  const g = cv.getContext('2d');
+  g.clearRect(0, 0, cv.width, cv.height);
+  try {
+    const q = orderQuad(cropQuad).map(pt => ({ x: pt.x * cropPrevK, y: pt.y * cropPrevK }));
+    let out = warpQuad(cropPrevSrc, q, 170);
+    if (cropTrans) out = removeBackground(out).canvas;
+    const k = Math.min(cv.width / out.width, cv.height / out.height);
+    const w = out.width * k, h = out.height * k;
+    g.drawImage(out, (cv.width - w) / 2, (cv.height - h) / 2, w, h);
+  } catch (e) { /* 見本が出せなくても本編には影響しない */ }
+}
+function closeCropper() {
+  $('cropper').classList.add('hide');
+  cropSrc = null; cropQuad = null; cropPrevSrc = null; dragIdx = -1;
+  $('loupe').style.display = 'none';
+}
+
+function cropLayout() {
+  const stage = $('cropStage');
+  const cw = stage.clientWidth, ch = stage.clientHeight;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const cv = $('cropCanvas');
+  if (cv.width !== Math.round(cw * dpr) || cv.height !== Math.round(ch * dpr)) {
+    cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr);
+  }
+  const s = Math.min(cw / cropSrc.width, ch / cropSrc.height) * 0.9;
+  cropFit = { s, ox: (cw - cropSrc.width * s) / 2, oy: (ch - cropSrc.height * s) / 2, dpr };
+  return { cw, ch, dpr };
+}
+const toView = p => ({ x: cropFit.ox + p.x * cropFit.s, y: cropFit.oy + p.y * cropFit.s });
+const toImg = p => ({ x: (p.x - cropFit.ox) / cropFit.s, y: (p.y - cropFit.oy) / cropFit.s });
+
+function drawCrop() {
+  if (!cropSrc) return;
+  const { cw, ch, dpr } = cropLayout();
+  const g = $('cropCanvas').getContext('2d');
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, cw, ch);
+  g.drawImage(cropSrc, cropFit.ox, cropFit.oy, cropSrc.width * cropFit.s, cropSrc.height * cropFit.s);
+
+  const q = cropQuad.map(toView);
+  // 外側を暗くする
+  g.save();
+  g.beginPath();
+  g.rect(0, 0, cw, ch);
+  g.moveTo(q[0].x, q[0].y);
+  for (let i = 3; i >= 1; i--) g.lineTo(q[i].x, q[i].y);
+  g.closePath();
+  g.fillStyle = '#000a';
+  g.fill('evenodd');
+  g.restore();
+
+  // 枠
+  g.beginPath();
+  g.moveTo(q[0].x, q[0].y);
+  for (let i = 1; i < 4; i++) g.lineTo(q[i].x, q[i].y);
+  g.closePath();
+  g.strokeStyle = '#3ddc84';
+  g.lineWidth = 2;
+  g.stroke();
+
+  // つかむ丸
+  q.forEach((p, i) => {
+    g.beginPath();
+    g.arc(p.x, p.y, i === dragIdx ? 15 : 12, 0, Math.PI * 2);
+    g.fillStyle = i === dragIdx ? '#3ddc84' : '#ffffffee';
+    g.fill();
+    g.lineWidth = 2;
+    g.strokeStyle = '#0f1412';
+    g.stroke();
+  });
+}
+
+function drawLoupe(viewPt) {
+  const lp = $('loupe');
+  const g = $('loupeCanvas').getContext('2d');
+  const src = toImg(viewPt);
+  const zoom = 3;
+  const r = 104 / 2 / zoom;   // 元画像側で見る半径
+  g.clearRect(0, 0, 104, 104);
+  g.fillStyle = '#000';
+  g.fillRect(0, 0, 104, 104);
+  g.drawImage(cropSrc, src.x - r, src.y - r, r * 2, r * 2, 0, 0, 104, 104);
+  g.strokeStyle = '#3ddc84';
+  g.lineWidth = 1.5;
+  g.beginPath();
+  g.moveTo(52, 34); g.lineTo(52, 70);
+  g.moveTo(34, 52); g.lineTo(70, 52);
+  g.stroke();
+  // 指で隠れないよう、上半分にいるときは下に出す
+  const stage = $('cropStage');
+  lp.style.display = 'block';
+  lp.style.left = Math.max(8, Math.min(stage.clientWidth - 112, viewPt.x - 52)) + 'px';
+  lp.style.top = (viewPt.y < stage.clientHeight / 2 ? viewPt.y + 30 : viewPt.y - 138) + 'px';
+}
+
+function cropPointer(e, type) {
+  if (!cropSrc) return;
+  const rect = $('cropStage').getBoundingClientRect();
+  const pt = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  if (type === 'down') {
+    let bi = -1, bd = 40;
+    cropQuad.map(toView).forEach((p, i) => {
+      const d = Math.hypot(p.x - pt.x, p.y - pt.y);
+      if (d < bd) { bd = d; bi = i; }
+    });
+    dragIdx = bi;
+    if (bi >= 0) { e.preventDefault(); drawLoupe(pt); drawCrop(); }
+    return;
+  }
+  if (dragIdx < 0) return;
+  e.preventDefault();
+  if (type === 'move') {
+    const ip = toImg(pt);
+    cropQuad[dragIdx] = {
+      x: Math.max(0, Math.min(cropSrc.width, ip.x)),
+      y: Math.max(0, Math.min(cropSrc.height, ip.y)),
+    };
+    drawLoupe(pt);
+    drawCrop();
+  } else {
+    dragIdx = -1;
+    $('loupe').style.display = 'none';
+    drawCrop();
+    renderPreview();
+  }
+}
+
+async function finishCrop() {
+  busy(true, '切り抜いています…');
+  await nextFrame();
+  try {
+    let out = warpQuad(cropSrc, orderQuad(cropQuad), 760);
+    let hasAlpha = false;
+    if (cropTrans) {
+      const r = removeBackground(out);
+      out = r.canvas;
+      hasAlpha = r.applied;
+    }
+    const full = await canvasToBlob(out, hasAlpha);
+    const thumbCanvas = drawToCanvas(out, 260);
+    const thumb = await canvasToBlob(thumbCanvas, hasAlpha);
+    busy(false);
+    closeCropper();
+    if (cropTrans && !hasAlpha) toast('まわりに背景が見つからなかったので、四角いまま登録します');
+    if (cropTarget) {
+      await commitPhoto(cropTarget, full, thumb);
+      renderAll();
+      toast(`No.${cropTarget} に登録しました`);
+      openDetail(cropTarget);
+    } else {
+      openPicker(full, thumb);
+    }
+  } catch (e) {
+    busy(false);
+    toast('うまく切り抜けませんでした。もう一度お試しください');
+  }
+}
+
+/* =====================================================================
+ * 保存先の枠えらび
+ * ===================================================================== */
+let pendingPhoto = null, pickFilter = 'empty';
+
+function openPicker(full, thumb) {
+  pendingPhoto = { full, thumb };
+  pickFilter = 'empty';
+  renderPicker();
+  $('picker').classList.remove('hide');
+}
+function renderPicker() {
+  for (const b of $('pickFilters').children) b.classList.toggle('on', b.dataset.pf === pickFilter);
+  const box = $('pickGrid');
+  box.textContent = '';
+  const list = pickFilter === 'empty' ? state.slots.filter(s => !s.photoId) : state.slots;
+  if (!list.length) {
+    box.appendChild(el('p', 'empty-note', '空いている枠がありません。「すべての枠」から選ぶと写真を差し替えられます。'));
+    return;
+  }
+  for (const s of list) {
+    const b = el('button', 'pcell' + (s.photoId ? ' used' : ''));
+    b.appendChild(el('b', null, 'No.' + s.no));
+    b.appendChild(el('span', null, s.name || (s.photoId ? '登録ずみ' : '空き')));
+    b.onclick = async () => {
+      $('picker').classList.add('hide');
+      if (s.photoId && !confirm(`No.${s.no} にはすでに写真があります。差し替えますか？`)) {
+        $('picker').classList.remove('hide');
+        return;
+      }
+      await commitPhoto(s.no, pendingPhoto.full, pendingPhoto.thumb);
+      pendingPhoto = null;
+      renderAll();
+      toast(`No.${s.no} に登録しました`);
+      openDetail(s.no);
+    };
+    box.appendChild(b);
+  }
+}
+
+async function commitPhoto(slotNo, full, thumb) {
+  const slot = state.slots.find(s => s.no === slotNo);
+  if (!slot) return;
+  const id = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  await idbPut(STORE_PHOTO, { id, full, thumb });
+  if (slot.photoId) { await idbDel(STORE_PHOTO, slot.photoId).catch(() => {}); forgetPhoto(slot.photoId); }
+  slot.photoId = id;
+  if (slot.count < 1) slot.count = 1;
+  if (!slot.gotAt) slot.gotAt = Date.now();
+  await saveState(true);
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+}
+
+/* 写真ライブラリから読み込む */
+let libTarget = 0;
+function pickFromLibrary(slotNo) {
+  libTarget = slotNo || 0;
+  $('fileShot').value = '';
+  $('fileShot').click();
+}
+
+/* =====================================================================
+ * バックアップ
+ * ===================================================================== */
+function download(name, blob) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+const stamp = () => {
+  const d = new Date();
+  const p = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`;
+};
+
+async function exportData(withPhotos) {
+  busy(true, '書き出しています…');
+  await nextFrame();
+  try {
+    const pack = { app: 'sealalbum', version: 1, appVersion: APP_VER, exportedAt: Date.now(), state, photos: [] };
+    if (withPhotos) {
+      const all = await idbAll(STORE_PHOTO);
+      const alive = new Set(state.slots.map(s => s.photoId).filter(Boolean));
+      for (const rec of all) {
+        if (!alive.has(rec.id)) continue;
+        pack.photos.push({
+          id: rec.id,
+          full: await blobToDataURL(rec.full),
+          thumb: rec.thumb ? await blobToDataURL(rec.thumb) : null,
+        });
+      }
+    }
+    const blob = new Blob([JSON.stringify(pack)], { type: 'application/json' });
+    download(`シールアルバム-${stamp()}${withPhotos ? '' : '-データのみ'}.json`, blob);
+    busy(false);
+    toast('書き出しました');
+  } catch (e) {
+    busy(false);
+    toast('書き出しに失敗しました');
+  }
+}
+
+async function importData(file) {
+  busy(true, '読み込んでいます…');
+  await nextFrame();
+  try {
+    const text = await file.text();
+    const pack = JSON.parse(text);
+    if (!pack || pack.app !== 'sealalbum' || !pack.state || !Array.isArray(pack.state.slots)) {
+      throw new Error('形式がちがいます');
+    }
+    busy(false);
+    const hasPhotos = Array.isArray(pack.photos) && pack.photos.length;
+    if (!confirm(`いまのデータを、読み込んだ内容で置きかえます。よろしいですか？\n\n枠：${pack.state.slots.length}種\n写真：${hasPhotos ? pack.photos.length + '枚' : 'なし（文字データのみ）'}`)) return;
+    busy(true, '読み込んでいます…');
+    await nextFrame();
+
+    releaseURLs();
+    photoCache.clear();
+    await idbClear(STORE_PHOTO);
+    for (const p of (pack.photos || [])) {
+      await idbPut(STORE_PHOTO, {
+        id: p.id,
+        full: dataURLtoBlob(p.full),
+        thumb: p.thumb ? dataURLtoBlob(p.thumb) : dataURLtoBlob(p.full),
+      });
+    }
+    state = pack.state;
+    state.slots = state.slots.map((s, i) => Object.assign(makeSlot(i + 1), s, { no: i + 1 }));
+    if (!hasPhotos) state.slots.forEach(s => { s.photoId = null; });
+    await saveState(true);
+    busy(false);
+    renderAll();
+    toast('読み込みました');
+  } catch (e) {
+    busy(false);
+    toast('読み込めませんでした。書き出したファイルか確認してください');
+  }
+}
+
+async function resetPhotos() {
+  if (!confirm('登録した写真をすべて消します。名前・枚数・メモは残ります。よろしいですか？')) return;
+  releaseURLs();
+  photoCache.clear();
+  await idbClear(STORE_PHOTO);
+  state.slots.forEach(s => { s.photoId = null; });
+  await saveState(true);
+  renderAll();
+  toast('写真を消しました');
+}
+
+async function resetAll() {
+  if (!confirm('すべてのデータ（写真・名前・枚数）を消して最初からやり直します。よろしいですか？')) return;
+  if (!confirm('本当に消してよいですか？この操作は元に戻せません。')) return;
+  releaseURLs();
+  photoCache.clear();
+  await idbClear(STORE_PHOTO);
+  state = freshState();
+  await saveState(true);
+  filter = 'all';
+  renderAll();
+  switchView('Album');
+  toast('最初の状態に戻しました');
+}
+
+async function changeSlotCount(d) {
+  const cur = state.slots.length;
+  const next = Math.max(1, Math.min(MAX_SLOTS, cur + d));
+  if (next === cur) return;
+  if (next < cur) {
+    const lost = state.slots.slice(next).filter(s => s.count > 0 || s.photoId || s.name);
+    if (lost.length && !confirm(`No.${next + 1} 以降の ${lost.length} 件に入力ずみのデータがあります。消してよいですか？`)) return;
+    for (const s of state.slots.slice(next)) {
+      if (s.photoId) { await idbDel(STORE_PHOTO, s.photoId).catch(() => {}); forgetPhoto(s.photoId); }
+    }
+    state.slots = state.slots.slice(0, next);
+  } else {
+    for (let i = cur; i < next; i++) state.slots.push(makeSlot(i + 1));
+  }
+  await saveState(true);
+  renderAll();
+}
+
+/* =====================================================================
+ * 画面のつなぎこみ
+ * ===================================================================== */
+function wire() {
+  /* タブ */
+  for (const b of $('tabbar').children) b.onclick = () => switchView(b.dataset.view);
+
+  /* ヘルプ */
+  $('btnHelp').onclick = () => $('help').classList.remove('hide');
+  $('helpClose').onclick = $('helpOk').onclick = () => $('help').classList.add('hide');
+
+  /* 撮影 */
+  $('fab').onclick = () => openCamera(0);
+  $('camClose').onclick = closeCamera;
+  $('shutter').onclick = shoot;
+  $('camLib').onclick = $('camErrPick').onclick = () => { const n = targetSlot; closeCamera(); pickFromLibrary(n); };
+  $('camTorch').onclick = toggleTorch;
+  $('camSwitch').onclick = () => { facing = facing === 'environment' ? 'user' : 'environment'; startStream(); };
+
+  $('fileShot').onchange = async e => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    busy(true, '写真を読み込んでいます…');
+    try {
+      const url = URL.createObjectURL(file);
+      const img = await loadImage(url);
+      URL.revokeObjectURL(url);
+      busy(false);
+      openCropper(drawToCanvas(img, 1600), libTarget);
+    } catch (err) {
+      busy(false);
+      toast('この写真は読み込めませんでした');
+    }
+  };
+
+  /* 切り抜き */
+  const stage = $('cropStage');
+  stage.addEventListener('pointerdown', e => cropPointer(e, 'down'));
+  stage.addEventListener('pointermove', e => cropPointer(e, 'move'));
+  stage.addEventListener('pointerup', e => cropPointer(e, 'up'));
+  stage.addEventListener('pointercancel', e => cropPointer(e, 'up'));
+  $('cropCancel').onclick = closeCropper;
+  $('cropAuto').onclick = () => { cropQuad = detectQuad(cropSrc); drawCrop(); renderPreview(); toast('四隅を検出しました'); };
+  $('cropFull').onclick = () => {
+    cropQuad = [{ x: 0, y: 0 }, { x: cropSrc.width, y: 0 },
+                { x: cropSrc.width, y: cropSrc.height }, { x: 0, y: cropSrc.height }];
+    drawCrop();
+    renderPreview();
+  };
+  $('tgTrans').onclick = () => {
+    cropTrans = !cropTrans;
+    $('tgTrans').classList.toggle('on', cropTrans);
+    renderPreview();
+  };
+  const rot = deg => {
+    cropSrc = rotateCanvas(cropSrc, deg);
+    cropQuad = detectQuad(cropSrc);
+    buildPrevSrc();
+    drawCrop();
+    renderPreview();
+  };
+  $('tgRotL').onclick = () => rot(-90);
+  $('tgRotR').onclick = () => rot(90);
+  $('cropOk').onclick = finishCrop;
+
+  /* 保存先えらび */
+  $('pickClose').onclick = () => { $('picker').classList.add('hide'); pendingPhoto = null; };
+  for (const b of $('pickFilters').children) b.onclick = () => { pickFilter = b.dataset.pf; renderPicker(); };
+
+  /* 詳細 */
+  $('dClose').onclick = closeDetail;
+  $('detail').onclick = e => { if (e.target === $('detail')) { applyDetail(); saveState(); renderAll(); closeDetail(); } };
+  $('dPlus').onclick = () => bumpCount(1);
+  $('dMinus').onclick = () => bumpCount(-1);
+  $('dShoot').onclick = () => {
+    applyDetail(); saveState(); renderAll();
+    const n = detailNo;          // closeDetail() で detailNo が消えるので先に控える
+    closeDetail();
+    openCamera(n);
+  };
+  $('dPick').onclick = () => {
+    applyDetail(); saveState(); renderAll();
+    const n = detailNo;
+    closeDetail();
+    pickFromLibrary(n);
+  };
+  $('dDelPhoto').onclick = async () => {
+    const slot = state.slots.find(s => s.no === detailNo);
+    if (!slot || !slot.photoId) return;
+    if (!confirm('この写真を消しますか？（枚数や名前は残ります）')) return;
+    applyDetail();
+    await idbDel(STORE_PHOTO, slot.photoId).catch(() => {});
+    forgetPhoto(slot.photoId);
+    slot.photoId = null;
+    await saveState(true);
+    renderAll();
+    openDetail(slot.no);
+  };
+  $('dSave').onclick = async () => {
+    applyDetail();
+    await saveState(true);
+    renderAll();
+    closeDetail();
+    toast('保存しました');
+  };
+
+  /* 写真ビューア */
+  $('viewer').onclick = () => $('viewer').classList.add('hide');
+
+  /* 交換 */
+  $('btnCopyTrade').onclick = async () => {
+    const txt = $('tradeText').value;
+    try { await navigator.clipboard.writeText(txt); toast('コピーしました'); }
+    catch (e) { $('tradeText').select(); document.execCommand('copy'); toast('コピーしました'); }
+  };
+  $('btnShareTrade').onclick = async () => {
+    const txt = $('tradeText').value;
+    if (navigator.share) { try { await navigator.share({ text: txt }); } catch (e) {} }
+    else toast('この端末では共有を使えません。コピーをお使いください');
+  };
+
+  /* データ */
+  $('inpAlbum').onchange = () => {
+    state.title = $('inpAlbum').value.trim() || DEFAULT_TITLE;
+    $('inpAlbum').value = state.title;
+    saveState();
+    renderProgress();
+    renderTrade();
+  };
+  $('slotPlus').onclick = () => changeSlotCount(1);
+  $('slotMinus').onclick = () => changeSlotCount(-1);
+  $('btnExport').onclick = () => exportData(true);
+  $('btnExportLite').onclick = () => exportData(false);
+  $('btnImport').onclick = () => { $('fileImport').value = ''; $('fileImport').click(); };
+  $('fileImport').onchange = e => { const f = e.target.files && e.target.files[0]; if (f) importData(f); };
+  $('btnResetPhotos').onclick = resetPhotos;
+  $('btnResetAll').onclick = resetAll;
+
+  /* 画面の向きが変わったら切り抜き画面を描き直す */
+  window.addEventListener('resize', () => { if (cropSrc) drawCrop(); });
+
+  /* 戻るボタンで重なった画面を閉じる */
+  window.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    for (const id of ['viewer', 'help', 'picker', 'detail', 'cropper', 'camera']) {
+      const n = $(id);
+      if (!n.classList.contains('hide')) {
+        if (id === 'camera') closeCamera();
+        else if (id === 'cropper') closeCropper();
+        else n.classList.add('hide');
+        return;
+      }
+    }
+  });
+
+  /* 画面を離れたらカメラを止める */
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stopStream(); });
+}
+
+/* =====================================================================
+ * 起動
+ * ===================================================================== */
+(async function init() {
+  try {
+    db = await openDB();
+    await loadState();
+  } catch (e) {
+    state = freshState();
+    toast('保存領域を使えないため、今回の内容は残りません');
+  }
+  wire();
+  renderAll();
+  switchView('Album');
+  if (!state.slots.some(s => s.count > 0 || s.photoId)) $('help').classList.remove('hide');
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>
