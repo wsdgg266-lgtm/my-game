@@ -169,6 +169,21 @@
     border:1px solid var(--line); font-size:20px; display:grid; place-items:center; flex:none; }
   .counter .v{ flex:1; text-align:center; font-size:15px; font-weight:bold; }
   .counter .v small{ display:block; font-size:11px; color:var(--sub); font-weight:normal; margin-top:2px; }
+  .autonote{ font-size:11px; color:var(--sub); line-height:1.7; margin-top:7px; }
+  .autobar{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:12px;
+    background:#1c2f26; border:1px solid #2f5a45; margin-bottom:12px; font-size:12px; line-height:1.7; }
+  .autobar .t{ flex:1; min-width:0; }
+  .autobar button{ flex:none; font-size:11.5px; padding:8px 10px; border-radius:9px;
+    background:var(--panel2); border:1px solid var(--line); color:var(--fg); }
+  .guess{ margin-bottom:12px; }
+  .guess h4{ font-size:12px; margin-bottom:8px; color:var(--sub); font-weight:normal; }
+  .gcell{ display:flex; align-items:center; gap:10px; width:100%; padding:9px; margin-bottom:7px;
+    border-radius:12px; background:var(--panel); border:1px solid var(--line); text-align:left; }
+  .gcell img{ width:44px; height:44px; flex:none; border-radius:8px; object-fit:contain; background:#0b100d; }
+  .gcell .gi{ flex:1; min-width:0; font-size:12.5px; line-height:1.5; }
+  .gcell .gi small{ display:block; color:var(--sub); font-size:11px; margin-top:2px; }
+  .gcell .gp{ flex:none; font-size:11px; color:var(--accent); font-weight:bold; }
+  .gcell.top{ border-color:var(--accent); background:#1a2b23; }
   .sugg{ display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; max-height:96px; overflow-y:auto; }
   .sugg button{ font-size:11.5px; padding:6px 9px; border-radius:8px; background:var(--panel2);
     border:1px solid var(--line); color:var(--sub); }
@@ -368,6 +383,10 @@
 <div class="sheet hide" id="detail">
   <div class="inner">
     <h3><span id="dTitle">No.1</span><button class="x" id="dClose">✕</button></h3>
+    <div id="dAuto" class="autobar hide">
+      <div class="t" id="dAutoTxt"></div>
+      <button id="dNotSame">ちがう</button>
+    </div>
     <img id="dPhoto" class="hide" alt="">
     <div id="dPhotoEmpty">
       <div class="em">🃏</div>
@@ -386,6 +405,7 @@
     <div class="field">
       <label>レアリティ</label>
       <div class="rchips" id="dRarity"></div>
+      <p class="autonote hide" id="dRarityNote"></p>
     </div>
     <div class="field">
       <label>持っている枚数</label>
@@ -451,6 +471,7 @@
 <div class="sheet hide" id="picker">
   <div class="inner">
     <h3><span>どの番号のシール？</span><button class="x" id="pickClose">✕</button></h3>
+    <div class="guess hide" id="pickGuess"><h4>もしかして、この中のどれか？</h4><div id="pickGuessList"></div></div>
     <div class="chips" id="pickFilters">
       <button class="chip on" data-pf="empty">空いている枠</button>
       <button class="chip" data-pf="all">すべての枠</button>
@@ -474,7 +495,8 @@
       <p><strong>2.</strong> 自動で四隅を検出して、ななめの写真も正面の形に直します。ずれていれば白い丸をドラッグして直せます。</p>
       <p><strong>3.</strong> 「まわりを透明に」を押しておくと、背景を消してシールの形だけを切り抜きます。</p>
       <p><strong>4.</strong> 何番のシールかを選ぶとアルバムに入ります。名前・レアリティ・枚数はマスをタップして入力します。</p>
-      <p><strong>5.</strong> 同じシールが出たら枚数を＋するだけ。ダブりと未所持は「こうかん」タブで一覧になります。</p>
+      <p><strong>5.</strong> <strong>2枚目からは自動です。</strong>一度登録したシールと同じものを撮ると、写真から見分けて名前もレアリティもそのまま引き継ぎ、ダブりとして枚数を足します。にていて迷うときは「もしかして、この中のどれか？」と候補が出ます。</p>
+      <p><strong>6.</strong> はじめて撮るシールは、キラ(箔)かどうかを写真から見て<strong>ノーマルかレアを先に選んでおきます</strong>。5thレア・無限レア・シークレットの区別まではできないので、そこはタップで直してください。名前も、はじめての1枚だけは手入力です。</p>
     </div>
     <div class="card">
       <p>📱 ホーム画面に追加すると、アプリのように全画面で使えてオフラインでも開けます。</p>
@@ -504,7 +526,7 @@
 /* ---------------------------------------------------------------
  * 定数
  * ------------------------------------------------------------- */
-const APP_VER = '1.0.0';
+const APP_VER = '1.1.0';
 const DB_NAME = 'sealalbum';
 const DB_VER = 1;
 const STORE_KV = 'kv';        // 状態(JSON)
@@ -631,7 +653,8 @@ let state = null;
 let saveTimer = 0;
 
 function makeSlot(no) {
-  return { no, name: '', rarity: '', count: 0, memo: '', photoId: null, gotAt: null };
+  return { no, name: '', rarity: '', count: 0, memo: '', photoId: null, gotAt: null,
+           sig: null, rarityAuto: false };
 }
 function freshState() {
   return {
@@ -713,6 +736,29 @@ function estimateBg(data, w, h, ratio) {
   }
   if (!rs.length) return [255, 255, 255];
   const med = a => { a.sort((p, q) => p - q); return a[a.length >> 1]; };
+  return [med(rs), med(gs), med(bs)];
+}
+
+/**
+ * 少し内側のリング(inner〜outer の帯)から色を集める。
+ * 四隅を少し広げて切り出しているぶん、いちばん外側には机など別の物が混じる。
+ * そこを避けて取ると、たいていは「台紙そのもの」の色が得られる。
+ */
+function insetRingColor(data, w, h, inner, outer) {
+  const a = Math.round(Math.min(w, h) * inner);
+  const b = Math.round(Math.min(w, h) * outer);
+  const rs = [], gs = [], bs = [];
+  for (let y = a; y < h - a; y++) {
+    const edgeRow = y < b || y >= h - b;
+    for (let x = a; x < w - a; x++) {
+      if (!edgeRow && x === b) { x = w - b - 1; continue; }
+      const i = (y * w + x) * 4;
+      if (data[i + 3] < 8) continue;
+      rs.push(data[i]); gs.push(data[i + 1]); bs.push(data[i + 2]);
+    }
+  }
+  if (!rs.length) return null;
+  const med = arr => { arr.sort((p, q) => p - q); return arr[arr.length >> 1]; };
   return [med(rs), med(gs), med(bs)];
 }
 
@@ -1094,38 +1140,53 @@ function removeBackground(canvas) {
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
   // ごく外側だけを見て背景色を決める(内側の絵柄を混ぜないため)
-  const bgs = ringColors(img.data, canvas.width, canvas.height, 0.02);
-  // まず見つかった色ぜんぶで試し、消しすぎたら いちばん多い色だけでやり直す
-  let r = tryRemoveBackground(canvas, ctx, img, bgs);
-  if (!r && bgs.length > 1) r = tryRemoveBackground(canvas, ctx, img, [bgs[0]]);
-  if (!r && bgs.length > 1) r = tryRemoveBackground(canvas, ctx, img, [bgs[1]]);
-  return r || { canvas, applied: false };
+  const w = canvas.width, h = canvas.height;
+  // 1つめの候補: 少し内側のリング = ふつうは台紙そのものの色
+  const inset = insetRingColor(img.data, w, h, 0.03, 0.08);
+  // 2つめ以降の候補: いちばん外側のふちの色(最大2色)
+  const bgs = ringColors(img.data, w, h, 0.02);
+  // [背景色, その色を取った帯] の順に試す。しきい値も同じ帯から決めないとちぐはぐになる
+  const tries = [];
+  if (inset) tries.push([[inset], [0.03, 0.08]]);
+  tries.push([bgs, [0, 0.02]]);
+  if (bgs.length > 1) {
+    tries.push([[bgs[0]], [0, 0.02]]);
+    tries.push([[bgs[1]], [0, 0.02]]);
+  }
+  for (const [cand, band] of tries) {
+    const r = tryRemoveBackground(canvas, ctx, img, cand, band);
+    if (r) return r;
+  }
+  return { canvas, applied: false };
 }
 
 /**
  * 指定した背景色で透明化を試す。消しすぎたと判断したら null を返す。
  * @returns {{canvas:HTMLCanvasElement, applied:boolean}|null}
  */
-function tryRemoveBackground(canvas, ctx, img, bgs) {
+function tryRemoveBackground(canvas, ctx, img, bgs, band) {
   const w = canvas.width, h = canvas.height;
   const data = img.data;
   const dist = bgDistanceMapMulti(data, w, h, bgs);
 
-  // ふち沿いの画素のばらつきから、背景と呼べるか・どこまで消してよいかを決める
+  // 背景色を取ったのと同じ帯のばらつきから、どこまで消してよいかを決める。
+  // (ちがう場所から決めるとしきい値がちぐはぐになり、シール本体まで消えてしまう)
   const edge = [];
-  const band = Math.max(2, Math.round(Math.min(w, h) * 0.02));
-  for (let y = 0; y < h; y++) {
-    const edgeRow = y < band || y >= h - band;
-    for (let x = 0; x < w; x++) {
-      if (!edgeRow && x === band) { x = w - band - 1; continue; }
+  const a0 = Math.round(Math.min(w, h) * (band ? band[0] : 0));
+  const b0 = Math.max(a0 + 2, Math.round(Math.min(w, h) * (band ? band[1] : 0.02)));
+  for (let y = a0; y < h - a0; y++) {
+    const edgeRow = y < b0 || y >= h - b0;
+    for (let x = a0; x < w - a0; x++) {
+      if (!edgeRow && x === b0) { x = w - b0 - 1; continue; }
       edge.push(dist[y * w + x]);
     }
   }
+  if (!edge.length) return null;
   edge.sort((p, q) => p - q);
   const at = f => edge[Math.min(edge.length - 1, Math.floor(edge.length * f))] || 0;
   const tol = Math.min(60, Math.max(18, at(0.8) * 1.5 + 12));
-  const tolHi = Math.min(70, tol * 2);  // 地続き判定を許す上限（これ以上ちがう色へは広げない）
-  const LOCAL = 22;                     // となり合う画素が「地続き」とみなせる色の近さ
+  const tolHi = Math.min(60, tol * 1.5);  // 地続き判定を許す上限（これ以上ちがう色へは広げない）
+  const LOCAL = 15;                       // となり合う画素が「地続き」とみなせる色の近さ
 
   const colorDist = (p, q) => {
     const i = p * 4, j = q * 4;
@@ -1183,9 +1244,20 @@ function tryRemoveBackground(canvas, ctx, img, bgs) {
     if (y < minY) minY = y; if (y > maxY) maxY = y;
   }
 
-  // 消しすぎ防止のチェック
-  if (maxX < 0 || keep < w * h * 0.05) return null;
-  if (maxSize < keep * 0.65) return null;
+  // 消しすぎ防止のチェック。
+  // いちばん効く手がかりは「消した部分が平らな背景だったか」。
+  // 台紙や机ならほぼ一色なので背景色との差は小さく、
+  // シール本体を食べてしまったときは絵柄のぶんだけ差が大きくなる。
+  let removedSum = 0, removedCount = 0;
+  for (let p = 0; p < w * h; p++) if (bgMask[p]) { removedSum += dist[p]; removedCount++; }
+  const removedSpread = removedCount ? removedSum / removedCount : 0;
+  const spreadLimit = Math.min(16, Math.max(10, tol * 0.6));
+
+  if (maxX < 0) return null;
+  if (keep < w * h * 0.05) return null;            // ほとんど残らない = 消しすぎ
+  if (keep > w * h * 0.95) return null;            // ほとんど消えない = 切り抜く意味がない
+  if (removedSpread > spreadLimit) return null;    // 消した部分が平らでない = 背景ではなかった
+  if (maxSize < keep * 0.35) return null;          // 残りが粉々 = 絵柄だけが残った
 
   // ふちをなめらかに（3x3 の平均でアルファをぼかす）
   const alpha = new Float32Array(w * h);
@@ -1212,6 +1284,214 @@ function tryRemoveBackground(canvas, ctx, img, bgs) {
   out.width = maxX - minX + 1; out.height = maxY - minY + 1;
   out.getContext('2d').drawImage(canvas, minX, minY, out.width, out.height, 0, 0, out.width, out.height);
   return { canvas: out, applied: true };
+}
+
+/* =====================================================================
+ * シールの「指紋」と、キラ(箔)の見分け
+ *
+ * どのキャラかを絵から当てることは端末内だけではできない。
+ * そこで「一度登録したシールと同じものか」を色と形で見分けて、
+ * 同じならその枠の名前とレアリティをそのまま引き継ぐ。
+ * ウエハースはダブりが大量に出るので、これだけで入力の手間はほぼ無くなる。
+ * ===================================================================== */
+
+const SIG_SIZE = 64;    // 指紋を取るときの正方形サイズ
+const SIG_GRID = 4;     // 色を平均するマス目(4x4)
+const SIG_SHAPE = 8;    // 形をとらえるマス目(8x8)
+const SIG_HUES = 12;    // 色あいのヒストグラムの段数
+
+/** RGB から色あい(0〜1)・あざやかさ・明るさを求める */
+function rgbToHsv(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  let hVal = 0;
+  if (d > 1e-6) {
+    if (mx === r) hVal = ((g - b) / d + 6) % 6;
+    else if (mx === g) hVal = (b - r) / d + 2;
+    else hVal = (r - g) / d + 4;
+    hVal /= 6;
+  }
+  return [hVal, mx > 1e-6 ? d / mx : 0, mx];
+}
+
+/**
+ * シール画像から「指紋」を作る。
+ * 明るさの差で別物と判定しないよう、色は画像全体の明るさで割って正規化する。
+ * @returns {{g:number[], h:number[], s:number[], a:number}}
+ *   g=マスごとの色, h=色あいの分布, s=形, a=たて/よこ比
+ */
+function computeSignature(canvas) {
+  // 透明な余白を除いた中身を、64x64 の真ん中に形を保ったまま収める
+  const box = opaqueBounds(canvas);
+  const bw = box[2] - box[0] + 1, bh = box[3] - box[1] + 1;
+  const c = document.createElement('canvas');
+  c.width = c.height = SIG_SIZE;
+  const g2 = c.getContext('2d', { willReadFrequently: true });
+  const k = Math.min(SIG_SIZE / bw, SIG_SIZE / bh);
+  const dw = bw * k, dh = bh * k;
+  g2.drawImage(canvas, box[0], box[1], bw, bh, (SIG_SIZE - dw) / 2, (SIG_SIZE - dh) / 2, dw, dh);
+  const d = g2.getImageData(0, 0, SIG_SIZE, SIG_SIZE).data;
+
+  // 全体の明るさ(正規化用)
+  let lumSum = 0, opaque = 0;
+  for (let p = 0; p < SIG_SIZE * SIG_SIZE; p++) {
+    if (d[p * 4 + 3] < 96) continue;
+    lumSum += d[p * 4] * 0.3 + d[p * 4 + 1] * 0.59 + d[p * 4 + 2] * 0.11;
+    opaque++;
+  }
+  const gain = opaque ? 128 / Math.max(24, lumSum / opaque) : 1;
+
+  const cell = SIG_SIZE / SIG_GRID;
+  const grid = new Array(SIG_GRID * SIG_GRID * 3).fill(-1);
+  const gsum = new Float64Array(SIG_GRID * SIG_GRID * 3);
+  const gcnt = new Float64Array(SIG_GRID * SIG_GRID);
+  const shapeCell = SIG_SIZE / SIG_SHAPE;
+  const shape = new Array(SIG_SHAPE * SIG_SHAPE).fill(0);
+  const scnt = new Float64Array(SIG_SHAPE * SIG_SHAPE);
+  const hues = new Array(SIG_HUES).fill(0);
+
+  for (let y = 0; y < SIG_SIZE; y++) for (let x = 0; x < SIG_SIZE; x++) {
+    const i = (y * SIG_SIZE + x) * 4;
+    const si = ((y / shapeCell) | 0) * SIG_SHAPE + ((x / shapeCell) | 0);
+    scnt[si]++;
+    if (d[i + 3] < 96) continue;
+    shape[si]++;
+    const gi = (((y / cell) | 0) * SIG_GRID + ((x / cell) | 0)) * 3;
+    gsum[gi] += Math.min(255, d[i] * gain);
+    gsum[gi + 1] += Math.min(255, d[i + 1] * gain);
+    gsum[gi + 2] += Math.min(255, d[i + 2] * gain);
+    gcnt[gi / 3]++;
+    const hsv = rgbToHsv(d[i], d[i + 1], d[i + 2]);
+    if (hsv[1] > 0.22 && hsv[2] > 0.15) hues[Math.min(SIG_HUES - 1, (hsv[0] * SIG_HUES) | 0)] += hsv[1];
+  }
+  for (let n = 0; n < SIG_GRID * SIG_GRID; n++) {
+    if (gcnt[n] < 8) continue;    // 中身がほとんど無いマスは「不明」のままにする
+    grid[n * 3] = Math.round(gsum[n * 3] / gcnt[n]);
+    grid[n * 3 + 1] = Math.round(gsum[n * 3 + 1] / gcnt[n]);
+    grid[n * 3 + 2] = Math.round(gsum[n * 3 + 2] / gcnt[n]);
+  }
+  for (let n = 0; n < shape.length; n++) shape[n] = Math.round(shape[n] / scnt[n] * 255);
+  const hueTotal = hues.reduce((a, v) => a + v, 0) || 1;
+  for (let n = 0; n < hues.length; n++) hues[n] = +(hues[n] / hueTotal).toFixed(4);
+
+  return { g: grid, h: hues, s: shape, a: +(bw / bh).toFixed(3) };
+}
+
+/** 透明でない部分の範囲を返す(全部透明なら画像全体) */
+function opaqueBounds(canvas) {
+  const w = canvas.width, h = canvas.height;
+  const d = canvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h).data;
+  let minX = w, minY = h, maxX = -1, maxY = -1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (d[(y * w + x) * 4 + 3] < 96) continue;
+    if (x < minX) minX = x; if (x > maxX) maxX = x;
+    if (y < minY) minY = y; if (y > maxY) maxY = y;
+  }
+  return maxX < 0 ? [0, 0, w - 1, h - 1] : [minX, minY, maxX, maxY];
+}
+
+/** 2つの指紋の似ぐあいを 0〜1 で返す */
+function signatureScore(a, b) {
+  if (!a || !b || !a.g || !b.g) return 0;
+  // 色(共通して中身のあるマスだけ比べる)
+  let cs = 0, cn = 0;
+  for (let n = 0; n < SIG_GRID * SIG_GRID; n++) {
+    if (a.g[n * 3] < 0 || b.g[n * 3] < 0) continue;
+    const dr = a.g[n * 3] - b.g[n * 3];
+    const dg = a.g[n * 3 + 1] - b.g[n * 3 + 1];
+    const db = a.g[n * 3 + 2] - b.g[n * 3 + 2];
+    cs += 1 - Math.min(1, Math.sqrt((dr * dr + dg * dg + db * db) / 3) / 110);
+    cn++;
+  }
+  const colorSim = cn ? cs / cn : 0;
+  // 色あいの分布(重なりぐあい)
+  let hueSim = 0;
+  for (let n = 0; n < SIG_HUES; n++) hueSim += Math.min(a.h[n] || 0, b.h[n] || 0);
+  // 形
+  let ss = 0;
+  for (let n = 0; n < SIG_SHAPE * SIG_SHAPE; n++) ss += Math.abs(a.s[n] - b.s[n]);
+  const shapeSim = 1 - ss / (SIG_SHAPE * SIG_SHAPE * 255);
+  // たて/よこ比
+  const aspectSim = 1 - Math.min(1, Math.abs(Math.log((a.a || 1) / (b.a || 1))) / 0.5);
+  return 0.36 * colorSim + 0.28 * hueSim + 0.26 * shapeSim + 0.10 * aspectSim;
+}
+
+/**
+ * キラ(箔)かどうかを見分ける。
+ *
+ * 箔は「となり合う画素で色あいがバラバラに変わる」のが特徴で、
+ * ふつうの印刷は同じ色の面が続くので色あいの変化はふちだけに限られる。
+ * 合わせて、こまかい白飛びの粒(きらめき)も数える。
+ * 露出オーバーの大きな白飛びは粒とは別に数えて、混同しないようにする。
+ *
+ * ※ この判定は「ノーマル寄りか、キラ寄りか」の目安まで。
+ *    レア/5thレア/無限レア/シークレットの区別まではできない。
+ * @returns {{foil:boolean, score:number, hueVar:number, speck:number}}
+ */
+function estimateShine(canvas) {
+  const c = drawToCanvas(canvas, 520);
+  const w = c.width, h = c.height;
+  const d = c.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h).data;
+
+  const hs = new Float32Array(w * h), ss = new Float32Array(w * h), vs = new Float32Array(w * h);
+  const bright = new Uint8Array(w * h);
+  let opaque = 0;
+  for (let p = 0; p < w * h; p++) {
+    const i = p * 4;
+    if (d[i + 3] < 96) continue;
+    opaque++;
+    const hsv = rgbToHsv(d[i], d[i + 1], d[i + 2]);
+    hs[p] = hsv[0]; ss[p] = hsv[1]; vs[p] = hsv[2];
+    if (hsv[2] * 255 >= 228 && hsv[1] <= 0.22) bright[p] = 1;
+  }
+  if (opaque < 400) return { foil: false, score: 0, hueVar: 0, speck: 0 };
+
+  // こまかい白飛びの粒だけを数える(大きな白飛びは露出オーバーなので除く)
+  const { labels, sizes } = components(bright, w, h, 1);
+  const cap = Math.max(2, Math.round(opaque * 0.0012));
+  let speckPx = 0;
+  for (let p = 0; p < w * h; p++) {
+    const l = labels[p];
+    if (l >= 0 && sizes[l] <= cap) speckPx++;
+  }
+  const speck = speckPx / opaque;
+
+  // となり合う画素どうしの色あいの差(あざやかな所だけ見る)
+  let sum = 0, n = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w - 1; x++) {
+    const p = y * w + x, q = p + 1;
+    if (ss[p] < 0.28 || ss[q] < 0.28 || vs[p] < 0.25 || vs[q] < 0.25) continue;
+    let dh = Math.abs(hs[p] - hs[q]);
+    if (dh > 0.5) dh = 1 - dh;
+    sum += dh; n++;
+  }
+  const hueVar = n ? sum / n : 0;
+
+  const score = 0.65 * Math.min(1, hueVar / 0.012) + 0.35 * Math.min(1, speck / 0.02);
+  // 色あいのばらつきが小さいものは、粒がいくらあっても箔とはみなさない(露出オーバー対策)
+  const foil = hueVar >= 0.006 && score >= 0.6;
+  return { foil, score: +score.toFixed(3), hueVar: +hueVar.toFixed(4), speck: +speck.toFixed(5) };
+}
+
+/**
+ * 撮ったシールが、すでに登録ずみのどれと同じかを点数順に返す。
+ * @returns {{slot:object, score:number}[]}
+ */
+function rankMatches(sig) {
+  return state.slots
+    .filter(s => s.sig)
+    .map(s => ({ slot: s, score: signatureScore(sig, s.sig) }))
+    .sort((a, b) => b.score - a.score);
+}
+
+/** 迷いなく「同じシール」と言い切れるか。1位が高く、2位を十分引き離しているときだけ。 */
+const MATCH_AUTO = 0.88;      // これ以上なら自動で登録してよい
+const MATCH_GAP = 0.06;       // 2位との差がこれ以上あること
+const MATCH_SHOW = 0.62;      // 「これかも」として見せる下限
+function isSureMatch(ranked) {
+  if (!ranked.length) return false;
+  const gap = ranked[0].score - (ranked[1] ? ranked[1].score : 0);
+  return ranked[0].score >= MATCH_AUTO && gap >= MATCH_GAP;
 }
 
 /* ---- 書き出し ---------------------------------------------------- */
@@ -1492,6 +1772,20 @@ async function openDetail(no) {
   $('dCount').textContent = String(slot.count);
   $('dCountNote').textContent = slot.count === 0 ? '未所持' : slot.count === 1 ? '所持ずみ' : `ダブり ${slot.count - 1} 枚`;
 
+  // 直前に自動でやったことを知らせる
+  const auto = autoResult && autoResult.no === no ? autoResult : null;
+  $('dAuto').classList.toggle('hide', !auto || auto.kind !== 'dup');
+  if (auto && auto.kind === 'dup') {
+    $('dAutoTxt').textContent =
+      `${slot.name || 'このシール'}と同じシールと判定して、${slot.count}枚目として登録しました`;
+  }
+  $('dRarityNote').classList.toggle('hide', !slot.rarityAuto);
+  if (slot.rarityAuto) {
+    $('dRarityNote').textContent = slot.rarity === 'normal'
+      ? '写真から「つや消し」と見えたのでノーマルを選んでいます。ちがうときはタップして直してください。'
+      : '写真から「キラ(箔)」と見えたのでレアを選んでいます。5thレア・無限レア・シークレットの区別まではできないので、ちがうときはタップして直してください。';
+  }
+
   const rbox = $('dRarity');
   rbox.textContent = '';
   for (const r of RARITIES) {
@@ -1503,6 +1797,8 @@ async function openDetail(no) {
     b.onclick = () => {
       // ここで開き直すと入力途中の名前が消えてしまうので、印だけ付けかえる
       slot.rarity = r.id;
+      slot.rarityAuto = false;
+      $('dRarityNote').classList.add('hide');
       for (const c of rbox.children) c.classList.remove('on');
       b.classList.add('on');
     };
@@ -1528,9 +1824,14 @@ async function openDetail(no) {
     $('dPhoto').onclick = () => showViewer(urls.full, slot);
   }
   $('detail').classList.remove('hide');
+  $('detail').querySelector('.inner').scrollTop = 0;   // 前に開いたときのスクロール位置を残さない
 }
 
-function closeDetail() { $('detail').classList.add('hide'); detailNo = 0; }
+function closeDetail() {
+  $('detail').classList.add('hide');
+  detailNo = 0;
+  autoResult = null;
+}
 
 function applyDetail() {
   const slot = state.slots.find(s => s.no === detailNo);
@@ -1798,35 +2099,92 @@ async function finishCrop() {
     const full = await canvasToBlob(out, hasAlpha);
     const thumbCanvas = drawToCanvas(out, 260);
     const thumb = await canvasToBlob(thumbCanvas, hasAlpha);
+
+    // 撮った1枚から「どのシールか」と「キラ(箔)かどうか」を調べる
+    busy(true, '見分けています…');
+    await nextFrame();
+    const sig = computeSignature(out);
+    const shine = estimateShine(out);
+    const photo = { full, thumb, sig, shine };
     busy(false);
     closeCropper();
     if (cropTrans && !hasAlpha) toast('まわりに背景が見つからなかったので、四角いまま登録します');
+
     if (cropTarget) {
-      await commitPhoto(cropTarget, full, thumb);
+      await commitPhoto(cropTarget, photo);
       renderAll();
       toast(`No.${cropTarget} に登録しました`);
       openDetail(cropTarget);
-    } else {
-      openPicker(full, thumb);
+      return;
     }
+    // 登録ずみのシールと見くらべる
+    const ranked = rankMatches(sig).filter(r => r.slot.no !== cropTarget);
+    if (isSureMatch(ranked)) {
+      await registerDuplicate(ranked[0].slot, photo);
+      return;
+    }
+    openPicker(photo, ranked);
   } catch (e) {
     busy(false);
     toast('うまく切り抜けませんでした。もう一度お試しください');
   }
 }
 
+/**
+ * 「登録ずみのあのシールと同じ」として登録する。
+ * 名前とレアリティはその枠のものをそのまま引き継ぎ、枚数だけ1つ増やす。
+ * 写真は先に登録したものを残す(同じ絵なので増やしても容量を食うだけ)。
+ */
+async function registerDuplicate(slot, photo) {
+  slot.count = Math.min(99, slot.count + 1);
+  if (!slot.gotAt) slot.gotAt = Date.now();
+  if (!slot.photoId) await commitPhoto(slot.no, photo);
+  else await saveState(true);
+  autoResult = { no: slot.no, photo, kind: 'dup' };
+  renderAll();
+  openDetail(slot.no);
+}
+
 /* =====================================================================
  * 保存先の枠えらび
  * ===================================================================== */
-let pendingPhoto = null, pickFilter = 'empty';
+let pendingPhoto = null, pickFilter = 'empty', pickRanked = [];
 
-function openPicker(full, thumb) {
-  pendingPhoto = { full, thumb };
-  pickFilter = 'empty';
+function openPicker(photo, ranked) {
+  pendingPhoto = photo;
+  pickRanked = (ranked || []).filter(r => r.score >= MATCH_SHOW).slice(0, 3);
+  pickFilter = pickRanked.length ? 'all' : 'empty';
   renderPicker();
   $('picker').classList.remove('hide');
+  $('picker').querySelector('.inner').scrollTop = 0;
 }
 function renderPicker() {
+  // 「もしかして、この中のどれか？」
+  const guess = $('pickGuess'), glist = $('pickGuessList');
+  glist.textContent = '';
+  guess.classList.toggle('hide', !pickRanked.length);
+  pickRanked.forEach((r, i) => {
+    const b = el('button', 'gcell' + (i === 0 ? ' top' : ''));
+    const img = el('img');
+    img.alt = '';
+    photoURLs(r.slot.photoId).then(u => { if (u) img.src = u.thumb; });
+    b.appendChild(img);
+    const info = el('div', 'gi');
+    info.appendChild(el('span', null, r.slot.name ? `No.${r.slot.no} ${r.slot.name}` : `No.${r.slot.no}`));
+    info.appendChild(el('small', null,
+      [rarityOf(r.slot.rarity).id ? rarityOf(r.slot.rarity).label : null,
+       `いま ${r.slot.count} 枚`].filter(Boolean).join(' ／ ')));
+    b.appendChild(info);
+    b.appendChild(el('div', 'gp', Math.round(r.score * 100) + '%'));
+    b.onclick = async () => {
+      $('picker').classList.add('hide');
+      const photo = pendingPhoto;
+      pendingPhoto = null;
+      await registerDuplicate(r.slot, photo);
+    };
+    glist.appendChild(b);
+  });
+
   for (const b of $('pickFilters').children) b.classList.toggle('on', b.dataset.pf === pickFilter);
   const box = $('pickGrid');
   box.textContent = '';
@@ -1845,27 +2203,64 @@ function renderPicker() {
         $('picker').classList.remove('hide');
         return;
       }
-      await commitPhoto(s.no, pendingPhoto.full, pendingPhoto.thumb);
+      const photo = pendingPhoto;
       pendingPhoto = null;
+      await commitPhoto(s.no, photo);
       renderAll();
-      toast(`No.${s.no} に登録しました`);
       openDetail(s.no);
     };
     box.appendChild(b);
   }
 }
 
-async function commitPhoto(slotNo, full, thumb) {
+async function commitPhoto(slotNo, photo) {
   const slot = state.slots.find(s => s.no === slotNo);
-  if (!slot) return;
+  if (!slot || !photo) return;
   const id = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  await idbPut(STORE_PHOTO, { id, full, thumb });
+  await idbPut(STORE_PHOTO, { id, full: photo.full, thumb: photo.thumb });
   if (slot.photoId) { await idbDel(STORE_PHOTO, slot.photoId).catch(() => {}); forgetPhoto(slot.photoId); }
   slot.photoId = id;
+  if (photo.sig) slot.sig = photo.sig;
   if (slot.count < 1) slot.count = 1;
   if (!slot.gotAt) slot.gotAt = Date.now();
+  // レアリティがまだ空なら、キラ(箔)かどうかの見立てを先に入れておく
+  if (!slot.rarity && photo.shine && photo.shine.score >= 0.6) {
+    slot.rarity = photo.shine.foil ? 'rare' : 'normal';
+    slot.rarityAuto = true;
+    autoResult = { no: slot.no, kind: 'rarity', foil: photo.shine.foil };
+  } else if (!slot.rarity && photo.shine && photo.shine.score <= 0.2) {
+    slot.rarity = 'normal';
+    slot.rarityAuto = true;
+    autoResult = { no: slot.no, kind: 'rarity', foil: false };
+  }
   await saveState(true);
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+}
+
+/** 直前に自動でやったことを、詳細シートで知らせるための控え */
+let autoResult = null;
+
+/**
+ * 登録ずみの写真に指紋がないものへ、あとから付け直す。
+ * (この機能より前に撮った写真でも見分けられるようにするため)
+ */
+async function ensureSignatures() {
+  const targets = state.slots.filter(s => s.photoId && !s.sig);
+  if (!targets.length) return;
+  let done = 0;
+  for (const slot of targets) {
+    try {
+      const rec = await idbGet(STORE_PHOTO, slot.photoId);
+      if (!rec) continue;
+      const url = URL.createObjectURL(rec.full);
+      const img = await loadImage(url);
+      URL.revokeObjectURL(url);
+      const c = drawToCanvas(img, 520);
+      slot.sig = computeSignature(c);
+      done++;
+    } catch (e) { /* 1枚失敗しても他は続ける */ }
+  }
+  if (done) { await saveState(true); }
 }
 
 /* 写真ライブラリから読み込む */
@@ -2073,6 +2468,22 @@ function wire() {
   /* 詳細 */
   $('dClose').onclick = closeDetail;
   $('detail').onclick = e => { if (e.target === $('detail')) { applyDetail(); saveState(); renderAll(); closeDetail(); } };
+  $('dNotSame').onclick = async () => {
+    const auto = autoResult;
+    if (!auto || auto.kind !== 'dup') return;
+    const slot = state.slots.find(s => s.no === auto.no);
+    const photo = auto.photo;
+    if (slot) {
+      slot.count = Math.max(0, slot.count - 1);
+      if (slot.count === 0) slot.gotAt = null;
+      await saveState(true);
+    }
+    autoResult = null;
+    closeDetail();
+    renderAll();
+    if (photo) openPicker(photo, rankMatches(photo.sig));
+    else toast('取り消しました');
+  };
   $('dPlus').onclick = () => bumpCount(1);
   $('dMinus').onclick = () => bumpCount(-1);
   $('dShoot').onclick = () => {
@@ -2174,6 +2585,8 @@ function wire() {
   wire();
   renderAll();
   switchView('Album');
+  // 以前に撮った写真にも指紋を付けておく(見分けに使うため)
+  ensureSignatures().then(() => {}).catch(() => {});
   if (!state.slots.some(s => s.count > 0 || s.photoId)) $('help').classList.remove('hide');
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});

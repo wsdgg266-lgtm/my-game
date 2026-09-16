@@ -1,6 +1,10 @@
 // シールアルバム Service Worker
-// 写真もデータも端末内(IndexedDB)なので、シェルをキャッシュすればオフラインでも使える
-const CACHE = 'sealalbum-shell-v1';
+// 写真もデータも端末内(IndexedDB)なので、シェルをキャッシュすればオフラインでも使える。
+//
+// HTML はネットワークを先に見る(network first)。
+// キャッシュを先に見る作りだと、一度ホーム画面に追加した端末へ更新が永久に届かなくなる。
+// 画像などの変わらないファイルはキャッシュを先に見て、裏で静かに更新する。
+const CACHE = 'sealalbum-shell-v2';
 const SHELL = [
   './',
   './index.html',
@@ -22,16 +26,38 @@ self.addEventListener('activate', e => {
   );
 });
 
+const isPage = (req, url) =>
+  req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('index.html');
+
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
-  if (url.origin !== location.origin) return;
+  if (url.origin !== location.origin || e.request.method !== 'GET') return;
+
+  if (isPage(e.request, url)) {
+    e.respondWith(
+      fetch(e.request)
+        .then(res => {
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE).then(c => c.put(e.request, copy));
+          }
+          return res;
+        })
+        .catch(() => caches.match(e.request).then(hit => hit || caches.match('./index.html')))
+    );
+    return;
+  }
+
   e.respondWith(
-    caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
-      if (e.request.method === 'GET' && res.ok) {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy));
-      }
-      return res;
-    }).catch(() => caches.match('./index.html')))
+    caches.match(e.request).then(hit => {
+      const net = fetch(e.request).then(res => {
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, copy));
+        }
+        return res;
+      }).catch(() => hit);
+      return hit || net;
+    })
   );
 });
