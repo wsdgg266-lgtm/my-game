@@ -1,33 +1,33 @@
 {
   "_readme": "バスケットボール日本代表(AKATSUKI JAPAN)の試合。scripts/import-basket.mjs が GitHub Actions で毎日更新します。自動で取れない大会は manualGames に、招集メンバーは roster に手で書き足してください(自動更新でも消えません)。",
-  "updatedAt": "2026-09-15T21:39:55.166Z",
+  "updatedAt": "2026-09-16T21:34:18.185Z",
   "teamId": "136746",
   "games": [
     {
-      "id": "j2519418",
-      "ts": 1788171000000,
-      "dateJst": "2026-08-31",
-      "timeJst": "19:10",
+      "id": "j2605642",
+      "ts": 1789293600000,
+      "dateJst": "2026-09-13",
+      "timeJst": "19:00",
       "home": "Japan Basketball",
-      "away": "Qatar Basketball",
-      "hs": 123,
-      "as": 70,
+      "away": "South Korea Basketball",
+      "hs": 83,
+      "as": 100,
       "status": "post",
       "venue": "",
-      "label": "FIBA Basketball World Cup"
+      "label": "Asian Games Basketball"
     },
     {
-      "id": "j2519426",
-      "ts": 1795690800000,
-      "dateJst": "2026-11-26",
-      "timeJst": "20:00",
-      "home": "Lebanon Basketball",
+      "id": "j2605648",
+      "ts": 1789554000000,
+      "dateJst": "2026-09-16",
+      "timeJst": "19:20",
+      "home": "Chinese Taipei Basketball",
       "away": "Japan Basketball",
-      "hs": null,
-      "as": null,
-      "status": "pre",
+      "hs": 78,
+      "as": 85,
+      "status": "post",
       "venue": "",
-      "label": "FIBA Basketball World Cup"
+      "label": "Asian Games Basketball"
     }
   ],
   "manualGames": [],
