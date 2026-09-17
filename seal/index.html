@@ -377,7 +377,7 @@
   <button data-view="Data"><span class="ic">⚙️</span>データ</button>
 </nav>
 
-<button id="fab" aria-label="シールを撮る">📷</button>
+<button id="fab" aria-label="つぎの空き枠に撮る">📷</button>
 
 <!-- ===== 詳細シート ===== -->
 <div class="sheet hide" id="detail">
@@ -385,17 +385,21 @@
     <h3><span id="dTitle">No.1</span><button class="x" id="dClose">✕</button></h3>
     <div id="dAuto" class="autobar hide">
       <div class="t" id="dAutoTxt"></div>
-      <button id="dNotSame">ちがう</button>
+      <button id="dMerge">ダブりにする</button>
     </div>
     <img id="dPhoto" class="hide" alt="">
     <div id="dPhotoEmpty">
       <div class="em">🃏</div>
       <div>まだ写真がありません<br>下のボタンで撮影・選択できます</div>
     </div>
-    <div class="row2" style="margin-bottom:12px">
+    <div class="row2" style="margin-bottom:8px">
       <button class="btn sub" id="dShoot">📷 撮る</button>
       <button class="btn sub" id="dPick">🖼 選ぶ</button>
       <button class="btn sub hide" id="dDelPhoto">🗑</button>
+    </div>
+    <div class="row2 hide" id="dFixRow" style="margin-bottom:12px">
+      <button class="btn sub hide" id="dRecrop">✂️ 切り抜きを直す</button>
+      <button class="btn sub hide" id="dMove">↔ 枠を移す</button>
     </div>
     <div class="field">
       <label>シールの名前</label>
@@ -447,7 +451,7 @@
 <div class="ov hide" id="cropper">
   <div class="croptop">
     <button class="iconbtn" id="cropCancel">✕</button>
-    <div class="t">切り抜きの調整</div>
+    <div class="t">切り抜きを直す</div>
     <button class="iconbtn" id="cropAuto" title="自動検出をやり直す">🪄</button>
     <button class="iconbtn" id="cropFull" title="写真全体にする">⛶</button>
   </div>
@@ -462,15 +466,15 @@
       <button class="toggle" id="tgRotL">↺ 左90°</button>
       <button class="toggle" id="tgRotR">↻ 右90°</button>
     </div>
-    <div class="crophint">白い丸をドラッグしてシールの四隅に合わせます。ななめから撮っても正面から見た形に直します。</div>
-    <button class="btn" id="cropOk">この形で登録する</button>
+    <div class="crophint">白い丸をドラッグしてシールの四隅に合わせます。決めると、正面から見た形に直して枠にはめ直します。</div>
+    <button class="btn" id="cropOk">この形で枠にはめる</button>
   </div>
 </div>
 
 <!-- ===== 保存先えらび ===== -->
 <div class="sheet hide" id="picker">
   <div class="inner">
-    <h3><span>どの番号のシール？</span><button class="x" id="pickClose">✕</button></h3>
+    <h3><span>どの枠へ移す？</span><button class="x" id="pickClose">✕</button></h3>
     <div class="guess hide" id="pickGuess"><h4>もしかして、この中のどれか？</h4><div id="pickGuessList"></div></div>
     <div class="chips" id="pickFilters">
       <button class="chip on" data-pf="empty">空いている枠</button>
@@ -491,12 +495,12 @@
   <div class="inner">
     <h3><span>使い方</span><button class="x" id="helpClose">✕</button></h3>
     <div class="card">
-      <p><strong>1.</strong> 右下の 📷 を押してシールを撮ります。台紙ごと撮ると四隅を見つけやすいです。</p>
-      <p><strong>2.</strong> 自動で四隅を検出して、ななめの写真も正面の形に直します。ずれていれば白い丸をドラッグして直せます。</p>
-      <p><strong>3.</strong> 「まわりを透明に」を押しておくと、背景を消してシールの形だけを切り抜きます。</p>
-      <p><strong>4.</strong> 何番のシールかを選ぶとアルバムに入ります。名前・レアリティ・枚数はマスをタップして入力します。</p>
-      <p><strong>5.</strong> <strong>2枚目からは自動です。</strong>一度登録したシールと同じものを撮ると、写真から見分けて名前もレアリティもそのまま引き継ぎ、ダブりとして枚数を足します。にていて迷うときは「もしかして、この中のどれか？」と候補が出ます。</p>
-      <p><strong>6.</strong> はじめて撮るシールは、キラ(箔)かどうかを写真から見て<strong>ノーマルかレアを先に選んでおきます</strong>。5thレア・無限レア・シークレットの区別まではできないので、そこはタップで直してください。名前も、はじめての1枚だけは手入力です。</p>
+      <p><strong>1.</strong> アルバムの<strong>空いている枠をタップ</strong>すると、そのままカメラが開きます。右下の 📷 は、いちばん若い空き枠に撮ります。</p>
+      <p><strong>2.</strong> 台紙ごと撮るのがおすすめです。シャッターを押すと<strong>四隅の検出から枠へのはめこみまで自動</strong>で進み、その枠に入ります。</p>
+      <p><strong>3.</strong> 続けて名前とレアリティの画面が開きます。レアリティはキラ(箔)かどうかを写真から見て先に選んであります。</p>
+      <p><strong>4.</strong> 切り抜きがずれていたら「✂️ 切り抜きを直す」で四隅を手で合わせられます。枠をまちがえたら「↔ 枠を移す」で移せます。</p>
+      <p><strong>5.</strong> 別の枠に同じシールが入っていそうなときは知らせます。「ダブりにする」を押すと、その枠の枚数が増えます。</p>
+      <p><strong>6.</strong> 埋まっている枠はタップで編集。空き枠を<strong>長押し</strong>すると、撮る前に名前を入れられます。</p>
     </div>
     <div class="card">
       <p>📱 ホーム画面に追加すると、アプリのように全画面で使えてオフラインでも開けます。</p>
@@ -526,7 +530,7 @@
 /* ---------------------------------------------------------------
  * 定数
  * ------------------------------------------------------------- */
-const APP_VER = '1.1.0';
+const APP_VER = '1.2.0';
 const DB_NAME = 'sealalbum';
 const DB_VER = 1;
 const STORE_KV = 'kv';        // 状態(JSON)
@@ -1588,6 +1592,8 @@ function renderFilters() {
   }
 }
 
+let pressTimer = 0, pressFired = false;
+
 function renderGrid() {
   const grid = $('grid');
   grid.textContent = '';
@@ -1604,7 +1610,7 @@ function renderGrid() {
     const no = el('span', 'no', 'No.' + slot.no);
     wrap.appendChild(no);
     if (slot.count >= 2) wrap.appendChild(el('span', 'cnt', '×' + slot.count));
-    const ph = el('div', 'ph', slot.count > 0 ? '🃏' : '？');
+    const ph = el('div', 'ph', slot.photoId ? '🃏' : '📷');
     wrap.appendChild(ph);
     if (slot.photoId) {
       const img = el('img');
@@ -1614,9 +1620,25 @@ function renderGrid() {
       wrap.appendChild(img);
     }
     cell.appendChild(wrap);
-    cell.appendChild(el('div', 'nm', slot.name || '（名前を入力）'));
+    cell.appendChild(el('div', 'nm',
+      slot.name || (slot.photoId ? '（名前を入力）' : 'タップして撮る')));
     cell.appendChild(el('div', 'rb ' + rarityOf(slot.rarity).cls));
-    cell.onclick = () => openDetail(slot.no);
+
+    // 空いている枠はタップですぐカメラへ。長押しすると名前などの編集画面が開く
+    cell.addEventListener('pointerdown', () => {
+      pressFired = false;
+      clearTimeout(pressTimer);
+      pressTimer = setTimeout(() => { pressFired = true; openDetail(slot.no); }, 480);
+    });
+    const cancelPress = () => clearTimeout(pressTimer);
+    cell.addEventListener('pointerup', cancelPress);
+    cell.addEventListener('pointerleave', cancelPress);
+    cell.addEventListener('pointercancel', cancelPress);
+    cell.onclick = () => {
+      if (pressFired) { pressFired = false; return; }
+      if (slot.photoId) openDetail(slot.no);
+      else openCamera(slot.no);
+    };
     grid.appendChild(cell);
   }
 }
@@ -1635,6 +1657,9 @@ function renderProgress() {
     ? 'まだ1枚も登録されていません。📷 から始めましょう'
     : `のこり ${total - got} 種 ／ 手持ち ${sheets} 枚（ダブり ${dup} 枚）`;
   $('albumName').textContent = state.title;
+  const next = nextEmptySlot();
+  $('fab').title = next ? `No.${next} の枠に撮る` : '空いている枠はありません';
+  $('fab').setAttribute('aria-label', $('fab').title);
 }
 
 function renderTrade() {
@@ -1772,13 +1797,21 @@ async function openDetail(no) {
   $('dCount').textContent = String(slot.count);
   $('dCountNote').textContent = slot.count === 0 ? '未所持' : slot.count === 1 ? '所持ずみ' : `ダブり ${slot.count - 1} 枚`;
 
-  // 直前に自動でやったことを知らせる
+  // 別の枠に同じシールが入っていそうなときに知らせる
   const auto = autoResult && autoResult.no === no ? autoResult : null;
-  $('dAuto').classList.toggle('hide', !auto || auto.kind !== 'dup');
-  if (auto && auto.kind === 'dup') {
-    $('dAutoTxt').textContent =
-      `${slot.name || 'このシール'}と同じシールと判定して、${slot.count}枚目として登録しました`;
+  const maybe = auto && auto.kind === 'maybe' ? auto.cand : null;
+  $('dAuto').classList.toggle('hide', !maybe);
+  if (maybe) {
+    const nm = maybe.slot.name ? `No.${maybe.slot.no} ${maybe.slot.name}` : `No.${maybe.slot.no}`;
+    $('dAutoTxt').textContent = `${nm} と同じシールに見えます（${Math.round(maybe.score * 100)}%）`;
+    $('dMerge').textContent = `${nm}のダブりにする`;
   }
+
+  // 直前に撮った写真なら、切り抜きを手で直せる
+  const canRecrop = !!(lastCapture && lastCapture.slotNo === no);
+  $('dRecrop').classList.toggle('hide', !canRecrop);
+  $('dMove').classList.toggle('hide', !slot.photoId);
+  $('dFixRow').classList.toggle('hide', !canRecrop && !slot.photoId);
   $('dRarityNote').classList.toggle('hide', !slot.rarityAuto);
   if (slot.rarityAuto) {
     $('dRarityNote').textContent = slot.rarity === 'normal'
@@ -1868,8 +1901,13 @@ function showViewer(url, slot) {
 let stream = null, facing = 'environment', targetSlot = 0, torchOn = false;
 
 async function openCamera(slotNo) {
-  targetSlot = slotNo || 0;
-  $('camTitle').textContent = slotNo ? `No.${slotNo} のシールを撮る` : 'シールを枠の中におさめて撮影';
+  const no = slotNo || nextEmptySlot();
+  if (!no) return toast('空いている枠がありません。埋めたい枠をタップしてください');
+  targetSlot = no;
+  const slot = state.slots.find(s => s.no === no);
+  $('camTitle').textContent = slot && slot.name
+    ? `No.${no} ${slot.name} を撮る`
+    : `No.${no} の枠に入れる`;
   $('camera').classList.remove('hide');
   clearCamError();
   await startStream();
@@ -1927,7 +1965,83 @@ function shoot() {
   if (!v.videoWidth) return toast('カメラの準備中です');
   const c = drawToCanvas(v, 1600);
   closeCamera();
-  openCropper(c, targetSlot);
+  processCapture(c, targetSlot);
+}
+
+/**
+ * 切り抜いた絵を、アルバムの枠と同じ正方形のまん中に収める。
+ * どの写真も同じ形・同じ余白になるので、並べたときに大きさがそろう。
+ */
+function fitToFrame(canvas, size) {
+  const out = document.createElement('canvas');
+  out.width = out.height = size;
+  const g = out.getContext('2d');
+  const box = opaqueBounds(canvas);
+  const bw = box[2] - box[0] + 1, bh = box[3] - box[1] + 1;
+  const inner = size * 0.94;                       // ふちに少し余白を残す
+  const k = Math.min(inner / bw, inner / bh);
+  const dw = bw * k, dh = bh * k;
+  g.drawImage(canvas, box[0], box[1], bw, bh, (size - dw) / 2, (size - dh) / 2, dw, dh);
+  return out;
+}
+
+/** 直前に撮った元画像。「切り抜きを直す」で使う(保存はしない) */
+let lastCapture = null;
+
+/**
+ * 撮った写真を、四隅の検出から枠にはめるところまで一気に進める。
+ * 入れる枠は撮る前に決まっているので、途中で操作を求めない。
+ */
+async function processCapture(canvas, slotNo) {
+  const slot = state.slots.find(x => x.no === slotNo);
+  if (!slot) return;
+  busy(true, '枠に合わせています…');
+  await nextFrame();
+  try {
+    lastCapture = { canvas, slotNo };
+    const built = buildFramed(canvas, detectQuad(canvas));
+    const photo = await packPhoto(built.framed, built.cut);
+    busy(false);
+    await commitPhoto(slotNo, photo);
+    // 別の枠に同じシールが入っていないか見ておく(取りちがえ防止)
+    const ranked = rankMatches(photo.sig).filter(r => r.slot.no !== slotNo);
+    if (ranked.length && ranked[0].score >= MATCH_SHOW) {
+      autoResult = { no: slotNo, kind: 'maybe', cand: ranked[0] };
+    }
+    renderAll();
+    openDetail(slotNo);
+  } catch (e) {
+    busy(false);
+    toast('うまく読み取れませんでした。もう一度お試しください');
+  }
+}
+
+/**
+ * 四隅 → 台形補正 → 背景を透明に → 枠にフィット
+ * @returns {{framed:HTMLCanvasElement, cut:HTMLCanvasElement}}
+ */
+function buildFramed(canvas, quad, transparent) {
+  let cut = warpQuad(canvas, orderQuad(quad), 760);
+  if (transparent !== false) cut = removeBackground(cut).canvas;
+  return { framed: fitToFrame(cut, 760), cut };
+}
+
+/**
+ * 保存用の写真一式(本体・サムネ・指紋・キラ判定)を作る。
+ * 指紋とキラ判定は、枠にはめる前の切り抜き(cut)で測る。
+ * 枠に合わせて拡大縮小すると、箔のこまかいきらめきがならされてしまうため。
+ */
+async function packPhoto(framed, cut) {
+  const full = await canvasToBlob(framed, true);
+  const thumb = await canvasToBlob(drawToCanvas(framed, 260), true);
+  const src = cut || framed;
+  return { full, thumb, sig: computeSignature(src), shine: estimateShine(src) };
+}
+
+/** 空いている(まだ写真のない)いちばん小さい番号の枠 */
+function nextEmptySlot() {
+  const s = state.slots.find(x => !x.photoId);
+  return s ? s.no : 0;
 }
 
 /* =====================================================================
@@ -2086,80 +2200,44 @@ function cropPointer(e, type) {
 }
 
 async function finishCrop() {
-  busy(true, '切り抜いています…');
+  busy(true, '枠に合わせています…');
   await nextFrame();
   try {
-    let out = warpQuad(cropSrc, orderQuad(cropQuad), 760);
-    let hasAlpha = false;
-    if (cropTrans) {
-      const r = removeBackground(out);
-      out = r.canvas;
-      hasAlpha = r.applied;
-    }
-    const full = await canvasToBlob(out, hasAlpha);
-    const thumbCanvas = drawToCanvas(out, 260);
-    const thumb = await canvasToBlob(thumbCanvas, hasAlpha);
-
-    // 撮った1枚から「どのシールか」と「キラ(箔)かどうか」を調べる
-    busy(true, '見分けています…');
-    await nextFrame();
-    const sig = computeSignature(out);
-    const shine = estimateShine(out);
-    const photo = { full, thumb, sig, shine };
+    const built = buildFramed(cropSrc, cropQuad, cropTrans);
+    const photo = await packPhoto(built.framed, built.cut);
     busy(false);
+    const no = cropTarget;
     closeCropper();
-    if (cropTrans && !hasAlpha) toast('まわりに背景が見つからなかったので、四角いまま登録します');
-
-    if (cropTarget) {
-      await commitPhoto(cropTarget, photo);
-      renderAll();
-      toast(`No.${cropTarget} に登録しました`);
-      openDetail(cropTarget);
-      return;
-    }
-    // 登録ずみのシールと見くらべる
-    const ranked = rankMatches(sig).filter(r => r.slot.no !== cropTarget);
-    if (isSureMatch(ranked)) {
-      await registerDuplicate(ranked[0].slot, photo);
-      return;
-    }
-    openPicker(photo, ranked);
+    await commitPhoto(no, photo);
+    renderAll();
+    toast(`No.${no} の切り抜きを直しました`);
+    openDetail(no);
   } catch (e) {
     busy(false);
     toast('うまく切り抜けませんでした。もう一度お試しください');
   }
 }
 
-/**
- * 「登録ずみのあのシールと同じ」として登録する。
- * 名前とレアリティはその枠のものをそのまま引き継ぎ、枚数だけ1つ増やす。
- * 写真は先に登録したものを残す(同じ絵なので増やしても容量を食うだけ)。
- */
-async function registerDuplicate(slot, photo) {
-  slot.count = Math.min(99, slot.count + 1);
-  if (!slot.gotAt) slot.gotAt = Date.now();
-  if (!slot.photoId) await commitPhoto(slot.no, photo);
-  else await saveState(true);
-  autoResult = { no: slot.no, photo, kind: 'dup' };
-  renderAll();
-  openDetail(slot.no);
-}
-
 /* =====================================================================
- * 保存先の枠えらび
+ * 枠を移す(入れる枠をまちがえたとき)
  * ===================================================================== */
-let pendingPhoto = null, pickFilter = 'empty', pickRanked = [];
+let moveFrom = 0, pickFilter = 'empty', pickRanked = [];
 
-function openPicker(photo, ranked) {
-  pendingPhoto = photo;
-  pickRanked = (ranked || []).filter(r => r.score >= MATCH_SHOW).slice(0, 3);
-  pickFilter = pickRanked.length ? 'all' : 'empty';
+function openMove(slotNo) {
+  const slot = state.slots.find(s => s.no === slotNo);
+  if (!slot || !slot.photoId) return;
+  moveFrom = slotNo;
+  pickRanked = (slot.sig ? rankMatches(slot.sig) : [])
+    .filter(r => r.slot.no !== slotNo && r.score >= MATCH_SHOW)
+    .slice(0, 3);
+  pickFilter = 'empty';
   renderPicker();
   $('picker').classList.remove('hide');
   $('picker').querySelector('.inner').scrollTop = 0;
 }
+
 function renderPicker() {
-  // 「もしかして、この中のどれか？」
+  // 「もしかして、この中のどれか？」= すでに同じシールが入っている枠
   const guess = $('pickGuess'), glist = $('pickGuessList');
   glist.textContent = '';
   guess.classList.toggle('hide', !pickRanked.length);
@@ -2171,24 +2249,18 @@ function renderPicker() {
     b.appendChild(img);
     const info = el('div', 'gi');
     info.appendChild(el('span', null, r.slot.name ? `No.${r.slot.no} ${r.slot.name}` : `No.${r.slot.no}`));
-    info.appendChild(el('small', null,
-      [rarityOf(r.slot.rarity).id ? rarityOf(r.slot.rarity).label : null,
-       `いま ${r.slot.count} 枚`].filter(Boolean).join(' ／ ')));
+    info.appendChild(el('small', null, `同じシールなら、この枠のダブりにします（いま ${r.slot.count} 枚）`));
     b.appendChild(info);
     b.appendChild(el('div', 'gp', Math.round(r.score * 100) + '%'));
-    b.onclick = async () => {
-      $('picker').classList.add('hide');
-      const photo = pendingPhoto;
-      pendingPhoto = null;
-      await registerDuplicate(r.slot, photo);
-    };
+    b.onclick = () => mergeInto(r.slot.no);
     glist.appendChild(b);
   });
 
   for (const b of $('pickFilters').children) b.classList.toggle('on', b.dataset.pf === pickFilter);
   const box = $('pickGrid');
   box.textContent = '';
-  const list = pickFilter === 'empty' ? state.slots.filter(s => !s.photoId) : state.slots;
+  const list = (pickFilter === 'empty' ? state.slots.filter(s => !s.photoId) : state.slots)
+    .filter(s => s.no !== moveFrom);
   if (!list.length) {
     box.appendChild(el('p', 'empty-note', '空いている枠がありません。「すべての枠」から選ぶと写真を差し替えられます。'));
     return;
@@ -2197,20 +2269,66 @@ function renderPicker() {
     const b = el('button', 'pcell' + (s.photoId ? ' used' : ''));
     b.appendChild(el('b', null, 'No.' + s.no));
     b.appendChild(el('span', null, s.name || (s.photoId ? '登録ずみ' : '空き')));
-    b.onclick = async () => {
-      $('picker').classList.add('hide');
-      if (s.photoId && !confirm(`No.${s.no} にはすでに写真があります。差し替えますか？`)) {
-        $('picker').classList.remove('hide');
-        return;
-      }
-      const photo = pendingPhoto;
-      pendingPhoto = null;
-      await commitPhoto(s.no, photo);
-      renderAll();
-      openDetail(s.no);
-    };
+    b.onclick = () => moveTo(s.no);
     box.appendChild(b);
   }
+}
+
+function closeMove() { $('picker').classList.add('hide'); moveFrom = 0; }
+
+/** 枠が空になったときの後片づけ(自動で入れた値を残さない) */
+function clearIfEmpty(slot) {
+  if (slot.photoId || slot.count > 0) return;
+  slot.gotAt = null;
+  if (slot.rarityAuto) { slot.rarity = ''; slot.rarityAuto = false; }
+}
+
+/** 写真をそのまま別の枠へ移す */
+async function moveTo(toNo) {
+  const from = state.slots.find(s => s.no === moveFrom);
+  const to = state.slots.find(s => s.no === toNo);
+  if (!from || !to || !from.photoId) return;
+  if (to.photoId && !confirm(`No.${to.no} にはすでに写真があります。差し替えますか？`)) return;
+  closeMove();
+  if (to.photoId) { await idbDel(STORE_PHOTO, to.photoId).catch(() => {}); forgetPhoto(to.photoId); }
+  to.photoId = from.photoId;
+  to.sig = from.sig;
+  if (to.count < 1) to.count = 1;
+  if (!to.gotAt) to.gotAt = from.gotAt || Date.now();
+  if (!to.rarity && from.rarityAuto) { to.rarity = from.rarity; to.rarityAuto = true; }
+  // 名前がまだ入っていない枠へ移すときは、名前とメモも一緒に連れていく。
+  // すでに名前のある枠(あらかじめ用意した枠)へ移すときは、その枠の名前を尊重する。
+  const movedName = !to.name && from.name;
+  if (movedName) to.name = from.name;
+  if (!to.memo && from.memo) to.memo = from.memo;
+  from.photoId = null;
+  from.sig = null;
+  from.count = Math.max(0, from.count - 1);
+  if (movedName && !from.photoId && from.count === 0) { from.name = ''; from.memo = ''; }
+  clearIfEmpty(from);
+  await saveState(true);
+  renderAll();
+  toast(`No.${to.no} へ移しました`);
+  openDetail(to.no);
+}
+
+/** いま開いている枠の写真を消して、別の枠のダブりとして数える */
+async function mergeInto(toNo) {
+  const from = state.slots.find(s => s.no === moveFrom);
+  const to = state.slots.find(s => s.no === toNo);
+  if (!from || !to) return;
+  closeMove();
+  if (from.photoId) { await idbDel(STORE_PHOTO, from.photoId).catch(() => {}); forgetPhoto(from.photoId); }
+  from.photoId = null;
+  from.sig = null;
+  from.count = Math.max(0, from.count - 1);
+  clearIfEmpty(from);
+  to.count = Math.min(99, to.count + 1);
+  if (!to.gotAt) to.gotAt = Date.now();
+  await saveState(true);
+  renderAll();
+  toast(`No.${to.no} のダブり（${to.count}枚目）にしました`);
+  openDetail(to.no);
 }
 
 async function commitPhoto(slotNo, photo) {
@@ -2227,17 +2345,15 @@ async function commitPhoto(slotNo, photo) {
   if (!slot.rarity && photo.shine && photo.shine.score >= 0.6) {
     slot.rarity = photo.shine.foil ? 'rare' : 'normal';
     slot.rarityAuto = true;
-    autoResult = { no: slot.no, kind: 'rarity', foil: photo.shine.foil };
   } else if (!slot.rarity && photo.shine && photo.shine.score <= 0.2) {
     slot.rarity = 'normal';
     slot.rarityAuto = true;
-    autoResult = { no: slot.no, kind: 'rarity', foil: false };
   }
   await saveState(true);
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 }
 
-/** 直前に自動でやったことを、詳細シートで知らせるための控え */
+/** 「別の枠に同じシールがありそう」を詳細シートで知らせるための控え */
 let autoResult = null;
 
 /**
@@ -2266,7 +2382,8 @@ async function ensureSignatures() {
 /* 写真ライブラリから読み込む */
 let libTarget = 0;
 function pickFromLibrary(slotNo) {
-  libTarget = slotNo || 0;
+  libTarget = slotNo || nextEmptySlot();
+  if (!libTarget) return toast('空いている枠がありません。埋めたい枠をタップしてください');
   $('fileShot').value = '';
   $('fileShot').click();
 }
@@ -2408,7 +2525,7 @@ function wire() {
   $('helpClose').onclick = $('helpOk').onclick = () => $('help').classList.add('hide');
 
   /* 撮影 */
-  $('fab').onclick = () => openCamera(0);
+  $('fab').onclick = () => openCamera(nextEmptySlot());
   $('camClose').onclick = closeCamera;
   $('shutter').onclick = shoot;
   $('camLib').onclick = $('camErrPick').onclick = () => { const n = targetSlot; closeCamera(); pickFromLibrary(n); };
@@ -2424,7 +2541,7 @@ function wire() {
       const img = await loadImage(url);
       URL.revokeObjectURL(url);
       busy(false);
-      openCropper(drawToCanvas(img, 1600), libTarget);
+      processCapture(drawToCanvas(img, 1600), libTarget);
     } catch (err) {
       busy(false);
       toast('この写真は読み込めませんでした');
@@ -2462,27 +2579,35 @@ function wire() {
   $('cropOk').onclick = finishCrop;
 
   /* 保存先えらび */
-  $('pickClose').onclick = () => { $('picker').classList.add('hide'); pendingPhoto = null; };
+  $('pickClose').onclick = closeMove;
   for (const b of $('pickFilters').children) b.onclick = () => { pickFilter = b.dataset.pf; renderPicker(); };
 
   /* 詳細 */
   $('dClose').onclick = closeDetail;
   $('detail').onclick = e => { if (e.target === $('detail')) { applyDetail(); saveState(); renderAll(); closeDetail(); } };
-  $('dNotSame').onclick = async () => {
+  $('dMerge').onclick = () => {
     const auto = autoResult;
-    if (!auto || auto.kind !== 'dup') return;
-    const slot = state.slots.find(s => s.no === auto.no);
-    const photo = auto.photo;
-    if (slot) {
-      slot.count = Math.max(0, slot.count - 1);
-      if (slot.count === 0) slot.gotAt = null;
-      await saveState(true);
-    }
+    if (!auto || auto.kind !== 'maybe') return;
+    applyDetail();
+    moveFrom = detailNo;
     autoResult = null;
     closeDetail();
-    renderAll();
-    if (photo) openPicker(photo, rankMatches(photo.sig));
-    else toast('取り消しました');
+    mergeInto(auto.cand.slot.no);
+  };
+  $('dRecrop').onclick = () => {
+    if (!lastCapture || lastCapture.slotNo !== detailNo) return;
+    applyDetail();
+    saveState();
+    const cap = lastCapture;
+    closeDetail();
+    openCropper(cap.canvas, cap.slotNo);
+  };
+  $('dMove').onclick = () => {
+    applyDetail();
+    saveState();
+    const n = detailNo;
+    closeDetail();
+    openMove(n);
   };
   $('dPlus').onclick = () => bumpCount(1);
   $('dMinus').onclick = () => bumpCount(-1);
@@ -2506,6 +2631,8 @@ function wire() {
     await idbDel(STORE_PHOTO, slot.photoId).catch(() => {});
     forgetPhoto(slot.photoId);
     slot.photoId = null;
+    slot.sig = null;
+    clearIfEmpty(slot);
     await saveState(true);
     renderAll();
     openDetail(slot.no);
