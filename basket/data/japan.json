@@ -1,6 +1,6 @@
 {
   "_readme": "バスケットボール日本代表(AKATSUKI JAPAN)の試合。scripts/import-basket.mjs が GitHub Actions で毎日更新します。自動で取れない大会は manualGames に、招集メンバーは roster に手で書き足してください(自動更新でも消えません)。",
-  "updatedAt": "2026-09-16T21:34:18.185Z",
+  "updatedAt": "2026-09-17T21:37:52.172Z",
   "teamId": "136746",
   "games": [
     {
@@ -17,15 +17,15 @@
       "label": "Asian Games Basketball"
     },
     {
-      "id": "j2605648",
-      "ts": 1789554000000,
-      "dateJst": "2026-09-16",
+      "id": "j2606056",
+      "ts": 1789726800000,
+      "dateJst": "2026-09-18",
       "timeJst": "19:20",
-      "home": "Chinese Taipei Basketball",
-      "away": "Japan Basketball",
-      "hs": 78,
-      "as": 85,
-      "status": "post",
+      "home": "Japan Basketball",
+      "away": "China Basketball",
+      "hs": null,
+      "as": null,
+      "status": "pre",
       "venue": "",
       "label": "Asian Games Basketball"
     }
