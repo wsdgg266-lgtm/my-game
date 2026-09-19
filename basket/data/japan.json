@@ -1,21 +1,8 @@
 {
   "_readme": "バスケットボール日本代表(AKATSUKI JAPAN)の試合。scripts/import-basket.mjs が GitHub Actions で毎日更新します。自動で取れない大会は manualGames に、招集メンバーは roster に手で書き足してください(自動更新でも消えません)。",
-  "updatedAt": "2026-09-18T21:08:43.584Z",
+  "updatedAt": "2026-09-19T20:55:28.536Z",
   "teamId": "136746",
   "games": [
-    {
-      "id": "j2605642",
-      "ts": 1789293600000,
-      "dateJst": "2026-09-13",
-      "timeJst": "19:00",
-      "home": "Japan Basketball",
-      "away": "South Korea Basketball",
-      "hs": 83,
-      "as": 100,
-      "status": "post",
-      "venue": "",
-      "label": "Asian Games Basketball"
-    },
     {
       "id": "j2606056",
       "ts": 1789726800000,
@@ -26,6 +13,19 @@
       "hs": 97,
       "as": 78,
       "status": "post",
+      "venue": "",
+      "label": "Asian Games Basketball"
+    },
+    {
+      "id": "j2607518",
+      "ts": 1789900800000,
+      "dateJst": "2026-09-20",
+      "timeJst": "19:40",
+      "home": "Japan Basketball",
+      "away": "South Korea Basketball",
+      "hs": null,
+      "as": null,
+      "status": "pre",
       "venue": "",
       "label": "Asian Games Basketball"
     }
