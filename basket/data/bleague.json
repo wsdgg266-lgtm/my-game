@@ -1,23 +1,10 @@
 {
   "_readme": "B.LEAGUE の日程・結果・順位表。scripts/import-basket.mjs が GitHub Actions で毎日更新します。手で直しても構いませんが、次の自動更新で上書きされます。",
-  "updatedAt": "2026-09-21T22:08:03.938Z",
+  "updatedAt": "2026-09-22T21:35:12.408Z",
   "season": "2026-2027",
   "leagueName": "Japanese B1 League",
   "leagueId": "4977",
   "games": [
-    {
-      "id": "b2477017",
-      "ts": 1779789900000,
-      "dateJst": "2026-05-26",
-      "timeJst": "19:05",
-      "home": "Nagasaki Velca",
-      "away": "Ryukyu Golden Kings",
-      "hs": 72,
-      "as": 64,
-      "status": "post",
-      "venue": "",
-      "label": ""
-    },
     {
       "id": "b2586921",
       "ts": 1790053200000,
@@ -25,9 +12,9 @@
       "timeJst": "14:00",
       "home": "Alvark Tokyo",
       "away": "Ryukyu Golden Kings",
-      "hs": null,
-      "as": null,
-      "status": "pre",
+      "hs": 84,
+      "as": 73,
+      "status": "post",
       "venue": "Arena Tachikawa Tachihi",
       "label": ""
     },
