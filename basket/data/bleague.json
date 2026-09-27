@@ -1,6 +1,6 @@
 {
   "_readme": "B.LEAGUE の日程・結果・順位表。scripts/import-basket.mjs が GitHub Actions で毎日更新します。手で直しても構いませんが、次の自動更新で上書きされます。",
-  "updatedAt": "2026-09-26T21:24:17.418Z",
+  "updatedAt": "2026-09-27T21:31:28.576Z",
   "season": "2026-2027",
   "leagueName": "Japanese B1 League",
   "leagueId": "4977",
@@ -201,16 +201,29 @@
       "label": ""
     },
     {
-      "id": "b2586934",
-      "ts": 1790481600000,
+      "id": "b2586940",
+      "ts": 1790492700000,
       "dateJst": "2026-09-27",
-      "timeJst": "13:00",
-      "home": "Ibaraki Robots",
-      "away": "San-en NeoPhoenix",
+      "timeJst": "16:05",
+      "home": "Kawasaki Brave Thunders",
+      "away": "Nagoya Diamond Dolphins",
+      "hs": 78,
+      "as": 90,
+      "status": "post",
+      "venue": "Todoroki Arena",
+      "label": ""
+    },
+    {
+      "id": "b2586941",
+      "ts": 1790935500000,
+      "dateJst": "2026-10-02",
+      "timeJst": "19:05",
+      "home": "Chiba Jets Funabashi",
+      "away": "Alvark Tokyo",
       "hs": null,
       "as": null,
       "status": "pre",
-      "venue": "",
+      "venue": "Chiba Port Arena",
       "label": ""
     }
   ],
