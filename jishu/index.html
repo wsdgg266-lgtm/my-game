@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#D23F70">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="じしゅ学習ナビ">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:#F5F8FA}@media (prefers-color-scheme: dark){:root{background:#131A21}}[hidden]{display:none!important}</style>
+<title>じしゅ学習ナビ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+:root{
+  --paper:#F5F8FA; --grid:#DFE8EE; --surface:#FFFFFF; --line:#C9D5DE;
+  --ink:#24303C; --muted:#5A6875;
+  --koko:#2677BA; --koko-soft:#E3EFF9;
+  --waku:#D96E12; --waku-soft:#FCEBDB;
+  --stamp:#D23F70; --stamp-soft:#FBE3EC;
+  --ok:#2E8B57;
+  --ui:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;
+  --hand:"Klee One","UD Digi Kyokasho N-R","Hiragino Mincho ProN","Noto Serif JP",serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#131A21; --grid:#1C252E; --surface:#1B232C; --line:#2F3B47;
+    --ink:#E6EDF3; --muted:#9AA8B5;
+    --koko:#6FB2EC; --koko-soft:#1B3246;
+    --waku:#F3A45C; --waku-soft:#3A2816;
+    --stamp:#F27CA5; --stamp-soft:#3A1D29;
+    --ok:#6CCB94;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#131A21; --grid:#1C252E; --surface:#1B232C; --line:#2F3B47;
+  --ink:#E6EDF3; --muted:#9AA8B5;
+  --koko:#6FB2EC; --koko-soft:#1B3246;
+  --waku:#F3A45C; --waku-soft:#3A2816;
+  --stamp:#F27CA5; --stamp-soft:#3A1D29;
+  --ok:#6CCB94;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:var(--ui); color:var(--ink); font-size:16px; line-height:1.7;
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+}
+.wrap{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:20px 56px;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-direction:column;gap:2px}
+header .date{font-size:15px;color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums}
+h1{font-size:30px;line-height:1.25;margin:0;font-weight:900;letter-spacing:.02em;text-wrap:balance}
+h1 span{color:var(--stamp)}
+.card{background:var(--surface);border:2px solid var(--ink);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.step{display:flex;align-items:center;gap:10px}
+.step b{flex:none;width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-size:17px}
+.step h2{margin:0;font-size:20px;font-weight:900}
+.hint{margin:0;color:var(--muted);font-size:14px}
+button{font-family:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--koko);outline-offset:2px}
+.days{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.day{border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 0;font-size:20px;font-weight:900;line-height:1.2}
+.day small{display:block;font-size:10px;font-weight:700;color:var(--muted)}
+.day[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--surface)}
+.day[aria-pressed="true"] small{color:var(--surface);opacity:.8}
+.dayname{font-weight:900;font-size:17px;margin:0}
+.cands{display:flex;flex-direction:column;gap:8px}
+.cand{display:flex;align-items:center;gap:10px;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;font-size:17px;font-weight:700;line-height:1.4;transition:transform .12s,border-color .12s,background .12s}
+.cand.spin{border-color:var(--stamp);background:var(--stamp-soft);transform:scale(1.02)}
+.cand[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.cand .t{flex:1}
+.cand .done{font-size:12px;color:var(--ok);font-weight:700;white-space:nowrap}
+.badge{flex:none;font-size:12px;font-weight:900;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.badge.こつこつ{background:var(--koko-soft);color:var(--koko)}
+.badge.わくわく{background:var(--waku-soft);color:var(--waku)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:2px solid var(--ink);background:var(--surface);border-radius:999px;padding:8px 16px;font-size:16px;font-weight:900}
+.btn.main{background:var(--stamp);border-color:var(--stamp);color:#fff}
+.btn:disabled{opacity:.45;cursor:default}
+/* sheet mimic */
+.sheet{border:2px solid var(--ink);border-radius:4px;display:flex;flex-direction:column}
+.sheet .r{display:flex;gap:10px;align-items:baseline;padding:8px 12px;border-bottom:1.5px solid var(--line);flex-wrap:wrap}
+.sheet .r:last-child{border-bottom:0}
+.sheet .k{font-size:12px;font-weight:900;color:var(--muted);flex:none;min-width:64px}
+.menu-opt{font-weight:900;padding:0 8px;border-radius:999px;border:2px solid transparent;color:var(--muted)}
+.menu-opt.on{border-color:var(--stamp);color:var(--stamp)}
+.handtxt{font-family:var(--hand);font-weight:600;font-size:19px;line-height:1.6}
+.goals{display:flex;flex-direction:column;gap:8px}
+.goal{text-align:left;border:2px dashed var(--line);background:transparent;border-radius:10px;padding:8px 12px;font-family:var(--hand);font-weight:600;font-size:17px;line-height:1.55}
+.goal[aria-pressed="true"]{border-style:solid;border-color:var(--koko);background:var(--koko-soft)}
+.label{font-size:13px;font-weight:900;color:var(--muted);letter-spacing:.06em;margin:0}
+ol.howto{margin:0;padding-left:1.6em;display:flex;flex-direction:column;gap:4px}
+ol.howto li{padding-left:4px}
+.tips{display:flex;flex-wrap:wrap;gap:6px}
+.tip{font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--paper);border:1.5px solid var(--line)}
+.empty{color:var(--muted);font-weight:700;margin:0}
+/* timer */
+.timer{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.dial{position:relative;width:148px;height:148px;flex:none}
+.dial svg{width:100%;height:100%;transform:rotate(-90deg)}
+.dial .num{position:absolute;inset:0;display:grid;place-items:center;font-size:34px;font-weight:900;font-variant-numeric:tabular-nums}
+.dial .num.end{color:var(--stamp);font-size:26px}
+.tctrl{display:flex;flex-direction:column;gap:10px;flex:1;min-width:180px}
+.preset{border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 12px;font-weight:900;font-size:15px}
+.preset[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--surface)}
+/* reflect */
+.rgroup{display:flex;flex-direction:column;gap:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:2px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:700}
+.chip[aria-pressed="true"]{border-color:var(--waku);background:var(--waku-soft);color:var(--ink)}
+.result{border:2px solid var(--ink);border-radius:4px;padding:12px 14px;background:var(--surface);
+  background-image:linear-gradient(transparent calc(1.8em - 1px),var(--line) calc(1.8em - 1px));background-size:100% 1.8em;
+  font-family:var(--hand);font-weight:600;font-size:18px;line-height:1.8em;min-height:5.4em}
+/* stamps */
+.stamps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.st{aspect-ratio:1;max-width:100%;border:2px dashed var(--line);border-radius:50%;display:grid;place-items:center;font-size:18px;font-weight:900;color:var(--muted)}
+.st.on{border:3px solid var(--stamp);color:var(--stamp);transform:rotate(-8deg);background:var(--stamp-soft)}
+.st.on::after{content:"できた";position:absolute}
+.st.on{position:relative;font-size:0}
+.st.on::after{font-size:14px}
+.total{margin:0;font-weight:700;color:var(--muted)}
+.total b{color:var(--stamp);font-size:20px}
+.parent{font-size:13.5px;color:var(--muted);line-height:1.7}
+.parent summary{cursor:pointer;font-weight:900;color:var(--ink)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="date" id="today"></div>
+    <h1>じしゅ学習<span>ナビ</span></h1>
+  </header>
+
+  <section class="card" aria-labelledby="s1">
+    <div class="step"><b>1</b><h2 id="s1">きょうのネタをえらぶ</h2></div>
+    <div class="days" id="days" role="group" aria-label="曜日"></div>
+    <p class="dayname" id="dayname"></p>
+    <div class="cands" id="cands"></div>
+    <div class="row">
+      <button class="btn main" id="spin" type="button">ルーレットできめる</button>
+      <button class="btn" id="shuffle" type="button">ほかのネタを出す</button>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="s2">
+    <div class="step"><b>2</b><h2 id="s2">シートの上に書くこと</h2></div>
+    <div class="sheet">
+      <div class="r"><span class="k">日づけ</span><span class="handtxt" id="sheetDate"></span></div>
+      <div class="r"><span class="k">メニュー</span><span class="menu-opt" id="mKoko">こつこつ</span><span class="menu-opt" id="mWaku">わくわく</span></div>
+      <div class="r"><span class="k">内よう</span><span class="handtxt" id="sheetTopic">―</span></div>
+    </div>
+    <p class="label">今日のめあて（1つえらぶ）</p>
+    <div class="goals" id="goals"><p class="empty">1でネタをえらぶと出てきます</p></div>
+  </section>
+
+  <section class="card" aria-labelledby="s3">
+    <div class="step"><b>3</b><h2 id="s3">マスの中の書き方</h2></div>
+    <div id="howto"><p class="empty">1でネタをえらぶと出てきます</p></div>
+    <div class="tips">
+      <span class="tip">ていねいな字で</span><span class="tip">大事なところは色でかこむ</span><span class="tip">絵や表を1つ入れる</span><span class="tip">行のはじめをそろえる</span><span class="tip">さいごの行まで書く</span>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="s4">
+    <div class="step"><b>4</b><h2 id="s4">タイマーでしゅうちゅう</h2></div>
+    <div class="timer">
+      <div class="dial">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="44" fill="none" stroke="var(--grid)" stroke-width="9"/>
+          <circle id="arc" cx="50" cy="50" r="44" fill="none" stroke="var(--stamp)" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="0"/>
+        </svg>
+        <div class="num" id="tnum" aria-live="polite">15:00</div>
+      </div>
+      <div class="tctrl">
+        <div class="row" id="presets" role="group" aria-label="時間">
+          <button class="preset" type="button" data-min="10">10分</button>
+          <button class="preset" type="button" data-min="15" aria-pressed="true">15分</button>
+          <button class="preset" type="button" data-min="20">20分</button>
+        </div>
+        <div class="row">
+          <button class="btn main" id="tgo" type="button">スタート</button>
+          <button class="btn" id="treset" type="button">もどす</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="s5">
+    <div class="step"><b>5</b><h2 id="s5">ふりかえりを書く</h2></div>
+    <div class="rgroup"><p class="label">できたこと</p><div class="chips" id="rDone"></div></div>
+    <div class="rgroup"><p class="label">がんばったこと</p><div class="chips" id="rTried"></div></div>
+    <div class="rgroup"><p class="label">つぎにがんばりたいこと</p><div class="chips" id="rNext"></div></div>
+    <p class="label">シートにうつそう</p>
+    <div class="result" id="rOut"></div>
+  </section>
+
+  <section class="card" aria-labelledby="s6">
+    <div class="step"><b>6</b><h2 id="s6">こんしゅうのスタンプ</h2></div>
+    <div class="stamps" id="stamps"></div>
+    <div class="row"><button class="btn main" id="doneBtn" type="button">今日はできた！</button></div>
+    <p class="total" id="total"></p>
+  </section>
+
+  <details class="parent">
+    <summary>おうちの方へ</summary>
+    <p>学校の「自主学習メニュー」（こつこつ①〜⑦・わくわく①〜⑨）に合わせて、3年生向けのネタを曜日ごとに51こ入れています。曜日は今日に自動で合わせ、土日は「金（すきなこと）」を出します。ネタは3つだけ見せて本人にえらばせ、「めあて」と「ふりかえり」は例文をタップしてシートに書きうつす使い方です。スタンプと「やった」印はこの端末のブラウザにだけ記録されます。</p>
+  </details>
+</div>
+
+<script>
+const DATA = {"days": [{"key": "mon", "d": "月", "name": "かん字・ことばの日", "kind": "こつこつ", "note": "こつこつ①②③ が中心"}, {"key": "tue", "d": "火", "name": "計算の日", "kind": "こつこつ", "note": "こつこつ④⑥ が中心"}, {"key": "wed", "d": "水", "name": "しらべ学習の日", "kind": "わくわく", "note": "わくわく②③ が中心"}, {"key": "thu", "d": "木", "name": "じゅぎょうのふくしゅうの日", "kind": "こつこつ", "note": "こつこつ⑤⑦ が中心"}, {"key": "fri", "d": "金", "name": "すきなことの日", "kind": "わくわく", "note": "わくわく①④〜⑨ から"}], "topics": [{"day": "mon", "m": "こつこつ", "n": "①", "t": "新しくならったかん字", "g": ["新しくならったかん字を5こ、正しい書きじゅんで書けるようにする", "とめ・はね・はらいに気をつけて、ていねいに書く"], "p": ["かん字を4マス分つかって大きく書く", "書きじゅんを1、2、3…と番号で書く", "そのかん字をつかったことばを3つ書く", "ことばをつかって、みじかい文を1つ作る"]}, {"day": "mon", "m": "こつこつ", "n": "①", "t": "かん字テストのじゅんび", "g": ["テストに出るかん字を10こ、見ないで書けるようにする", "まちがえやすいかん字を3回ずつ練習する"], "p": ["よみがなを書いて、その下に見ないでかん字を書く", "教科書を見て赤えんぴつで丸つけ", "まちがえたかん字を3回ずつ書く", "もう一度テストして、ぜんぶ書けたら花丸"]}, {"day": "mon", "m": "こつこつ", "n": "②", "t": "同じぶしゅのかん字あつめ", "g": ["さんずいのかん字を10こあつめる", "ぶしゅとかん字のいみのつながりを見つける"], "p": ["ぶしゅ（さんずい・きへん・くさかんむり など）を大きく書く", "そのぶしゅのかん字とよみを表にする", "気づいたことを書く（例：さんずいは水に関係がある）"]}, {"day": "mon", "m": "こつこつ", "n": "②", "t": "はんたいのいみのことば", "g": ["はんたいのいみのことばを10組見つける", "見つけたことばで文を3つ作る"], "p": ["2つのことばを「⇔」でつないで書く（例：軽い⇔重い、始まる⇔終わる）", "絵を1つかいてちがいをあらわす", "ことばをつかった文を作る"]}, {"day": "mon", "m": "こつこつ", "n": "②", "t": "国語じてんでことばしらべ", "g": ["知らないことばを5つじてんで引いて、いみを書く", "じてんを早く引けるようになる"], "p": ["教科書や本から知らないことばを5つえらぶ", "ことば・のっていたページ・いみを書く", "そのことばをつかった文を作る"]}, {"day": "mon", "m": "こつこつ", "n": "②", "t": "ようすをあらわすことば", "g": ["ようすをあらわすことばを15こあつめる", "ことばをなかま分けする"], "p": ["「ふわふわ」「きらきら」「ざあざあ」などをあつめる", "音・うごき・さわった感じ にわけて表にする", "1つえらんで絵と文で書く"]}, {"day": "mon", "m": "こつこつ", "n": "①", "t": "ローマ字の練習", "g": ["家族の名前をローマ字で書けるようにする", "のばす音・小さい「っ」のローマ字をおぼえる"], "p": ["自分と家族の名前をローマ字で書く", "すきな食べ物・動物を5つローマ字で書く", "まちがえやすいところに色でしるしをつける"]}, {"day": "mon", "m": "こつこつ", "n": "③", "t": "教科書のしゃ写", "g": ["「、」「。」も正しく、1ページていねいにうつす", "行のはじめをそろえて書く"], "p": ["うつすページと題名を書く", "1マスに1字、ていねいにうつす", "書きおわったら教科書と見くらべて、ちがうところを直す"]}, {"day": "mon", "m": "わくわく", "n": "③", "t": "ことわざしらべ", "g": ["ことわざを5つしらべて、いみを書く", "ことわざをつかった文を作る"], "p": ["ことわざを大きく書く（例：さるも木から落ちる）", "いみを書く", "どんなときにつかうか、文を作る", "1つえらんで絵をかく"]}, {"day": "mon", "m": "わくわく", "n": "③", "t": "四字じゅく語しらべ", "g": ["四字じゅく語を5つしらべて、いみを書く", "数字が入った四字じゅく語をあつめる"], "p": ["四字じゅく語とよみを書く（例：一石二鳥、十人十色）", "いみを書く", "自分の生活でつかえる場面を考えて書く"]}, {"day": "tue", "m": "こつこつ", "n": "④", "t": "九九の練習（7・8・9のだん）", "g": ["7・8・9のだんを、早く正しく言えるようにする", "ばらばら問題20問を全部正かいする"], "p": ["九九の表を書く", "ばらばらの順で20問を書いてとく", "かかった時間を書く", "まちがえた九九を3回書く"]}, {"day": "tue", "m": "こつこつ", "n": "④", "t": "かけ算のひっ算", "g": ["2けた×1けたのひっ算を10問、正かくにとく", "くり上がりをわすれないようにする"], "p": ["問題をマスにそろえて書く", "くり上がりの数を小さく書く", "赤で丸つけ、まちがいはとなりでとき直す"]}, {"day": "tue", "m": "こつこつ", "n": "④", "t": "あまりのあるわり算", "g": ["あまりのあるわり算を20問とく", "たしかめ算で答えをチェックする"], "p": ["わり算の式と答えを書く", "となりに「たしかめ算」を書く（例：3×5＋2＝17）", "あまりがわる数より小さいかチェックする"]}, {"day": "tue", "m": "こつこつ", "n": "④", "t": "たし算・ひき算のひっ算", "g": ["3けた・4けたのひっ算を10問、正かくにとく", "くり下がりのしかたをしっかりおぼえる"], "p": ["位をそろえてマスに書く", "くり上がり・くり下がりを小さく書く", "ていねいに丸つけする"]}, {"day": "tue", "m": "こつこつ", "n": "⑤", "t": "大きな数", "g": ["一万より大きい数を正しく読み書きできる", "位の表をつかって数をあらわす"], "p": ["一・十・百・千・万…の位の表を書く", "数を表に入れて漢字と数字で書く", "チラシなどから大きな数を見つけて書く"]}, {"day": "tue", "m": "こつこつ", "n": "⑤", "t": "時こくと時間", "g": ["自分の1日の時間を計算できるようにする", "〇時〇分から何分後の時こくをもとめる"], "p": ["おきてからねるまでの時こくを表にする", "「学校にいる時間は何時間何分？」などの問題を作ってとく", "時計の絵をかく"]}, {"day": "tue", "m": "こつこつ", "n": "⑤", "t": "家のものの重さしらべ", "g": ["家のものの重さをはかって、g・kgで書く", "重さをよそうしてから、はかる"], "p": ["はかるものを5つえらぶ", "よそう・はかった重さ・ちがい を表にする", "気づいたことを書く"]}, {"day": "tue", "m": "こつこつ", "n": "⑤", "t": "分数と小数", "g": ["分数を絵であらわせるようにする", "0.1がいくつ分かで小数をあらわす"], "p": ["ピザやテープの絵をかいて分数をぬりわける", "数直線に小数を書く", "問題を5問作ってとく"]}, {"day": "tue", "m": "こつこつ", "n": "⑥", "t": "テストのまちがい直し", "g": ["テストでまちがえた問題を全部とき直す", "どうしてまちがえたかを書く"], "p": ["まちがえた問題をうつす", "どこでまちがえたかを書く", "正しくとき直す", "にている問題を自分で1問作ってとく"]}, {"day": "tue", "m": "こつこつ", "n": "④", "t": "文しょう問題づくり", "g": ["かけ算とわり算の文しょう問題を3問作る", "式と答えを正しく書く"], "p": ["身近なもの（おかし・えんぴつ）で問題を作る", "絵をかいて考える", "式・答えを書いて、家の人にもといてもらう"]}, {"day": "wed", "m": "わくわく", "n": "③", "t": "こん虫しらべ", "g": ["こん虫の体のつくりをしらべてまとめる", "こん虫とこん虫でないものを見分ける"], "p": ["こん虫の絵を大きくかく", "頭・むね・はら、あし6本に名前をつける", "すみか・食べ物をしらべて書く"]}, {"day": "wed", "m": "わくわく", "n": "②", "t": "身近な花・草の図かんづくり", "g": ["家のまわりの花を3つしらべて図かんにする", "花の色・形・さくきせつをまとめる"], "p": ["花の絵をかく", "名前・色・大きさ・さくきせつを書く", "見つけた場所を書く"]}, {"day": "wed", "m": "わくわく", "n": "③", "t": "都道府県しらべ", "g": ["1つの県をえらんで、とくちょうを5つまとめる", "県の形と県庁所在地をおぼえる"], "p": ["県の形をかく", "県庁所在地・名物・有名な場所を書く", "行ってみたいところを書く"]}, {"day": "wed", "m": "わくわく", "n": "③", "t": "国旗しらべ", "g": ["国旗を5つしらべて、色やもようのいみを書く", "国の場所を地図でたしかめる"], "p": ["国旗を色えんぴつでかく", "国の名前・首都・ことばを書く", "国旗のいみを書く"]}, {"day": "wed", "m": "わくわく", "n": "③", "t": "外国のあいさつ", "g": ["5か国の「こんにちは」をしらべる", "英語のあいさつを言えるようにする"], "p": ["国の名前と国旗を書く", "あいさつとよみかたを書く", "家族に言ってみたかんそうを書く"]}, {"day": "wed", "m": "わくわく", "n": "③", "t": "スイーツしらべ", "g": ["すきなおかしが何からできているかしらべる", "生まれた国をしらべる"], "p": ["おかしの絵をかく", "ざいりょう・生まれた国・れきしを書く", "自分が作るならどんなおかしか考える"]}, {"day": "wed", "m": "わくわく", "n": "③", "t": "乗り物しらべ", "g": ["乗り物のはやさをしらべてくらべる", "しんかんせんのしゅるいをしらべる"], "p": ["乗り物の絵をかく", "はやさ・のれる人数などを表にする", "いちばんおどろいたことを書く"]}, {"day": "wed", "m": "わくわく", "n": "③", "t": "地図記号しらべ", "g": ["地図記号を15こおぼえる", "地図記号の形のわけをしらべる"], "p": ["地図記号とそのいみを表にする", "形のわけを書く（例：田んぼはいねをかったあと）", "近所にある地図記号に丸をつける"]}, {"day": "wed", "m": "わくわく", "n": "③", "t": "野菜しらべ", "g": ["野菜のどこを食べているかしらべる", "土の中・土の上になる野菜を分ける"], "p": ["野菜の絵をかく", "根・くき・葉・実・花 に分けて表にする", "すきな野菜の料理を書く"]}, {"day": "wed", "m": "わくわく", "n": "③", "t": "ふしぎに思ったこと", "g": ["ふしぎに思ったことを1つしらべて、答えを見つける", "よそうとしらべた答えをくらべる"], "p": ["ぎもんを書く（例：なぜ空は青いの？）", "自分のよそうを書く", "しらべてわかったことを書く", "もっと知りたいことを書く"]}, {"day": "wed", "m": "わくわく", "n": "③", "t": "人物しらべ", "g": ["すきな人物を1人しらべて、したことをまとめる", "その人のすごいところを3つ書く"], "p": ["人物の名前と生きた時代を書く", "したこと・すごいところを書く", "自分がまねしたいことを書く"]}, {"day": "thu", "m": "こつこつ", "n": "⑤", "t": "算数のふくしゅう", "g": ["今日ならった問題を教科書を見ずにとく", "ときかたを言葉でせつめいできるようにする"], "p": ["今日のページと単元名を書く", "問題をうつしてとく", "ときかたのポイントを色でかこむ"]}, {"day": "thu", "m": "こつこつ", "n": "⑤", "t": "理科：植物の育ち方", "g": ["植物の育つじゅんばんをまとめる", "たね・子葉・花・実のようすを絵にする"], "p": ["たね→め→子葉→葉→花→実 の絵をじゅんにかく", "それぞれのようすを書く", "気づいたことを書く"]}, {"day": "thu", "m": "こつこつ", "n": "⑤", "t": "理科：じしゃくにつくもの", "g": ["家のもの10こがじしゃくにつくかしらべる", "つくものの共通点を見つける"], "p": ["しらべるもの・よそう・けっか を表にする", "つくものとつかないものに分ける", "わかったことを書く"]}, {"day": "thu", "m": "こつこつ", "n": "⑤", "t": "理科：かげと太陽", "g": ["朝・昼・夕方のかげの向きをくらべる", "かげと太陽の向きのかんけいをまとめる"], "p": ["かげの絵をかく", "時こくとかげの向き・長さを表にする", "わかったことを書く"]}, {"day": "thu", "m": "こつこつ", "n": "⑤", "t": "理科：電気を通すもの", "g": ["電気を通すもの・通さないものをまとめる", "回路の図をかけるようにする"], "p": ["かん電池・豆電球・どう線の回路の図をかく", "通すもの・通さないもの を表にする", "わかったことを書く"]}, {"day": "thu", "m": "こつこつ", "n": "⑤", "t": "社会：家から学校までの地図", "g": ["家から学校までの地図を地図記号をつかってかく", "方位（東西南北）を入れる"], "p": ["方位記号をかく", "道・目じるしの建物を地図記号でかく", "気づいたことを書く"]}, {"day": "thu", "m": "こつこつ", "n": "⑤", "t": "社会：お店の工夫", "g": ["スーパーの工夫を5つ見つける", "お客さんのための工夫をまとめる"], "p": ["お店の名前を書く", "見つけた工夫と、そのわけを表にする", "お店の人にききたいことを書く"]}, {"day": "thu", "m": "こつこつ", "n": "⑤", "t": "社会：むかしの道具とくらし", "g": ["家の人にむかしのくらしをインタビューする", "むかしと今の道具をくらべる"], "p": ["インタビューしたこと（しつもんと答え）を書く", "むかし・今 の道具をくらべる表を作る", "かんそうを書く"]}, {"day": "thu", "m": "こつこつ", "n": "⑤", "t": "社会：火事からくらしを守る", "g": ["家の中の火事をふせぐものをさがす", "消防しょの仕事をまとめる"], "p": ["消火器や火災けいほう器のある場所を家の図にかく", "消防しょの人の仕事を書く", "家でできることを書く"]}, {"day": "thu", "m": "こつこつ", "n": "⑤", "t": "音楽：リコーダー", "g": ["リコーダーのゆびづかいを図でまとめる", "ならった曲を3回ふく"], "p": ["ドからドまでのゆびの図をかく", "練習した曲名と回数を書く", "むずかしいところと工夫を書く"]}, {"day": "thu", "m": "こつこつ", "n": "⑦", "t": "教科書のよしゅう", "g": ["あしたならうページを読んで、わからないことばをしらべる", "知りたいことを1つ書く"], "p": ["ページと題名を書く", "わからないことばといみを書く", "あしたのじゅぎょうで知りたいことを書く"]}, {"day": "fri", "m": "わくわく", "n": "①", "t": "日記", "g": ["今日いちばん心にのこったことを書く", "したこと・思ったことを分けて書く"], "p": ["いつ・どこで・だれと・何をしたか書く", "そのとき思ったこと・かんじたことを書く", "絵を1つかく"]}, {"day": "fri", "m": "わくわく", "n": "①", "t": "かんさつ日記", "g": ["身近なものを1つえらんで、よく見てかんさつする", "色・形・大きさを書く"], "p": ["かんさつしたものの絵を大きくかく", "色・形・大きさ・におい・さわった感じを書く", "気づいたこと・ぎもんを書く"]}, {"day": "fri", "m": "わくわく", "n": "①", "t": "うそ作文", "g": ["「もしも〇〇だったら」のお話を書く", "読んだ人がわらうお話にする"], "p": ["題名を書く（例：もしもぼくが空をとべたら）", "はじめ・中・終わりに分けて書く", "さし絵をかく"]}, {"day": "fri", "m": "わくわく", "n": "①", "t": "物語づくり", "g": ["オリジナルキャラクターが出てくる物語を作る", "はじめ・中・終わりのある物語にする"], "p": ["キャラクターの絵と名前・せいかくを書く", "はじめ・中・終わりを4コマで考える", "文にして書く"]}, {"day": "fri", "m": "わくわく", "n": "④", "t": "家族新聞づくり", "g": ["家族のニュースを3つ新聞にまとめる", "見出しを大きく、読みやすく書く"], "p": ["新聞の名前をきめる", "見出し・記事・絵を3つ書く", "へんしゅう後記（ひとこと）を書く"]}, {"day": "fri", "m": "わくわく", "n": "⑤", "t": "新聞記事のかんそう", "g": ["気になった記事を1つえらんで、かんそうを書く", "記事の大事なところをまとめる"], "p": ["記事の見出しと日付を書く（はってもOK）", "いつ・どこで・何があったかまとめる", "自分の考えを書く"]}, {"day": "fri", "m": "わくわく", "n": "⑥", "t": "お手伝い（料理）", "g": ["家の人と料理をして、作り方をまとめる", "ざいりょうと手じゅんを書く"], "p": ["料理の名前と絵をかく", "ざいりょうと分量を書く", "作り方を1、2、3とじゅんに書く", "食べた人のかんそうを書く"]}, {"day": "fri", "m": "わくわく", "n": "⑦", "t": "本のしょうかい", "g": ["すきな本を友だちにすすめる文を書く", "おすすめのところを3つ書く"], "p": ["題名・書いた人を書く", "あらすじを書く（おわりはひみつ）", "おすすめポイントと、すきな場面の絵を書く"]}, {"day": "fri", "m": "わくわく", "n": "⑧", "t": "おり紙のおり方せつめい", "g": ["おり紙のおり方を図でせつめいする", "ほかの人が見てもおれるように書く"], "p": ["作ったものをはる", "おり方を1、2、3…と図でかく", "むずかしいところのコツを書く"]}, {"day": "fri", "m": "わくわく", "n": "⑨", "t": "なわとびの記ろく", "g": ["なわとびの回数をはかって、ぼうグラフにする", "5日間で記ろくをのばす"], "p": ["とび方と回数を表にする", "ぼうグラフにする", "上手になるコツを書く"]}], "goalForms": ["〇〇を△こおぼえる", "〇〇についてしらべて、3つまとめる", "まちがえた問題を全部とき直す", "〇〇をていねいに書く"], "reflect": {"done": ["見ないで書けた", "いみがわかった", "表や絵でまとめられた", "全部正かいできた", "新しいことを知れた"], "tried": ["字をていねいに書くこと", "さいごの行まで書くこと", "絵や表を入れること", "時間まで集中すること", "自分でしらべること"], "next": ["まちがえたところをもう一度やりたい", "もっとしらべてみたい", "もっと早くできるようにしたい", "つぎは色をつかって見やすくしたい", "家の人にも教えてあげたい"]}};
+const $ = s => document.querySelector(s);
+const WD = ["日","月","火","水","木","金","土"];
+const now = new Date();
+const todayKey = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate();
+
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem("jishu:"+k); return v==null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem("jishu:"+k, JSON.stringify(v)); }catch(e){} }
+};
+let doneTopics = store.get("doneTopics", []);
+let stampDays = store.get("stamps", []);
+
+const wdIdx = now.getDay();
+const defaultDay = (wdIdx>=1 && wdIdx<=5) ? DATA.days[wdIdx-1].key : "fri";
+let state = store.get("today:"+todayKey, null) || {day: defaultDay, cands: null, pick: null, goal: null, r: {}};
+
+$("#today").textContent = (now.getMonth()+1)+"月"+now.getDate()+"日（"+WD[wdIdx]+"）";
+$("#sheetDate").textContent = (now.getMonth()+1)+"月 "+now.getDate()+"日（"+WD[wdIdx]+"）";
+
+function save(){ store.set("today:"+todayKey, state); }
+function topicsOf(day){ return DATA.topics.map((t,i)=>({...t,i})).filter(t=>t.day===day); }
+function pickCands(day){
+  const all = topicsOf(day);
+  const fresh = all.filter(t=>!doneTopics.includes(t.i));
+  const pool = (fresh.length>=3 ? fresh : all).slice();
+  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  return pool.slice(0,3).map(t=>t.i);
+}
+
+function renderDays(){
+  const box = $("#days"); box.innerHTML="";
+  DATA.days.forEach(d=>{
+    const b=document.createElement("button"); b.type="button"; b.className="day";
+    b.setAttribute("aria-pressed", String(d.key===state.day));
+    b.innerHTML = d.d+"<small>"+(d.key===DATA.days[wdIdx-1]?.key?"今日":d.kind)+"</small>";
+    b.onclick=()=>{ state.day=d.key; state.cands=pickCands(d.key); state.pick=null; state.goal=null; save(); renderAll(); };
+    box.appendChild(b);
+  });
+  const d = DATA.days.find(x=>x.key===state.day);
+  $("#dayname").textContent = d.d+"曜日は「"+d.name+"」"+((wdIdx===0||wdIdx===6)?"（土日はすきな曜日をえらんでね）":"");
+}
+
+function renderCands(){
+  if(!state.cands) state.cands = pickCands(state.day);
+  const box=$("#cands"); box.innerHTML="";
+  state.cands.forEach(i=>{
+    const t=DATA.topics[i];
+    const b=document.createElement("button"); b.type="button"; b.className="cand"; b.dataset.i=i;
+    b.setAttribute("aria-pressed", String(state.pick===i));
+    b.innerHTML='<span class="badge '+t.m+'">'+t.m+t.n+'</span><span class="t">'+t.t+'</span>'+(doneTopics.includes(i)?'<span class="done">✓ やった</span>':'');
+    b.onclick=()=>{ choose(i); };
+    box.appendChild(b);
+  });
+}
+function choose(i){ state.pick=i; state.goal=null; save(); renderAll(); }
+
+function renderSheet(){
+  const t = state.pick!=null ? DATA.topics[state.pick] : null;
+  $("#mKoko").classList.toggle("on", !!t && t.m==="こつこつ");
+  $("#mWaku").classList.toggle("on", !!t && t.m==="わくわく");
+  $("#sheetTopic").textContent = t ? t.t : "―";
+  const g=$("#goals"), h=$("#howto");
+  if(!t){ g.innerHTML='<p class="empty">1でネタをえらぶと出てきます</p>'; h.innerHTML='<p class="empty">1でネタをえらぶと出てきます</p>'; return; }
+  g.innerHTML="";
+  t.g.forEach((txt,k)=>{
+    const b=document.createElement("button"); b.type="button"; b.className="goal"; b.textContent=txt;
+    b.setAttribute("aria-pressed", String(state.goal===k));
+    b.onclick=()=>{ state.goal = state.goal===k?null:k; save(); renderSheet(); };
+    g.appendChild(b);
+  });
+  h.innerHTML='<ol class="howto">'+t.p.map(x=>"<li>"+x+"</li>").join("")+'</ol>';
+}
+
+function renderReflect(){
+  const groups=[["rDone","done"],["rTried","tried"],["rNext","next"]];
+  groups.forEach(([id,key])=>{
+    const box=$("#"+id); box.innerHTML="";
+    DATA.reflect[key].forEach(txt=>{
+      const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=txt;
+      b.setAttribute("aria-pressed", String(state.r[key]===txt));
+      b.onclick=()=>{ state.r[key] = state.r[key]===txt?null:txt; save(); renderReflect(); };
+      box.appendChild(b);
+    });
+  });
+  const t = state.pick!=null ? DATA.topics[state.pick] : null;
+  const r=state.r;
+  const parts=[];
+  parts.push("今日は「"+(t?t.t:"〇〇")+"」をした。");
+  parts.push(r.done ? (r.done+"。") : "〇〇ができた。");
+  parts.push((r.tried||"〇〇")+"をがんばった。");
+  parts.push("つぎは、"+(r.next||"〇〇したい")+"。");
+  $("#rOut").textContent = parts.join("");
+}
+
+function weekDates(){
+  const d=new Date(now); const w=d.getDay(); const mon=new Date(d); mon.setDate(d.getDate()-((w+6)%7));
+  return [0,1,2,3,4].map(k=>{ const x=new Date(mon); x.setDate(mon.getDate()+k); return x.getFullYear()+"-"+(x.getMonth()+1)+"-"+x.getDate(); });
+}
+function renderStamps(){
+  const box=$("#stamps"); box.innerHTML="";
+  weekDates().forEach((k,idx)=>{
+    const s=document.createElement("div"); s.className="st"+(stampDays.includes(k)?" on":""); s.textContent=DATA.days[idx].d;
+    s.setAttribute("aria-label", DATA.days[idx].d+"曜日"+(stampDays.includes(k)?" できた":""));
+    box.appendChild(s);
+  });
+  const done = stampDays.includes(todayKey);
+  $("#doneBtn").textContent = done ? "今日のスタンプをけす" : "今日はできた！";
+  $("#total").innerHTML = "これまでのスタンプ <b>"+stampDays.length+"</b> こ";
+}
+$("#doneBtn").onclick=()=>{
+  if(stampDays.includes(todayKey)){
+    stampDays = stampDays.filter(x=>x!==todayKey);
+    if(state.pick!=null && state.stampedTopic===state.pick) doneTopics = doneTopics.filter(x=>x!==state.pick);
+  } else {
+    stampDays.push(todayKey);
+    if(state.pick!=null && !doneTopics.includes(state.pick)){ doneTopics.push(state.pick); state.stampedTopic=state.pick; }
+  }
+  store.set("stamps",stampDays); store.set("doneTopics",doneTopics); save(); renderStamps(); renderCands();
+};
+
+$("#shuffle").onclick=()=>{ state.cands=pickCands(state.day); state.pick=null; state.goal=null; save(); renderAll(); };
+let spinning=false;
+$("#spin").onclick=()=>{
+  if(spinning) return; spinning=true;
+  const btns=[...document.querySelectorAll(".cand")];
+  const target=Math.floor(Math.random()*btns.length);
+  const total=btns.length*4+target; let step=0;
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce){ spinning=false; choose(+btns[target].dataset.i); return; }
+  (function tick(){
+    btns.forEach(b=>b.classList.remove("spin"));
+    btns[step%btns.length].classList.add("spin");
+    if(step>=total){ setTimeout(()=>{ spinning=false; choose(+btns[target].dataset.i); beep(880,.15); },350); return; }
+    step++; setTimeout(tick, 70+step*step*1.4);
+  })();
+};
+
+/* timer */
+let tMin=15, remain=15*60, running=false, iv=null, endAt=0, wake=null, actx=null;
+const C=276.46;
+function fmt(s){ return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
+function drawT(){
+  const n=$("#tnum");
+  if(remain<=0){ n.textContent="おわり！"; n.classList.add("end"); }
+  else { n.textContent=fmt(remain); n.classList.remove("end"); }
+  $("#arc").setAttribute("stroke-dashoffset", String(C*(1-remain/(tMin*60))));
+  $("#tgo").textContent = running ? "いちじストップ" : (remain<tMin*60 && remain>0 ? "つづける" : "スタート");
+}
+function beep(f,d,delay=0){
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(), g=actx.createGain(); o.type="sine"; o.frequency.value=f;
+    const t0=actx.currentTime+delay; g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.3,t0+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t0+d);
+    o.connect(g).connect(actx.destination); o.start(t0); o.stop(t0+d+0.05);
+  }catch(e){}
+}
+function chime(){ [0,0.35,0.7].forEach((d,i)=>beep([784,988,1175][i],0.5,d)); }
+async function lock(){ try{ wake = await navigator.wakeLock?.request("screen"); }catch(e){ wake=null; } }
+function stopRun(){ running=false; clearInterval(iv); try{ wake?.release(); }catch(e){} wake=null; }
+$("#tgo").onclick=()=>{
+  if(running){ stopRun(); drawT(); return; }
+  if(remain<=0) remain=tMin*60;
+  beep(660,.08);
+  running=true; endAt=Date.now()+remain*1000; lock();
+  iv=setInterval(()=>{ remain=Math.max(0,Math.round((endAt-Date.now())/1000)); if(remain<=0){ stopRun(); chime(); } drawT(); },250);
+  drawT();
+};
+$("#treset").onclick=()=>{ stopRun(); remain=tMin*60; drawT(); };
+document.querySelectorAll(".preset").forEach(b=>b.onclick=()=>{
+  if(running) return;
+  document.querySelectorAll(".preset").forEach(x=>x.setAttribute("aria-pressed","false"));
+  b.setAttribute("aria-pressed","true"); tMin=+b.dataset.min; remain=tMin*60; drawT();
+});
+
+function renderAll(){ renderDays(); renderCands(); renderSheet(); renderReflect(); renderStamps(); }
+if(state.pick==null && !state.cands){ state.cands=pickCands(state.day); state.pick=state.cands[0]; state.goal=0; }
+renderAll(); drawT();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+  });
+}
+</script>
+</body>
+</html>

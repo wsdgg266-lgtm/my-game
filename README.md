@@ -20,6 +20,7 @@
 
 公開 URL(GitHub Pages 有効化後):
 `https://wsdgg266-lgtm.github.io/my-game/`
+(じしゅ学習ナビは `https://wsdgg266-lgtm.github.io/my-game/jishu/`)
 
 ## Vercel で公開する
 
@@ -41,6 +42,7 @@
    - バスナビ!: `https://<プロジェクト名>.vercel.app/basket/`
    - おてつだいバンク: `https://<プロジェクト名>.vercel.app/points/`
    - シールアルバム: `https://<プロジェクト名>.vercel.app/seal/`
+   - じしゅ学習ナビ: `https://<プロジェクト名>.vercel.app/jishu/`
 
 以降はデフォルトブランチ(`claude/shopping-reminder-app-7xpyg5`)への push のたびに
 自動で再デプロイされます。
