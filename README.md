@@ -21,6 +21,7 @@
 公開 URL(GitHub Pages 有効化後):
 `https://wsdgg266-lgtm.github.io/my-game/`
 (じしゅ学習ナビは `https://wsdgg266-lgtm.github.io/my-game/jishu/`)
+(四神まなびバトルは `https://wsdgg266-lgtm.github.io/my-game/shishin/`)
 
 ## Vercel で公開する
 
