@@ -1,7 +1,133 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": "2026-10-04T21:49:34.088Z",
+  "updatedAt": "2026-10-06T00:15:32.431Z",
   "items": [
+    {
+      "title": "【NBA】ティンバーウルブズのアンソニー・エドワーズ、ラメロ・ボールとの共存に迷いなし「来てくれて最高にうれしいよ」(BASKET COUNT)",
+      "url": "https://news.yahoo.co.jp/articles/ead78ff10b7eb7f4e427e027d785c771fd86b885",
+      "ts": 1791243631000,
+      "date": "2026-10-06",
+      "source": "Yahoo!ニュース(スポーツ)"
+    },
+    {
+      "title": "「理にかなわない」…ブレイザーズ指揮官、リラードとモラントの同時先発に慎重な姿勢",
+      "url": "https://basketballking.jp/news/world/20261005/636287.html",
+      "ts": 1791209063000,
+      "date": "2026-10-05",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "ナゲッツ指揮官、新加入デローザンのベンチスタートを明言…プレシーズン初戦は黒星",
+      "url": "https://basketballking.jp/news/world/20261005/636282.html",
+      "ts": 1791208114000,
+      "date": "2026-10-05",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "ジョシュ・ハート、右手薬指の事情を明かす…「手術を受ければ僕のキャリアは終わる」",
+      "url": "https://basketballking.jp/news/world/20261005/636277.html",
+      "ts": 1791206457000,
+      "date": "2026-10-05",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "U18女子日本代表が107点差つけ大勝…開催国マレーシアを圧倒しアジアカップ2連勝",
+      "url": "https://basketballking.jp/news/japan/20261005/636273.html",
+      "ts": 1791205287000,
+      "date": "2026-10-05",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "ブレイザーズが新たに雇用したチームアナウンサーを数時間で解雇…理由は10年以上前のSNS投稿",
+      "url": "https://basketballking.jp/news/world/20261005/636099.html",
+      "ts": 1791196513000,
+      "date": "2026-10-05",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "1試合25得点、平均20分超出場も…Bプレミア“ドラフト1期生”開幕4戦目までのスタッツまとめ",
+      "url": "https://basketballking.jp/news/japan/20261005/636220.html",
+      "ts": 1791192327000,
+      "date": "2026-10-05",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "Bリーグドラフト志望選手リスト更新…福大大濠、青学大で活躍した広瀬、芦田ら5選手が公示、志望届提出39名に",
+      "url": "https://basketballking.jp/news/japan/20261005/636165.html",
+      "ts": 1791189206000,
+      "date": "2026-10-05",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "攻守にフル稼働の重責を担う長崎ヴェルカの馬場雄大「この状況で良いパフォーマンスができれば選手として、人として成長できる」",
+      "url": "https://basket-count.com/article/detail/275799",
+      "ts": 1791189030000,
+      "date": "2026-10-05",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "ビームス初のスポーツコンセプトストアが誕生…「BEAMS SPORTS」が10月12日オープン",
+      "url": "https://basketballking.jp/news/release/20261005/636169.html",
+      "ts": 1791184968000,
+      "date": "2026-10-05",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "NBA クリッパーズ 八村と河村 プレシーズンマッチで見せ場作る",
+      "url": "https://news.web.nhk/newsweb/na/nd-20261005de54643",
+      "ts": 1791184375000,
+      "date": "2026-10-05",
+      "source": "NHKニュース(スポーツ)"
+    },
+    {
+      "title": "好調なアルバルク東京に痛手…新戦力のラクラン・オルブリッチが左脚負傷しIL入り",
+      "url": "https://basketballking.jp/news/japan/20261005/636156.html",
+      "ts": 1791183866000,
+      "date": "2026-10-05",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "當間光「自分たちの力を証明するチャンス」別府溝部学園（大分県）",
+      "url": "https://basket-count.com/article/detail/275763",
+      "ts": 1791183644000,
+      "date": "2026-10-05",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "アルバルク東京がラクラン・オルブリッチをインジュアリーリストに登録、平均18.3得点、10.0リバウンド、4.8アシストとマルチに活躍",
+      "url": "https://basket-count.com/article/detail/275783",
+      "ts": 1791181990000,
+      "date": "2026-10-05",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【Bプレミア西地区結果まとめ】3クラブが開幕4連勝…昨季B1王者の長崎は4連敗スタート",
+      "url": "https://basketballking.jp/news/japan/20261005/636111.html",
+      "ts": 1791180655000,
+      "date": "2026-10-05",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "開幕4連敗の佐賀バルーナーズ、宮永雄太ヘッドコーチが望むステップアップ「まだ理想形の10％程度しか到達していない」",
+      "url": "https://basket-count.com/article/detail/275727",
+      "ts": 1791173700000,
+      "date": "2026-10-05",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "A東京が4度の延長戦の末に千葉Jを撃破！三遠は指揮官欠場の緊急事態を乗り越え2連勝、Bプレミア第2週の試合結果一覧",
+      "url": "https://basket-count.com/article/detail/275728",
+      "ts": 1791172206000,
+      "date": "2026-10-05",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【NBA】契約問題で揉めに揉めたジェイレン・デューレン、残留を決めて決意新た「ここでキャリアを全うし、レガシーを残したい」",
+      "url": "https://basket-count.com/article/detail/275723",
+      "ts": 1791163699000,
+      "date": "2026-10-05",
+      "source": "バスケットカウント"
+    },
     {
       "title": "京都ハンナリーズで新たなスタートを切った岸本隆一「毎試合が必死、良い意味で先のことを見ないですんでいる環境にすごく感謝」",
       "url": "https://basket-count.com/article/detail/275717",
@@ -17,137 +143,11 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "“女性指揮官”Bプレミアで連勝…三遠の綾部舞HC代行「若い子たちに勇気や希望を」",
-      "url": "https://basketballking.jp/news/japan/20261004/636072.html",
-      "ts": 1791114652000,
-      "date": "2026-10-04",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "U18女子日本代表がアジアカップ白星発進…竹内みや14得点、前半苦戦も3Qにチャイニーズ・タイペイ圧倒",
-      "url": "https://basketballking.jp/news/japan/20261004/636058.html",
-      "ts": 1791110710000,
-      "date": "2026-10-04",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "川崎がBプレミア初勝利…初先発のアブドゥル-ラフマン18得点、桶谷HCは山内を評価",
-      "url": "https://basketballking.jp/news/japan/20261004/636061.html",
-      "ts": 1791107474000,
-      "date": "2026-10-04",
-      "source": "バスケットボールキング"
-    },
-    {
       "title": "品川愛翔「変わらなきゃいけない」県立佐賀北（佐賀県）",
       "url": "https://basket-count.com/article/detail/275668",
       "ts": 1791104456000,
       "date": "2026-10-04",
       "source": "バスケットカウント"
-    },
-    {
-      "title": "富永啓生が22得点…北海道はホームで仙台に連勝、2選手がダブルダブル達成",
-      "url": "https://basketballking.jp/news/japan/20261004/636050.html",
-      "ts": 1791101002000,
-      "date": "2026-10-04",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "テウ アダマ「チームへの誇りを持って戦おう」八雲学園（東京都）",
-      "url": "https://basket-count.com/article/detail/275665",
-      "ts": 1791100846000,
-      "date": "2026-10-04",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "名古屋Dが無傷のBプレミア開幕4連勝…ヘンリー25得点、敵地で島根を撃破",
-      "url": "https://basketballking.jp/news/japan/20261004/636004.html",
-      "ts": 1791098199000,
-      "date": "2026-10-04",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "「これからも私の誇り」A千葉が大塚裕土氏の背番号「24」永久欠番セレモニー実施",
-      "url": "https://basketballking.jp/news/japan/20261004/635999.html",
-      "ts": 1791094730000,
-      "date": "2026-10-04",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "【女子出場校 予選結果一覧】SoftBank ウインターカップ2026 令和8年度 第79回全国高等学校バスケットボール選手権大会",
-      "url": "https://basketballking.jp/news/japan/fixed/635994.html",
-      "ts": 1791088239000,
-      "date": "2026-10-04",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "【男子出場校 予選結果一覧】SoftBank ウインターカップ2026 令和8年度 第79回全国高等学校バスケットボール選手権大会",
-      "url": "https://basketballking.jp/news/japan/fixed/635987.html",
-      "ts": 1791088230000,
-      "date": "2026-10-04",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "【最新】Bリーグ「平均来場者数」まとめ…全55クラブの2026－27シーズン数値まとめ",
-      "url": "https://basketballking.jp/news/japan/fixed/634999.html",
-      "ts": 1791088225000,
-      "date": "2026-10-04",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "【写真ギャラリー】2026.10.2 広島ドラゴンフライズ 96－73 神戸ストークス",
-      "url": "https://basketballking.jp/news/japan/20261004/635911.html",
-      "ts": 1791083020000,
-      "date": "2026-10-04",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "古巣・千葉Jとの死闘を制したアルバルク東京のディー・ジェイ・ホグ「彼らとここで対戦するのは特別で不思議な感覚でした」",
-      "url": "https://basket-count.com/article/detail/275657",
-      "ts": 1791082813000,
-      "date": "2026-10-04",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "ホーキンス然「楽しむ気持ちしかありません」開志国際（新潟県）",
-      "url": "https://basket-count.com/article/detail/275645",
-      "ts": 1791072014000,
-      "date": "2026-10-04",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "シーホース三河のエース、西田優大の責任「安齋さんから『本当にお前は自由にやっていい』と言われました」",
-      "url": "https://basket-count.com/article/detail/275650",
-      "ts": 1791023332000,
-      "date": "2026-10-03",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "高橋志奈「もっと積極的にコート上で表現できたら」一関学院（岩手県）",
-      "url": "https://basket-count.com/article/detail/275637",
-      "ts": 1791014439000,
-      "date": "2026-10-03",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "大嶋遥佳「みんなで高め合っていける大会にしたい」県立能代科学技術（秋田県）",
-      "url": "https://basket-count.com/article/detail/275630",
-      "ts": 1791007211000,
-      "date": "2026-10-03",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【NBA】ホーネッツでキャリア第2章をスタートさせるナズ・リード「僕自身も新しいことを吸収したい」",
-      "url": "https://basket-count.com/article/detail/275633",
-      "ts": 1791005457000,
-      "date": "2026-10-03",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "NBA クリッパーズ 八村と河村が新シーズンへ意気込み",
-      "url": "https://news.web.nhk/newsweb/na/nd-20260929de53012",
-      "ts": 1790653020000,
-      "date": "2026-09-29",
-      "source": "NHKニュース(スポーツ)"
     }
   ],
   "note": "",
