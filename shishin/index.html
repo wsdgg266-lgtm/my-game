@@ -894,6 +894,38 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .lockbox b{font-family:var(--f-disp);font-weight:400;font-size:24px}
 .lockbox p{margin:0;font-size:16px;color:var(--mute)}
 
+/* ===== v9：新しい敵イラスト（透過）・ラスボス・ホームのメインビジュアル ===== */
+.mon img{object-fit:contain;object-position:50% 100%;-webkit-mask-image:none;mask-image:none;
+  filter:drop-shadow(0 8px 10px rgba(0,0,0,.55)) drop-shadow(0 0 14px color-mix(in srgb,var(--c) 45%,transparent));
+  transform-origin:50% 100%;animation:mbreathe 2.2s ease-in-out infinite}
+@keyframes mbreathe{0%,100%{transform:translateY(0) scale(1,1)}50%{transform:translateY(-6px) scale(1.02,.98)}}
+.mon.atk img{animation:mlunge .5s ease}
+@keyframes mlunge{0%{transform:none}35%{transform:translate(-22%,8%) scale(1.18) rotate(-6deg)}100%{transform:none}}
+.mon::before{content:"";position:absolute;left:18%;right:18%;bottom:-1%;height:9%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.55),transparent)}
+.mon.elite::after{inset:20% 12% 4%}
+.monorb{object-fit:contain !important;object-position:50% 50% !important;transform:scale(1.05) !important;background:radial-gradient(circle,#24346e,#0b1438)}
+.foemon{background:radial-gradient(circle at 50% 60%,color-mix(in srgb,var(--c) 30%,#1a2756),#0b1438 75%)}
+.foemon img{object-fit:contain;object-position:50% 100%;padding:10px 8px 4px;box-sizing:border-box;filter:drop-shadow(0 6px 8px rgba(0,0,0,.5))}
+.dl-img img{object-fit:contain !important;background:radial-gradient(circle,#24346e,#0b1438)}
+/* ラスボス */
+.chaos{width:100%;height:100%;overflow:hidden}
+.chaos img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;transform:none!important}
+.chaos.big{-webkit-mask-image:radial-gradient(ellipse 60% 62% at 50% 50%,#000 55%,transparent 80%);mask-image:radial-gradient(ellipse 60% 62% at 50% 50%,#000 55%,transparent 80%);animation:float 2.6s ease-in-out infinite}
+.chaos.big img{-webkit-mask-image:none;mask-image:none;filter:drop-shadow(0 0 18px #9b4dff)}
+.chaos.mini img{object-position:50% 22%;transform:scale(1.6)!important;transform-origin:50% 18%}
+.foeart .chaos img{object-position:50% 25%}
+.a-bg.chaosbg img{filter:blur(8px) brightness(.45) saturate(1.3)}
+/* ホーム：メインビジュアル */
+.h-bg.kv{bottom:0}
+.h-bg.kv .h-blur{-webkit-mask-image:none;mask-image:none;filter:blur(24px) brightness(.5) saturate(1.3)}
+.h-kv{position:absolute;left:50%;top:40px;transform:translateX(-50%);height:calc(100% - 40px);width:auto;max-width:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent),linear-gradient(180deg,#000 80%,transparent);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent),linear-gradient(180deg,#000 80%,transparent);mask-composite:intersect;
+  animation:hzoomkv 16s ease-in-out infinite alternate;transform-origin:50% 40%}
+@keyframes hzoomkv{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.04)}}
+.chaos.big img{filter:brightness(1.35) saturate(1.2) drop-shadow(0 0 18px #9b4dff)}
+.a-enemy.boss:has(.chaos){right:-8%;top:0;width:72%;height:90%}
+
 </style>
 </head>
 <body>
@@ -1168,16 +1200,16 @@ const BOSSES = {
 // 冒険マップ 12ステージ（設計書15章）
 const STAGES = [
   {id:1,  code:'1-1', title:'はじまりの道', type:'battle', s:'math',     reward:40,  enemy:{name:'すうじスライム', e:'💧', mon:'slime', hp:150,  atk:7}},
-  {id:2,  code:'1-2', title:'青い強敵',     type:'elite',  s:'math',     reward:70,  enemy:{name:'けいさんゴブリン', e:'👺', mon:'goblin', hue:200, hp:230, atk:10}},
+  {id:2,  code:'1-2', title:'青い強敵',     type:'elite',  s:'math',     reward:70,  enemy:{name:'けいさんゴブリン', e:'👺', mon:'goblin', hp:230, atk:10}},
   {id:3,  code:'1-3', title:'青龍の試練',   type:'boss',   s:'math',     reward:180},
   {id:4,  code:'2-1', title:'炎のことば道', type:'battle', s:'japanese', reward:45,  enemy:{name:'ことばコウモリ', e:'🦇', mon:'bat', hp:260, atk:10}},
-  {id:5,  code:'2-2', title:'紅蓮の強敵',   type:'elite',  s:'japanese', reward:75,  enemy:{name:'もじくいスライム', e:'💧', mon:'slime', hue:150, hp:330, atk:12}},
+  {id:5,  code:'2-2', title:'紅蓮の強敵',   type:'elite',  s:'japanese', reward:75,  enemy:{name:'もじくいスライム', e:'💧', mon:'slime', hue:270, hp:330, atk:12}},
   {id:6,  code:'2-3', title:'朱雀の試練',   type:'boss',   s:'japanese', reward:180},
-  {id:7,  code:'3-1', title:'探究の森',     type:'battle', s:'science',  reward:50,  enemy:{name:'もりのゴブリン', e:'👺', mon:'goblin', hp:340, atk:11}},
-  {id:8,  code:'3-2', title:'白虎の強敵',   type:'elite',  s:'science',  reward:80,  enemy:{name:'いなずまコウモリ', e:'🦇', mon:'bat', hue:170, hp:430, atk:14}},
+  {id:7,  code:'3-1', title:'探究の森',     type:'battle', s:'science',  reward:50,  enemy:{name:'もりのゴブリン', e:'👺', mon:'mori', hp:340, atk:11}},
+  {id:8,  code:'3-2', title:'白虎の強敵',   type:'elite',  s:'science',  reward:80,  enemy:{name:'いなずまウサギ', e:'⚡', mon:'raijin', hp:430, atk:14}},
   {id:9,  code:'3-3', title:'白虎の試練',   type:'boss',   s:'science',  reward:200},
-  {id:10, code:'4-1', title:'歴史への道',   type:'battle', s:'social',   reward:55,  enemy:{name:'いせきスライム', e:'💧', mon:'slime', hue:60, hp:430, atk:12}},
-  {id:11, code:'4-2', title:'玄武の強敵',   type:'elite',  s:'social',   reward:85,  enemy:{name:'れきしゴブリン', e:'👺', mon:'goblin', hue:250, hp:530, atk:15}},
+  {id:10, code:'4-1', title:'歴史への道',   type:'battle', s:'social',   reward:55,  enemy:{name:'いせきスライム', e:'💧', mon:'slime', hue:200, hp:430, atk:12}},
+  {id:11, code:'4-2', title:'玄武の強敵',   type:'elite',  s:'social',   reward:85,  enemy:{name:'サムライゴブリン', e:'👺', mon:'samurai', hp:530, atk:15}},
   {id:12, code:'4-3', title:'玄武の試練',   type:'boss',   s:'social',   reward:220}
 ];
 // ボスの強さ（バランス調整後。設計書の値から HP を引き上げ）
@@ -1323,11 +1355,11 @@ SUBJ_KEYS.forEach(s => {
 
 if (typeof module !== 'undefined') module.exports = { SUBJ, SUBJ_KEYS, ADV, matchup, CARDS, ITEMS, BOX_POOL, cardTag, STARTER_CARDS, STARTER_DECK, BOSSES, STAGES, UNITS, QB, QMAP };
 
-const ART = {"boss_math": "img/boss_math-429272c7.webp", "boss_japanese": "img/boss_japanese-eaa6fc3d.webp", "boss_science": "img/boss_science-a60e567d.webp", "boss_social": "img/boss_social-351f1081.webp", "p_math": "img/p_math-3f663285.webp", "p_japanese": "img/p_japanese-3c5333cf.webp", "p_science": "img/p_science-14cfbb78.webp", "p_social": "img/p_social-f614547d.webp", "kizuna": "img/kizuna-f49a09c7.webp", "i_book": "img/i_book-a8b81722.webp", "i_potion": "img/i_potion-04616a90.webp", "i_fire": "img/i_fire-49b69cf7.webp", "i_blessing": "img/i_blessing-afd678f8.webp", "back": "img/back-e00efc9c.webp", "logo": "img/logo-e3eb78a3.webp", "c1": "img/c1-88587135.webp", "c2": "img/c2-11c5ea75.webp", "c3": "img/c3-f1999b3c.webp", "c4": "img/c4-d7d1bf67.webp", "c5": "img/c5-f153942d.webp", "c6": "img/c6-0714296a.webp", "c7": "img/c7-28f2aa17.webp", "c8": "img/c8-b7b78f37.webp", "c9": "img/c9-a2251dfe.webp", "c10": "img/c10-2b14f641.webp", "c11": "img/c11-acb16dcd.webp", "c14": "img/c14-c9cbe55d.webp", "c15": "img/c15-937c565b.webp", "c16": "img/c16-bb27ae60.webp", "c12": "img/c12-fe81c071.webp", "c17": "img/c17-272426a6.webp", "c18": "img/c18-12fb15f7.webp", "c19": "img/c19-f81f3515.webp", "c13": "img/c13-d4a5a866.webp", "c20": "img/c20-1ae1fe0c.webp", "c21": "img/c21-d0b7974e.webp", "c22": "img/c22-9076f094.webp"};
+const ART = {"chaos": "img/chaos-b433685e.webp", "boss_math": "img/boss_math-429272c7.webp", "boss_japanese": "img/boss_japanese-eaa6fc3d.webp", "boss_science": "img/boss_science-a60e567d.webp", "boss_social": "img/boss_social-351f1081.webp", "p_math": "img/p_math-3f663285.webp", "p_japanese": "img/p_japanese-3c5333cf.webp", "p_science": "img/p_science-14cfbb78.webp", "p_social": "img/p_social-f614547d.webp", "kizuna": "img/kizuna-f49a09c7.webp", "i_book": "img/i_book-a8b81722.webp", "i_potion": "img/i_potion-04616a90.webp", "i_fire": "img/i_fire-49b69cf7.webp", "i_blessing": "img/i_blessing-afd678f8.webp", "back": "img/back-e00efc9c.webp", "logo": "img/logo-e3eb78a3.webp", "c1": "img/c1-88587135.webp", "c2": "img/c2-11c5ea75.webp", "c3": "img/c3-f1999b3c.webp", "c4": "img/c4-d7d1bf67.webp", "c5": "img/c5-f153942d.webp", "c6": "img/c6-0714296a.webp", "c7": "img/c7-28f2aa17.webp", "c8": "img/c8-b7b78f37.webp", "c9": "img/c9-a2251dfe.webp", "c10": "img/c10-2b14f641.webp", "c11": "img/c11-acb16dcd.webp", "c14": "img/c14-c9cbe55d.webp", "c15": "img/c15-937c565b.webp", "c16": "img/c16-bb27ae60.webp", "c12": "img/c12-fe81c071.webp", "c17": "img/c17-272426a6.webp", "c18": "img/c18-12fb15f7.webp", "c19": "img/c19-f81f3515.webp", "c13": "img/c13-d4a5a866.webp", "c20": "img/c20-1ae1fe0c.webp", "c21": "img/c21-d0b7974e.webp", "c22": "img/c22-9076f094.webp"};
 const ART_AR = {"c1": 0.88, "c2": 0.852, "c3": 0.831, "c4": 0.831, "c5": 0.817, "c6": 0.782, "c7": 0.69, "c8": 0.62, "c9": 0.782, "c10": 0.761, "c11": 2.208, "c14": 2.108, "c15": 2.177, "c16": 2.323, "c12": 2.461, "c17": 2.47, "c18": 2.435, "c19": 2.487, "c13": 2.591, "c20": 2.582, "c21": 2.664, "c22": 2.6};
 const OPENING = ["img/opening0-c195e259.webp", "img/opening1-63bf00ac.webp", "img/opening2-bfffa57f.webp", "img/opening3-8d77e0b7.webp", "img/opening4-f3229a6f.webp", "img/opening5-30553491.webp", "img/opening6-40b8905e.webp", "img/opening7-0305cde1.webp", "img/opening8-a26a6398.webp", "img/opening9-49c5c0d4.webp", "img/opening10-d1846d83.webp", "img/opening11-488200e1.webp"];
-const MON = {"slime": ["img/mon_slime0-af4fbbdd.webp", "img/mon_slime1-963ec31b.webp", "img/mon_slime2-8dc9f732.webp"], "goblin": ["img/mon_goblin0-bc2870b6.webp", "img/mon_goblin1-aa2110e7.webp", "img/mon_goblin2-abe5afaa.webp"], "bat": ["img/mon_bat0-d6777b88.webp", "img/mon_bat1-7fbf740f.webp", "img/mon_bat2-44e62c6c.webp"]};
-const HOME = {"bg": "img/home_bg-e9266dd5.webp", "box": "img/home_box-8c39ede4.webp", "deck": "img/home_deck-38a7a812.webp", "mission": "img/home_mission-14dfe72b.webp", "scroll": "img/home_scroll-cc8c3fdf.webp", "gem": "img/home_gem-5f08d13b.webp", "coin": "img/home_coin-b762eaff.webp", "ticket": "img/home_ticket-b9ef95e8.webp"};
+const MON = {"slime": "img/mon_slime-5f470aae.webp", "goblin": "img/mon_goblin-f694c6ca.webp", "bat": "img/mon_bat-4b2dd96b.webp", "mori": "img/mon_mori-bdb995b9.webp", "raijin": "img/mon_raijin-2290d373.webp", "samurai": "img/mon_samurai-a781761d.webp"};
+const HOME = {"kv": "img/home_kv-b01017ac.webp", "box": "img/home_box-8c39ede4.webp", "deck": "img/home_deck-38a7a812.webp", "mission": "img/home_mission-14dfe72b.webp", "scroll": "img/home_scroll-cc8c3fdf.webp", "gem": "img/home_gem-5f08d13b.webp", "coin": "img/home_coin-b762eaff.webp", "ticket": "img/home_ticket-b9ef95e8.webp"};
 </script>
 <script>
 // ===== 四神まなびバトル Web版 本体 =====
@@ -1588,8 +1620,8 @@ const SUBJ_KANA = {math:'さんすう', japanese:'こくご', science:'りか', 
 function dayKey(){ const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth()+1) * 100 + d.getDate(); }
 function dailyStage(){
   const k = dayKey(), n = Math.min(S.cleared.length, 12);
-  const s = SUBJ_KEYS[k % 4], mon = ['slime','goblin','bat'][Math.floor(k / 4) % 3];
-  const nm = {slime:'スライム', goblin:'ゴブリン', bat:'コウモリ'}[mon];
+  const s = SUBJ_KEYS[k % 4], mon = ['slime','goblin','bat','mori','raijin','samurai'][Math.floor(k / 4) % 6];
+  const nm = {slime:'スライム', goblin:'ゴブリン', bat:'コウモリ', mori:'もりのようせい', raijin:'いなずまウサギ', samurai:'サムライゴブリン'}[mon];
   return {id:'daily', code:'今日', title:'今日のバトル', type:'elite', s, reward:60, daily:true,
     enemy:{name:'きょうの ' + nm, e:'⭐', mon, hue:(k * 37) % 360, hp:160 + 40 * n, atk:8 + n}};
 }
@@ -1602,7 +1634,7 @@ function makeStage(id, hard){
 const hardCleared = id => (S.hard || []).includes(id);
 const qPool = s => s === 'all' ? SUBJ_KEYS.reduce((a,k) => a.concat(QB[k]), []) : QB[s];
 function bossArt(s, cls){
-  if (s === 'all') return '<div class="final4 ' + (cls||'') + '">' + SUBJ_KEYS.map(k => '<img src="' + ART['boss_' + k] + '" alt="">').join('') + '</div>';
+  if (s === 'all') return '<div class="chaos ' + (cls||'') + '"><img src="' + ART.chaos + '" alt="混沌の王・カオス"></div>';
   return '<img src="' + ART['boss_' + s] + '" alt="">';
 }
 function statusBar(){
@@ -1619,12 +1651,7 @@ function vHome(){
   const left = Math.max(0, 10 - d.study);
   const av = cardDef(lead).img ? '<img src="' + ART[cardDef(lead).img] + '" alt="">' : '<span>' + L.e + '</span>';
   return '<main class="home2">' +
-    '<div class="h-bg"><img class="h-blur" src="' + HOME.bg + '" alt=""><div class="h-temple"><img src="' + HOME.bg + '" alt=""></div><div class="h-cast">' +
-      '<img class="hc beast b-math" src="' + ART.boss_math + '" alt=""><img class="hc beast b-jp" src="' + ART.boss_japanese + '" alt="">' +
-      '<img class="hc beast b-sci" src="' + ART.boss_science + '" alt=""><img class="hc beast b-soc" src="' + ART.boss_social + '" alt="">' +
-      '<img class="hc hero2 c-math" src="' + ART.p_math + '" alt="雷の計算士"><img class="hc hero2 c-jp" src="' + ART.p_japanese + '" alt="言葉の舞姫">' +
-      '<img class="hc hero2 c-sci" src="' + ART.p_science + '" alt="科学の探究者"><img class="hc hero2 c-soc" src="' + ART.p_social + '" alt="歴史のナビゲーター">' +
-      '<div class="h-glow"></div></div></div><div class="h-sparks"></div>' +
+    '<div class="h-bg kv"><img class="h-blur" src="' + HOME.kv + '" alt=""><img class="h-kv" src="' + HOME.kv + '" alt="四神と守護者たち"></div><div class="h-sparks"></div>' +
     '<header class="h-top"><button class="h-av" data-act="go" data-v="deck" aria-label="リーダーをかえる">' + av + '<b>Lv.' + lv + '</b></button>' +
       '<div class="h-stat"><div class="h-row"><span class="h-pill"><img src="' + HOME.coin + '" alt="">' + S.coins.toLocaleString() + '</span><span class="h-pill t"><img src="' + HOME.ticket + '" alt="">' + S.tickets + '</span><button class="h-plus" data-act="go" data-v="mission" aria-label="チケットのあつめかた">+</button></div>' +
       '<div class="h-exp"><div class="h-expbar"><i style="width:' + within + '%"></i></div><span>あと ' + (100 - within) + '</span></div></div>' +
@@ -1650,7 +1677,7 @@ function vMap(p){
   if (sel !== 'all' && !SUBJ_KEYS.includes(sel)) sel = 'math';
   const dOpen = S.cleared.includes(1), dDone = S.dailyWin === dayKey(), ds = dailyStage();
   let h = top('ぼうけん') + '<main class="scroll">' +
-    '<button class="daily s-' + ds.s + (dOpen ? '' : ' lock') + '" ' + (dOpen ? 'data-act="go" data-v="stage" data-id="daily"' : 'disabled') + '><span class="dl-img"><img src="' + monImg(ds.enemy) + '" alt="" style="filter:hue-rotate(' + ds.enemy.hue + 'deg)"></span><span class="grow"><small>毎日 かわる！</small><b>今日のバトル</b><em>' + (dOpen ? (dDone ? '✅ 今日は クリアずみ（何度でも あそべる）' : SUBJ[ds.s].e + ' ' + SUBJ_KANA[ds.s] + ' ・ 🎫+1 🪙60') : '1-1を クリアすると ひらく') + '</em></span><span class="arrow">›</span></button>' +
+    '<button class="daily s-' + ds.s + (dOpen ? '' : ' lock') + '" ' + (dOpen ? 'data-act="go" data-v="stage" data-id="daily"' : 'disabled') + '><span class="dl-img"><img src="' + monImg(ds.enemy) + '" alt="" style="filter:hue-rotate(' + (ds.enemy.hue || 0) + 'deg)"></span><span class="grow"><small>毎日 かわる！</small><b>今日のバトル</b><em>' + (dOpen ? (dDone ? '✅ 今日は クリアずみ（何度でも あそべる）' : SUBJ[ds.s].e + ' ' + SUBJ_KANA[ds.s] + ' ・ 🎫+1 🪙60') : '1-1を クリアすると ひらく') + '</em></span><span class="arrow">›</span></button>' +
     '<div class="chsel">' + SUBJ_KEYS.concat('all').map((k, i) => {
       const open = chOpen(k), done = STAGES.filter(st => st.s === k).every(st => S.cleared.includes(st.id));
       return '<button class="ch s-' + k + (k === sel ? ' on' : '') + (open ? '' : ' lock') + '" ' + (open ? 'data-act="mapch" data-s="' + k + '"' : 'disabled') + '>' +
@@ -1879,7 +1906,7 @@ function vBattle(){
 }
 
 // 敵キャラの絵（スライム・ゴブリン・コウモリ）。hue があれば色ちがい（強敵）
-function monImg(en, pose){ return MON[en.mon][pose || 0]; }
+function monImg(en){ return MON[en.mon]; }
 function monStyle(en){ return en.hue ? ' style="filter:hue-rotate(' + en.hue + 'deg) saturate(1.25)"' : ''; }
 // 大きな対戦ステージ
 function arena2(st, c, fx, hpLow){
@@ -1889,9 +1916,9 @@ function arena2(st, c, fx, hpLow){
   const ecls = fx.k === 'attack' ? ' hitme' : fx.k === 'counter' ? ' strike' : '';
   const pcls = fx.k === 'attack' ? ' dash' : fx.k === 'counter' ? ' hurt' : fx.k === 'switch' ? ' enter' : '';
   let h = '<div class="arena2 s-' + st.s + (fx.k === 'attack' ? ' shakeA' + (fx.crit ? ' big' : '') : fx.k === 'counter' ? ' shakeB' : '') + '" style="--pc:var(--' + c.s + ')">' +
-    '<div class="a-bg' + (mon ? ' mon' : '') + '"' + (mon ? monStyle(st.enemy) : '') + '><img src="' + (mon ? monImg(st.enemy) : bgArt) + '" alt=""></div><div class="a-lines"></div><div class="a-split"></div>' +
+    '<div class="a-bg' + (st.s === 'all' ? ' chaosbg' : '') + '"><img src="' + (st.s === 'all' ? ART.chaos : bgArt) + '" alt=""></div><div class="a-lines"></div><div class="a-split"></div>' +
     // 敵（右上）
-    '<div class="a-enemy' + ecls + (boss ? ' boss' : '') + '">' + (boss ? (st.s === 'all' ? bossArt('all', 'big') : '<img src="' + bgArt + '" alt="' + esc(st.enemy.name) + '">') : mon ? '<div class="mon' + (st.type === 'elite' ? ' elite' : '') + (fx.k === 'counter' ? ' atk' : '') + '"' + monStyle(st.enemy) + '><img class="m0" src="' + monImg(st.enemy, 0) + '" alt="' + esc(st.enemy.name) + '"><img class="m1" src="' + monImg(st.enemy, 1) + '" alt=""><img class="m2" src="' + monImg(st.enemy, 2) + '" alt=""></div>' : '<span class="eemo">' + st.enemy.e + '</span>') + '</div>' +
+    '<div class="a-enemy' + ecls + (boss ? ' boss' : '') + '">' + (boss ? (st.s === 'all' ? bossArt('all', 'big') : '<img src="' + bgArt + '" alt="' + esc(st.enemy.name) + '">') : mon ? '<div class="mon' + (st.type === 'elite' ? ' elite' : '') + (fx.k === 'counter' ? ' atk' : '') + '"' + monStyle(st.enemy) + '><img src="' + monImg(st.enemy) + '" alt="' + esc(st.enemy.name) + '"></div>' : '<span class="eemo">' + st.enemy.e + '</span>') + '</div>' +
     // 味方（左下）
     '<div class="a-player' + pcls + '" data-k="' + fx.id + '">' + (c.img ? '<img src="' + ART[c.img] + '" alt="' + esc(c.title) + '">' : '<span class="pemo">' + c.e + '</span>') + '</div>' +
     '<div class="a-vs">VS</div>' +
