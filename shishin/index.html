@@ -956,6 +956,24 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .h-hint::before{content:"◀ ";font-size:11px}
 @keyframes hintside{50%{transform:translateX(-5px)}}
 @media (max-height:720px){.h-hint{display:block;bottom:24px;left:calc(50% + 66px)}}
+/* ===== v11：ホームの主役 = デッキの1番目（リーダー） ===== */
+.h-kvbg{position:absolute;left:50%;top:0;transform:translateX(-50%);height:100%;width:auto;max-width:none;filter:blur(2px) brightness(.42) saturate(1.15);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.h-lead{position:absolute;left:50%;top:64px;transform:translateX(-50%);width:min(96%,460px);height:60%;z-index:1;animation:leadin .6s cubic-bezier(.2,1.2,.4,1)}
+.h-lead::before{content:"";position:absolute;inset:8% 6% 0;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--c) 55%,transparent),transparent);filter:blur(10px)}
+.h-lead img{position:relative;width:100%;height:100%;object-fit:cover;object-position:50% 12%;
+  -webkit-mask-image:radial-gradient(ellipse 50% 52% at 50% 44%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 50% 52% at 50% 44%,#000 62%,transparent 100%);
+  animation:leadbreath 4s ease-in-out infinite;transform-origin:50% 90%}
+.h-lead.emo{display:grid;place-items:center}
+.h-lead.emo span{position:relative;font-size:140px}
+@keyframes leadin{from{opacity:0;transform:translateX(-50%) translateY(16px) scale(.96)}}
+@keyframes leadbreath{50%{transform:translateY(-4px) scale(1.012)}}
+.h-mid{pointer-events:none}
+.h-mid>*{pointer-events:auto}
+.h-leadname{position:absolute;left:10px;z-index:4;display:flex;flex-direction:column;align-items:flex-start;padding:4px 12px 5px;border-radius:12px;background:rgba(6,12,40,.72);border:1.5px solid var(--c);box-shadow:0 0 12px color-mix(in srgb,var(--c) 50%,transparent);text-align:left;max-width:34%}
+.h-leadname small{font-size:10px;font-weight:800;color:var(--c);letter-spacing:.1em}
+.h-leadname b{font-family:var(--f-disp);font-weight:400;font-size:14px;line-height:1.2;color:#fff}
+@media (max-height:720px){.h-lead{top:40px}.h-leadname b{font-size:12px}}
 
 </style>
 </head>
@@ -1682,7 +1700,9 @@ function vHome(){
   const left = Math.max(0, 10 - d.study);
   const av = cardDef(lead).img ? '<img src="' + ART[cardDef(lead).img] + '" alt="">' : '<span>' + L.e + '</span>';
   return '<main class="home2">' +
-    '<div class="h-bg kv"><img class="h-blur" src="' + HOME.kv + '" alt=""><img class="h-kv" src="' + HOME.kv + '" alt="四神と守護者たち"></div><div class="h-sparks"></div>' +
+    '<div class="h-bg kv s-' + L.s + '"><img class="h-blur" src="' + HOME.kv + '" alt=""><img class="h-kvbg" src="' + HOME.kv + '" alt="">' +
+      (cardDef(lead).img ? '<div class="h-lead"><img src="' + ART[cardDef(lead).img] + '" alt="' + esc(L.title) + '"></div>' : '<div class="h-lead emo"><span>' + L.e + '</span></div>') +
+      '<button class="h-leadname" data-act="go" data-v="deck"><small>リーダー</small><b>' + esc(L.title) + '</b></button></div><div class="h-sparks"></div>' +
     '<header class="h-top"><button class="h-av" data-act="go" data-v="deck" aria-label="リーダーをかえる">' + av + '<b>Lv.' + lv + '</b></button>' +
       '<div class="h-stat"><div class="h-row"><span class="h-pill"><img src="' + HOME.coin + '" alt="">' + S.coins.toLocaleString() + '</span><span class="h-pill t"><img src="' + HOME.ticket + '" alt="">' + S.tickets + '</span><button class="h-plus" data-act="go" data-v="mission" aria-label="チケットのあつめかた">+</button></div>' +
       '<div class="h-exp"><div class="h-expbar"><i style="width:' + within + '%"></i></div><span>あと ' + (100 - within) + '</span></div></div>' +
@@ -2535,13 +2555,14 @@ function render(scrollTop){
 }
 // ホーム：メインビジュアルの 手前の2人の顔が 冒険ボタンに かくれない大きさに合わせる
 function fitHome(){
-  const kv = $app.querySelector('.h-kv'), adv = $app.querySelector('.h-adv'), bg = $app.querySelector('.h-bg');
-  if (!kv || !adv || !bg) return;
+  const ld = $app.querySelector('.h-lead'), adv = $app.querySelector('.h-adv'), bg = $app.querySelector('.h-bg'), nm = $app.querySelector('.h-leadname');
+  if (!ld || !adv || !bg) return;
   const z = parseFloat($app.style.zoom) || 1;
-  const top = kv.offsetTop, bgH = bg.clientHeight;
+  const top = ld.offsetTop;
   const advTop = (adv.getBoundingClientRect().top - bg.getBoundingClientRect().top) / z;
-  const h = Math.max(260, Math.min(Math.max(bgH - top, 200) * 1.25, (advTop - top + 6) / (window.innerHeight < 720 ? 0.7 : 0.66)));
-  kv.style.height = Math.round(h) + 'px';
+  const h = Math.max(200, advTop - top + 24);
+  ld.style.height = Math.round(h) + 'px';
+  if (nm) nm.style.top = Math.round(advTop - 40) + 'px';
 }
 // iPad など 大きい画面では アプリ全体を 拡大して 見やすく
 function fitScale(){
