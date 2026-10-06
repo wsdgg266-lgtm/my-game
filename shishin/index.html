@@ -17,6 +17,7 @@
 :root{padding-top:env(safe-area-inset-top,0px)}
 /* Layout: 四神の方位盤 — 夜空の盤面の上に、東西南北の守護神が並ぶ。1画面アプリ＋下タブ */
 :root{
+  --vw:1vw;--vh:1vh;
   --sky:#101733;        /* 夜空（背景） */
   --plate:#1a2350;      /* 盤面パネル */
   --plate2:#243066;     /* 浮き上がり */
@@ -231,7 +232,7 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 @keyframes slide{0%{transform:translateX(-110%)}20%{transform:translateX(0)}80%{transform:translateX(0)}100%{transform:translateX(110%)}}
 @keyframes fadeio{0%,100%{opacity:0}15%,85%{opacity:1}}
 .toastzone{position:fixed;left:0;right:0;top:calc(62px + env(safe-area-inset-top,0px));z-index:100;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
-.toast{background:var(--gold);color:#281d00;font-weight:800;padding:8px 16px;border-radius:99px;box-shadow:0 6px 18px rgba(0,0,0,.35);animation:toast 2.6s ease forwards;max-width:90vw;text-align:center}
+.toast{background:var(--gold);color:#281d00;font-weight:800;padding:8px 16px;border-radius:99px;box-shadow:0 6px 18px rgba(0,0,0,.35);animation:toast 2.6s ease forwards;max-width:calc(90*var(--vw));text-align:center}
 @keyframes toast{0%{opacity:0;transform:translateY(-12px)}10%,85%{opacity:1;transform:none}100%{opacity:0}}
 .overlay{position:absolute;inset:0;z-index:50;display:grid;place-items:center;background:rgba(5,8,25,.6);animation:fadein .3s ease}
 @keyframes fadein{from{opacity:0}}
@@ -307,7 +308,7 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .tc.sm{--u:7.4px}
 .tc.sm .tc-desc{display:none}
 .tc.md{--u:11px}
-.tc.lg{--u:clamp(14px,4.4vw,18px)}
+.tc.lg{--u:clamp(14px,calc(4.4*var(--vw)),18px)}
 .tc.back{aspect-ratio:188/252;padding:0;overflow:hidden;border-color:#c9a24a;box-shadow:0 0 .8em rgba(255,200,61,.5)}
 .tc.back img{width:100%;height:100%;object-fit:cover;display:block}
 .tc-wrap{display:flex;justify-content:center}
@@ -344,7 +345,7 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .lvchip .bar{flex:1;height:8px}
 .home .logo{width:46%;max-width:190px;margin:-2px auto -6px;border-radius:14px}
 .hero{position:relative;display:block;width:100%;padding:0;border-radius:24px;overflow:hidden;border:3px solid var(--c);box-shadow:0 0 22px color-mix(in srgb,var(--c) 55%,transparent);background:#070a1c}
-.heroart{height:clamp(170px,30vh,250px);position:relative;overflow:hidden}
+.heroart{height:clamp(170px,calc(30*var(--vh)),250px);position:relative;overflow:hidden}
 .heroart img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;display:block}
 .heroart.fb,.mateart.fb,.gmart.fb{display:grid;place-items:center}
 .heroart.fb img,.mateart.fb img,.gmart.fb img{position:absolute;inset:0;filter:blur(6px) brightness(.45)}
@@ -451,7 +452,7 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .op-bg{position:absolute;inset:-10%;filter:blur(24px) brightness(.45) saturate(1.3)}
 .op-b{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1s ease-in-out}
 .op-b.on{opacity:1}
-.op-stage{position:relative;width:min(100vw,560px);aspect-ratio:358/355}
+.op-stage{position:relative;width:min(calc(100*var(--vw)),560px);aspect-ratio:358/355}
 .op-stage{overflow:hidden;-webkit-mask-image:linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent)}
 .op-f{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s cubic-bezier(.4,0,.2,1);will-change:opacity,transform}
 .op-f.on{opacity:1}
@@ -483,7 +484,7 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 
 /* ===== v4：大きな対戦ステージ ===== */
 .bscreen .btop{padding:6px 12px 4px}
-.arena2{position:relative;height:clamp(250px,42vh,380px);margin:0 10px;border-radius:22px;overflow:hidden;border:2px solid color-mix(in srgb,var(--c) 70%,#fff);box-shadow:0 0 24px color-mix(in srgb,var(--c) 50%,transparent),inset 0 0 60px rgba(0,0,0,.6);background:#05071a;flex:none}
+.arena2{position:relative;height:clamp(250px,calc(42*var(--vh)),380px);margin:0 10px;border-radius:22px;overflow:hidden;border:2px solid color-mix(in srgb,var(--c) 70%,#fff);box-shadow:0 0 24px color-mix(in srgb,var(--c) 50%,transparent),inset 0 0 60px rgba(0,0,0,.6);background:#05071a;flex:none}
 .a-bg{position:absolute;inset:-12%}
 .a-bg img{width:100%;height:100%;object-fit:cover;filter:blur(10px) brightness(.38) saturate(1.4);transform:scale(1.1)}
 .a-lines{position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 70% 30%,rgba(255,255,255,.07) 0 2deg,transparent 2deg 9deg);mix-blend-mode:screen;animation:spin 30s linear infinite;opacity:.8}
@@ -492,7 +493,7 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 /* 敵 */
 .a-enemy{position:absolute;right:-2%;top:6%;width:62%;height:70%;display:grid;place-items:center;z-index:2}
 .a-enemy img{width:100%;height:100%;object-fit:cover;object-position:60% 25%;-webkit-mask-image:radial-gradient(ellipse 70% 70% at 55% 45%,#000 55%,transparent 75%);mask-image:radial-gradient(ellipse 70% 70% at 55% 45%,#000 55%,transparent 75%);filter:drop-shadow(0 0 18px var(--c))}
-.eemo{font-size:clamp(110px,24vh,170px);line-height:1;filter:drop-shadow(0 0 24px var(--c)) drop-shadow(0 10px 10px rgba(0,0,0,.6));animation:float 2.6s ease-in-out infinite}
+.eemo{font-size:clamp(110px,calc(24*var(--vh)),170px);line-height:1;filter:drop-shadow(0 0 24px var(--c)) drop-shadow(0 10px 10px rgba(0,0,0,.6));animation:float 2.6s ease-in-out infinite}
 @keyframes float{50%{transform:translateY(-8px) scale(1.03)}}
 .a-enemy.hitme{animation:ehit .55s ease}
 @keyframes ehit{0%{filter:none}15%{transform:translate(14px,-6px) rotate(4deg);filter:brightness(3) saturate(0)}35%{transform:translate(-10px,4px)}55%{transform:translate(6px,0)}100%{transform:none;filter:none}}
@@ -503,7 +504,7 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .a-player img{width:100%;height:100%;object-fit:cover;object-position:50% 12%;-webkit-mask-image:radial-gradient(ellipse 62% 70% at 50% 42%,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse 62% 70% at 50% 42%,#000 55%,transparent 100%)}
 .a-player::before{content:"";position:absolute;inset:12% 10% 0;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--pc) 55%,transparent),transparent 70%);filter:blur(8px)}
 .a-player>*{position:relative}
-.pemo{font-size:clamp(100px,22vh,150px);line-height:1;filter:drop-shadow(0 0 24px var(--pc));margin-bottom:12%}
+.pemo{font-size:clamp(100px,calc(22*var(--vh)),150px);line-height:1;filter:drop-shadow(0 0 24px var(--pc));margin-bottom:12%}
 .a-player.dash{animation:pdash .6s cubic-bezier(.3,1.4,.5,1)}
 @keyframes pdash{35%{transform:translate(28%,-18%) scale(1.12)}100%{transform:none}}
 .a-player.hurt{animation:phurt .5s ease}
@@ -568,7 +569,7 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .gacha.g-N{--gl:#dfe4ff} .gacha.g-R{--gl:#4fb4ff} .gacha.g-SR{--gl:#ffcf4a} .gacha.g-SSR{--gl:#ff7ad9}
 .gc-top{width:100%;display:flex;align-items:center;gap:10px;padding:10px 16px;z-index:3}
 .gc-top b{flex:1;font-family:var(--f-disp);font-weight:400;font-size:20px}
-.gc-circle{position:absolute;left:50%;top:44%;width:min(92vw,420px);aspect-ratio:1;transform:translate(-50%,-50%);z-index:0}
+.gc-circle{position:absolute;left:50%;top:44%;width:min(calc(92*var(--vw)),420px);aspect-ratio:1;transform:translate(-50%,-50%);z-index:0}
 .gc-ring{position:absolute;border-radius:50%;border:2px solid color-mix(in srgb,var(--gl) 70%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--gl) 50%,transparent),inset 0 0 18px color-mix(in srgb,var(--gl) 30%,transparent)}
 .gc-ring.r1{inset:0;border-style:dashed;animation:spin 24s linear infinite}
 .gc-ring.r2{inset:12%;border-width:3px;background:repeating-conic-gradient(color-mix(in srgb,var(--gl) 40%,transparent) 0 3deg,transparent 3deg 15deg);-webkit-mask-image:radial-gradient(circle,transparent 62%,#000 63%,#000 70%,transparent 71%);mask-image:radial-gradient(circle,transparent 62%,#000 63%,#000 70%,transparent 71%);animation:spin 14s linear infinite reverse}
@@ -577,7 +578,7 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .gc-god{position:absolute;font-size:30px;filter:drop-shadow(0 0 10px var(--gl))}
 .gc-god.n{top:-2%;left:50%;transform:translateX(-50%)} .gc-god.s{bottom:-2%;left:50%;transform:translateX(-50%)}
 .gc-god.e{right:-2%;top:50%;transform:translateY(-50%)} .gc-god.w{left:-2%;top:50%;transform:translateY(-50%)}
-.gc-back{position:absolute;left:50%;top:44%;width:min(44vw,190px);aspect-ratio:188/252;transform:translate(-50%,-50%);z-index:2;border-radius:12px;overflow:hidden;border:2px solid #c9a24a;box-shadow:0 0 30px var(--gl)}
+.gc-back{position:absolute;left:50%;top:44%;width:min(calc(44*var(--vw)),190px);aspect-ratio:188/252;transform:translate(-50%,-50%);z-index:2;border-radius:12px;overflow:hidden;border:2px solid #c9a24a;box-shadow:0 0 30px var(--gl)}
 .gc-back img{width:100%;height:100%;object-fit:cover;display:block}
 .gc-back.float{animation:gfloat 2.4s ease-in-out infinite}
 @keyframes gfloat{50%{transform:translate(-50%,-54%) rotate(1.5deg)}}
@@ -606,13 +607,13 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .revealing::after{content:"";position:absolute;inset:0;background:#fff;z-index:10;pointer-events:none;animation:wflash .7s ease forwards}
 @keyframes wflash{0%{opacity:1}100%{opacity:0}}
 .gc-count{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:16px;z-index:4;font-weight:800;color:var(--mute)}
-.gc-flip{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);width:min(60vw,250px);z-index:3;perspective:1200px}
+.gc-flip{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);width:min(calc(60*var(--vw)),250px);z-index:3;perspective:1200px}
 .gc-inner{position:relative;transform-style:preserve-3d;animation:flip 1s cubic-bezier(.3,1.3,.5,1) .2s both}
 @keyframes flip{0%{transform:rotateY(180deg) scale(.7)}100%{transform:rotateY(0) scale(1)}}
 .gc-face{backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .gc-backface{position:absolute;inset:0;transform:rotateY(180deg);border-radius:14px;overflow:hidden}
 .gc-backface img{width:100%;height:100%;object-fit:cover}
-.gc-front .tc{width:100%;--u:clamp(12px,3.8vw,15.6px)}
+.gc-front .tc{width:100%;--u:clamp(12px,calc(3.8*var(--vw)),15.6px)}
 .gacha.g-SSR .gc-front .tc{box-shadow:0 0 30px #ff7ad9,0 0 60px #ffd84a}
 .gacha.g-SR .gc-front .tc{box-shadow:0 0 30px var(--gold)}
 .gc-rar{position:absolute;z-index:5;left:50%;top:calc(46px + env(safe-area-inset-top,0px));transform:translateX(-50%);font-family:var(--f-disp);font-size:52px;line-height:1;font-style:italic;-webkit-text-stroke:2px #000;text-shadow:3px 3px 0 #000;animation:rarpop .7s cubic-bezier(.2,1.6,.4,1) .9s both;white-space:nowrap}
@@ -638,32 +639,32 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .rate-list small{color:var(--mute)}
 
 /* ===== v6：バトルの問題を見やすく ===== */
-.arena2{height:clamp(185px,31vh,290px)}
+.arena2{height:clamp(185px,calc(31*var(--vh)),290px)}
 .bscreen .btop{padding:4px 12px 2px;min-height:0}
 .bscreen .btop .bt b{font-size:15px}
 .bscreen .statusline{padding:6px 12px 0}
 .bscreen .qbox{margin-top:6px;padding:12px 14px 10px;gap:12px}
-.bscreen .qtext{font-size:clamp(22px,6.6vw,30px);line-height:1.45;font-weight:800;letter-spacing:.01em}
+.bscreen .qtext{font-size:clamp(22px,calc(6.6*var(--vw)),30px);line-height:1.45;font-weight:800;letter-spacing:.01em}
 .bscreen .qtext rt{font-size:.45em}
 .qunit{display:inline-block;vertical-align:.35em;margin-right:8px;font-size:12px;font-weight:800;color:var(--mute);background:rgba(255,255,255,.08);border-radius:99px;padding:2px 10px;line-height:1.5}
 .bscreen .choices{gap:10px}
-.bscreen .choice{font-size:clamp(20px,6vw,26px);min-height:64px;border-radius:18px}
-.bscreen .choices.long .choice{font-size:clamp(17px,4.9vw,21px);min-height:54px}
+.bscreen .choice{font-size:clamp(20px,calc(6*var(--vw)),26px);min-height:64px;border-radius:18px}
+.bscreen .choices.long .choice{font-size:clamp(17px,calc(4.9*var(--vw)),21px);min-height:54px}
 .bscreen .explain .ans{font-size:22px}
 .bscreen .explain{font-size:17px}
 .bscreen .bottombar{padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}
 .bscreen .dk{min-height:52px}
 .bscreen .dk .dimg{width:30px;height:30px}
 @media (max-height:700px){
-  .arena2{height:clamp(165px,28vh,220px)}
+  .arena2{height:clamp(165px,calc(28*var(--vh)),220px)}
   .bscreen .choice{min-height:54px}
-  .bscreen .qtext{font-size:clamp(20px,6vw,24px)}
+  .bscreen .qtext{font-size:clamp(20px,calc(6*var(--vw)),24px)}
 }
-.bscreen .qtext.small{font-size:clamp(18px,5.2vw,22px)}
+.bscreen .qtext.small{font-size:clamp(18px,calc(5.2*var(--vw)),22px)}
 @media (min-height:760px){
-  .bscreen .qtext{font-size:clamp(24px,7.4vw,32px)}
-  .bscreen .choice{min-height:76px;font-size:clamp(22px,6.6vw,28px)}
-  .bscreen .choices.long .choice{min-height:60px;font-size:clamp(18px,5.4vw,23px)}
+  .bscreen .qtext{font-size:clamp(24px,calc(7.4*var(--vw)),32px)}
+  .bscreen .choice{min-height:76px;font-size:clamp(22px,calc(6.6*var(--vw)),28px)}
+  .bscreen .choices.long .choice{min-height:60px;font-size:clamp(18px,calc(5.4*var(--vw)),23px)}
   .bscreen .choices{gap:12px}
 }
 @media (max-height:700px){
@@ -695,7 +696,7 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .home2{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;background:#0a1640}
 .h-bg{position:absolute;left:0;right:0;top:0;bottom:150px;overflow:hidden}
 .h-bg .h-blur{position:absolute;inset:-5%;width:110%;height:110%;object-fit:cover;filter:blur(18px) brightness(.6) saturate(1.3)}
-.h-bg .h-art{position:absolute;left:0;top:44px;width:100%;height:min(calc(100% - 60px),122vw);object-fit:cover;object-position:50% 30%;-webkit-mask-image:linear-gradient(180deg,transparent,#000 10%,#000 80%,transparent);mask-image:linear-gradient(180deg,transparent,#000 10%,#000 80%,transparent);animation:hzoom 18s ease-in-out infinite alternate;transform-origin:50% 40%}
+.h-bg .h-art{position:absolute;left:0;top:44px;width:100%;height:min(calc(100% - 60px),calc(122*var(--vw)));object-fit:cover;object-position:50% 30%;-webkit-mask-image:linear-gradient(180deg,transparent,#000 10%,#000 80%,transparent);mask-image:linear-gradient(180deg,transparent,#000 10%,#000 80%,transparent);animation:hzoom 18s ease-in-out infinite alternate;transform-origin:50% 40%}
 @keyframes hzoom{from{transform:scale(1.02)}to{transform:scale(1.1) translateY(-2%)}}
 .h-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,16,48,.7),transparent 14%,transparent 70%,#0a1640 100%)}
 .h-sparks{position:absolute;inset:0 0 150px;pointer-events:none;background-image:radial-gradient(circle,rgba(255,255,255,.9) 0 1px,transparent 2px),radial-gradient(circle,rgba(255,220,140,.8) 0 1px,transparent 2px);background-size:70px 90px,110px 130px;animation:drift 12s linear infinite;opacity:.55}
@@ -718,13 +719,13 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .h-snd{flex:none;width:34px;height:34px;border-radius:50%;background:rgba(5,10,35,.7);font-size:16px;margin-top:4px}
 .h-warn{position:relative;z-index:3;margin:8px 12px 0;padding:6px 10px;border-radius:10px;background:rgba(255,93,108,.85);font-size:13px;font-weight:800}
 .h-mid{position:relative;z-index:3;flex:1;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px}
-.h-adv{position:relative;width:min(56vw,230px);aspect-ratio:1.55;border-radius:50%;padding:0;
+.h-adv{position:relative;width:min(calc(56*var(--vw)),230px);aspect-ratio:1.55;border-radius:50%;padding:0;
   background:radial-gradient(ellipse at 50% 40%,#2a3f9a,#0f1a52 70%);border:5px solid #e8b94a;
   box-shadow:0 0 0 3px #7a5310,0 0 0 7px rgba(232,185,74,.5),0 0 40px rgba(255,200,80,.6),inset 0 0 24px rgba(0,0,0,.6);animation:advglow 2s ease-in-out infinite}
 @keyframes advglow{50%{box-shadow:0 0 0 3px #7a5310,0 0 0 9px rgba(232,185,74,.7),0 0 60px rgba(255,210,90,.9),inset 0 0 24px rgba(0,0,0,.6)}}
 .h-adv::before,.h-adv::after{content:"◆";position:absolute;left:50%;transform:translateX(-50%);color:#7fd0ff;font-size:16px;text-shadow:0 0 8px #7fd0ff}
 .h-adv::before{top:-14px} .h-adv::after{bottom:-14px}
-.h-adv-in{font-family:var(--f-disp);font-size:clamp(46px,14vw,60px);line-height:1;background:linear-gradient(180deg,#fff4c2,#ffcf4a 45%,#c47a12);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #3a2300)}
+.h-adv-in{font-family:var(--f-disp);font-size:clamp(46px,calc(14*var(--vw)),60px);line-height:1;background:linear-gradient(180deg,#fff4c2,#ffcf4a 45%,#c47a12);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #3a2300)}
 .h-adv:active{transform:scale(.96)}
 .h-btns{position:relative;z-index:3;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 10px 0}
 .h-btn{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:74px;border-radius:14px;padding:4px 2px 6px;border:2.5px solid #e8b94a;box-shadow:0 3px 0 #6b4a10,inset 0 0 14px rgba(255,255,255,.18)}
@@ -765,12 +766,12 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .mis-btn:disabled small{color:#8f95b6}
 .mis-got{flex:none;font-size:12px;font-weight:800;color:var(--good)}
 /* 冒険ボタンを小さめに */
-.h-adv{width:min(42vw,170px);border-width:4px}
-.h-adv-in{font-size:clamp(34px,10.5vw,44px)}
+.h-adv{width:min(calc(42*var(--vw)),170px);border-width:4px}
+.h-adv-in{font-size:clamp(34px,calc(10.5*var(--vw)),44px)}
 .h-adv::before,.h-adv::after{font-size:13px}
 .h-adv::before{top:-11px} .h-adv::after{bottom:-11px}
-.h-adv{width:min(32vw,130px);border-width:3px;box-shadow:0 0 0 2px #7a5310,0 0 0 5px rgba(232,185,74,.5),0 0 28px rgba(255,200,80,.6),inset 0 0 18px rgba(0,0,0,.6)}
-.h-adv-in{font-size:clamp(26px,8vw,34px)}
+.h-adv{width:min(calc(32*var(--vw)),130px);border-width:3px;box-shadow:0 0 0 2px #7a5310,0 0 0 5px rgba(232,185,74,.5),0 0 28px rgba(255,200,80,.6),inset 0 0 18px rgba(0,0,0,.6)}
+.h-adv-in{font-size:clamp(26px,calc(8*var(--vw)),34px)}
 .h-adv::before,.h-adv::after{font-size:11px}
 .h-adv::before{top:-9px} .h-adv::after{bottom:-9px}
 /* ホーム背景：拡大しすぎず、くっきり表示 */
@@ -782,7 +783,7 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .h-bg .h-art{top:48px;bottom:auto}
 @media (min-height:760px){.h-bg .h-art{width:150%;left:-25%;top:46px}}
 /* ===== ホーム背景：主要キャラで構成 ===== */
-.h-cast{position:absolute;left:0;right:0;top:44px;height:min(calc(100% - 44px),128vw);animation:hzoom2 16s ease-in-out infinite alternate;transform-origin:50% 60%}
+.h-cast{position:absolute;left:0;right:0;top:44px;height:min(calc(100% - 44px),calc(128*var(--vw)));animation:hzoom2 16s ease-in-out infinite alternate;transform-origin:50% 60%}
 .hc{position:absolute;object-fit:cover}
 .beast{width:58%;height:52%;-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 45%,transparent 72%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 45%,transparent 72%)}
 .b-math{left:-10%;top:-2%;object-position:60% 22%}
@@ -861,11 +862,11 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .tut-box b{font-size:19px;line-height:1.5}
 .tut-i{font-size:46px;line-height:1}
 .tut-box small{color:var(--mute);font-weight:800}
-.tut-q{align-items:flex-start;padding-top:22vh}
+.tut-q{align-items:flex-start;padding-top:calc(22*var(--vh))}
 .tut-deck,.tut-sp{align-items:flex-end;padding-bottom:110px}
 .tut-deck::after,.tut-sp::after{content:"⬇";position:absolute;bottom:72px;font-size:34px;color:var(--gold);animation:bob 1s ease-in-out infinite}
 .tut-deck::after{left:30%} .tut-sp::after{right:12%}
-.h-hint{position:absolute;bottom:calc(min(32vw,130px) / 1.55 + 22px);left:50%;transform:translateX(-50%);z-index:4;white-space:nowrap;font-weight:800;font-size:15px;padding:6px 14px;border-radius:99px;background:var(--gold);color:#2a1600;box-shadow:0 4px 12px rgba(0,0,0,.4);animation:hintbob 1s ease-in-out infinite}
+.h-hint{position:absolute;bottom:calc(min(calc(32*var(--vw)),130px) / 1.55 + 22px);left:50%;transform:translateX(-50%);z-index:4;white-space:nowrap;font-weight:800;font-size:15px;padding:6px 14px;border-radius:99px;background:var(--gold);color:#2a1600;box-shadow:0 4px 12px rgba(0,0,0,.4);animation:hintbob 1s ease-in-out infinite}
 @keyframes hintbob{50%{transform:translate(-50%,-6px)}}
 .h-mid{position:relative}
 .tabs.v2 button rt{font-size:8px;color:inherit;opacity:.8}
@@ -925,6 +926,36 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 @keyframes hzoomkv{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.04)}}
 .chaos.big img{filter:brightness(1.35) saturate(1.2) drop-shadow(0 0 18px #9b4dff)}
 .a-enemy.boss:has(.chaos){right:-8%;top:0;width:72%;height:90%}
+
+/* ===== v10：ホームを見やすく ===== */
+.home2::before{content:"";position:absolute;left:0;right:0;top:0;height:120px;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(6,12,40,.85),rgba(6,12,40,.4) 60%,transparent)}
+.home2>.h-top{position:relative;z-index:3}
+.h-bg.kv .h-blur{filter:blur(28px) brightness(.32) saturate(1.2)}
+.h-bg.kv::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 45%,rgba(10,22,64,.55) 72%,#0a1640 100%)}
+.h-kv{-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent),linear-gradient(180deg,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent),linear-gradient(180deg,#000 88%,transparent)}
+.h-btn b{font-size:16px;letter-spacing:.02em;background:rgba(0,0,0,.38);border-radius:99px;padding:1px 10px;-webkit-text-stroke:0;text-shadow:0 1px 2px #000}
+.h-btn b ruby rt{display:none}
+.h-adv{box-shadow:0 0 0 3px rgba(0,0,0,.25),0 0 28px rgba(255,200,80,.55),0 8px 18px rgba(0,0,0,.6)}
+.h-study{box-shadow:0 6px 18px rgba(0,0,0,.45)}
+/* 縦が短い画面（iPhone SE など）：下のボタンを少しコンパクトにして 絵を大きく */
+@media (max-height:720px){
+  .h-bg.kv{top:0}
+  .h-kv{top:0}
+  .h-btn{height:60px;padding-bottom:4px}
+  .h-btn img{width:44px;height:36px;top:-8px}
+  .h-btn b{font-size:14px}
+  .h-study{margin-top:6px;padding:4px 10px}
+  .h-scroll{width:34px;height:34px}
+  .h-rew img{width:24px;height:30px}
+  .h-rew{padding:2px 6px}
+  .h-links{padding:2px 0 2px}
+  .h-hint{display:none}
+}
+/* 「ここをタップ」は 冒険ボタンの 横に（キャラの顔に かからないように） */
+.h-hint{bottom:28px;left:calc(50% + 72px);transform:none;font-size:13px;padding:5px 10px;animation:hintside 1s ease-in-out infinite}
+.h-hint::before{content:"◀ ";font-size:11px}
+@keyframes hintside{50%{transform:translateX(-5px)}}
+@media (max-height:720px){.h-hint{display:block;bottom:24px;left:calc(50% + 66px)}}
 
 </style>
 </head>
@@ -2500,7 +2531,34 @@ function render(scrollTop){
   $app.innerHTML = html + (full || locked ? '' : tabs()) + pinOverlay();
   if (S.furi !== false) try { furigana($app); } catch(e){}
   const ns = document.querySelector('.scroll'); if (ns) ns.scrollTop = keep;
+  fitHome(); if (v.v === 'home') setTimeout(fitHome, 300);
 }
+// ホーム：メインビジュアルの 手前の2人の顔が 冒険ボタンに かくれない大きさに合わせる
+function fitHome(){
+  const kv = $app.querySelector('.h-kv'), adv = $app.querySelector('.h-adv'), bg = $app.querySelector('.h-bg');
+  if (!kv || !adv || !bg) return;
+  const z = parseFloat($app.style.zoom) || 1;
+  const top = kv.offsetTop, bgH = bg.clientHeight;
+  const advTop = (adv.getBoundingClientRect().top - bg.getBoundingClientRect().top) / z;
+  const h = Math.max(260, Math.min(Math.max(bgH - top, 200) * 1.25, (advTop - top + 6) / (window.innerHeight < 720 ? 0.7 : 0.66)));
+  kv.style.height = Math.round(h) + 'px';
+}
+// iPad など 大きい画面では アプリ全体を 拡大して 見やすく
+function fitScale(){
+  const w = window.innerWidth, h = window.innerHeight;
+  const z = w >= 600 ? Math.max(1, Math.min(w / 430, h / 880)) : 1;
+  const r = document.documentElement.style;
+  $app.style.zoom = z === 1 ? '' : z;
+  $app.style.height = z === 1 ? '' : (h / z) + 'px';
+  r.setProperty('--vw', Math.min(w / z, 520) / 100 + 'px');
+  r.setProperty('--vh', h / z / 100 + 'px');
+  fitHome();
+}
+window.addEventListener('resize', fitScale);
+window.addEventListener('orientationchange', () => setTimeout(fitScale, 200));
+fitScale();
+try { document.fonts.ready.then(fitHome); } catch(e){}
+window.addEventListener('load', fitHome);
 
 // ---------- 操作 ----------
 $app.addEventListener('click', e => {
