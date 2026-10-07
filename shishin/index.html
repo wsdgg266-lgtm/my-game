@@ -956,37 +956,6 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .h-hint::before{content:"◀ ";font-size:11px}
 @keyframes hintside{50%{transform:translateX(-5px)}}
 @media (max-height:720px){.h-hint{display:block;bottom:24px;left:calc(50% + 66px)}}
-/* ===== v12：ホームの主役 = バトルに つれていく なかま（3人） ===== */
-.h-kvbg{position:absolute;left:50%;top:0;transform:translateX(-50%);height:100%;width:auto;max-width:none;filter:blur(1.5px) brightness(.4) saturate(1.15);
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
-.h-party{position:absolute;left:0;right:0;top:66px;height:60%}
-.h-mem{position:absolute;bottom:0;animation:memin .6s cubic-bezier(.2,1.2,.4,1) both}
-.h-mem::before{content:"";position:absolute;inset:10% 8% 2%;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--c) 55%,transparent),transparent);filter:blur(10px)}
-.h-mem img{position:relative;width:100%;height:100%;object-fit:cover;object-position:50% 12%;
-  -webkit-mask-image:radial-gradient(ellipse 50% 52% at 50% 45%,#000 60%,transparent 100%);mask-image:radial-gradient(ellipse 50% 52% at 50% 45%,#000 60%,transparent 100%);
-  animation:membreath 4s ease-in-out infinite;transform-origin:50% 90%}
-.h-mem span{position:absolute;inset:0;display:grid;place-items:center;font-size:90px}
-.h-mem.m0{left:50%;width:min(66%,330px);height:100%;margin-left:calc(min(66%,330px) / -2);z-index:3}
-.h-mem.m1{left:-4%;width:min(50%,250px);height:76%;bottom:14%;z-index:1;animation-delay:.12s;filter:brightness(.85)}
-.h-mem.m2{right:-4%;width:min(50%,250px);height:76%;bottom:14%;z-index:1;animation-delay:.2s;filter:brightness(.85)}
-.h-mem.m1 img{animation-delay:-1.3s}.h-mem.m2 img{animation-delay:-2.6s}
-@keyframes memin{from{opacity:0;transform:translateY(18px) scale(.95)}}
-@keyframes membreath{50%{transform:translateY(-4px) scale(1.012)}}
-.h-mid{pointer-events:none}
-.h-mid>*{pointer-events:auto}
-.h-leadname{position:absolute;left:50%;transform:translateX(-50%);z-index:4;display:flex;flex-direction:column;align-items:center;padding:3px 12px 4px;border-radius:12px;background:rgba(6,12,40,.72);border:1.5px solid rgba(255,207,74,.7);box-shadow:0 2px 10px rgba(0,0,0,.5);white-space:nowrap;max-width:94%}
-.h-leadname small{font-size:10px;font-weight:800;color:var(--gold);letter-spacing:.1em}
-.h-leadname b{font-weight:800;font-size:12px;line-height:1.25;color:#fff;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-@media (max-height:720px){.h-party{top:40px}}
-.h-mem.m0{width:min(56%,300px);margin-left:calc(min(56%,300px) / -2)}
-.h-mem.m1,.h-mem.m2{width:min(50%,260px);height:74%;bottom:20%;filter:brightness(.92)}
-.h-mem.m1{left:-3%}.h-mem.m2{right:-3%}
-.h-mem.m1 img{-webkit-mask-image:radial-gradient(ellipse 50% 52% at 46% 45%,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse 50% 52% at 46% 45%,#000 55%,transparent 100%)}
-.h-mem.m2 img{-webkit-mask-image:radial-gradient(ellipse 50% 52% at 54% 45%,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse 50% 52% at 54% 45%,#000 55%,transparent 100%)}
-.h-mem.m0 img{-webkit-mask-image:radial-gradient(ellipse 46% 50% at 50% 45%,#000 52%,transparent 100%);mask-image:radial-gradient(ellipse 46% 50% at 50% 45%,#000 52%,transparent 100%)}
-.h-mem.m1 img{-webkit-mask-image:radial-gradient(ellipse 44% 48% at 48% 45%,#000 48%,transparent 100%);mask-image:radial-gradient(ellipse 44% 48% at 48% 45%,#000 48%,transparent 100%)}
-.h-mem.m2 img{-webkit-mask-image:radial-gradient(ellipse 44% 48% at 52% 45%,#000 48%,transparent 100%);mask-image:radial-gradient(ellipse 44% 48% at 52% 45%,#000 48%,transparent 100%)}
-.h-bg.kv div{background:none;padding:0;border-radius:0}
 
 </style>
 </head>
@@ -1417,7 +1386,7 @@ SUBJ_KEYS.forEach(s => {
 
 if (typeof module !== 'undefined') module.exports = { SUBJ, SUBJ_KEYS, ADV, matchup, CARDS, ITEMS, BOX_POOL, cardTag, STARTER_CARDS, STARTER_DECK, BOSSES, STAGES, UNITS, QB, QMAP };
 
-const ART = {"chaos": "img/chaos-b433685e.webp", "boss_math": "img/boss_math-429272c7.webp", "boss_japanese": "img/boss_japanese-eaa6fc3d.webp", "boss_science": "img/boss_science-a60e567d.webp", "boss_social": "img/boss_social-351f1081.webp", "p_math": "img/p_math-3f663285.webp", "p_japanese": "img/p_japanese-3c5333cf.webp", "p_science": "img/p_science-14cfbb78.webp", "p_social": "img/p_social-f614547d.webp", "kizuna": "img/kizuna-f49a09c7.webp", "i_book": "img/i_book-a8b81722.webp", "i_potion": "img/i_potion-04616a90.webp", "i_fire": "img/i_fire-49b69cf7.webp", "i_blessing": "img/i_blessing-afd678f8.webp", "back": "img/back-e00efc9c.webp", "logo": "img/logo-e3eb78a3.webp", "c1": "img/c1-88587135.webp", "c2": "img/c2-11c5ea75.webp", "c3": "img/c3-f1999b3c.webp", "c4": "img/c4-d7d1bf67.webp", "c5": "img/c5-f153942d.webp", "c6": "img/c6-0714296a.webp", "c7": "img/c7-28f2aa17.webp", "c8": "img/c8-b7b78f37.webp", "c9": "img/c9-a2251dfe.webp", "c10": "img/c10-2b14f641.webp", "c11": "img/c11-acb16dcd.webp", "c14": "img/c14-c9cbe55d.webp", "c15": "img/c15-937c565b.webp", "c16": "img/c16-bb27ae60.webp", "c12": "img/c12-fe81c071.webp", "c17": "img/c17-272426a6.webp", "c18": "img/c18-12fb15f7.webp", "c19": "img/c19-f81f3515.webp", "c13": "img/c13-d4a5a866.webp", "c20": "img/c20-1ae1fe0c.webp", "c21": "img/c21-d0b7974e.webp", "c22": "img/c22-9076f094.webp"};
+const ART = {"chaos": "img/chaos-b433685e.webp", "boss_math": "img/boss_math-429272c7.webp", "boss_japanese": "img/boss_japanese-eaa6fc3d.webp", "boss_science": "img/boss_science-a60e567d.webp", "boss_social": "img/boss_social-351f1081.webp", "p_math": "img/p_math-9de530c8.webp", "p_japanese": "img/p_japanese-e9e23c91.webp", "p_science": "img/p_science-2db58174.webp", "p_social": "img/p_social-60057a3f.webp", "kizuna": "img/kizuna-f49a09c7.webp", "i_book": "img/i_book-a8b81722.webp", "i_potion": "img/i_potion-04616a90.webp", "i_fire": "img/i_fire-49b69cf7.webp", "i_blessing": "img/i_blessing-afd678f8.webp", "back": "img/back-e00efc9c.webp", "logo": "img/logo-e3eb78a3.webp", "c1": "img/c1-88587135.webp", "c2": "img/c2-11c5ea75.webp", "c3": "img/c3-f1999b3c.webp", "c4": "img/c4-d7d1bf67.webp", "c5": "img/c5-f153942d.webp", "c6": "img/c6-0714296a.webp", "c7": "img/c7-28f2aa17.webp", "c8": "img/c8-b7b78f37.webp", "c9": "img/c9-a2251dfe.webp", "c10": "img/c10-2b14f641.webp", "c11": "img/c11-acb16dcd.webp", "c14": "img/c14-c9cbe55d.webp", "c15": "img/c15-937c565b.webp", "c16": "img/c16-bb27ae60.webp", "c12": "img/c12-fe81c071.webp", "c17": "img/c17-272426a6.webp", "c18": "img/c18-12fb15f7.webp", "c19": "img/c19-f81f3515.webp", "c13": "img/c13-d4a5a866.webp", "c20": "img/c20-1ae1fe0c.webp", "c21": "img/c21-d0b7974e.webp", "c22": "img/c22-9076f094.webp"};
 const ART_AR = {"c1": 0.88, "c2": 0.852, "c3": 0.831, "c4": 0.831, "c5": 0.817, "c6": 0.782, "c7": 0.69, "c8": 0.62, "c9": 0.782, "c10": 0.761, "c11": 2.208, "c14": 2.108, "c15": 2.177, "c16": 2.323, "c12": 2.461, "c17": 2.47, "c18": 2.435, "c19": 2.487, "c13": 2.591, "c20": 2.582, "c21": 2.664, "c22": 2.6};
 const OPENING = ["img/opening0-c195e259.webp", "img/opening1-63bf00ac.webp", "img/opening2-bfffa57f.webp", "img/opening3-8d77e0b7.webp", "img/opening4-f3229a6f.webp", "img/opening5-30553491.webp", "img/opening6-40b8905e.webp", "img/opening7-0305cde1.webp", "img/opening8-a26a6398.webp", "img/opening9-49c5c0d4.webp", "img/opening10-d1846d83.webp", "img/opening11-488200e1.webp"];
 const MON = {"slime": "img/mon_slime-5f470aae.webp", "goblin": "img/mon_goblin-f694c6ca.webp", "bat": "img/mon_bat-4b2dd96b.webp", "mori": "img/mon_mori-bdb995b9.webp", "raijin": "img/mon_raijin-2290d373.webp", "samurai": "img/mon_samurai-a781761d.webp"};
@@ -1713,11 +1682,7 @@ function vHome(){
   const left = Math.max(0, 10 - d.study);
   const av = cardDef(lead).img ? '<img src="' + ART[cardDef(lead).img] + '" alt="">' : '<span>' + L.e + '</span>';
   return '<main class="home2">' +
-    '<div class="h-bg kv"><img class="h-blur" src="' + HOME.kv + '" alt=""><img class="h-kvbg" src="' + HOME.kv + '" alt="">' +
-      '<div class="h-party">' + [1, 2, 0].map(i => { const id = S.deck[i]; if (id == null) return ''; const c = stats(id), d = cardDef(id);
-        return '<div class="h-mem m' + i + ' s-' + c.s + '">' + (d.img ? '<img src="' + ART[d.img] + '" alt="' + esc(c.title) + '">' : '<span>' + c.e + '</span>') + '</div>'; }).join('') + '</div>' +
-      '<button class="h-leadname" data-act="go" data-v="deck"><small>つれていく なかま</small><b>' + S.deck.map(id => esc(stats(id).title)).join('・') + '</b></button>' +
-    '</div><div class="h-sparks"></div>' +
+    '<div class="h-bg kv"><img class="h-blur" src="' + HOME.kv + '" alt=""><img class="h-kv" src="' + HOME.kv + '" alt="四神と守護者たち"></div><div class="h-sparks"></div>' +
     '<header class="h-top"><button class="h-av" data-act="go" data-v="deck" aria-label="リーダーをかえる">' + av + '<b>Lv.' + lv + '</b></button>' +
       '<div class="h-stat"><div class="h-row"><span class="h-pill"><img src="' + HOME.coin + '" alt="">' + S.coins.toLocaleString() + '</span><span class="h-pill t"><img src="' + HOME.ticket + '" alt="">' + S.tickets + '</span><button class="h-plus" data-act="go" data-v="mission" aria-label="チケットのあつめかた">+</button></div>' +
       '<div class="h-exp"><div class="h-expbar"><i style="width:' + within + '%"></i></div><span>あと ' + (100 - within) + '</span></div></div>' +
@@ -2570,13 +2535,13 @@ function render(scrollTop){
 }
 // ホーム：メインビジュアルの 手前の2人の顔が 冒険ボタンに かくれない大きさに合わせる
 function fitHome(){
-  const pt = $app.querySelector('.h-party'), adv = $app.querySelector('.h-adv'), bg = $app.querySelector('.h-bg'), nm = $app.querySelector('.h-leadname');
-  if (!pt || !adv || !bg) return;
+  const kv = $app.querySelector('.h-kv'), adv = $app.querySelector('.h-adv'), bg = $app.querySelector('.h-bg');
+  if (!kv || !adv || !bg) return;
   const z = parseFloat($app.style.zoom) || 1;
-  const top = pt.offsetTop;
+  const top = kv.offsetTop, bgH = bg.clientHeight;
   const advTop = (adv.getBoundingClientRect().top - bg.getBoundingClientRect().top) / z;
-  pt.style.height = Math.round(Math.max(200, advTop - top + 30)) + 'px';
-  if (nm) nm.style.top = Math.round(advTop - 46) + 'px';
+  const h = Math.max(260, Math.min(Math.max(bgH - top, 200) * 1.25, (advTop - top + 6) / (window.innerHeight < 720 ? 0.7 : 0.66)));
+  kv.style.height = Math.round(h) + 'px';
 }
 // iPad など 大きい画面では アプリ全体を 拡大して 見やすく
 function fitScale(){
