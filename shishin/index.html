@@ -1083,6 +1083,15 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
   @keyframes hzoomfull{from{transform:scale(1)}to{transform:scale(1.05)}}
   .h-bg.kv::after{background:linear-gradient(180deg,rgba(6,12,40,.55),transparent 12%,transparent 62%,rgba(10,22,64,.75) 82%,#0a1640 100%)}
 }
+/* ===== v15：人間の なかま（とくせい） ===== */
+.a-ab{position:absolute;z-index:7;left:50%;top:22%;transform:translateX(-50%);white-space:nowrap;font-weight:800;font-size:15px;padding:5px 14px;border-radius:99px;background:linear-gradient(90deg,#ffcf4a,#ff8a3d);color:#2a1600;box-shadow:0 0 16px rgba(255,190,60,.8);animation:pop 1.2s ease forwards;pointer-events:none}
+.a-ab.guard{background:linear-gradient(90deg,#7fd0ff,#3e7bff);color:#fff;top:40%}
+.abpanel{border-color:var(--gold);background:linear-gradient(180deg,rgba(255,207,74,.12),var(--plate))}
+.howtag{position:absolute;left:4px;right:4px;bottom:22%;text-align:center;font-size:9px;font-weight:800;line-height:1.25;color:#2a1600;background:var(--gold);border-radius:6px;padding:2px 2px}
+.tip.gift{border-color:var(--gold);background:linear-gradient(90deg,rgba(255,207,74,.22),var(--plate))}
+.tip.gift b{color:var(--gold)}
+.a-ab{top:auto;bottom:24%}
+.a-ab.guard{bottom:auto;top:38%}
 
 </style>
 </head>
@@ -1329,6 +1338,20 @@ CARDS.push(
   {id:114, e:'🐢', name:'玄甲将・ガンキ',   s:'social',   r:5, tag:'四神', img:'boss_social',   boss:true, hp:320, atk:52, sk:'玄甲・歴史大地陣', sp:105, desc:'大地の知恵で 未来の道を示す。', how:'boss'},
   {id:120, e:'✨', name:'四神の絆',         s:'all',      r:5, tag:'SSR', img:'kizuna', hp:330, atk:66, sk:'四神合一・学びの光', sp:130, desc:'四属性の力が ひとつに。どの相手にも 有利（1.1倍）。', how:'final'}
 );
+// ---- 人間の なかま（各教科2人）。ab = とくせい（勉強の手助け）、how/stage = 手に入れ方 ----
+// how なし → まなびBOX から出る / how:'stage' → そのステージを はじめて クリアすると 仲間に / 7日連続ログインでも BOXキャラが 1人 もらえる
+CARDS.push(
+  {id:131, e:'🥷', name:'九九忍者・カズマ',     s:'math',     r:4, tag:'SR', hp:165, atk:38, sk:'九九忍法・分身斬り', sp:70, desc:'九九を となえて 分身する 忍者の少年。', ab:{k:'unit', units:['かけ算','わり算'], x:2, name:'九九忍法', text:'かけ算・わり算の 問題で ダメージ2倍'}},
+  {id:132, e:'📐', name:'図形の建築士・ミオ',   s:'math',     r:4, tag:'SR', hp:185, atk:34, sk:'コンパス・バリア',   sp:65, desc:'定規と コンパスで 守りの陣を えがく。', how:'stage', stage:2, ab:{k:'guard', name:'図形の盾', text:'1回の バトルで 1回だけ、まちがえても 反撃を うけない'}},
+  {id:133, e:'🖌️', name:'書道家・スミレ',       s:'japanese', r:4, tag:'SR', hp:160, atk:37, sk:'一筆入魂',           sp:70, desc:'筆の ひと書きで 答えを うかびあがらせる。', ab:{k:'hint', name:'筆さばき', text:'問題ごとに まちがいの 選択肢を 1つ 消す'}},
+  {id:134, e:'📖', name:'物語の語り部・ユウト', s:'japanese', r:4, tag:'SR', hp:175, atk:35, sk:'英雄譚・よみがえる力', sp:65, desc:'物語の 英雄を よびだして 仲間を はげます。', how:'stage', stage:5, ab:{k:'heal', v:.06, name:'はげましの物語', text:'正解するたびに HPが 少し 回復'}},
+  {id:135, e:'🔭', name:'星読み博士・ソラ',     s:'science',  r:4, tag:'SR', hp:165, atk:36, sk:'流星群ストライク',   sp:75, desc:'星の 動きを 読んで 力を ためる 天文学者。', how:'stage', stage:8, ab:{k:'gauge', v:40, name:'星の力', text:'必殺技ゲージが 早く たまる（25→40）'}},
+  {id:136, e:'🦋', name:'虫はかせ・コウ',       s:'science',  r:4, tag:'SR', hp:160, atk:37, sk:'こん虫大行進',       sp:70, desc:'こん虫たちと 力を あわせる 小さな博士。', ab:{k:'streak', name:'虫たちの応援', text:'2問 連続正解で クリティカル（ふつうは 3問）'}},
+  {id:137, e:'⚔️', name:'若侍・ムサシ',         s:'social',   r:4, tag:'SR', hp:180, atk:36, sk:'歴史一刀流',         sp:70, desc:'昔の くらしを 知りつくした 若き侍。', how:'stage', stage:11, ab:{k:'unit', units:['昔のくらし','仕事と産業'], x:2, name:'歴史の太刀', text:'昔のくらし・仕事と産業の 問題で ダメージ2倍'}},
+  {id:138, e:'🧳', name:'旅人・ハルカ',         s:'social',   r:4, tag:'SR', hp:170, atk:37, sk:'47都道府県めぐり',   sp:70, desc:'日本中を 旅して 地図を 集める 少女。', ab:{k:'unit', units:['地図','都道府県'], x:2, name:'旅の地図', text:'地図・都道府県の 問題で ダメージ2倍'}}
+);
+const HUMAN_IDS = [131,132,133,134,135,136,137,138];
+const STAGE_CARD = {}; CARDS.forEach(c => { if (c.how === 'stage') STAGE_CARD[c.stage] = c.id; });
 const TAG_BY_R = {1:'N', 2:'N', 3:'R', 4:'SR', 5:'SSR'};
 const cardTag = c => c.tag || TAG_BY_R[c.r];
 const BOSS_CARD = { math:111, japanese:112, science:113, social:114 };
@@ -1864,7 +1887,7 @@ function vStage(p){
     (canHard ? '<div class="hardsel"><button data-act="stagehard" data-h="0" aria-pressed="' + !p.hard + '">ふつう</button><button data-act="stagehard" data-h="1" aria-pressed="' + !!p.hard + '">👑 むずかしい' + (hardCleared(st.id) ? ' ✓' : '') + '</button></div>' : '') +
     '<div class="foe2 s-' + s + (st.hard ? ' hard' : '') + '">' + (boss ? '<div class="foeart">' + bossArt(s) + '</div>' : st.enemy.mon ? '<div class="foemon' + (st.type === 'elite' ? ' elite' : '') + '"><img src="' + monImg(st.enemy) + '" alt=""' + monStyle(st.enemy) + '>' + (st.type === 'elite' ? '<span class="elitetag">つよい てき</span>' : '') + '</div>' : '<div class="foeemo">' + st.enemy.e + '</div>') +
       '<b>' + esc(st.enemy.name) + '</b><div class="foestat"><span>❤️ ' + st.enemy.hp + '</span><span>' + SUBJ[s].e + ' ' + SUBJ_KANA[s] + '</span><span style="color:var(--gold)">🪙 ' + st.reward + '</span></div></div>' +
-    '<div class="tip s-' + (best || 'all') + '">' + tip + '</div>' + (st.hard ? '<div class="tip s-japanese">👑 むずかしい：敵が つよく、問題も むずかしい。ほうしゅう 1.5倍！</div>' : '') +
+    '<div class="tip s-' + (best || 'all') + '">' + tip + '</div>' + (STAGE_CARD[st.id] && !owned(STAGE_CARD[st.id]) && !st.hard ? '<div class="tip s-' + cardDef(STAGE_CARD[st.id]).s + ' gift">🎁 はじめて クリアすると <b>' + esc(cardDef(STAGE_CARD[st.id]).name) + '</b> が なかまに！</div>' : '') + (st.hard ? '<div class="tip s-japanese">👑 むずかしい：敵が つよく、問題も むずかしい。ほうしゅう 1.5倍！</div>' : '') +
     '<div class="row"><b class="grow" style="font-size:17px">つれていく なかま</b><button class="sub-btn" data-act="go" data-v="deck">かえる</button></div>' +
     '<div class="team">' + S.deck.map(id => { const c = stats(id), m = matchup(c.s, s);
       return '<div class="mate">' + artBox(id, 'mateart') + '<b>' + esc(c.name) + '</b><span class="' + (m > 1 ? 'up' : m < 1 ? 'down' : '') + '">' + (m > 1 ? '▲ つよい' : m < 1 ? '▼ にがて' : 'ふつう') + '</span></div>'; }).join('') + '</div>' +
@@ -1900,6 +1923,14 @@ function nextQ(){
   B.q = g || getQ(B.queue.shift());
   B.choices = shuffle(B.q.choices);
   B.picked = null; B.phase = 'ask'; B.n++; B.hidden = [];
+  applyHint();
+}
+// とくせい
+const abOf = id => cardDef(id).ab || null;
+function applyHint(){
+  const ab = abOf(activeId());
+  if (!ab || ab.k !== 'hint' || B.hidden.length || B.phase !== 'ask') return;
+  B.hidden = shuffle(B.choices.map((x,i) => i).filter(i => B.choices[i] !== B.q.answer)).slice(0,1);
 }
 // アイテム
 function useItem(k){
@@ -1940,24 +1971,33 @@ function battleAnswer(i){
     if (B.streak >= 5 && !B.five){ B.five = true; addTickets(1, '5問連続正解'); }
     B.gauge = Math.min(100, B.gauge + 25);
     B.cardExp[c.id] = (B.cardExp[c.id] || 0) + 10;
-    const m = matchup(c.s, B.st.s), crit = B.streak >= 3;
-    const dmg = Math.max(1, Math.round((c.atkV + (B.streak-1)*4) * m * (crit ? 1.2 : 1) * buffMul()));
+    const ab = abOf(c.id); let abTxt = '';
+    if (ab && ab.k === 'gauge') B.gauge = Math.min(100, B.gauge + ab.v - 25);
+    const crit = B.streak >= (ab && ab.k === 'streak' ? 2 : 3);
+    if (ab && ab.k === 'streak' && B.streak === 2) abTxt = ab.name + '！';
+    const ux = ab && ab.k === 'unit' && ab.units.includes(B.q.unit) ? ab.x : 1;
+    if (ux > 1) abTxt = ab.name + '！ ダメージ' + ux + '倍';
+    if (ab && ab.k === 'heal' && B.hp < B.hpMax){ const h = Math.max(1, Math.round(B.hpMax * ab.v)); B.hp = Math.min(B.hpMax, B.hp + h); abTxt = ab.name + '：HP +' + h; }
+    const m = matchup(c.s, B.st.s);
+    const dmg = Math.max(1, Math.round((c.atkV + (B.streak-1)*4) * m * (crit ? 1.2 : 1) * ux * buffMul()));
     B.enemyHP = Math.max(0, B.enemyHP - dmg);
     B.phase = 'anim';
-    B.fx = {k:'attack', dmg, crit, m, id:Date.now()};
+    B.fx = {k:'attack', dmg, crit, m, ab:abTxt, id:Date.now()};
     render();
     setTimeout(() => sfx('hit'), 250);
     setTimeout(() => { if (B.enemyHP <= 0) winBattle(); else { nextQ(); B.fx = null; render(); } }, 1250);
   } else {
     sfx('ng');
     B.wrong++; B.streak = 0;
-    const m = matchup(B.st.s, c.s);
-    const dmg = Math.max(1, Math.round(B.st.enemy.atk * m));
+    const m = matchup(B.st.s, c.s), ab = abOf(c.id);
+    const guard = ab && ab.k === 'guard' && !B.guarded;
+    if (guard) B.guarded = true;
+    const dmg = guard ? 0 : Math.max(1, Math.round(B.st.enemy.atk * m));
     B.hp = Math.max(0, B.hp - dmg);
     // まちがえた問題は少しあとで もう一度出す（再学習）
     B.queue.splice(Math.min(2, B.queue.length), 0, B.q.id); B.retry = B.q.id;
     B.phase = 'wrong';
-    B.fx = {k:'counter', dmg, id:Date.now()};
+    B.fx = {k:'counter', dmg, ab:guard ? ab.name + '！ ダメージを ふせいだ' : '', id:Date.now()};
     render();
   }
 }
@@ -1982,7 +2022,7 @@ function battleSpecial(){
 }
 function battleSwitch(i){
   if (!B || B.phase !== 'ask' || i === B.active) return;
-  B.active = i; sfx('tap');
+  B.active = i; sfx('tap'); applyHint();
   B.fx = {k:'switch', id:Date.now()}; render();
 }
 function winBattle(){
@@ -2003,6 +2043,7 @@ function endBattle(won){
     }
     if (st.final && first && !st.hard){ ITEM_KEYS.forEach(k => S.items[k]++); res.allItems = true; }
     // ボス初撃破でボスのカード、全ボス撃破で「四神の絆」
+    if (first && !st.hard && !st.daily && STAGE_CARD[st.id] && !owned(STAGE_CARD[st.id])){ const hid = STAGE_CARD[st.id]; S.cards[hid] = {lv:1, exp:0, ev:false}; res.newCards = (res.newCards||[]).concat(hid); }
     if (st.type === 'boss' && BOSS_CARD[st.s]){ const bid = BOSS_CARD[st.s]; if (!owned(bid)){ S.cards[bid] = {lv:1, exp:0, ev:false}; res.newCards = (res.newCards||[]).concat(bid); } }
     if (!owned(FINAL_CARD) && [3,6,9,12].every(x => S.cleared.includes(x))){ S.cards[FINAL_CARD] = {lv:1, exp:0, ev:false}; res.newCards = (res.newCards||[]).concat(FINAL_CARD); }
     const ik = ITEM_KEYS[Math.floor(Math.random()*ITEM_KEYS.length)]; S.items[ik]++; res.item = ik;
@@ -2087,9 +2128,10 @@ function arena2(st, c, fx, hpLow){
     h += '<div class="a-slash' + (fx.crit ? ' x' : '') + '"></div><div class="a-flash"></div>';
     h += '<div class="a-dmg">' + (fx.crit ? '<small>' + (fx.sp ? '必殺技！' : fx.item ? '炎の一撃！' : 'クリティカル！') + '</small>' : '') + fx.dmg + '</div>';
     if (!fx.sp && !fx.item) h += '<div class="a-good">せいかい！</div>';
+    if (fx.ab) h += '<div class="a-ab">' + esc(fx.ab) + '</div>';
     if (fx.m !== 1) h += '<div class="a-rel ' + (fx.m > 1 ? 'up' : 'down') + '">' + (fx.m > 1 ? '相性 有利！ ダメージUP' : '相性 不利… ダメージDOWN') + '</div>';
   }
-  if (fx.k === 'counter') h += '<div class="a-claw"></div><div class="a-red"></div><div class="a-dmg mine">' + fx.dmg + '</div>';
+  if (fx.k === 'counter') h += fx.ab ? '<div class="a-ab guard">🛡️ ' + esc(fx.ab) + '</div>' : '<div class="a-claw"></div><div class="a-red"></div><div class="a-dmg mine">' + fx.dmg + '</div>';
   return h + '</div>';
 }
 function itemRow(usable){
@@ -2131,7 +2173,7 @@ function vCards(p){
       h += '<div class="h2">' + (s === 'all' ? '✨ 特別カード <span class="muted" style="font-size:14px">4体の ボスを たおすと…</span>' : SUBJ[s].e + ' ' + SUBJ[s].g + ' <span class="muted" style="font-size:14px">' + SUBJ[s].name + '</span>') + '</div><div class="dexgrid">';
       CARDS.filter(c => c.s === s).sort((a,b) => (b.img?1:0) - (a.img?1:0) || (a.boss?1:0) - (b.boss?1:0) || a.r - b.r).forEach(c => {
         if (owned(c.id)) h += '<button class="dexbtn" data-act="go" data-v="card" data-id="' + c.id + '">' + cardFace(c.id, 'sm') + '</button>';
-        else h += '<div class="dexbtn">' + cardFace(c.id, 'sm', {locked:true}) + '<span class="inq">' + (c.boss ? '👑' : '？') + '</span></div>';
+        else h += '<div class="dexbtn">' + cardFace(c.id, 'sm', {locked:true}) + '<span class="inq">' + (c.boss ? '👑' : '？') + '</span>' + (c.how === 'stage' ? '<span class="howtag">' + STAGES.find(x => x.id === c.stage).code + ' クリアで 仲間に</span>' : HUMAN_IDS.includes(c.id) ? '<span class="howtag">BOX ・ 7日ログイン</span>' : '') + '</div>';
       });
       h += '</div>';
     });
@@ -2170,6 +2212,7 @@ function vCard(p){
       '<p class="muted" style="margin:8px 0 0;font-size:13px">' + (c.s === 'all' ? 'どの教科' : SUBJ[c.s].name) + 'の 問題に 正解したり、バトルに 出たりすると EXPが たまるよ</p></div>' +
     '<div class="kv"><div><b>❤️ ' + c.maxHP + '</b><small>HP</small></div><div><b>⚔️ ' + c.atkV + '</b><small>こうげき</small></div><div><b>💫 ' + c.spV + '</b><small>必殺の いりょく</small></div></div>' +
     '<div class="panel"><span class="label">必殺技</span><div style="font-weight:800;font-size:18px">' + esc(c.sk) + '</div><div style="margin-top:6px">' + rel + '</div></div>' +
+    (c.ab ? '<div class="panel abpanel"><span class="label">とくせい</span><div style="font-weight:800;font-size:18px">✦ ' + esc(c.ab.name) + '</div><div style="margin-top:4px">' + esc(c.ab.text) + '</div><small class="muted">バトルで この なかまが 前に 出ているときに 発動</small></div>' : '') +
     (c.ev ? '<div class="panel" style="border-color:var(--gold)">✨ 覚醒ずみ！ HP+40・こうげき+15・必殺+20、Lv.20まで 育てられる</div>' :
       '<div class="panel"><span class="label">しんか（覚醒）</span><div style="margin:4px 0 8px">Lv.5 ＋ 🪙' + cost + ' で 覚醒。HP+40・こうげき+15・必殺+20、Lv上限が 20に！</div>' +
       '<button class="cta" data-act="evolve" data-id="' + c.id + '"' + (canEvo && S.coins >= cost ? '' : ' disabled') + '>' + (c.lv < 5 ? 'Lv.5で しんか できる' : S.coins < cost ? 'コインが たりない（🪙' + S.coins + '）' : '✨ 覚醒する！') + '</button></div>') +
@@ -2659,6 +2702,7 @@ function render(scrollTop){
   if (S.furi !== false) try { furigana($app); } catch(e){}
   const ns = document.querySelector('.scroll'); if (ns) ns.scrollTop = keep;
   fitHome(); if (v.v === 'home') setTimeout(fitHome, 300);
+  if (v.v === 'home') setTimeout(checkLogin, 800);
 }
 // ホーム：メインビジュアルの 手前の2人の顔が 冒険ボタンに かくれない大きさに合わせる
 function fitHome(){
@@ -2687,6 +2731,26 @@ window.addEventListener('orientationchange', () => setTimeout(fitScale, 200));
 fitScale();
 try { document.fonts.ready.then(fitHome); } catch(e){}
 window.addEventListener('load', fitHome);
+
+// ---------- 連続ログイン（7日ごとに 人間の なかまを プレゼント） ----------
+let loginChecked = false;
+function checkLogin(){
+  if (loginChecked || document.querySelector('.opening')) return; loginChecked = true;
+  const today = dayKey(), L = S.login || (S.login = {last:0, streak:0});
+  if (L.last === today) return;
+  const y = new Date(); y.setDate(y.getDate() - 1);
+  const yk = y.getFullYear() * 10000 + (y.getMonth()+1) * 100 + y.getDate();
+  L.streak = L.last === yk ? L.streak + 1 : 1; L.last = today;
+  const n = ((L.streak - 1) % 7) + 1;
+  if (n === 7){
+    const cand = HUMAN_IDS.filter(id => !cardDef(id).how && !owned(id));
+    if (cand.length){ const id = pick(cand); S.cards[id] = {lv:1, exp:0, ev:false}; toast('🎉 7日 れんぞく！ ' + cardDef(id).name + ' が なかまに なった！'); }
+    else addTickets(3, '7日 れんぞくログイン');
+  } else if (n === 3) addTickets(1, '3日 れんぞくログイン');
+  else toast('📅 れんぞく ' + n + '日目！ 7日で 新しい なかまが くるよ');
+  persist();
+  if (cur().v === 'home' && !B) render();
+}
 
 // ---------- 操作 ----------
 $app.addEventListener('click', e => {
