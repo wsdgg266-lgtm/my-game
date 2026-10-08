@@ -1061,6 +1061,28 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .op-start{background:linear-gradient(0deg,rgba(2,4,12,.9),rgba(2,4,12,.1) 45%,transparent)}
 @media (prefers-reduced-motion:reduce){.op-fx{display:none}}
 .op-cap{left:0;right:0;padding:10px 0;background:linear-gradient(90deg,transparent,rgba(20,0,40,.85) 20%,rgba(20,0,40,.85) 80%,transparent);color:#fff}
+/* ===== v14：ホームのイラストを 画面いっぱいに ===== */
+.h-btns{grid-template-columns:1fr 1.15fr 1fr;align-items:end;padding-top:0}
+.h-advcell{position:relative;display:flex;justify-content:center;align-items:flex-end;height:74px}
+.h-advcell .h-adv{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:min(36vmin,142px);margin:0}
+.h-advcell .h-adv:active{transform:translateX(-50%) scale(.96)}
+.h-advcell .h-hint{bottom:calc(100% + 26px);left:50%;transform:translateX(-50%);animation:hintbob 1s ease-in-out infinite}
+.h-advcell .h-hint::before{content:none}
+.h-advcell .h-hint::after{content:"▼";position:absolute;left:50%;top:100%;transform:translateX(-50%);color:var(--gold);font-size:12px;line-height:1}
+.h-mid{position:relative}
+.h-side{position:absolute;right:8px;top:6px;width:62px;display:flex;flex-direction:column;align-items:center;gap:0;padding:4px 0 5px;border-radius:14px;background:rgba(6,12,40,.72);border:1.5px solid #e8b94a;box-shadow:0 3px 10px rgba(0,0,0,.5)}
+.h-side img{width:40px;height:34px;object-fit:contain}
+.h-side b{font-size:10px;font-weight:800;color:#fff;white-space:nowrap}
+.h-side .badge.dot{top:-6px;right:-6px}
+/* 縦長の画面（スマホ）：イラストを 画面いっぱいに */
+@media (max-aspect-ratio:3/5){
+  .h-bg.kv{top:0;bottom:0}
+  .h-bg.kv .h-blur{display:none}
+  .h-kv{left:0;top:0;transform:none;width:100%;height:100%!important;object-fit:cover;object-position:50% 0;
+    -webkit-mask-image:none;mask-image:none;animation:hzoomfull 18s ease-in-out infinite alternate;transform-origin:50% 30%}
+  @keyframes hzoomfull{from{transform:scale(1)}to{transform:scale(1.05)}}
+  .h-bg.kv::after{background:linear-gradient(180deg,rgba(6,12,40,.55),transparent 12%,transparent 62%,rgba(10,22,64,.75) 82%,#0a1640 100%)}
+}
 
 </style>
 </head>
@@ -1793,11 +1815,11 @@ function vHome(){
       '<div class="h-exp"><div class="h-expbar"><i style="width:' + within + '%"></i></div><span>あと ' + (100 - within) + '</span></div></div>' +
       '<button class="h-snd" data-act="sound" aria-label="おと">' + (S.sound ? '🔊' : '🔇') + '</button></header>' +
     (storageOK ? '' : '<div class="h-warn">⚠️ このブラウザでは きろくが のこりません</div>') +
-    '<div class="h-mid">' + (S.cleared.length ? '' : '<div class="h-hint">ここを タップ！</div>') + '<button class="h-adv" data-act="tab" data-k="map"><span class="h-adv-in">冒険</span></button></div>' +
+    '<div class="h-mid"><button class="h-side" data-act="go" data-v="mission"><img src="' + HOME.mission + '" alt=""><b>ミッション</b>' + (mr ? '<span class="badge dot">' + mr + '</span>' : '') + '</button></div>' +
     '<div class="h-btns">' +
       '<button class="h-btn b-box" data-act="go" data-v="box"><img src="' + HOME.box + '" alt=""><b>まなびBOX</b>' + (S.tickets ? '<span class="badge dot">' + S.tickets + '</span>' : '') + '</button>' +
+      '<div class="h-advcell">' + (S.cleared.length ? '' : '<div class="h-hint">ここを タップ！</div>') + '<button class="h-adv" data-act="tab" data-k="map"><span class="h-adv-in">冒険</span></button></div>' +
       '<button class="h-btn b-deck" data-act="go" data-v="deck"><img src="' + HOME.deck + '" alt=""><b>デッキ編成</b></button>' +
-      '<button class="h-btn b-mis" data-act="go" data-v="mission"><img src="' + HOME.mission + '" alt=""><b>ミッション</b>' + (mr ? '<span class="badge dot">' + mr + '</span>' : '') + '</button>' +
     '</div>' +
     '<button class="h-study" data-act="tab" data-k="learn"><img class="h-scroll" src="' + HOME.scroll + '" alt=""><div class="grow"><b>今日の学習</b><span>' + Math.min(d.study, 10) + '/10問</span><div class="h-sbar"><i style="width:' + Math.min(100, d.study * 10) + '%"></i></div></div>' +
       '<div class="h-rew"><img src="' + HOME.gem + '" alt=""><div>' + (left ? '<small>報酬まで</small><b>' + left + '問</b>' : '<small>' + (d.claimed.study ? 'クリア！' : 'うけとれる！') + '</small><b>' + (d.claimed.study ? '✓' : '🎁') + '</b>') + '</div></div></button>' +
@@ -2642,6 +2664,7 @@ function render(scrollTop){
 function fitHome(){
   const kv = $app.querySelector('.h-kv'), adv = $app.querySelector('.h-adv'), bg = $app.querySelector('.h-bg');
   if (!kv || !adv || !bg) return;
+  if (getComputedStyle(kv).objectFit === 'cover'){ kv.style.height = ''; return; }  // 画面いっぱい表示のとき
   const z = parseFloat($app.style.zoom) || 1;
   const top = kv.offsetTop, bgH = bg.clientHeight;
   const advTop = (adv.getBoundingClientRect().top - bg.getBoundingClientRect().top) / z;
