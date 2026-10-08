@@ -1,5 +1,5 @@
 /* 四神まなびバトル Service Worker（オフライン対応） */
-const V='shishin-d3d119015e', IMGC='shishin-img-v1';
+const V='shishin-3a5ca2d37e', IMGC='shishin-img-v1';
 const PRE=["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png"];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(PRE)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('shishin-')&&k!==V&&k!==IMGC).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
