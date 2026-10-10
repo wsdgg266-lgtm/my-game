@@ -1092,6 +1092,55 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .tip.gift b{color:var(--gold)}
 .a-ab{top:auto;bottom:24%}
 .a-ab.guard{bottom:auto;top:38%}
+/* ===== v16：進化 ===== */
+.evo-ov{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;text-align:center;
+  background:radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--c,#4fb2ff) 35%,#050818),#02040c 75%);animation:fadein .4s ease;overflow:hidden}
+.evo-ov.out{opacity:0;transition:opacity .35s}
+.evo-rays{position:absolute;left:50%;top:42%;width:180vmax;height:180vmax;transform:translate(-50%,-50%);background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.10) 0 6deg,transparent 6deg 18deg);opacity:0;animation:evorays 8s linear 3s infinite,fadein .6s ease 3s forwards}
+@keyframes evorays{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.evo-stage{position:relative;width:min(70vmin,300px);aspect-ratio:.8;margin-top:-20px}
+.evo-stage img,.evo-stage .emo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 15%;border-radius:24px;display:grid;place-items:center;font-size:120px;
+  -webkit-mask-image:radial-gradient(ellipse 52% 54% at 50% 46%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 52% 54% at 50% 46%,#000 62%,transparent 100%)}
+.evo-old{animation:evoold 3.05s ease forwards}
+.evo-new{opacity:0;animation:evonew 3.05s ease forwards}
+@keyframes evoold{0%,35%{opacity:1;filter:none}45%{filter:brightness(8) saturate(0)}50%,60%,70%,80%,88%{opacity:1;filter:brightness(8) saturate(0)}55%,65%,75%,84%,92%{opacity:0;filter:brightness(8) saturate(0)}100%{opacity:0}}
+@keyframes evonew{0%,50%,60%,70%,80%,88%{opacity:0;filter:brightness(8) saturate(0)}55%,65%,75%,84%,92%{opacity:1;filter:brightness(8) saturate(0)}97%{opacity:1;filter:brightness(8) saturate(0);transform:scale(1)}100%{opacity:1;filter:brightness(1.05);transform:scale(1.04)}}
+.evo-ov .evo-new{animation:evonew 3.05s ease forwards,evonewafter 2.5s ease-in-out 3.1s infinite alternate}
+@keyframes evonewafter{from{transform:scale(1.04)}to{transform:scale(1.08)}}
+.evo-burst{position:absolute;left:50%;top:46%;width:30px;height:30px;border-radius:50%;transform:translate(-50%,-50%) scale(0);background:#fff;box-shadow:0 0 60px 30px #fff,0 0 140px 60px var(--c,#4fb2ff);opacity:0;animation:evoburst .9s ease-out 2.95s forwards}
+@keyframes evoburst{0%{opacity:1;transform:translate(-50%,-50%) scale(0)}40%{opacity:1;transform:translate(-50%,-50%) scale(18)}100%{opacity:0;transform:translate(-50%,-50%) scale(30)}}
+.evo-t1,.evo-t2{position:relative;margin:0;font-weight:800;font-size:18px;color:#fff;text-shadow:0 2px 8px #000}
+.evo-t1{animation:evot1 3.1s ease forwards}
+@keyframes evot1{0%{opacity:0}10%,85%{opacity:1}100%{opacity:0;height:0}}
+.evo-t2{opacity:0;animation:fadein .5s ease 3.1s forwards;font-size:18px;line-height:1.5;margin-top:-34px}
+.evo-t2 b{color:var(--gold)}
+.evo-t2 b.big{font-family:var(--f-disp);font-weight:400;font-size:clamp(26px,8vmin,38px);color:#fff;text-shadow:0 0 18px var(--c,#4fb2ff),0 3px 0 #000}
+.evo-stat{position:relative;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 12px;opacity:0;animation:fadein .5s ease 3.4s forwards;font-weight:800;font-size:14px;color:#fff;background:rgba(0,0,0,.45);padding:8px 14px;border-radius:14px}
+.evo-stat b.up{color:#7dffb5}
+.evo-tap{position:relative;opacity:0;font-weight:800;color:#fff;margin-top:6px}
+.evo-ov.ready .evo-tap{animation:blink 1.4s ease-in-out infinite}
+.evo-ov.awake .evo-new{box-shadow:none}
+.evo-ov.awake .evo-stage::after{content:"";position:absolute;inset:-8%;border-radius:50%;background:radial-gradient(circle,rgba(255,207,74,.45),transparent 65%);opacity:0;animation:fadein .6s ease 3.1s forwards;z-index:-1}
+.evopanel .evorow{display:flex;align-items:center;gap:12px;margin-top:6px}
+.evopanel .evorow b{display:block;font-size:16px}
+.evonext{width:64px;height:64px;border-radius:16px;overflow:hidden;flex:none;border:2px solid var(--c);display:grid;place-items:center;font-size:34px;background:#070a1c}
+.evonext img{width:100%;height:100%;object-fit:cover;object-position:50% 15%}
+.evonext.unknown img{filter:brightness(0) drop-shadow(0 0 2px #fff);opacity:.8}
+.evonext.awake{box-shadow:0 0 14px rgba(255,207,74,.8);border-color:var(--gold)}
+.evobar{height:9px;margin-top:6px}
+.evobar>i{background:linear-gradient(90deg,var(--c),#fff)}
+.evopanel.done{border-color:var(--gold);font-weight:800}
+.dexbtn.seen .tc{filter:saturate(.55) brightness(.8)}
+.howtag.done{background:#3ee08a}
+@keyframes evofade{from{opacity:0}to{opacity:1}}
+.evo-rays{animation:evorays 8s linear 3s infinite,evofade .6s ease 3s forwards}
+.evo-t2{animation:evofade .5s ease 3.1s forwards}
+.evo-stat{animation:evofade .5s ease 3.4s forwards}
+.evo-ov.awake .evo-stage::after{animation:evofade .6s ease 3.1s forwards}
+.evo-rays{opacity:0}
+.evonext{position:relative}
+.evonext.unknown img{filter:blur(5px) brightness(.35) saturate(.6);opacity:1}
+.evonext.unknown::after{content:"？";position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-disp);font-size:30px;color:#fff;text-shadow:0 0 10px var(--c)}
 
 </style>
 </head>
@@ -1356,7 +1405,12 @@ const TAG_BY_R = {1:'N', 2:'N', 3:'R', 4:'SR', 5:'SSR'};
 const cardTag = c => c.tag || TAG_BY_R[c.r];
 const BOSS_CARD = { math:111, japanese:112, science:113, social:114 };
 const FINAL_CARD = 120;
-const BOX_POOL = CARDS.filter(c => !c.how);   // BOXから出るのは通常カードだけ
+// ---- 進化：[進化先, 必要レベル]。動物カードは 4段階（Lv.5 / 10 / 20）、人間は Lv.10 で 覚醒 ----
+const EVO = {1:[3,5], 3:[7,10], 7:[9,20],   2:[4,5], 4:[6,10], 6:[10,20],
+  11:[14,5], 14:[15,10], 15:[16,20],   12:[17,5], 17:[18,10], 18:[19,20],   13:[20,5], 20:[21,10], 21:[22,20]};
+const EVO_FROM = {}; Object.keys(EVO).forEach(k => EVO_FROM[EVO[k][0]] = +k);
+const AWAKE_LV = 10, MAX_LV = 30;
+const BOX_POOL = CARDS.filter(c => !c.how && !EVO_FROM[c.id]);   // BOXから出るのは 進化前の すがた と 人間の仲間
 
 // アイテムカード（デザイン画像の下段）
 const ITEMS = {
@@ -1604,6 +1658,13 @@ function persist(){
   catch(e){ storageOK = false; }
 }
 let S = (window.claude && window.claude.hot && window.claude.hot.data && window.claude.hot.data.S) || load();
+// 旧「覚醒」（コインで強化）からの 引っこし：動物カードは 1段階 進化した あつかいに
+setTimeout(() => {
+  let changed = false;
+  Object.keys(S.cards).forEach(k => { const id = +k, st = S.cards[id]; if (st && st.ev && EVO[id]){ st.ev = false; st.lv = Math.max(st.lv, EVO[id][1]); changed = true; } });
+  Object.keys(S.cards).forEach(k => { const r = evoCheck(+k); if (r.length){ EVO_Q.push(...r); changed = true; } });
+  if (changed){ persist(); render(); }
+}, 0);
 if (window.claude && window.claude.hot && window.claude.hot.snapshot) {
   try { window.claude.hot.snapshot(() => ({ S })); } catch(e){}
 }
@@ -1621,12 +1682,13 @@ const owned = id => !!S.cards[id];
 
 function stats(id){
   const d = cardDef(id), st = S.cards[id] || {lv:1,exp:0,ev:false};
-  const cap = st.ev ? 20 : 10;
+  const cap = MAX_LV, L = st.lv - 1, Lh = Math.min(L, 9), Ll = Math.max(0, L - 9);  // Lv.10までは 大きく、そのあとは ゆっくり 強くなる
   return {
     ...d, lv:st.lv, exp:st.exp, ev:st.ev, cap,
-    maxHP: d.hp + (st.lv-1)*12 + (st.ev?40:0),
-    atkV:  d.atk + (st.lv-1)*4 + (st.ev?15:0),
-    spV:   d.sp + (st.lv-1)*2 + (st.ev?20:0),
+    maxHP: d.hp + Lh*12 + Ll*6 + (st.ev?40:0),
+    atkV:  d.atk + Lh*4 + Ll*2 + (st.ev?15:0),
+    spV:   d.sp + Lh*2 + Ll*1 + (st.ev?20:0),
+    img:   st.ev && d.img && ART[d.img + '_ev'] ? d.img + '_ev' : d.img,
     next:  30 + st.lv*15,
     title: (st.ev ? '覚醒・' : '') + d.name
   };
@@ -1673,12 +1735,67 @@ function addPlayerExp(n){
 function addCardExp(id, n){
   const st = S.cards[id]; if (!st) return {gained:0, from:0, to:0};
   const from = st.lv; let gained = 0;
-  const cap = () => st.ev ? 20 : 10;
+  const cap = () => MAX_LV;
   if (st.lv >= cap()) return {gained:0, from, to:from, max:true};
   st.exp += n; gained = n;
   while (st.lv < cap() && st.exp >= 30 + st.lv*15){ st.exp -= 30 + st.lv*15; st.lv++; }
   if (st.lv >= cap()) st.exp = 0;
-  return {gained, from, to:st.lv};
+  const evos = evoCheck(id); EVO_Q.push(...evos);
+  return {gained, from, to:st.lv, evo:evos.length ? evos[evos.length-1].to : 0};
+}
+// ---------- 進化 ----------
+const EVO_Q = [];
+const isHuman = id => STARTER_CARDS.includes(id) || HUMAN_IDS.includes(id);
+const seen = id => owned(id) || (S.dex || []).includes(id);
+const lineHas = id => owned(id) || (EVO[id] ? lineHas(EVO[id][0]) : false);
+const lineOwner = id => owned(id) ? id : (EVO[id] ? lineOwner(EVO[id][0]) : null);
+function markSeen(id){ S.dex = S.dex || []; if (!S.dex.includes(id)) S.dex.push(id); }
+// レベルが 進化ラインに 届いていたら 進化させる（記録を かえす）
+function evoCheck(id){
+  const out = [];
+  for (let guard = 0; guard < 4; guard++){
+    const st = S.cards[id]; if (!st) break;
+    if (EVO[id] && st.lv >= EVO[id][1]){
+      const to = EVO[id][0], before = stats(id);
+      if (S.cards[to]){ const t = S.cards[to]; if (st.lv > t.lv || (st.lv === t.lv && st.exp > t.exp)){ t.lv = st.lv; t.exp = st.exp; } }
+      else S.cards[to] = {lv:st.lv, exp:st.exp, ev:false};
+      delete S.cards[id]; markSeen(id); markSeen(to);
+      S.deck = S.deck.map(x => x === id ? to : x).filter((x, i, arr) => arr.indexOf(x) === i);
+      out.push({from:id, to, before, after:stats(to)});
+      id = to; continue;
+    }
+    if (isHuman(id) && !st.ev && st.lv >= AWAKE_LV){
+      const before = stats(id); st.ev = true;
+      out.push({from:id, to:id, awake:true, before, after:stats(id)});
+    }
+    break;
+  }
+  return out;
+}
+// 進化の演出（結果画面などの上に 重ねて 見せる）
+let evoShowing = false;
+function playEvo(){
+  if (evoShowing || !EVO_Q.length || document.querySelector('.opening')) return;
+  const v = cur(); if (B || v.v === 'battle' || (v.v === 'box' && boxState)) return;
+  const r = EVO_Q.shift(); evoShowing = true;
+  const fd = cardDef(r.from), td = cardDef(r.to);
+  const imgOf = (d, ev) => d.img ? ART[ev && ART[d.img + '_ev'] ? d.img + '_ev' : d.img] : null;
+  const pic = (src, e, cls) => src ? '<img class="' + cls + '" src="' + src + '" alt="">' : '<span class="' + cls + ' emo">' + e + '</span>';
+  const ov = document.createElement('div');
+  ov.className = 'evo-ov s-' + td.s + (r.awake ? ' awake' : '');
+  const diff = (k, l) => '<span>' + l + ' <b>' + r.before[k] + '</b> → <b class="up">' + r.after[k] + '</b></span>';
+  ov.innerHTML = '<div class="evo-rays"></div><div class="evo-stage">' + pic(imgOf(fd, false), fd.e, 'evo-old') + pic(imgOf(td, r.awake), td.e, 'evo-new') + '<i class="evo-burst"></i></div>' +
+    '<p class="evo-t1">おや…？ <b>' + esc(r.before.title) + '</b> の ようすが…！</p>' +
+    '<p class="evo-t2">' + (r.awake ? '<b>' + esc(fd.name) + '</b> が 覚醒した！' : '<b>' + esc(fd.name) + '</b> は<br><b class="big">' + esc(td.name) + '</b> に しんかした！') + '</p>' +
+    '<div class="evo-stat">' + diff('maxHP', '❤️ HP') + diff('atkV', '⚔️ こうげき') + diff('spV', '💫 必殺') + '</div>' +
+    '<div class="evo-tap">タップして つぎへ</div>';
+  document.body.appendChild(ov);
+  setTimeout(() => sfx('charge'), 300); setTimeout(() => sfx('up'), 1500); setTimeout(() => sfx('ssr'), 3000);
+  let ready = false; setTimeout(() => { ready = true; ov.classList.add('ready'); }, 3600);
+  ov.addEventListener('click', () => {
+    if (!ready) return;
+    ov.classList.add('out'); setTimeout(() => { ov.remove(); evoShowing = false; render(); }, 350);
+  });
 }
 // すべての回答（バトル・練習・復習）を記録
 // ---------- 今日のミッション ----------
@@ -2166,14 +2283,15 @@ function vResult(p){
 // ---------- カード ----------
 function vCards(p){
   const mode = p.mode || 'deck';
-  let h = top('カード') + '<main class="scroll"><div class="seg"><button data-act="cmode" data-m="deck" aria-pressed="' + (mode==='deck') + '">🃏 デッキ</button><button data-act="cmode" data-m="dex" aria-pressed="' + (mode==='dex') + '">📖 図鑑 ' + Object.keys(S.cards).length + '/' + CARDS.length + '</button></div>';
+  let h = top('カード') + '<main class="scroll"><div class="seg"><button data-act="cmode" data-m="deck" aria-pressed="' + (mode==='deck') + '">🃏 デッキ</button><button data-act="cmode" data-m="dex" aria-pressed="' + (mode==='dex') + '">📖 図鑑 ' + CARDS.filter(c => seen(c.id)).length + '/' + CARDS.length + '</button></div>';
   if (mode === 'deck') h += deckEditor();
   else {
     SUBJ_KEYS.concat('all').forEach(s => {
       h += '<div class="h2">' + (s === 'all' ? '✨ 特別カード <span class="muted" style="font-size:14px">4体の ボスを たおすと…</span>' : SUBJ[s].e + ' ' + SUBJ[s].g + ' <span class="muted" style="font-size:14px">' + SUBJ[s].name + '</span>') + '</div><div class="dexgrid">';
       CARDS.filter(c => c.s === s).sort((a,b) => (b.img?1:0) - (a.img?1:0) || (a.boss?1:0) - (b.boss?1:0) || a.r - b.r).forEach(c => {
         if (owned(c.id)) h += '<button class="dexbtn" data-act="go" data-v="card" data-id="' + c.id + '">' + cardFace(c.id, 'sm') + '</button>';
-        else h += '<div class="dexbtn">' + cardFace(c.id, 'sm', {locked:true}) + '<span class="inq">' + (c.boss ? '👑' : '？') + '</span>' + (c.how === 'stage' ? '<span class="howtag">' + STAGES.find(x => x.id === c.stage).code + ' クリアで 仲間に</span>' : HUMAN_IDS.includes(c.id) ? '<span class="howtag">BOX ・ 7日ログイン</span>' : '') + '</div>';
+        else if (seen(c.id)) h += '<div class="dexbtn seen">' + cardFace(c.id, 'sm') + '<span class="howtag done">しんか ずみ ✓</span></div>';
+        else h += '<div class="dexbtn">' + cardFace(c.id, 'sm', {locked:true}) + '<span class="inq">' + (c.boss ? '👑' : '？') + '</span>' + (c.how === 'stage' ? '<span class="howtag">' + STAGES.find(x => x.id === c.stage).code + ' クリアで 仲間に</span>' : HUMAN_IDS.includes(c.id) ? '<span class="howtag">BOX ・ 7日ログイン</span>' : EVO_FROM[c.id] ? '<span class="howtag">' + esc(cardDef(EVO_FROM[c.id]).name) + ' から しんか</span>' : '') + '</div>';
       });
       h += '</div>';
     });
@@ -2203,7 +2321,6 @@ function toggleDeck(id){
 }
 function vCard(p){
   const c = stats(p.id);
-  const canEvo = !c.ev && c.lv >= 5, cost = 50;
   const atMax = c.lv >= c.cap;
   const good = ADV[c.s], weak = Object.keys(ADV).find(k => ADV[k] === c.s);
   const rel = c.s === 'all' ? '<span class="chip up">▲ どの相手にも 1.1倍</span>' : relChip(c.s, good) + ' ' + SUBJ[good].e + SUBJ[good].g + 'に つよい　' + relChip(c.s, weak) + ' ' + SUBJ[weak].e + SUBJ[weak].g + 'に よわい';
@@ -2213,10 +2330,22 @@ function vCard(p){
     '<div class="kv"><div><b>❤️ ' + c.maxHP + '</b><small>HP</small></div><div><b>⚔️ ' + c.atkV + '</b><small>こうげき</small></div><div><b>💫 ' + c.spV + '</b><small>必殺の いりょく</small></div></div>' +
     '<div class="panel"><span class="label">必殺技</span><div style="font-weight:800;font-size:18px">' + esc(c.sk) + '</div><div style="margin-top:6px">' + rel + '</div></div>' +
     (c.ab ? '<div class="panel abpanel"><span class="label">とくせい</span><div style="font-weight:800;font-size:18px">✦ ' + esc(c.ab.name) + '</div><div style="margin-top:4px">' + esc(c.ab.text) + '</div><small class="muted">バトルで この なかまが 前に 出ているときに 発動</small></div>' : '') +
-    (c.ev ? '<div class="panel" style="border-color:var(--gold)">✨ 覚醒ずみ！ HP+40・こうげき+15・必殺+20、Lv.20まで 育てられる</div>' :
-      '<div class="panel"><span class="label">しんか（覚醒）</span><div style="margin:4px 0 8px">Lv.5 ＋ 🪙' + cost + ' で 覚醒。HP+40・こうげき+15・必殺+20、Lv上限が 20に！</div>' +
-      '<button class="cta" data-act="evolve" data-id="' + c.id + '"' + (canEvo && S.coins >= cost ? '' : ' disabled') + '>' + (c.lv < 5 ? 'Lv.5で しんか できる' : S.coins < cost ? 'コインが たりない（🪙' + S.coins + '）' : '✨ 覚醒する！') + '</button></div>') +
+    evoPanel(c) +
   '</main>';
+}
+// 進化の パネル（つぎの すがた・のこり レベル）
+function evoPanel(c){
+  const bar = (lv, need) => '<div class="bar evobar"><i style="width:' + Math.min(100, Math.round(lv / need * 100)) + '%"></i></div>';
+  if (EVO[c.id]){
+    const [to, need] = EVO[c.id], td = cardDef(to), known = seen(to);
+    return '<div class="panel evopanel"><span class="label">しんか</span><div class="evorow">' +
+      '<div class="evonext' + (known ? '' : ' unknown') + '">' + (td.img ? '<img src="' + ART[td.img] + '" alt="">' : '<span>' + td.e + '</span>') + '</div>' +
+      '<div class="grow"><b>Lv.' + need + ' で ' + (known ? esc(td.name) : '？？？') + ' に しんか！</b><span class="muted">あと ' + Math.max(0, need - c.lv) + ' レベル</span>' + bar(c.lv, need) + '</div></div></div>';
+  }
+  if (isHuman(c.id)) return c.ev ? '<div class="panel evopanel done">✨ 覚醒ずみ！ Lv.' + MAX_LV + 'まで 育てられるよ</div>' :
+    '<div class="panel evopanel"><span class="label">覚醒</span><div class="evorow"><div class="evonext awake">' + (c.img ? '<img src="' + ART[c.img] + '" alt="">' : '<span>' + c.e + '</span>') + '</div><div class="grow"><b>Lv.' + AWAKE_LV + ' で 覚醒！</b><span class="muted">あと ' + Math.max(0, AWAKE_LV - c.lv) + ' レベル ・ HP+40 こうげき+15 必殺+20</span>' + bar(c.lv, AWAKE_LV) + '</div></div></div>';
+  if (EVO_FROM[c.id]) return '<div class="panel evopanel done">👑 さいしゅう形態！ Lv.' + MAX_LV + 'まで 育てられるよ</div>';
+  return '';
 }
 function evolve(id){
   const st = S.cards[id];
@@ -2229,12 +2358,13 @@ function evolve(id){
 let boxState = null;
 const BOX_W = {1:40, 2:30, 3:18, 4:9, 5:3};
 const TAG_RANK = {N:0, R:1, SR:2, SSR:3};
-function boxPool(){ const un = BOX_POOL.filter(c => !owned(c.id)); return un.length ? un : BOX_POOL; }
+function boxPool(){ const un = BOX_POOL.filter(c => !lineHas(c.id)); return un.length ? un : BOX_POOL; }
 function drawOne(){
   const pool = boxPool();
   let pick = Math.random() * pool.reduce((a,c) => a + BOX_W[c.r], 0), got = pool[0];
   for (const c of pool){ pick -= BOX_W[c.r]; if (pick <= 0){ got = c; break; } }
-  if (owned(got.id)){ const exp = 40 + got.r*10; const r = addCardExp(got.id, exp); return {id:got.id, dup:true, exp, lvup: r.to > r.from}; }
+  const own = lineOwner(got.id);
+  if (own){ const exp = 40 + got.r*10; const r = addCardExp(own, exp); return {id:S.cards[own] ? own : (r.evo || own), dup:true, exp, lvup: r.to > r.from}; }
   S.cards[got.id] = {lv:1, exp:0, ev:false}; return {id:got.id, dup:false};
 }
 function circle(cls){
@@ -2266,7 +2396,7 @@ function vBox(){
   }
   // ガチャ画面
   if (st && st.phase === 'rates') return vRates();
-  const have = BOX_POOL.filter(c => owned(c.id)).length;
+  const have = BOX_POOL.filter(c => lineHas(c.id)).length;
   return '<div class="gacha idle">' +
     '<div class="gc-top"><button class="back" data-act="back" aria-label="もどる">‹</button><b>まなびBOX しょうかん</b><span class="pill gold">🎫 ' + S.tickets + '</span></div>' +
     circle() + '<div class="gc-back float"><img src="' + ART.back + '" alt="カードのうら"></div>' +
@@ -2289,7 +2419,7 @@ function vRates(){
   const pool = boxPool(), tot = pool.reduce((a,c) => a + BOX_W[c.r], 0);
   const byTag = {};
   pool.forEach(c => { const t = cardTag(c); (byTag[t] = byTag[t] || []).push(c); });
-  let h = top('でる カードと でやすさ') + '<main class="scroll"><p class="muted" style="margin:0">いま でる カードは ' + pool.length + 'まい。' + (BOX_POOL.every(c => owned(c.id)) ? '全部 集めたので、同じ カードが 出ると カードEXPに なるよ。' : 'まだ 持っていない カードだけが 出るよ。') + '<br>チケットは 勉強で もらえるよ（お金は かかりません）。</p>';
+  let h = top('でる カードと でやすさ') + '<main class="scroll"><p class="muted" style="margin:0">いま でる カードは ' + pool.length + 'まい。' + (BOX_POOL.every(c => lineHas(c.id)) ? '全部 集めたので、同じ カードが 出ると カードEXPに なるよ。' : 'まだ 持っていない カードだけが 出るよ。') + '<br>チケットは 勉強で もらえるよ（お金は かかりません）。</p>';
   ['SSR','SR','R','N'].forEach(t => {
     const list = byTag[t]; if (!list) return;
     const p = list.reduce((a,c) => a + BOX_W[c.r], 0) / tot * 100;
@@ -2702,6 +2832,7 @@ function render(scrollTop){
   if (S.furi !== false) try { furigana($app); } catch(e){}
   const ns = document.querySelector('.scroll'); if (ns) ns.scrollTop = keep;
   fitHome(); if (v.v === 'home') setTimeout(fitHome, 300);
+  if (EVO_Q.length) setTimeout(playEvo, 500);
   if (v.v === 'home') setTimeout(checkLogin, 800);
 }
 // ホーム：メインビジュアルの 手前の2人の顔が 冒険ボタンに かくれない大きさに合わせる
