@@ -1,7 +1,98 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": "2026-10-09T22:49:47.610Z",
+  "updatedAt": "2026-10-10T21:56:24.242Z",
   "items": [
+    {
+      "title": "U18女子日本代表が豪州に1点差惜敗…竹内が25得点も18年ぶりアジアカップVまで一歩届かず",
+      "url": "https://basketballking.jp/news/japan/20261010/637157.html",
+      "ts": 1791636846000,
+      "date": "2026-10-10",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【U18トップリーグ男子】福大大濠と北陸学院が快勝…帝京長岡は逆転勝利【10月10日結果】",
+      "url": "https://basketballking.jp/news/japan/20261010/637151.html",
+      "ts": 1791631839000,
+      "date": "2026-10-10",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "舩木玲「自分の持てる力を最大限発揮する」県立松江東（島根県）",
+      "url": "https://basket-count.com/article/detail/276344",
+      "ts": 1791621057000,
+      "date": "2026-10-10",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【NBAレジェンドインタビュー】「鏡の中の自分」とバスケの神様が認めたリッチモンドが“全力勝負”を語る",
+      "url": "https://basketballking.jp/news/world/20261010/637091.html",
+      "ts": 1791615787000,
+      "date": "2026-10-10",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "山本麻衣のWNBA1年目が終了…エーシズは延長惜敗でプレーオフ準決勝敗退",
+      "url": "https://basketballking.jp/news/world/20261010/637094.html",
+      "ts": 1791613485000,
+      "date": "2026-10-10",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "齋藤琉地果「コートに立って、チームをもっと強くしたい」福島東稜（福島県）",
+      "url": "https://basket-count.com/article/detail/276336",
+      "ts": 1791612107000,
+      "date": "2026-10-10",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【10月9日のBプレミア最多記録】富山のアンゴラが41得点…宇都宮のケルも38得点で躍動",
+      "url": "https://basketballking.jp/news/japan/20261010/637085.html",
+      "ts": 1791604016000,
+      "date": "2026-10-10",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【NBA】タイリース・ハリバートンは憧れの先輩リラードとの関係修復を切望「僕の責任。少し行き過ぎていた」",
+      "url": "https://basket-count.com/article/detail/276332",
+      "ts": 1791599408000,
+      "date": "2026-10-10",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【EASL】B.LEAGUE王者としてのプライドを示したい、長崎ヴェルカの熊谷航「覚悟や責任を持って自分たちのバスケを」",
+      "url": "https://basket-count.com/article/detail/276302",
+      "ts": 1791597633000,
+      "date": "2026-10-10",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "A東京がアリーナ開業1周年のビアガーデン開催を発表…茨城戦・三河戦の屋外PVも実施",
+      "url": "https://basketballking.jp/news/japan/20261010/637082.html",
+      "ts": 1791596876000,
+      "date": "2026-10-10",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【NBA】新天地でデビュー飾ったレブロン・ジェームズ、18分間で10得点5アシストを記録「今後に向けた良いステップになった」",
+      "url": "https://basket-count.com/article/detail/276325",
+      "ts": 1791596021000,
+      "date": "2026-10-10",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "北條真杏「負けるとしても良い負け方を」作新学院（栃木県）",
+      "url": "https://basket-count.com/article/detail/276313",
+      "ts": 1791594014000,
+      "date": "2026-10-10",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "アルバルク東京のベンチに厚みを与える飯田遼「何分出たとかにフォーカスしすぎず、過程を大事にしていきたい」",
+      "url": "https://basket-count.com/article/detail/276295",
+      "ts": 1791590447000,
+      "date": "2026-10-10",
+      "source": "バスケットカウント"
+    },
     {
       "title": "【10月4日〜10日】女子U18日本代表「FIBA U18女子アジアカップ2026」｜メンバー・試合日程・配信情報",
       "url": "https://basketballking.jp/news/japan/fixed/635629.html",
@@ -38,48 +129,6 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "サンダーを引っ張るシェイ・ギルジャス・アレクサンダー「僕がベストだと思っている」",
-      "url": "https://basketballking.jp/news/world/20261009/636861.html",
-      "ts": 1791538578000,
-      "date": "2026-10-09",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "山口が3人制米代表経験のデモンテ・フラニガンと契約…「インパクトを与えられるよう頑張ります」",
-      "url": "https://basketballking.jp/news/japan/20261009/637031.html",
-      "ts": 1791538083000,
-      "date": "2026-10-09",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "Bリーグドラフト志望選手リスト更新…上武大学の深谷ナナが志望届提出40人目として公示",
-      "url": "https://basketballking.jp/news/japan/20261009/637033.html",
-      "ts": 1791537466000,
-      "date": "2026-10-09",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "ヴィアティン三重にカナダ人PFのジェヴォニー・スコットが加入…「ぜひ応援に来てね！」",
-      "url": "https://basketballking.jp/news/japan/20261009/637019.html",
-      "ts": 1791537329000,
-      "date": "2026-10-09",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "欧州バスケ二分の危機…ユーロリーグが拒否も、NBAは2027年の新リーグ設立へ姿勢崩さず",
-      "url": "https://basketballking.jp/news/world/20261009/636859.html",
-      "ts": 1791534203000,
-      "date": "2026-10-09",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "さいたまブロンコスの古牧昌也が左大腿二頭筋損傷で全治6週間…今季加入の33歳SG",
-      "url": "https://basketballking.jp/news/japan/20261009/637009.html",
-      "ts": 1791533531000,
-      "date": "2026-10-09",
-      "source": "バスケットボールキング"
-    },
-    {
       "title": "【NBA】トレイルブレイザーズのデイミアン・リラードが2027年の3ポイントコンテスト出場を早くも宣言！史上最多4度目の優勝を狙う",
       "url": "https://basket-count.com/article/detail/276231",
       "ts": 1791532854000,
@@ -91,55 +140,6 @@
       "url": "https://basket-count.com/article/detail/276104",
       "ts": 1791518248000,
       "date": "2026-10-09",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "内野由愛「全部の試合が接戦になる」福岡大学附属若葉（福岡県）",
-      "url": "https://basket-count.com/article/detail/276091",
-      "ts": 1791511207000,
-      "date": "2026-10-09",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "吉田颯志「絶対勝たせるという思いで」県立長崎工業（長崎県）",
-      "url": "https://basket-count.com/article/detail/276086",
-      "ts": 1791507618000,
-      "date": "2026-10-09",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "外国籍のトレンドと真逆、重量級トリオで臨むシーホース三河の安齋竜三HC「我慢を続けることができればアドバンテージを取れる」",
-      "url": "https://basket-count.com/article/detail/276076",
-      "ts": 1791448012000,
-      "date": "2026-10-08",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "宇都宮ブレックスの石川裕大がアースフレンズ東京Zに期限付き移籍「今の自分には、競争し、責任を持ってプレーする経験が必要」",
-      "url": "https://basket-count.com/article/detail/276058",
-      "ts": 1791440311000,
-      "date": "2026-10-08",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【NBA】新天地ヒートで再びタイトル獲得に挑むクレイ・トンプソン「今もプレーを続けている理由は勝ちたいから」",
-      "url": "https://basket-count.com/article/detail/276043",
-      "ts": 1791428400000,
-      "date": "2026-10-08",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【NBA】レブロン・ジェームズが「嘘はやめろ」と否定、名物アナウンサーがエンビードの『遅刻騒動』に謝罪",
-      "url": "https://basket-count.com/article/detail/276054",
-      "ts": 1791419705000,
-      "date": "2026-10-08",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "Bリーグが初の試み、話題となった審判の判定事象について説明「この判定がミスジャッジではないと考えています」",
-      "url": "https://basket-count.com/article/detail/276032",
-      "ts": 1791365503000,
-      "date": "2026-10-07",
       "source": "バスケットカウント"
     },
     {
