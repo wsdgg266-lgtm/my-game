@@ -1185,6 +1185,16 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .tabs.v2{gap:5px;padding:4px 8px calc(4px + env(safe-area-inset-bottom,0px))}
 .tabs.v2 button{min-height:46px;font-size:11px;padding:4px 0 5px;border-radius:10px}
 .tsvg{width:22px;height:22px}
+/* ===== v18：カードの 大きさを すべて そろえる ===== */
+.tc .tc-art,.tc.wide .tc-art{aspect-ratio:300/382}
+.tc-art>img{object-fit:cover;object-position:50% 30%}
+.tc-art.person>img{object-position:50% 12%}
+.tc-art.flat{background:#05071a}
+.tc-art.flat .tc-blur{position:absolute;inset:-8%;width:116%;height:116%;object-fit:cover;filter:blur(10px) brightness(.55) saturate(1.3)}
+.tc-art.flat .tc-fit{position:absolute;left:0;right:0;top:50%;transform:translateY(-62%) scale(1.55);width:100%;height:auto;object-fit:contain;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.tc-desc{min-height:2.9em;max-height:2.9em;overflow:hidden}
+.tc-art.flat .tc-blur{filter:blur(8px) brightness(.85) saturate(1.3);transform:scale(1.2)}
+.tc-art.flat .tc-fit{transform:translateY(-58%) scale(2.05);-webkit-mask-image:radial-gradient(ellipse 48% 50% at 50% 50%,#000 70%,transparent 100%);mask-image:radial-gradient(ellipse 48% 50% at 50% 50%,#000 70%,transparent 100%)}
 
 </style>
 </head>
@@ -1935,9 +1945,11 @@ function cardFace(id, size, opt){
   opt = opt || {};
   const d = cardDef(id), c = owned(id) ? stats(id) : Object.assign({}, d, {lv:1, ev:false, maxHP:d.hp, atkV:d.atk, title:d.name});
   const wide = d.img && !d.boss;          // 守護戦士・絆・通常カードは横長の絵
-  const arStyle = ART_AR[d.img] ? ' style="aspect-ratio:' + Math.min(ART_AR[d.img], 1.3) + '"' : '';
+  // 絵の 枠は すべて 同じ 形（たて長）。横長の 絵は 全体が 見えるように、うしろを ぼかして うめる
+  const arStyle = '', src = d.img ? ART[c.img || d.img] : '', flat = d.img && (ART_AR[d.img] || 0) > 1.3;
+  const kind = !d.img ? '' : flat ? ' flat' : isHuman(id) ? ' person' : '';
   let art;
-  if (d.img) art = '<img src="' + ART[c.img || d.img] + '" alt="' + esc(d.name) + '">';
+  if (d.img) art = flat ? '<img class="tc-blur" src="' + src + '" alt=""><img class="tc-fit" src="' + src + '" alt="' + esc(d.name) + '">' : '<img src="' + src + '" alt="' + esc(d.name) + '">';
   else art = '<div class="tc-fb"><img src="' + ART['boss_' + (d.s === 'all' ? 'math' : d.s)] + '" alt=""><span class="emo">' + d.e + '</span></div><span class="tc-badge">' + BADGE[d.s] + '</span><span class="tc-tag">' + cardTag(d) + '</span>';
   if (!d.boss) art += '<div class="tc-name">' + (opt.locked ? '？？？' : esc(c.title)) + '</div>';
 
@@ -1945,7 +1957,7 @@ function cardFace(id, size, opt){
   const rib = (d.s === 'all' ? '<b style="font-size:.8em;letter-spacing:0">四属性の力が ひとつに</b>' : '<span>得意教科</span><b>' + SUBJ[d.s].name + '</b>') + lvTag;
   const desc = d.desc || ('必殺技「' + d.sk + '」で たたかう ' + SUBJ[d.s].g + 'の なかま。');
   return '<div class="tc ' + (size || 'md') + ' s-' + d.s + (wide ? ' wide' : '') + (c.ev ? ' ev' : '') + (opt.locked ? ' locked' : '') + '">' +
-    '<div class="tc-art"' + arStyle + '>' + art + '</div><div class="tc-rib">' + rib + '</div><p class="tc-desc">' + esc(desc) + '</p>' +
+    '<div class="tc-art' + kind + '"' + arStyle + '>' + art + '</div><div class="tc-rib">' + rib + '</div><p class="tc-desc">' + esc(desc) + '</p>' +
     '<div class="tc-stats"><span>💗<small>HP</small> ' + c.maxHP + '</span><span>🗡️<small>攻撃力</small> ' + c.atkV + '</span></div></div>';
 }
 function nextStage(){ return STAGES.find(st => !S.cleared.includes(st.id)) || null; }
