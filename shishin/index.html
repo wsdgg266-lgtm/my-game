@@ -1141,6 +1141,50 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .evonext{position:relative}
 .evonext.unknown img{filter:blur(5px) brightness(.35) saturate(.6);opacity:1}
 .evonext.unknown::after{content:"？";position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-disp);font-size:30px;color:#fff;text-shadow:0 0 10px var(--c)}
+/* ===== v17：ホームのボタンを ぜんたいに 小さく ===== */
+.h-top{padding:6px 10px 0;gap:6px}
+.h-av,.h-av img,.h-av span{width:50px;height:50px}
+.h-av img,.h-av span{border-width:2px}
+.h-av b{font-size:11px;bottom:-6px;padding:0 8px}
+.h-stat{gap:4px;padding-top:2px}
+.h-pill{font-size:14px;padding:2px 10px 2px 3px;gap:4px}
+.h-pill img{width:20px;height:20px}
+.h-plus{width:24px;height:24px;font-size:16px}
+.h-exp{padding:1px 8px}
+.h-expbar{height:6px}
+.h-exp span{font-size:10px}
+.h-snd{width:28px;height:28px;font-size:13px;margin-top:2px}
+.h-side{width:50px;right:6px;top:2px;padding:3px 0 4px;border-radius:12px}
+.h-side img{width:32px;height:26px}
+.h-side b{font-size:9px}
+.h-btns{gap:6px;padding:4px 10px 0}
+.h-btn{height:56px;border-radius:12px;border-width:2px;padding:2px 2px 4px}
+.h-btn img{width:42px;height:34px;top:-8px}
+.h-btn b{font-size:13px;padding:0 8px}
+.h-advcell{height:56px}
+.h-advcell .h-adv{width:min(29vmin,112px);bottom:-2px;border-width:3px}
+.h-advcell .h-adv-in{font-size:clamp(26px,8vmin,34px)}
+.h-advcell .h-hint{font-size:12px;padding:4px 10px;bottom:calc(100% + 18px)}
+.h-study{margin:6px 10px 0;padding:4px 10px;gap:8px;border-radius:12px}
+.h-scroll{width:32px;height:32px}
+.h-study b{font-size:13px}
+.h-study span{font-size:11px}
+.h-sbar{height:6px}
+.h-rew{padding:2px 6px}
+.h-rew img{width:22px;height:28px}
+.h-rew small{font-size:9px}
+.h-rew b{font-size:14px}
+.h-links{padding:2px 0 4px}
+.h-links button{font-size:11px}
+@media (max-height:720px){
+  .h-btn{height:50px}.h-advcell{height:50px}
+  .h-btn img{width:36px;height:30px}
+  .h-btn b{font-size:12px}
+  .h-advcell .h-adv{width:min(27vmin,100px)}
+}
+.tabs.v2{gap:5px;padding:4px 8px calc(4px + env(safe-area-inset-bottom,0px))}
+.tabs.v2 button{min-height:46px;font-size:11px;padding:4px 0 5px;border-radius:10px}
+.tsvg{width:22px;height:22px}
 
 </style>
 </head>
