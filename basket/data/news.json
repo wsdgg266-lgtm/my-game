@@ -1,13 +1,118 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": "2026-10-13T00:55:43.665Z",
+  "updatedAt": "2026-10-13T23:02:00.477Z",
   "items": [
     {
-      "title": "「ずっとPGのファンだった」テイタム、ジョージとの初共演に「現実離れした感覚」",
-      "url": "https://basketballking.jp/news/world/20261013/637490.html",
-      "ts": 1791839855000,
+      "title": "車いすバスケ女子、活躍誓う　アジアパラ大会、鈴鹿で直前合宿(伊勢新聞)",
+      "url": "https://news.yahoo.co.jp/articles/190485bd7ef34238cbb7c6af2d952ceaf8c2e977",
+      "ts": 1791932406000,
+      "date": "2026-10-14",
+      "source": "Yahoo!ニュース(スポーツ)"
+    },
+    {
+      "title": "開幕目前でも実力者は多数…NBAの契約を待つ即戦力＆育成枠のFA選手をピックアップ",
+      "url": "https://basketballking.jp/news/world/20261013/637287.html",
+      "ts": 1791893750000,
       "date": "2026-10-13",
       "source": "バスケットボールキング"
+    },
+    {
+      "title": "【更新中】一覧「Bリーグドラフト2027」志望届提出選手リスト…指名候補選手のポジション・身長・出身校",
+      "url": "https://basketballking.jp/news/japan/fixed/634331.html",
+      "ts": 1791889232000,
+      "date": "2026-10-13",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "ヨキッチが“史上最高の4人”を選定「ラッセル、ジョーダン、チェンバレン、あと1人は…」",
+      "url": "https://basketballking.jp/news/world/20261013/637501.html",
+      "ts": 1791889214000,
+      "date": "2026-10-13",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "青森のブレイクフィールドに罰金10万円…山形戦の終盤に退場、出場停止はなし",
+      "url": "https://basketballking.jp/news/japan/20261013/637611.html",
+      "ts": 1791887424000,
+      "date": "2026-10-13",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "元セルティックスのスティーブンズが2位／大学からNBAへ転身したHCの通算勝率トップ10",
+      "url": "https://basketballking.jp/news/world/20261013/636871.html",
+      "ts": 1791885797000,
+      "date": "2026-10-13",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【最新】Bリーグ「平均来場者数」まとめ…全55クラブの2026－27シーズン数値まとめ",
+      "url": "https://basketballking.jp/news/japan/fixed/634999.html",
+      "ts": 1791885625000,
+      "date": "2026-10-13",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "U18トップリーグD1最終週の日程発表…福大大濠vs東山など代々木第一で男女8試合、20日にチケット販売開始",
+      "url": "https://basketballking.jp/news/japan/20261013/637597.html",
+      "ts": 1791884456000,
+      "date": "2026-10-13",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "変革のアルバルク東京で危機感を語る大倉颯太「ポイントガードとしての強みを証明しないといけない」",
+      "url": "https://basket-count.com/article/detail/276540",
+      "ts": 1791883315000,
+      "date": "2026-10-13",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "信州がパワハラ報道巡るリーグの調査結果を公表…調査対象の事項はいずれも規約違反に当たらず",
+      "url": "https://basketballking.jp/news/japan/20261013/637590.html",
+      "ts": 1791882293000,
+      "date": "2026-10-13",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "Bプレミア参入を目指す福井が組織体制を変更…手代木氏をGMから新設役職へ配置転換",
+      "url": "https://basketballking.jp/news/japan/20261013/637593.html",
+      "ts": 1791880064000,
+      "date": "2026-10-13",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "NBA クリッパーズが河村勇輝との契約解除",
+      "url": "https://news.web.nhk/newsweb/na/nd-20261013de58566",
+      "ts": 1791876726000,
+      "date": "2026-10-13",
+      "source": "NHKニュース(スポーツ)"
+    },
+    {
+      "title": "Bリーグがドラフトロッタリーの“前倒し開催”発表…指名選手の報酬はサラリーキャップ対象外とする方向で調整中",
+      "url": "https://basketballking.jp/news/japan/20261013/637533.html",
+      "ts": 1791871213000,
+      "date": "2026-10-13",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "第三回データで読むWINNER〜第3週振り返り〜【PR】Promoted by スポーツくじWINNER",
+      "url": "https://basket-count.com/article/detail/276526",
+      "ts": 1791861300000,
+      "date": "2026-10-13",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "A東京がTOYOTA ARENA TOKYO開業1周年を記念した特別イベント『AOMI Beer Garden』を10月21日から24日までの4日間に開催",
+      "url": "https://basket-count.com/article/detail/276510",
+      "ts": 1791860446000,
+      "date": "2026-10-13",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "今井苺「まずは強気で戦うこと」日ノ本学園（兵庫県）",
+      "url": "https://basket-count.com/article/detail/276491",
+      "ts": 1791853230000,
+      "date": "2026-10-13",
+      "source": "バスケットカウント"
     },
     {
       "title": "横浜ビー・コルセアーズで完全復活、新ルールで価値を高める佐藤卓磨「外国籍選手を相手にできる力が、自分にはあると信じています」",
@@ -17,41 +122,6 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "横浜BCの新井楽人がキャリアハイ33得点「チームメートのおかげ」ルーキー躍動し千葉J撃破",
-      "url": "https://basketballking.jp/news/japan/20261012/637457.html",
-      "ts": 1791808018000,
-      "date": "2026-10-12",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "【Bプレミア西地区結果まとめ】昨季B1王者の長崎が3連勝…開幕6連勝の広島は単独首位キープ",
-      "url": "https://basketballking.jp/news/japan/20261012/637480.html",
-      "ts": 1791804911000,
-      "date": "2026-10-12",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "桜丘がU18トップリーグD2で全勝優勝…入替戦へ進出決定「3年生がチームに残せる最高のプレゼント」",
-      "url": "https://basketballking.jp/news/japan/20261012/637456.html",
-      "ts": 1791801798000,
-      "date": "2026-10-12",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "山本弥音がスティール王、大会MVPの竹内みやも上位に…U18女子アジア杯スタッツリーダーズ",
-      "url": "https://basketballking.jp/news/japan/20261012/637387.html",
-      "ts": 1791800667000,
-      "date": "2026-10-12",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "【Bプレミア東地区結果まとめ】A東京と群馬が貯金5で首位攻防戦へ…延長戦を制した横浜BCなど“2位集団”に",
-      "url": "https://basketballking.jp/news/japan/20261012/637464.html",
-      "ts": 1791799106000,
-      "date": "2026-10-12",
-      "source": "バスケットボールキング"
-    },
-    {
       "title": "フラー譲「自分たちのバスケは出せている」常盤（群馬県）",
       "url": "https://basket-count.com/article/detail/276485",
       "ts": 1791788436000,
@@ -59,39 +129,11 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "FE名古屋のフランシス・ロペスが脳震とうと診断…段階的プロトコルで復帰時期は未定",
-      "url": "https://basketballking.jp/news/japan/20261012/637392.html",
-      "ts": 1791788390000,
-      "date": "2026-10-12",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "東京SRの田中大貴がキャリア通算6000得点＆2000アシストに到達…Bプレミア開幕後も全7戦出場し存在感",
-      "url": "https://basketballking.jp/news/japan/20261012/637368.html",
-      "ts": 1791784970000,
-      "date": "2026-10-12",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "【10月11日Bワン結果まとめ】北地区首位争いは岩手に軍配…横浜EXは後半に逆転し福井に快勝",
-      "url": "https://basketballking.jp/news/japan/20261012/637375.html",
-      "ts": 1791784445000,
-      "date": "2026-10-12",
-      "source": "バスケットボールキング"
-    },
-    {
       "title": "Bプレミア第4週は祝日の月曜日から試合がスタート、連敗から脱出した昨シーズンのB1王者長崎はB2王者の神戸と対戦",
       "url": "https://basket-count.com/article/detail/276454",
       "ts": 1791779400000,
       "date": "2026-10-12",
       "source": "バスケットカウント"
-    },
-    {
-      "title": "【10月11日のBプレミア最多記録】昨季B1得点王が本領発揮…トリプルダブル達成者も誕生",
-      "url": "https://basketballking.jp/news/japan/20261012/637285.html",
-      "ts": 1791776782000,
-      "date": "2026-10-12",
-      "source": "バスケットボールキング"
     },
     {
       "title": "決勝弾を沈めた仙台89ERSのエース、ジャレット・カルバー「自分の得意なスポットでシュートを打ち切ることを決めていました」",
@@ -112,34 +154,6 @@
       "url": "https://basket-count.com/article/detail/276412",
       "ts": 1791768889000,
       "date": "2026-10-12",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "藤井煌馬「最後は全員で勝てるように」県立盛岡工業（岩手県）",
-      "url": "https://basket-count.com/article/detail/276396",
-      "ts": 1791766858000,
-      "date": "2026-10-12",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "アルバルク東京がデジョン・ジャロウと契約を締結、オルブリッチ離脱の補強は同じポジションではなく196cmのウイングプレーヤー",
-      "url": "https://basket-count.com/article/detail/276395",
-      "ts": 1791764739000,
-      "date": "2026-10-12",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "棚橋康成「力と構造を掛け算するバスケを」東京サンロッカーズ U18（東京都）",
-      "url": "https://basket-count.com/article/detail/276388",
-      "ts": 1791702018000,
-      "date": "2026-10-11",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "川崎ブレイブサンダースの桶谷大HCが若手に求める要素「どういう風に尖った部分を出してくれるかが、試合に出せるかに繋がる」",
-      "url": "https://basket-count.com/article/detail/276380",
-      "ts": 1791694551000,
-      "date": "2026-10-11",
       "source": "バスケットカウント"
     }
   ],
