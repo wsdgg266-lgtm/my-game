@@ -1,62 +1,111 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": "2026-10-13T23:02:00.477Z",
+  "updatedAt": "2026-10-14T21:53:47.518Z",
   "items": [
     {
-      "title": "車いすバスケ女子、活躍誓う　アジアパラ大会、鈴鹿で直前合宿(伊勢新聞)",
-      "url": "https://news.yahoo.co.jp/articles/190485bd7ef34238cbb7c6af2d952ceaf8c2e977",
-      "ts": 1791932406000,
+      "title": "【EASL】ロスター10人の緊急事態もなんのその、アルバルク東京が全員バスケでサウスゴビ・ブロンコスに35点差の快勝",
+      "url": "https://basket-count.com/article/detail/276643",
+      "ts": 1791981919000,
       "date": "2026-10-14",
-      "source": "Yahoo!ニュース(スポーツ)"
+      "source": "バスケットカウント"
     },
     {
-      "title": "開幕目前でも実力者は多数…NBAの契約を待つ即戦力＆育成枠のFA選手をピックアップ",
-      "url": "https://basketballking.jp/news/world/20261013/637287.html",
-      "ts": 1791893750000,
-      "date": "2026-10-13",
+      "title": "離脱中のポルジンギス、チーム施設訪問も復帰は依然不透明…チーム首脳陣が現状を説明",
+      "url": "https://basketballking.jp/news/world/20261014/637785.html",
+      "ts": 1791976375000,
+      "date": "2026-10-14",
       "source": "バスケットボールキング"
     },
     {
-      "title": "【更新中】一覧「Bリーグドラフト2027」志望届提出選手リスト…指名候補選手のポジション・身長・出身校",
-      "url": "https://basketballking.jp/news/japan/fixed/634331.html",
-      "ts": 1791889232000,
-      "date": "2026-10-13",
+      "title": "「彼はまだ終わっていない」河村勇輝、契約解除も続くNBA挑戦…クリッパーズ選択にあった“先を見据えた理由”",
+      "url": "https://basketballking.jp/news/world/20261014/637667.html",
+      "ts": 1791976042000,
+      "date": "2026-10-14",
       "source": "バスケットボールキング"
     },
     {
-      "title": "ヨキッチが“史上最高の4人”を選定「ラッセル、ジョーダン、チェンバレン、あと1人は…」",
-      "url": "https://basketballking.jp/news/world/20261013/637501.html",
-      "ts": 1791889214000,
-      "date": "2026-10-13",
+      "title": "「あえて自由を制限している」プレシーズン4戦全敗のニックス…HCはプロセスを重視",
+      "url": "https://basketballking.jp/news/world/20261014/637780.html",
+      "ts": 1791973735000,
+      "date": "2026-10-14",
       "source": "バスケットボールキング"
     },
     {
-      "title": "青森のブレイクフィールドに罰金10万円…山形戦の終盤に退場、出場停止はなし",
-      "url": "https://basketballking.jp/news/japan/20261013/637611.html",
-      "ts": 1791887424000,
-      "date": "2026-10-13",
+      "title": "ペイトン・プリチャード、セルティックスと契約延長に合意…今オフは「成長」に集中",
+      "url": "https://basketballking.jp/news/world/20261014/637637.html",
+      "ts": 1791972333000,
+      "date": "2026-10-14",
       "source": "バスケットボールキング"
     },
     {
-      "title": "元セルティックスのスティーブンズが2位／大学からNBAへ転身したHCの通算勝率トップ10",
-      "url": "https://basketballking.jp/news/world/20261013/636871.html",
-      "ts": 1791885797000,
-      "date": "2026-10-13",
+      "title": "大会MVPの竹内みや「自分たちは世界でメダルを狙える」U18日本代表がアジアカップで得た収穫",
+      "url": "https://basketballking.jp/news/japan/20261014/637702.html",
+      "ts": 1791971889000,
+      "date": "2026-10-14",
       "source": "バスケットボールキング"
     },
     {
-      "title": "【最新】Bリーグ「平均来場者数」まとめ…全55クラブの2026－27シーズン数値まとめ",
-      "url": "https://basketballking.jp/news/japan/fixed/634999.html",
-      "ts": 1791885625000,
-      "date": "2026-10-13",
+      "title": "開幕3週間でドラ3が平均2ケタ得点を記録…Bプレミア“ドラフト1期生”スタッツまとめ",
+      "url": "https://basketballking.jp/news/japan/20261014/637644.html",
+      "ts": 1791970365000,
+      "date": "2026-10-14",
       "source": "バスケットボールキング"
     },
     {
-      "title": "U18トップリーグD1最終週の日程発表…福大大濠vs東山など代々木第一で男女8試合、20日にチケット販売開始",
-      "url": "https://basketballking.jp/news/japan/20261013/637597.html",
-      "ts": 1791884456000,
-      "date": "2026-10-13",
+      "title": "芹川宇海「とにかく1試合に全部を出し切る」筑紫女学園（福岡県）",
+      "url": "https://basket-count.com/article/detail/276638",
+      "ts": 1791970206000,
+      "date": "2026-10-14",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "JBAが公式サイト障害について説明「もう戻せないという状態になった」復旧困難により再構築へ",
+      "url": "https://basketballking.jp/news/japan/20261014/637749.html",
+      "ts": 1791968849000,
+      "date": "2026-10-14",
       "source": "バスケットボールキング"
+    },
+    {
+      "title": "篠田凪斗、阿部りあむ、永江奏楽「接戦に競り勝って自信を」育英（兵庫県）",
+      "url": "https://basket-count.com/article/detail/276579",
+      "ts": 1791963007000,
+      "date": "2026-10-14",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "中学生が挑むNBAへの道…GLOBALLERS 7期生の全記録",
+      "url": "https://basketballking.jp/news/japan/20261014/637653.html",
+      "ts": 1791957619000,
+      "date": "2026-10-14",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "八村塁は『非常に完成された選手』…古巣クリッパーズの先輩グリフィンが語る期待",
+      "url": "https://basketballking.jp/news/world/20261014/637671.html",
+      "ts": 1791957576000,
+      "date": "2026-10-14",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【10月12日のBプレミア最多記録】延長戦を制した横浜BC勢ズラリ…ドラ3新井楽人が33得点マーク",
+      "url": "https://basketballking.jp/news/japan/20261014/637639.html",
+      "ts": 1791951189000,
+      "date": "2026-10-14",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "塚田海翔「開始1秒から自分たちのバスケを」埼玉栄（埼玉県）",
+      "url": "https://basket-count.com/article/detail/276559",
+      "ts": 1791948633000,
+      "date": "2026-10-14",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【NBA】セルティックスがペイトン・プリチャードと2年総額4420万ドルで契約延長、昨シーズンは先発も任された生え抜きのガード",
+      "url": "https://basket-count.com/article/detail/276544",
+      "ts": 1791945016000,
+      "date": "2026-10-14",
+      "source": "バスケットカウント"
     },
     {
       "title": "変革のアルバルク東京で危機感を語る大倉颯太「ポイントガードとしての強みを証明しないといけない」",
@@ -66,32 +115,11 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "信州がパワハラ報道巡るリーグの調査結果を公表…調査対象の事項はいずれも規約違反に当たらず",
-      "url": "https://basketballking.jp/news/japan/20261013/637590.html",
-      "ts": 1791882293000,
-      "date": "2026-10-13",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "Bプレミア参入を目指す福井が組織体制を変更…手代木氏をGMから新設役職へ配置転換",
-      "url": "https://basketballking.jp/news/japan/20261013/637593.html",
-      "ts": 1791880064000,
-      "date": "2026-10-13",
-      "source": "バスケットボールキング"
-    },
-    {
       "title": "NBA クリッパーズが河村勇輝との契約解除",
       "url": "https://news.web.nhk/newsweb/na/nd-20261013de58566",
       "ts": 1791876726000,
       "date": "2026-10-13",
       "source": "NHKニュース(スポーツ)"
-    },
-    {
-      "title": "Bリーグがドラフトロッタリーの“前倒し開催”発表…指名選手の報酬はサラリーキャップ対象外とする方向で調整中",
-      "url": "https://basketballking.jp/news/japan/20261013/637533.html",
-      "ts": 1791871213000,
-      "date": "2026-10-13",
-      "source": "バスケットボールキング"
     },
     {
       "title": "第三回データで読むWINNER〜第3週振り返り〜【PR】Promoted by スポーツくじWINNER",
@@ -118,41 +146,6 @@
       "title": "横浜ビー・コルセアーズで完全復活、新ルールで価値を高める佐藤卓磨「外国籍選手を相手にできる力が、自分にはあると信じています」",
       "url": "https://basket-count.com/article/detail/276501",
       "ts": 1791808594000,
-      "date": "2026-10-12",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "フラー譲「自分たちのバスケは出せている」常盤（群馬県）",
-      "url": "https://basket-count.com/article/detail/276485",
-      "ts": 1791788436000,
-      "date": "2026-10-12",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "Bプレミア第4週は祝日の月曜日から試合がスタート、連敗から脱出した昨シーズンのB1王者長崎はB2王者の神戸と対戦",
-      "url": "https://basket-count.com/article/detail/276454",
-      "ts": 1791779400000,
-      "date": "2026-10-12",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "決勝弾を沈めた仙台89ERSのエース、ジャレット・カルバー「自分の得意なスポットでシュートを打ち切ることを決めていました」",
-      "url": "https://basket-count.com/article/detail/276437",
-      "ts": 1791774900000,
-      "date": "2026-10-12",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "東地区は全勝のチームが姿を消す、西地区は広島ドラゴンフライズが6連勝で首位をキープ！Bプレミア第3週の試合結果一覧",
-      "url": "https://basket-count.com/article/detail/276411",
-      "ts": 1791774000000,
-      "date": "2026-10-12",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【NBA】586日ぶりの復帰戦で17得点、カイリー・アービングがプレシーズンマッチで躍動「アタックすることだけを考えていた」",
-      "url": "https://basket-count.com/article/detail/276412",
-      "ts": 1791768889000,
       "date": "2026-10-12",
       "source": "バスケットカウント"
     }
