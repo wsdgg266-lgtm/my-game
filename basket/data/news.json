@@ -1,7 +1,119 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": "2026-10-14T21:53:47.518Z",
+  "updatedAt": "2026-10-15T21:39:56.135Z",
   "items": [
+    {
+      "title": "8年前のハワイを思い出す発言…八村塁28歳「それが僕の仕事ですからね」新天地クリッパーズで迎える「NBA第3章」の覚悟(Number Web)",
+      "url": "https://news.yahoo.co.jp/articles/740a58ac1a59d1ea26f27b80f62b16d73ef11b49",
+      "ts": 1792099278000,
+      "date": "2026-10-16",
+      "source": "Yahoo!ニュース(スポーツ)"
+    },
+    {
+      "title": "JBA会長就任から1年…島田慎二氏が日本代表、バスケ界の連携、資金調達や情報発信の重要性を語る",
+      "url": "https://basketballking.jp/news/shimada-no-mic/20261015/637891.html",
+      "ts": 1792061875000,
+      "date": "2026-10-15",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【NBA】スパーズが注目の『3ガード』をお披露目、フォックス、ハーパー、キャッスルの共闘でサンズに快勝「自然な進化の過程」",
+      "url": "https://basket-count.com/article/detail/276762",
+      "ts": 1792053016000,
+      "date": "2026-10-15",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "キャリアハイの33得点で千葉J撃破の立役者に、横浜ビー・コルセアーズの新井楽人「本当は合わせて動いて得点を取るほうが得意」",
+      "url": "https://basket-count.com/article/detail/276687",
+      "ts": 1792051250000,
+      "date": "2026-10-15",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【NBA】ウォリアーズのクリスタプス・ポルジンギスが健康面の問題で無期限の離脱「乗り越えられると信じている」",
+      "url": "https://basket-count.com/article/detail/276702",
+      "ts": 1792050603000,
+      "date": "2026-10-15",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "八村塁が子どもたちへエール「目標に向かって頑張って」オイコスが特別インタビューなど動画公開",
+      "url": "https://basketballking.jp/news/release/20261015/637685.html",
+      "ts": 1792048457000,
+      "date": "2026-10-15",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "「来年のU19W杯で優勝するという強い覚悟を」U18日本代表・細澤幸生がアジア杯で痛感した課題",
+      "url": "https://basketballking.jp/news/japan/20261015/637760.html",
+      "ts": 1792047141000,
+      "date": "2026-10-15",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【更新中】一覧「Bリーグドラフト2027」志望届提出選手リスト…指名候補選手のポジション・身長・出身校",
+      "url": "https://basketballking.jp/news/japan/fixed/634331.html",
+      "ts": 1792045832000,
+      "date": "2026-10-15",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【最新】Bリーグ「平均来場者数」まとめ…全55クラブの2026－27シーズン数値まとめ",
+      "url": "https://basketballking.jp/news/japan/fixed/634999.html",
+      "ts": 1792044025000,
+      "date": "2026-10-15",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【NBA】若きマーベリックスを導くカギとなるカイリー・アービング、球団社長のウジリが寄せる信頼と期待「この世界で唯一の存在」",
+      "url": "https://basket-count.com/article/detail/276618",
+      "ts": 1792043584000,
+      "date": "2026-10-15",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "“9人体制”のA東京がEASL白星スタート…長崎は韓国王者に黒星、琉球は28日初戦",
+      "url": "https://basketballking.jp/news/world/20261015/637830.html",
+      "ts": 1792040574000,
+      "date": "2026-10-15",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "「バスケットが今、楽しくて」41歳の竹内譲次…“オンザコートフリー”となったBプレミアで増す存在感",
+      "url": "https://basketballking.jp/news/japan/20261015/637815.html",
+      "ts": 1792034908000,
+      "date": "2026-10-15",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "川崎ブレイブサンダースの新たな舵取り役を担うモハメド-アリ・アブドゥル-ラフマン「年齢を重ねるにつれて新しい挑戦を求めるように」",
+      "url": "https://basket-count.com/article/detail/276668",
+      "ts": 1792033200000,
+      "date": "2026-10-15",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "スティーブ・カーHC、ウォリアーズのオフェンスに苦言「目指すところには程遠い」",
+      "url": "https://basketballking.jp/news/world/20261015/637803.html",
+      "ts": 1792033174000,
+      "date": "2026-10-15",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "“不機嫌”を“ご機嫌”にトレード？…ラメロ加入のウルブズ、指揮官の発言が話題に",
+      "url": "https://basketballking.jp/news/world/20261015/637805.html",
+      "ts": 1792031894000,
+      "date": "2026-10-15",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【EASL】外国籍選手コンビに62得点を奪われた長崎ヴェルカ、最終クォーターに失速しKBL王者の釜山KCCイージスに15点差で敗れる",
+      "url": "https://basket-count.com/article/detail/276623",
+      "ts": 1792025677000,
+      "date": "2026-10-15",
+      "source": "バスケットカウント"
+    },
     {
       "title": "【EASL】ロスター10人の緊急事態もなんのその、アルバルク東京が全員バスケでサウスゴビ・ブロンコスに35点差の快勝",
       "url": "https://basket-count.com/article/detail/276643",
@@ -17,53 +129,11 @@
       "source": "バスケットボールキング"
     },
     {
-      "title": "「彼はまだ終わっていない」河村勇輝、契約解除も続くNBA挑戦…クリッパーズ選択にあった“先を見据えた理由”",
-      "url": "https://basketballking.jp/news/world/20261014/637667.html",
-      "ts": 1791976042000,
-      "date": "2026-10-14",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "「あえて自由を制限している」プレシーズン4戦全敗のニックス…HCはプロセスを重視",
-      "url": "https://basketballking.jp/news/world/20261014/637780.html",
-      "ts": 1791973735000,
-      "date": "2026-10-14",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "ペイトン・プリチャード、セルティックスと契約延長に合意…今オフは「成長」に集中",
-      "url": "https://basketballking.jp/news/world/20261014/637637.html",
-      "ts": 1791972333000,
-      "date": "2026-10-14",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "大会MVPの竹内みや「自分たちは世界でメダルを狙える」U18日本代表がアジアカップで得た収穫",
-      "url": "https://basketballking.jp/news/japan/20261014/637702.html",
-      "ts": 1791971889000,
-      "date": "2026-10-14",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "開幕3週間でドラ3が平均2ケタ得点を記録…Bプレミア“ドラフト1期生”スタッツまとめ",
-      "url": "https://basketballking.jp/news/japan/20261014/637644.html",
-      "ts": 1791970365000,
-      "date": "2026-10-14",
-      "source": "バスケットボールキング"
-    },
-    {
       "title": "芹川宇海「とにかく1試合に全部を出し切る」筑紫女学園（福岡県）",
       "url": "https://basket-count.com/article/detail/276638",
       "ts": 1791970206000,
       "date": "2026-10-14",
       "source": "バスケットカウント"
-    },
-    {
-      "title": "JBAが公式サイト障害について説明「もう戻せないという状態になった」復旧困難により再構築へ",
-      "url": "https://basketballking.jp/news/japan/20261014/637749.html",
-      "ts": 1791968849000,
-      "date": "2026-10-14",
-      "source": "バスケットボールキング"
     },
     {
       "title": "篠田凪斗、阿部りあむ、永江奏楽「接戦に競り勝って自信を」育英（兵庫県）",
@@ -73,45 +143,10 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "中学生が挑むNBAへの道…GLOBALLERS 7期生の全記録",
-      "url": "https://basketballking.jp/news/japan/20261014/637653.html",
-      "ts": 1791957619000,
-      "date": "2026-10-14",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "八村塁は『非常に完成された選手』…古巣クリッパーズの先輩グリフィンが語る期待",
-      "url": "https://basketballking.jp/news/world/20261014/637671.html",
-      "ts": 1791957576000,
-      "date": "2026-10-14",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "【10月12日のBプレミア最多記録】延長戦を制した横浜BC勢ズラリ…ドラ3新井楽人が33得点マーク",
-      "url": "https://basketballking.jp/news/japan/20261014/637639.html",
-      "ts": 1791951189000,
-      "date": "2026-10-14",
-      "source": "バスケットボールキング"
-    },
-    {
       "title": "塚田海翔「開始1秒から自分たちのバスケを」埼玉栄（埼玉県）",
       "url": "https://basket-count.com/article/detail/276559",
       "ts": 1791948633000,
       "date": "2026-10-14",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【NBA】セルティックスがペイトン・プリチャードと2年総額4420万ドルで契約延長、昨シーズンは先発も任された生え抜きのガード",
-      "url": "https://basket-count.com/article/detail/276544",
-      "ts": 1791945016000,
-      "date": "2026-10-14",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "変革のアルバルク東京で危機感を語る大倉颯太「ポイントガードとしての強みを証明しないといけない」",
-      "url": "https://basket-count.com/article/detail/276540",
-      "ts": 1791883315000,
-      "date": "2026-10-13",
       "source": "バスケットカウント"
     },
     {
@@ -120,34 +155,6 @@
       "ts": 1791876726000,
       "date": "2026-10-13",
       "source": "NHKニュース(スポーツ)"
-    },
-    {
-      "title": "第三回データで読むWINNER〜第3週振り返り〜【PR】Promoted by スポーツくじWINNER",
-      "url": "https://basket-count.com/article/detail/276526",
-      "ts": 1791861300000,
-      "date": "2026-10-13",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "A東京がTOYOTA ARENA TOKYO開業1周年を記念した特別イベント『AOMI Beer Garden』を10月21日から24日までの4日間に開催",
-      "url": "https://basket-count.com/article/detail/276510",
-      "ts": 1791860446000,
-      "date": "2026-10-13",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "今井苺「まずは強気で戦うこと」日ノ本学園（兵庫県）",
-      "url": "https://basket-count.com/article/detail/276491",
-      "ts": 1791853230000,
-      "date": "2026-10-13",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "横浜ビー・コルセアーズで完全復活、新ルールで価値を高める佐藤卓磨「外国籍選手を相手にできる力が、自分にはあると信じています」",
-      "url": "https://basket-count.com/article/detail/276501",
-      "ts": 1791808594000,
-      "date": "2026-10-12",
-      "source": "バスケットカウント"
     }
   ],
   "note": "",
