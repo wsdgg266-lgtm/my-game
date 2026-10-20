@@ -1,145 +1,152 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": "2026-10-19T22:34:46.354Z",
+  "updatedAt": "2026-10-20T21:48:40.304Z",
   "items": [
     {
-      "title": "残り0.8秒から劇的3Pを沈めた山崎稜「自信につながるし、今後も変わらず準備を続けていきたい」",
-      "url": "https://basketballking.jp/news/japan/20261020/638589.html",
-      "ts": 1792429042000,
+      "title": "【NBA】新シーズン開幕！ピストンズが開幕カードから大逆転勝利！最大22点差をひっくり返した(スポニチアネックス)",
+      "url": "https://news.yahoo.co.jp/articles/b93e69423f9eb17667a664482ef2eced2c9dfc60",
+      "ts": 1792532259000,
+      "date": "2026-10-21",
+      "source": "Yahoo!ニュース(スポーツ)"
+    },
+    {
+      "title": "「ちょっと短かったはず」のシュートが吸い込まれた理由…山崎稜と広島ブースターが起こした残り0.8秒の奇跡",
+      "url": "https://basketballking.jp/news/japan/20261020/638803.html",
+      "ts": 1792494203000,
       "date": "2026-10-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "八村塁が好調の要因を「経験」と即答…新天地へ迅速にアジャスト、開幕を迎える8年目",
-      "url": "https://basketballking.jp/news/world/20261019/638569.html",
-      "ts": 1792402928000,
-      "date": "2026-10-19",
+      "title": "ドワイト・ハワードが改めて引退か…所属先が「キャリア最後の試合を終えた」と発表",
+      "url": "https://basketballking.jp/news/world/20261020/638609.html",
+      "ts": 1792492332000,
+      "date": "2026-10-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "家族の絆と不屈の闘志…ドンテ・グランタムが東京SRに捧げる熱き想い【TOBI»RUSH】",
-      "url": "https://basketballking.jp/news/tobirush/20261019/638496.html",
-      "ts": 1792400452000,
-      "date": "2026-10-19",
+      "title": "レイカーズがコネクトをウェイブ…指揮官が事情を語る「必要とされるものが変わった」",
+      "url": "https://basketballking.jp/news/world/20261020/638607.html",
+      "ts": 1792489907000,
+      "date": "2026-10-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "谷村帆香「自分にできるプレーをとにかく一生懸命やろう」浜松開誠館（静岡県）",
-      "url": "https://basket-count.com/article/detail/277067",
-      "ts": 1792399039000,
-      "date": "2026-10-19",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "Bプレミア第5週、東地区首位のアルバルク東京はホーム3連戦、西地区全勝の広島ドラゴンフライズと三遠ネオフェニックスが激突！",
-      "url": "https://basket-count.com/article/detail/277013",
-      "ts": 1792398000000,
-      "date": "2026-10-19",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "日本代表候補に名前を連ねた明治大の武藤俊太朗が公示…Bリーグドラフト志望選手リスト更新",
-      "url": "https://basketballking.jp/news/japan/20261019/638563.html",
-      "ts": 1792397173000,
-      "date": "2026-10-19",
+      "title": "開幕前日にマブスが「常に模範的なプロであり続けた」ドワイト・パウエルを放出",
+      "url": "https://basketballking.jp/news/world/20261020/638601.html",
+      "ts": 1792486919000,
+      "date": "2026-10-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "【NBA】復調を見せたベン・シモンズが右アキレス腱断裂で今シーズン絶望、キングスは開幕直前に構想再考へ「物語の終わりではない」",
-      "url": "https://basket-count.com/article/detail/276999",
-      "ts": 1792394375000,
-      "date": "2026-10-19",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "TOYOTA ARENA TOKYOで屋外シネマ開催…『マッドマックス』『SING』を芝生の上で鑑賞",
-      "url": "https://basketballking.jp/news/japan/20261019/638503.html",
-      "ts": 1792393740000,
-      "date": "2026-10-19",
+      "title": "サンダー期待の新人アデイ・マーラの出場に黄色信号？…古巣との契約問題でサンダーと見解対立",
+      "url": "https://basketballking.jp/news/world/20261020/638770.html",
+      "ts": 1792486864000,
+      "date": "2026-10-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "先発起用で躍動する千葉ジェッツの瀬川琉久「ヘッドコーチのやりたいバスケットボールは、自分の得意なスタイルとマッチしている」",
-      "url": "https://basket-count.com/article/detail/277014",
-      "ts": 1792391769000,
-      "date": "2026-10-19",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "「海賊魂は永遠に僕の心にある」現役引退の川村卓也氏セレモニー…“古巣”横浜BCへの感謝と次世代にエール",
-      "url": "https://basketballking.jp/news/japan/20261019/638447.html",
-      "ts": 1792390729000,
-      "date": "2026-10-19",
+      "title": "新生Bリーグでは昇格第1号…ウォルガ湘南が来季Bワン参入決定、書類遅延で制裁も",
+      "url": "https://basketballking.jp/news/japan/20261020/638702.html",
+      "ts": 1792486502000,
+      "date": "2026-10-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "EGOZARUがローカットモデル「EGO BLAZE LOW」を発売…2カラーを展開",
-      "url": "https://basketballking.jp/news/japan/20261019/638459.html",
-      "ts": 1792389726000,
-      "date": "2026-10-19",
+      "title": "【NBA】ティンバーウルブズがジェイデン・マクダニエルズと1年約63億円の延長契約に合意、2029-30シーズンまで在籍することに",
+      "url": "https://basket-count.com/article/detail/277169",
+      "ts": 1792485287000,
+      "date": "2026-10-20",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "アレックス・カークが6000得点と400ブロックを同時達成「これからも楽しくバスケットを」",
+      "url": "https://basketballking.jp/news/japan/20261020/638681.html",
+      "ts": 1792483763000,
+      "date": "2026-10-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "サンダーの守備巧者、ケイソン・ウォレスが5年約219億円で延長契約に合意",
-      "url": "https://basketballking.jp/news/world/20261019/638409.html",
-      "ts": 1792386950000,
-      "date": "2026-10-19",
+      "title": "富山グラウジーズ社長が八村塁にも言及…2季連続“制裁付きBプレミア”「崖っぷち」今季も基準未達なら降格",
+      "url": "https://basketballking.jp/news/japan/20261020/638654.html",
+      "ts": 1792483691000,
+      "date": "2026-10-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "NBA公認ブランド「NINJA BASKETBALL ARMY」が公式ストア開設…新商品とブランド映像も解禁",
-      "url": "https://basketballking.jp/news/world/20261019/638428.html",
-      "ts": 1792384481000,
-      "date": "2026-10-19",
+      "title": "佐賀バルーナーズ、ダジンスキーが復帰時期約2カ月の負傷で戦線離脱…国内経験豊富な新戦力獲得も発表",
+      "url": "https://basketballking.jp/news/japan/20261020/638692.html",
+      "ts": 1792478342000,
+      "date": "2026-10-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "昨季フル出場した若手ビッグマン、オソ・イガダロがサンズと3年約45億円の延長契約",
-      "url": "https://basketballking.jp/news/world/20261019/638390.html",
-      "ts": 1792384298000,
-      "date": "2026-10-19",
+      "title": "大阪エヴェッサのBプレミアライセンス判定は継続審査に、10月28日の理事会で条件未達の場合は2028-29シーズンはBワンへ",
+      "url": "https://basket-count.com/article/detail/277131",
+      "ts": 1792478100000,
+      "date": "2026-10-20",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "佐賀バルーナーズのデイビッド・ダジンスキーが右膝後十字靭帯損傷でインジュアリーリスト入り、クリストファー・オリビエを緊急補強",
+      "url": "https://basket-count.com/article/detail/277148",
+      "ts": 1792477755000,
+      "date": "2026-10-20",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "新天地セルティックスで刺激を受けるジョージ「ボストンをホームと呼べる場所にしたい」",
+      "url": "https://basketballking.jp/news/world/20261020/638574.html",
+      "ts": 1792477517000,
+      "date": "2026-10-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "菅匠之介「スピードを生かしたプレーができている」國學院大學久我山（東京都）",
-      "url": "https://basket-count.com/article/detail/276998",
-      "ts": 1792381887000,
-      "date": "2026-10-19",
+      "title": "宇都宮ブレックスのベテラン遠藤祐亮、出番が減少する中での生き残りを懸けた戦い「最初から100％を出す気持ちで臨んでいます」",
+      "url": "https://basket-count.com/article/detail/277121",
+      "ts": 1792473960000,
+      "date": "2026-10-20",
       "source": "バスケットカウント"
     },
     {
-      "title": "群馬vsA東京の東地区上位対決はA東京に軍配、茨城はうれしい開幕初勝利＆ホーム初勝利、Bプレミア第4週の試合結果一覧",
-      "url": "https://basket-count.com/article/detail/276944",
-      "ts": 1792379080000,
-      "date": "2026-10-19",
+      "title": "第四回データで読むWINNER〜第4週振り返り〜【PR】Promoted by スポーツくじWINNER",
+      "url": "https://basket-count.com/article/detail/277103",
+      "ts": 1792466100000,
+      "date": "2026-10-20",
       "source": "バスケットカウント"
     },
     {
-      "title": "練習生から這い上がりチームの主力に、島根スサノオマジックの上田隼輔「周りの支えがあってこそですが、自分の力を信じてやってきた」",
-      "url": "https://basket-count.com/article/detail/276945",
-      "ts": 1792378834000,
-      "date": "2026-10-19",
+      "title": "『勝てる、愛される、続けられる』プロバスケクラブを高知に、長谷至誠「Bリーグこそ私が目指す高知の活性化」",
+      "url": "https://basket-count.com/article/detail/276008",
+      "ts": 1792465225000,
+      "date": "2026-10-20",
       "source": "バスケットカウント"
     },
     {
-      "title": "岩門和樹「40分間、北陸らしい雰囲気で」北陸（福井県）",
-      "url": "https://basket-count.com/article/detail/276935",
-      "ts": 1792369994000,
-      "date": "2026-10-19",
+      "title": "インバウンドイベント『B.LEAGUEポップアップゾーン inマニラ』が盛況のうちに閉幕、今後のインバウンド事業に大きな弾み",
+      "url": "https://basket-count.com/article/detail/277098",
+      "ts": 1792461612000,
+      "date": "2026-10-20",
       "source": "バスケットカウント"
     },
     {
-      "title": "【NBA】ニックスが開幕直前にブルース・ブラウンを放出、『第3のセンター』のジェームズ・ワイズマンを残すことに",
-      "url": "https://basket-count.com/article/detail/276928",
-      "ts": 1792313538000,
-      "date": "2026-10-18",
+      "title": "日置登宇有と荒木恒志郎「大事な試合の大事な場面で力を出す」高山西（岐阜県）",
+      "url": "https://basket-count.com/article/detail/277088",
+      "ts": 1792458000000,
+      "date": "2026-10-20",
       "source": "バスケットカウント"
     },
     {
-      "title": "照沼琉華「一人でなくチームで」明秀学園日立（茨城県）",
-      "url": "https://basket-count.com/article/detail/276918",
-      "ts": 1792310444000,
-      "date": "2026-10-18",
+      "title": "【NBA】ホーネッツがブランドン・ミラーと5年約330億円の大型延長契約に合意、新たなチームの顔へ",
+      "url": "https://basket-count.com/article/detail/277082",
+      "ts": 1792456385000,
+      "date": "2026-10-20",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "大木来唄「留学生に頼ったバスケでは上には行けない」正智深谷（埼玉県）",
+      "url": "https://basket-count.com/article/detail/277074",
+      "ts": 1792455454000,
+      "date": "2026-10-20",
       "source": "バスケットカウント"
     }
   ],

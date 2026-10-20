@@ -1,6 +1,6 @@
 {
   "_readme": "NBAでプレーする日本出身選手。ESPN の各チームロスターから出身地が日本の選手を抽出したもの。scripts/import-basket.mjs が更新します。",
-  "updatedAt": "2026-10-19T22:34:36.405Z",
+  "updatedAt": "2026-10-20T21:48:29.376Z",
   "players": [
     {
       "id": "4066648",
