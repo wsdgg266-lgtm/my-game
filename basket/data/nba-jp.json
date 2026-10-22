@@ -1,6 +1,6 @@
 {
   "_readme": "NBAでプレーする日本出身選手。ESPN の各チームロスターから出身地が日本の選手を抽出したもの。scripts/import-basket.mjs が更新します。",
-  "updatedAt": "2026-10-21T21:54:52.271Z",
+  "updatedAt": "2026-10-22T21:51:44.205Z",
   "players": [
     {
       "id": "4066648",
@@ -9,12 +9,12 @@
       "teamAbbr": "LAC",
       "pos": "F",
       "stats": {
-        "games": "68",
-        "fgPct": "51.4",
-        "ppg": "11.5",
-        "rpg": "3.3",
-        "apg": "0.8",
-        "mpg": "28.3"
+        "games": "1",
+        "fgPct": "23.1",
+        "ppg": "10.0",
+        "rpg": "8.0",
+        "apg": "2.0",
+        "mpg": "32.0"
       }
     }
   ],
