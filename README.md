@@ -22,6 +22,7 @@
 `https://wsdgg266-lgtm.github.io/my-game/`
 (じしゅ学習ナビは `https://wsdgg266-lgtm.github.io/my-game/jishu/`)
 (四神まなびバトルは `https://wsdgg266-lgtm.github.io/my-game/shishin/`)
+(いろいろぬりえは `https://wsdgg266-lgtm.github.io/my-game/nurie/`)
 
 ## Vercel で公開する
 
@@ -43,6 +44,7 @@
    - バスナビ!: `https://<プロジェクト名>.vercel.app/basket/`
    - おてつだいバンク: `https://<プロジェクト名>.vercel.app/points/`
    - シールアルバム: `https://<プロジェクト名>.vercel.app/seal/`
+   - いろいろぬりえ: `https://<プロジェクト名>.vercel.app/nurie/`
    - じしゅ学習ナビ: `https://<プロジェクト名>.vercel.app/jishu/`
 
 以降はデフォルトブランチ(`claude/shopping-reminder-app-7xpyg5`)への push のたびに
@@ -144,6 +146,14 @@ B.LEAGUE・NBA・バスケットボール日本代表の試合日程、結果、
 写真は端末の外に一切送信しません。詳しくは
 [seal/README.md](seal/README.md)、仕様は [docs/SPEC-seal.md](docs/SPEC-seal.md) を見てください。
 (カメラを使うため https の公開URLで開く必要があります)
+
+## 🎨 同居アプリ: いろいろぬりえ
+
+4〜10歳向けの塗り絵アプリ「いろいろぬりえ」も入っています(`nurie/` フォルダ)。
+タップでぬれるバケツとペン・きらきらペン・スタンプで塗れて、絵の具のおさらで
+色を指でぐるぐる混ぜて自分の色を作れます。撮った写真を線画にして塗ることもでき、
+下絵は 4 ジャンル 32 枚入りです。写真は端末の外に一切送信しません。詳しくは
+[nurie/README.md](nurie/README.md)、仕様は [docs/SPEC-nurie.md](docs/SPEC-nurie.md) を見てください。
 
 ## 技術構成
 

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#FFB347">
+<title>いろいろぬりえ</title>
+<meta name="description" content="4〜10さい むけの ぬりえアプリ。いろを じぶんで まぜて つくったり、とった しゃしんを せんがに して ぬれます。">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  :root{
+    --bg:#FFF7EC; --card:#fff; --ink:#4A3B2F; --sub:#9A8573; --line:#F0DFC8;
+    --accent:#FF8A3D; --accent2:#FF5D8F; --ok:#3DBE6B;
+    --top: env(safe-area-inset-top); --bot: env(safe-area-inset-bottom);
+    --left: env(safe-area-inset-left); --right: env(safe-area-inset-right);
+  }
+  html,body{ width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--ink);
+    font-family:'Hiragino Maru Gothic ProN','Hiragino Maru Gothic Pro','BIZ UDPGothic','Yu Gothic',sans-serif;
+    -webkit-user-select:none; user-select:none; position:fixed; overscroll-behavior:none; -webkit-touch-callout:none; }
+  button{ font:inherit; color:inherit; background:none; border:none; cursor:pointer; touch-action:manipulation; }
+  button:disabled{ opacity:.3; }
+  .screen{ position:absolute; inset:0; display:none; flex-direction:column;
+    padding:var(--top) var(--right) var(--bot) var(--left); }
+  .screen.on{ display:flex; }
+
+  /* ===== 共通 ===== */
+  .bar{ flex:none; display:flex; align-items:center; gap:10px; padding:10px 14px; }
+  .bar h1{ font-size:22px; flex:1; text-align:center; letter-spacing:.05em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .round{ min-width:56px; height:56px; border-radius:18px; background:var(--card); box-shadow:0 3px 0 var(--line);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:26px; line-height:1; padding:0 8px; }
+  .round small{ font-size:11px; margin-top:3px; color:var(--sub); }
+  .round:active{ transform:translateY(2px); box-shadow:0 1px 0 var(--line); }
+  .big{ border-radius:20px; padding:12px 22px; font-size:20px; font-weight:bold; color:#fff;
+    background:var(--accent); box-shadow:0 4px 0 #D9682A; }
+  .big:active{ transform:translateY(3px); box-shadow:0 1px 0 #D9682A; }
+  .big.green{ background:var(--ok); box-shadow:0 4px 0 #2A9150; }
+  .big.pink{ background:var(--accent2); box-shadow:0 4px 0 #D0406E; }
+  .big.white{ background:#fff; color:var(--ink); box-shadow:0 4px 0 var(--line); }
+
+  /* ===== ホーム ===== */
+  #home{ align-items:center; justify-content:center; gap:4vmin;
+    background:radial-gradient(circle at 20% 15%,#FFE0B5 0,transparent 35%),radial-gradient(circle at 85% 80%,#FFD1E0 0,transparent 40%),var(--bg); }
+  .logo{ font-size:min(9vmin,64px); font-weight:bold; letter-spacing:.06em; text-align:center; }
+  .logo span{ display:inline-block; }
+  .homebtns{ display:flex; gap:3vmin; flex-wrap:wrap; justify-content:center; padding:0 16px; }
+  .homebtn{ width:min(28vmin,220px); aspect-ratio:1; border-radius:32px; background:#fff; box-shadow:0 6px 0 var(--line);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
+  .homebtn b{ font-size:min(14vmin,96px); line-height:1; }
+  .homebtn span{ font-size:min(3.6vmin,22px); font-weight:bold; }
+  .homebtn:active{ transform:translateY(4px); box-shadow:0 2px 0 var(--line); }
+  @media (max-width:560px) and (orientation:portrait){ .homebtn{ width:40vw; } .homebtn b{ font-size:18vw; } .homebtn span{ font-size:4.4vw; } }
+
+  /* ===== えらぶ ===== */
+  .tabs{ flex:none; display:flex; gap:8px; padding:0 14px 10px; overflow-x:auto; }
+  .tab{ flex:none; padding:8px 16px; border-radius:16px; background:#fff; font-size:18px; font-weight:bold; box-shadow:0 3px 0 var(--line); }
+  .tab.on{ background:var(--accent); color:#fff; box-shadow:0 3px 0 #D9682A; }
+  .grid{ flex:1; overflow-y:auto; padding:6px 14px 20px; display:grid; gap:14px;
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); align-content:start; -webkit-overflow-scrolling:touch; }
+  .pic{ background:#fff; border-radius:20px; padding:8px; box-shadow:0 4px 0 var(--line); display:flex; flex-direction:column; align-items:center; position:relative; }
+  .pic img{ width:100%; aspect-ratio:1; object-fit:contain; border-radius:12px; background:#fff; pointer-events:none; }
+  .pic .nm{ font-size:16px; font-weight:bold; margin-top:4px; }
+  .pic .lv{ position:absolute; top:8px; left:10px; font-size:14px; }
+  .pic:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--line); }
+
+  /* ===== ぬる ===== */
+  #paint{ display:none; }
+  #paint.on{ display:grid; grid-template-columns:auto 1fr auto; grid-template-rows:auto 1fr;
+    grid-template-areas:"top top top" "tools stage pal"; }
+  #paint .bar{ grid-area:top; padding:8px 12px; }
+  #tools{ grid-area:tools; display:flex; flex-direction:column; gap:8px; padding:4px 8px 10px 12px; overflow-y:auto; align-items:center; }
+  #pal{ grid-area:pal; display:flex; flex-direction:column; gap:8px; padding:4px 12px 10px 8px; overflow-y:auto; align-items:center; }
+  #stage{ grid-area:stage; position:relative; overflow:hidden; touch-action:none; border-radius:18px; margin:2px;
+    background:repeating-conic-gradient(#FBEFDD 0 25%, #FFF7EC 0 50%) 0 0/24px 24px; }
+  #board{ position:absolute; left:0; top:0; transform-origin:0 0; background:#fff; box-shadow:0 4px 16px #0002; border-radius:4px; }
+  #board canvas{ position:absolute; inset:0; width:100%; height:100%; border-radius:4px; }
+  .tool{ width:68px; height:64px; border-radius:18px; background:#fff; box-shadow:0 3px 0 var(--line);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:28px; line-height:1; flex:none; position:relative; }
+  .tool small{ font-size:11px; margin-top:4px; color:var(--sub); font-weight:bold; }
+  .tool.on{ background:#FFE3C7; box-shadow:0 0 0 3px var(--accent); }
+  .tool:active{ transform:translateY(2px); }
+  .sizes{ display:flex; flex-direction:column; gap:6px; align-items:center; background:#fff; border-radius:18px; padding:8px 6px; box-shadow:0 3px 0 var(--line); flex:none; }
+  .sizes button{ width:52px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; }
+  .sizes button.on{ background:#FFE3C7; }
+  .sizes i{ display:block; border-radius:50%; background:var(--ink); }
+  .swatches{ display:grid; grid-template-columns:repeat(2,48px); gap:8px; flex:none; }
+  .sw{ width:48px; height:48px; border-radius:50%; box-shadow:inset 0 -4px 0 #0002, 0 2px 0 var(--line); border:3px solid #fff; position:relative; }
+  .sw.on{ box-shadow:0 0 0 3px var(--ink), inset 0 -4px 0 #0002; transform:scale(1.08); }
+  .sw.empty{ background:repeating-linear-gradient(45deg,#f3e7d6 0 6px,#fff 6px 12px)!important; border:2px dashed #E3CDAF; pointer-events:none; box-shadow:none; }
+  .mixbtn{ width:104px; height:56px; border-radius:18px; flex:none; font-size:26px; display:flex; align-items:center; justify-content:center; gap:4px;
+    background:conic-gradient(#E53935,#FFE135,#3DBE6B,#1E5BD8,#8E44AD,#E53935); color:#fff; box-shadow:0 3px 0 var(--line); }
+  .mixbtn span{ background:#fff; color:var(--ink); border-radius:12px; font-size:13px; font-weight:bold; padding:4px 8px; }
+  .mylabel{ font-size:12px; font-weight:bold; color:var(--sub); flex:none; }
+  #stamps{ position:absolute; left:50%; bottom:10px; transform:translateX(-50%); display:none; gap:6px; padding:8px 10px;
+    background:#fffffff0; border-radius:20px; box-shadow:0 4px 14px #0002; max-width:calc(100% - 16px); overflow-x:auto; z-index:5; }
+  #stamps.on{ display:flex; }
+  #stamps button{ flex:none; width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; }
+  #stamps button.on{ background:#FFE3C7; box-shadow:0 0 0 3px var(--accent); }
+  #zoomReset{ position:absolute; right:10px; top:10px; z-index:5; display:none; }
+  #zoomReset.on{ display:flex; }
+  #undoBtn small{ color:var(--sub); }
+
+  @media (orientation:portrait){
+    #paint.on{ grid-template-columns:1fr; grid-template-rows:auto 1fr auto auto;
+      grid-template-areas:"top" "stage" "tools" "pal"; }
+    #tools{ flex-direction:row; padding:8px 10px 4px; overflow-x:auto; overflow-y:hidden; }
+    #pal{ flex-direction:row; padding:4px 10px 10px; overflow-x:auto; overflow-y:hidden; }
+    .sizes{ flex-direction:row; padding:6px; }
+    .sizes button{ width:44px; }
+    .swatches{ grid-template-columns:none; grid-auto-flow:column; grid-template-rows:repeat(2,44px); grid-auto-columns:44px; }
+    .sw{ width:44px; height:44px; }
+    .mixbtn{ width:64px; height:96px; flex-direction:column; }
+    .mylabel{ writing-mode:vertical-rl; }
+  }
+  @media (max-width:520px) and (orientation:portrait){
+    #paint .bar h1{ visibility:hidden; }
+    .tool{ width:54px; height:56px; font-size:24px; }
+    .tool small{ font-size:10px; }
+    #tools{ gap:6px; }
+  }
+  @media (max-height:640px) and (orientation:landscape){
+    .tool{ width:60px; height:52px; font-size:24px; }
+    .tool small{ display:none; }
+    .sw{ width:40px; height:40px; }
+    .swatches{ grid-template-columns:repeat(2,40px); gap:6px; }
+    .mixbtn{ width:88px; height:48px; }
+    .sizes button{ height:32px; }
+  }
+
+  /* ===== いろまぜ ===== */
+  .overlay{ position:fixed; inset:0; background:#4A3B2F66; display:none; align-items:center; justify-content:center; z-index:30; padding:12px; }
+  .overlay.on{ display:flex; }
+  .sheet{ background:var(--bg); border-radius:28px; padding:14px; box-shadow:0 10px 30px #0004; max-width:100%; max-height:100%; overflow:auto; }
+  #mixSheet{ display:grid; gap:12px; grid-template-columns:auto auto; grid-template-areas:"dish side" "cols cols"; align-items:center; }
+  #dishWrap{ grid-area:dish; position:relative; }
+  #dish{ display:block; width:min(56vmin,380px); height:min(56vmin,380px); touch-action:none; }
+  #dishHint{ position:absolute; left:50%; bottom:9%; transform:translateX(-50%); font-size:17px; background:#ffffffd0; border-radius:16px; padding:6px 14px; white-space:nowrap; font-weight:bold; color:var(--sub); text-align:center; pointer-events:none; line-height:1.5; }
+  #dishHint:empty{ display:none; }
+  #dishHint .hand{ font-size:30px; display:inline-block; animation:circle 1.6s linear infinite; }
+  @keyframes circle{ from{ transform:rotate(0) translateX(6px) rotate(0); } to{ transform:rotate(360deg) translateX(6px) rotate(-360deg); } }
+  #mixSide{ grid-area:side; display:flex; flex-direction:column; align-items:center; gap:12px; min-width:150px; }
+  #mixIn{ display:flex; gap:8px; min-height:40px; align-items:center; }
+  #mixIn i{ width:34px; height:34px; border-radius:50%; border:3px solid #fff; box-shadow:0 2px 0 var(--line); }
+  #mixIn .slot{ width:34px; height:34px; border-radius:50%; border:2px dashed #E3CDAF; }
+  #mixResult{ width:110px; height:110px; border-radius:50%; background:#fff; border:5px solid #fff; box-shadow:0 4px 0 var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:44px; color:#D9C6AE; font-weight:bold; transition:background .4s; }
+  #mixMeter{ width:140px; height:14px; border-radius:7px; background:#fff; overflow:hidden; box-shadow:inset 0 1px 2px #0002; }
+  #mixMeter i{ display:block; height:100%; width:0; background:linear-gradient(90deg,#FFB347,#FF5D8F); border-radius:7px; transition:width .2s; }
+  #mixCols{ grid-area:cols; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:640px; }
+  #mixCols .sw{ width:44px; height:44px; }
+  .mixbtns{ display:flex; gap:10px; }
+  @media (orientation:portrait){
+    #mixSheet{ grid-template-columns:auto; grid-template-areas:"dish" "side" "cols"; justify-items:center; }
+    #dish{ width:min(76vw,380px); height:min(76vw,380px); }
+    #mixSide{ flex-direction:row; flex-wrap:wrap; justify-content:center; }
+    #mixResult{ width:80px; height:80px; font-size:32px; }
+  }
+
+  /* ===== しゃしん ===== */
+  #photoBody{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:10px 16px 16px; min-height:0; }
+  #photoStart{ display:flex; gap:3vmin; flex-wrap:wrap; justify-content:center; }
+  #photoEdit{ display:none; flex:1; width:100%; min-height:0; flex-direction:column; align-items:center; gap:12px; }
+  #photoEdit.on{ display:flex; }
+  #photoPrev{ flex:1; min-height:0; max-width:100%; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 4px 16px #0002; }
+  .levels{ display:flex; gap:8px; }
+  .levels button{ padding:10px 16px; border-radius:16px; background:#fff; font-size:17px; font-weight:bold; box-shadow:0 3px 0 var(--line); }
+  .levels button.on{ background:var(--accent); color:#fff; box-shadow:0 3px 0 #D9682A; }
+  .levels button i{ font-style:normal; display:block; font-size:12px; letter-spacing:-1px; }
+  #photoBusy{ display:none; font-size:22px; font-weight:bold; }
+  #photoBusy.on{ display:block; }
+
+  /* ===== ギャラリー ===== */
+  .work{ background:#fff; border-radius:20px; padding:8px; box-shadow:0 4px 0 var(--line); position:relative; }
+  .work img{ width:100%; aspect-ratio:1; object-fit:contain; border-radius:12px; pointer-events:none; background:#fff; }
+  .work .trash{ position:absolute; right:6px; bottom:6px; width:44px; height:44px; border-radius:50%; background:#fff; box-shadow:0 2px 6px #0003; font-size:20px; display:flex; align-items:center; justify-content:center; }
+  .trash svg{ position:absolute; inset:0; transform:rotate(-90deg); }
+  .trash circle{ fill:none; stroke:var(--accent2); stroke-width:4; stroke-dasharray:126; stroke-dashoffset:126; }
+  .trash.hold circle{ transition:stroke-dashoffset 3s linear; stroke-dashoffset:0; }
+  .none{ grid-column:1/-1; text-align:center; font-size:22px; color:var(--sub); padding:60px 0; line-height:1.8; }
+
+  /* ===== ダイアログ・トースト ===== */
+  #dlg .sheet{ text-align:center; padding:26px 22px; display:flex; flex-direction:column; gap:18px; align-items:center; }
+  #dlgMsg{ font-size:22px; font-weight:bold; line-height:1.5; }
+  #dlg .btns{ display:flex; gap:12px; }
+  #toast{ position:fixed; left:50%; bottom:calc(30px + var(--bot)); transform:translateX(-50%) translateY(20px); background:var(--ink); color:#fff;
+    padding:12px 20px; border-radius:18px; font-size:18px; font-weight:bold; opacity:0; transition:.25s; pointer-events:none; z-index:50; white-space:nowrap; }
+  #toast.on{ opacity:1; transform:translateX(-50%) translateY(0); }
+  #fx{ position:fixed; inset:0; pointer-events:none; z-index:40; width:100%; height:100%; }
+</style>
+</head>
+<body>
+
+<!-- ホーム -->
+<section class="screen on" id="home">
+  <div class="logo" aria-label="いろいろぬりえ">
+    <span style="color:#E53935">い</span><span style="color:#FB8C00">ろ</span><span style="color:#E8B700">い</span><span style="color:#3DBE6B">ろ</span><span style="color:#1E88E5">ぬ</span><span style="color:#8E44AD">り</span><span style="color:#FF5D8F">え</span>
+  </div>
+  <div class="homebtns">
+    <button class="homebtn" id="goPick"><b>🖼️</b><span>えを えらぶ</span></button>
+    <button class="homebtn" id="goPhoto"><b>📷</b><span>しゃしんで ぬりえ</span></button>
+    <button class="homebtn" id="goGallery"><b>📁</b><span>ぎゃらりー</span></button>
+  </div>
+</section>
+
+<!-- 下絵をえらぶ -->
+<section class="screen" id="pick">
+  <div class="bar">
+    <button class="round" data-home>🏠<small>おうち</small></button>
+    <h1>えを えらぼう</h1>
+    <div style="width:56px"></div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="grid" id="picGrid"></div>
+</section>
+
+<!-- ぬる -->
+<section class="screen" id="paint">
+  <div class="bar">
+    <button class="round" id="paintHome">🏠<small>おうち</small></button>
+    <h1 id="paintTitle"></h1>
+    <button class="round" id="soundBtn">🔊<small>おと</small></button>
+    <button class="big green" id="doneBtn">✓ できた!</button>
+  </div>
+  <div id="tools">
+    <button class="tool on" data-tool="bucket">🪣<small>ぬる</small></button>
+    <button class="tool" data-tool="pen">🖍️<small>ぺん</small></button>
+    <button class="tool" data-tool="kira">✨<small>きらきら</small></button>
+    <button class="tool" data-tool="stamp">⭐<small>すたんぷ</small></button>
+    <button class="tool" data-tool="eraser">🧽<small>けしごむ</small></button>
+    <button class="tool" id="undoBtn" disabled>↩️<small>もどす</small></button>
+    <div class="sizes" id="sizes">
+      <button data-size="0"><i style="width:8px;height:8px"></i></button>
+      <button data-size="1" class="on"><i style="width:16px;height:16px"></i></button>
+      <button data-size="2"><i style="width:26px;height:26px"></i></button>
+    </div>
+  </div>
+  <div id="stage">
+    <div id="board"><canvas id="fillCv"></canvas><canvas id="drawCv"></canvas><canvas id="lineCv"></canvas></div>
+    <div id="stamps"></div>
+    <button class="round" id="zoomReset">🔍<small>もとにもどす</small></button>
+  </div>
+  <div id="pal">
+    <div class="swatches" id="baseCols"></div>
+    <button class="mixbtn" id="mixBtn">🎨<span>まぜる</span></button>
+    <div class="mylabel">じぶんの いろ</div>
+    <div class="swatches" id="myCols"></div>
+  </div>
+</section>
+
+<!-- しゃしん -->
+<section class="screen" id="photo">
+  <div class="bar">
+    <button class="round" data-home>🏠<small>おうち</small></button>
+    <h1>しゃしんで ぬりえ</h1>
+    <div style="width:56px"></div>
+  </div>
+  <div id="photoBody">
+    <div id="photoStart">
+      <button class="homebtn" id="camBtn"><b>📸</b><span>とる</span></button>
+      <button class="homebtn" id="albumBtn"><b>🗂️</b><span>えらぶ</span></button>
+    </div>
+    <div id="photoBusy">⏳ せんを かいているよ…</div>
+    <div id="photoEdit">
+      <img id="photoPrev" alt="">
+      <div class="levels" id="levels">
+        <button data-lv="0">すくない<i>━</i></button>
+        <button data-lv="1" class="on">ふつう<i>━━</i></button>
+        <button data-lv="2">おおい<i>━━━</i></button>
+      </div>
+      <div style="display:flex;gap:12px">
+        <button class="big white" id="photoRetry">↩️ やりなおす</button>
+        <button class="big green" id="photoGo">🖍️ これで ぬる</button>
+      </div>
+    </div>
+  </div>
+  <input type="file" accept="image/*" capture="environment" id="camIn" hidden>
+  <input type="file" accept="image/*" id="albumIn" hidden>
+</section>
+
+<!-- ギャラリー -->
+<section class="screen" id="gallery">
+  <div class="bar">
+    <button class="round" data-home>🏠<small>おうち</small></button>
+    <h1>ぎゃらりー</h1>
+    <div style="width:56px"></div>
+  </div>
+  <div class="grid" id="workGrid"></div>
+</section>
+
+<!-- いろまぜ -->
+<div class="overlay" id="mix">
+  <div class="sheet" id="mixSheet">
+    <div id="dishWrap">
+      <canvas id="dish"></canvas>
+      <div id="dishHint">したの いろを おさらに いれてね</div>
+    </div>
+    <div id="mixSide">
+      <div id="mixIn"></div>
+      <div id="mixResult">?</div>
+      <div id="mixMeter"><i></i></div>
+      <div class="mixbtns">
+        <button class="round" id="washBtn">🫧<small>あらう</small></button>
+        <button class="round" id="mixClose">✖️<small>やめる</small></button>
+      </div>
+      <button class="big green" id="mixDone" disabled>✓ できた!</button>
+    </div>
+    <div id="mixCols"></div>
+  </div>
+</div>
+
+<!-- かくにん -->
+<div class="overlay" id="dlg">
+  <div class="sheet">
+    <div id="dlgMsg"></div>
+    <div class="btns"><button class="big white" id="dlgNo">やめる</button><button class="big pink" id="dlgYes">けす</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<canvas id="fx"></canvas>
+
+<script src="pictures.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
