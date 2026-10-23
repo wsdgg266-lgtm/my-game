@@ -1,48 +1,139 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": "2026-10-22T21:51:56.047Z",
+  "updatedAt": "2026-10-23T21:35:24.937Z",
   "items": [
     {
-      "title": "「スノータイム・レイカーズ」が好発進…ドンチッチ、リーブス、ケスラーの主力が躍動",
-      "url": "https://basketballking.jp/news/world/20261022/639173.html",
-      "ts": 1792671867000,
-      "date": "2026-10-22",
+      "title": "【NBA】ウォリアーズが直面する厳しい現実、ステフィン・カリー「チームの未来を見通すのは難しい」(BASKET COUNT)",
+      "url": "https://news.yahoo.co.jp/articles/5eda65af07381bca550c620f1df786c5d2774483",
+      "ts": 1792789312000,
+      "date": "2026-10-24",
+      "source": "Yahoo!ニュース(スポーツ)"
+    },
+    {
+      "title": "【日程と結果】八村塁 所属 NBAロサンゼルス・クリッパーズ 2026-27シーズン試合予定・スタッツ・ハイライト・中継情報一覧",
+      "url": "https://basketballking.jp/news/world/fixed/638120.html",
+      "ts": 1792749621000,
+      "date": "2026-10-23",
       "source": "バスケットボールキング"
     },
     {
-      "title": "「そんなに強く投げ飛ばしていない」フォックス、ホルムグレンとの小競り合いに疑問",
-      "url": "https://basketballking.jp/news/world/20261022/639170.html",
-      "ts": 1792670459000,
-      "date": "2026-10-22",
+      "title": "苦境の大阪、新たに負傷離脱者が発生し8名欠場…東京SR戦は7人で戦う緊急事態に",
+      "url": "https://basketballking.jp/news/japan/20261023/639371.html",
+      "ts": 1792749227000,
+      "date": "2026-10-23",
       "source": "バスケットボールキング"
     },
     {
-      "title": "リラードとモラントが躍動したブレイザーズ、サンズに41点差の圧勝で白星スタート",
-      "url": "https://basketballking.jp/news/world/20261022/639165.html",
-      "ts": 1792668722000,
-      "date": "2026-10-22",
+      "title": "クリッパーズのルーHC、開幕戦勝利をオーナーに捧げる「今も彼のために戦っている」",
+      "url": "https://basketballking.jp/news/world/20261023/639362.html",
+      "ts": 1792746270000,
+      "date": "2026-10-23",
       "source": "バスケットボールキング"
     },
     {
-      "title": "来季も現役続行を見据えるグリーン「ここで叶わなくても、引退するつもりはない」",
-      "url": "https://basketballking.jp/news/world/20261022/639036.html",
-      "ts": 1792663489000,
-      "date": "2026-10-22",
+      "title": "FE名古屋の月岡熙が「左大腿直筋筋肉離れ」で全治約6週間…日体大出身の23歳メインPGが離脱",
+      "url": "https://basketballking.jp/news/japan/20261023/639348.html",
+      "ts": 1792746166000,
+      "date": "2026-10-23",
       "source": "バスケットボールキング"
     },
     {
-      "title": "女子日本代表のゲインズHC続投が決定…萩原美樹子強化部会長が今シーズンの活動を総括",
-      "url": "https://basketballking.jp/news/japan/20261022/639144.html",
-      "ts": 1792661176000,
-      "date": "2026-10-22",
+      "title": "「当時は『なにくそ』だった」東京SR・野﨑零也のタフな原点…愛する息子の誇りとなり、Bプレミアの頂めざす【TOBI»RUSH】",
+      "url": "https://basketballking.jp/news/tobirush/20261023/639015.html",
+      "ts": 1792746016000,
+      "date": "2026-10-23",
       "source": "バスケットボールキング"
     },
     {
-      "title": "ウィザーズのデイビスが約9カ月ぶりの実戦で34得点…デビュー戦の球団最多タイ記録",
-      "url": "https://basketballking.jp/news/world/20261022/639065.html",
-      "ts": 1792660097000,
-      "date": "2026-10-22",
+      "title": "「NBA Rising Stars Invitational」日本予選が2年連続開催決定…ウインター杯上位校が出場",
+      "url": "https://basketballking.jp/news/japan/20261023/639349.html",
+      "ts": 1792745724000,
+      "date": "2026-10-23",
       "source": "バスケットボールキング"
+    },
+    {
+      "title": "「恥さらし」国歌斉唱中の行動をめぐりトランプ大統領がレブロンを批判…本人も反応",
+      "url": "https://basketballking.jp/news/world/20261023/639345.html",
+      "ts": 1792745139000,
+      "date": "2026-10-23",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "「Bリーグドラフト2027」東京成徳大の櫻井と日体大の塚本がエントリー…志望選手は44名に",
+      "url": "https://basketballking.jp/news/japan/20261023/639341.html",
+      "ts": 1792744324000,
+      "date": "2026-10-23",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "ケガ人多数で苦境に立たされる大阪エヴェッサ、ハードワークを惜しまず戦い続ける植松義也「ケガ人や身長差を言い訳にせず勝利を」",
+      "url": "https://basket-count.com/article/detail/277365",
+      "ts": 1792742400000,
+      "date": "2026-10-23",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【更新中】一覧「Bリーグドラフト2027」志望届提出選手リスト…指名候補選手のポジション・身長・出身校",
+      "url": "https://basketballking.jp/news/japan/fixed/634331.html",
+      "ts": 1792741532000,
+      "date": "2026-10-23",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "リラード×ティソの特別コラボモデル腕時計が発売「デイム・タイム」を表現したPRX新作",
+      "url": "https://basketballking.jp/news/release/20261023/639260.html",
+      "ts": 1792740951000,
+      "date": "2026-10-23",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "開幕無敗の名古屋Dと広島は本物か。対戦相手の成績まで織り込んだレーティングで序盤戦を読む【PR】Promoted by スポーツくじWINNER",
+      "url": "https://basket-count.com/article/detail/277382",
+      "ts": 1792737520000,
+      "date": "2026-10-23",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "小笠原未菜「やるべきこともっと突き詰めたい」千葉経済大学附属（千葉県）",
+      "url": "https://basket-count.com/article/detail/277431",
+      "ts": 1792735200000,
+      "date": "2026-10-23",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "佐藤碧水「準備してきたことを表現しよう」鳳凰（鹿児島県）",
+      "url": "https://basket-count.com/article/detail/277420",
+      "ts": 1792734154000,
+      "date": "2026-10-23",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "琉球ゴールデンキングスの新たな司令塔、大浦颯太が語る手応え「いろいろな変化をつけられるのはすごく良いこと」",
+      "url": "https://basket-count.com/article/detail/277392",
+      "ts": 1792727240000,
+      "date": "2026-10-23",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【NBA】タイリース・ハリバートンが右アキレス腱断裂からの復帰戦でペイサーズを逆転勝利へ導く「まさに『ゼロからのスタート』だ」",
+      "url": "https://basket-count.com/article/detail/277366",
+      "ts": 1792725300000,
+      "date": "2026-10-23",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "苦戦のアルティーリ千葉、安藤誓哉が語る巻き返しのカギ「オフェンスでいろいろなことをできる強みを出していきたい」",
+      "url": "https://basket-count.com/article/detail/277348",
+      "ts": 1792722600000,
+      "date": "2026-10-23",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "白木颯大「1分ずつ、1秒ずつを大事に」高岡第一（富山県）",
+      "url": "https://basket-count.com/article/detail/277357",
+      "ts": 1792715407000,
+      "date": "2026-10-23",
+      "source": "バスケットカウント"
     },
     {
       "title": "NBA 八村塁 新天地での開幕戦で10得点 チームは快勝",
@@ -52,101 +143,10 @@
       "source": "NHKニュース(スポーツ)"
     },
     {
-      "title": "負傷者続出の大阪エヴェッサ、今野翔太GMが現状を説明「私たちは決して諦めておりません」",
-      "url": "https://basketballking.jp/news/japan/20261022/639146.html",
-      "ts": 1792658601000,
-      "date": "2026-10-22",
-      "source": "バスケットボールキング"
-    },
-    {
       "title": "課題の3ポイントシュートで進歩を見せる琉球ゴールデンキングスの脇真大「メンタル面をしっかり整えてプレーできている」",
       "url": "https://basket-count.com/article/detail/277297",
       "ts": 1792657538000,
       "date": "2026-10-22",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "NBA開幕戦で史上初の出来事…アンソニー・エドワーズ、タイ・ジェロームがともに45得点",
-      "url": "https://basketballking.jp/news/world/20261022/639061.html",
-      "ts": 1792652974000,
-      "date": "2026-10-22",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "【B.ONE 見どころ｜10/22～10/25】上昇のきっかけをつかみたいFE名古屋と奈良が対戦…八王子vs東京Uの東京ダービーにも注目",
-      "url": "https://basketballking.jp/news/japan/20261022/639078.html",
-      "ts": 1792651315000,
-      "date": "2026-10-22",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "【NBA】クリッパーズの八村塁が先発起用に応えて10得点8リバウンド2アシストの活躍、121-96でキングスを破って開幕白星発進！",
-      "url": "https://basket-count.com/article/detail/277292",
-      "ts": 1792650769000,
-      "date": "2026-10-22",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "過去15年は毎年最低4選手が初選出…今季オールスターデビューを飾りそうな選手は？",
-      "url": "https://basketballking.jp/news/world/20261022/638605.html",
-      "ts": 1792648641000,
-      "date": "2026-10-22",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "西山涼風と佐藤尚子「勝負になったら負けたくない」県立四日市四郷（三重県）",
-      "url": "https://basket-count.com/article/detail/277285",
-      "ts": 1792645589000,
-      "date": "2026-10-22",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "フェイバ ヘンリー「バスケを楽しんで勝つ」慶誠（熊本県）",
-      "url": "https://basket-count.com/article/detail/277277",
-      "ts": 1792640018000,
-      "date": "2026-10-22",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "安積美月「もっと落ち着いてプレーできるように」奈良文化（奈良県）",
-      "url": "https://basket-count.com/article/detail/277267",
-      "ts": 1792638425000,
-      "date": "2026-10-22",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【NBA】ドノバン・ミッチェルはキャバリアーズでキャリアを終える覚悟「他のユニフォームを着たいとは思わない」",
-      "url": "https://basket-count.com/article/detail/277232",
-      "ts": 1792635089000,
-      "date": "2026-10-22",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【NBA】極度のシュート不振に陥り不名誉な記録を樹立したスパーズのビクター・ウェンバンヤマ「これは僕の好きなスポーツじゃない」",
-      "url": "https://basket-count.com/article/detail/277235",
-      "ts": 1792632161000,
-      "date": "2026-10-22",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【NBA】サンダーがスパーズとの開幕戦に勝利、シェイ・ギルジャス・アレクサンダー「この1試合自体にそれほど大きな意味はない」",
-      "url": "https://basket-count.com/article/detail/277224",
-      "ts": 1792571703000,
-      "date": "2026-10-21",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【NBA】レブロン＆ブラウン加入の新生シクサーズが開幕戦で躍動、前年王者のニックスを106-100で破り白星スタート",
-      "url": "https://basket-count.com/article/detail/277214",
-      "ts": 1792566017000,
-      "date": "2026-10-21",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "新指揮官の下で新たな役割を担う、宇都宮ブレックスの比江島慎「どうやって自分の特徴を出していけるか手探り状態」",
-      "url": "https://basket-count.com/article/detail/277198",
-      "ts": 1792552838000,
-      "date": "2026-10-21",
       "source": "バスケットカウント"
     }
   ],
