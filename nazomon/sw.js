@@ -1,6 +1,6 @@
 // なぞモン Service Worker
 // なぞなぞも モンスターの絵も ファイルに 入っているので、キャッシュすれば オフラインで あそべる
-const CACHE = 'nazomon-shell-v1';
+const CACHE = 'nazomon-shell-v2';
 const SHELL = [
   './',
   './index.html',
