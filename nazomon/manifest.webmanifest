@@ -1,0 +1,17 @@
+{
+  "name": "なぞモン",
+  "short_name": "なぞモン",
+  "description": "2にんで こうたいに なぞなぞに こたえて、モンスターを しんかさせよう! しょうがく 2〜4ねんせい むけ。",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF8EE",
+  "theme_color": "#8A6BFF",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

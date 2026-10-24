@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#8A6BFF">
+<title>なぞモン</title>
+<meta name="description" content="2にんで こうたいに なぞなぞに こたえて、モンスターを しんかさせよう! しょうがく 2〜4ねんせい むけ。">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  :root{
+    --bg:#FFF8EE; --card:#fff; --ink:#3D3350; --sub:#8E84A0; --line:#EDE3D6;
+    --accent:#8A6BFF; --accent-d:#6247D6; --ok:#2FBF71; --ng:#FF6B6B; --hint:#FFF4C2;
+    --p0:#FF6B6B; --p0d:#D94848; --p0l:#FFE3E3;
+    --p1:#4D96FF; --p1d:#2F6FD1; --p1l:#DDEBFF;
+    --top: env(safe-area-inset-top); --bot: env(safe-area-inset-bottom);
+    --left: env(safe-area-inset-left); --right: env(safe-area-inset-right);
+  }
+  html,body{ width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--ink);
+    font-family:'Hiragino Maru Gothic ProN','Hiragino Maru Gothic Pro','BIZ UDPGothic','Yu Gothic',sans-serif;
+    -webkit-user-select:none; user-select:none; position:fixed; overscroll-behavior:none; -webkit-touch-callout:none; }
+  button{ font:inherit; color:inherit; background:none; border:none; cursor:pointer; touch-action:manipulation; }
+  input{ font:inherit; -webkit-user-select:text; user-select:text; }
+  .screen{ position:absolute; inset:0; display:none; flex-direction:column; align-items:center;
+    padding:calc(var(--top) + 8px) calc(var(--right) + 16px) calc(var(--bot) + 12px) calc(var(--left) + 16px); overflow-y:auto; }
+  .screen.on{ display:flex; }
+  .wrap{ width:100%; max-width:520px; flex:1; display:flex; flex-direction:column; min-height:0; }
+  .mon svg{ width:100%; height:100%; display:block; }
+
+  .btn{ display:flex; align-items:center; justify-content:center; gap:8px; min-height:60px; border-radius:20px; padding:10px 22px;
+    font-size:22px; font-weight:bold; color:#fff; background:var(--accent); box-shadow:0 5px 0 var(--accent-d); }
+  .btn:active{ transform:translateY(4px); box-shadow:0 1px 0 var(--accent-d); }
+  .btn.sub{ background:#fff; color:var(--ink); box-shadow:0 5px 0 var(--line); border:2px solid var(--line); }
+  .btn.sub:active{ box-shadow:0 1px 0 var(--line); }
+  .btn:disabled{ opacity:.35; transform:none; }
+  .icon-btn{ width:52px; height:52px; border-radius:16px; background:#fff; box-shadow:0 3px 0 var(--line); font-size:24px;
+    display:flex; align-items:center; justify-content:center; flex:none; }
+  .icon-btn:active{ transform:translateY(2px); box-shadow:0 1px 0 var(--line); }
+  .bar{ display:flex; align-items:center; gap:10px; width:100%; min-height:56px; }
+  .bar h2{ flex:1; text-align:center; font-size:22px; }
+  .bar .sp{ width:52px; flex:none; }
+
+  /* ===== ホーム ===== */
+  #home .wrap{ align-items:center; justify-content:center; gap:14px; }
+  #home .top{ position:absolute; top:calc(var(--top) + 10px); right:calc(var(--right) + 16px); }
+  .logo{ font-size:52px; font-weight:900; letter-spacing:.06em; color:var(--accent);
+    text-shadow:3px 3px 0 #fff, 6px 6px 0 #E4DAFF; }
+  .logo-sub{ font-size:16px; color:var(--sub); margin-top:-6px; }
+  .parade{ display:flex; gap:4px; margin:10px 0 18px; }
+  .parade .mon{ width:76px; height:76px; animation:hop 1.6s ease-in-out infinite; }
+  .parade .mon:nth-child(2){ animation-delay:.2s } .parade .mon:nth-child(3){ animation-delay:.4s } .parade .mon:nth-child(4){ animation-delay:.6s }
+  @keyframes hop{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-10px) } }
+  #home .btn{ width:min(100%,320px); }
+
+  /* ===== むずかしさ ===== */
+  .lv-card{ background:#fff; border-radius:22px; padding:14px; margin-top:12px; border:4px solid var(--pc); }
+  .lv-card h3{ font-size:22px; color:var(--pc); margin-bottom:10px; }
+  .lv-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .lv-row button{ border-radius:16px; padding:10px 4px; background:var(--bg); border:3px solid var(--line); font-size:16px; font-weight:bold; line-height:1.4; }
+  .lv-row button b{ display:block; font-size:18px; }
+  .lv-row button.sel{ background:var(--pl); border-color:var(--pc); color:var(--pd); }
+  .p0{ --pc:var(--p0); --pd:var(--p0d); --pl:var(--p0l); }
+  .p1{ --pc:var(--p1); --pd:var(--p1d); --pl:var(--p1l); }
+  .grow{ flex:1; min-height:12px; }
+
+  /* ===== たまご ===== */
+  .eggs{ display:flex; justify-content:center; gap:12px; margin:20px 0; }
+  .eggs > div{ flex:1; max-width:200px; text-align:center; }
+  .eggs .mon{ width:100%; aspect-ratio:1; animation:wobble 2.4s ease-in-out infinite; transform-origin:50% 90%; }
+  .eggs > div:nth-child(2) .mon{ animation-delay:.6s; }
+  @keyframes wobble{ 0%,60%,100%{ transform:rotate(0) } 70%{ transform:rotate(-8deg) } 80%{ transform:rotate(7deg) } 90%{ transform:rotate(-4deg) } }
+  .tag{ display:inline-block; padding:4px 14px; border-radius:99px; color:#fff; background:var(--pc); font-weight:bold; font-size:18px; }
+  .lead{ font-size:22px; text-align:center; line-height:1.6; margin-top:10px; }
+  .note{ font-size:16px; color:var(--sub); text-align:center; line-height:1.6; }
+
+  /* ===== こうたい ===== */
+  #turn{ background:var(--pl); }
+  #turn .wrap{ align-items:center; justify-content:center; text-align:center; gap:8px; }
+  #turn .mon{ width:min(62vw,260px); aspect-ratio:1; animation:hop 1.4s ease-in-out infinite; }
+  #turn .who{ font-size:28px; font-weight:900; line-height:1.5; }
+  #turn .who span{ color:var(--pd); }
+  #turn .cheer{ background:#fff; border-radius:16px; padding:8px 14px; font-size:16px; line-height:1.6; }
+  #turn .btn{ background:var(--pc); box-shadow:0 5px 0 var(--pd); width:min(100%,320px); margin-top:8px; }
+
+  /* ===== もんだい ===== */
+  .status{ display:grid; grid-template-columns:1fr 1fr; gap:6px; flex:1; min-width:0; }
+  .pl{ display:flex; align-items:center; gap:6px; background:#fff; border-radius:16px; padding:4px 8px 4px 4px; border:3px solid transparent; opacity:.6; transition:.2s; min-width:0; }
+  .pl.now{ border-color:var(--pc); opacity:1; box-shadow:0 3px 0 var(--pl); }
+  .pl .mon{ width:44px; height:44px; flex:none; }
+  .pl .info{ min-width:0; flex:1; }
+  .pl .nm{ font-size:14px; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--pd); }
+  .stars{ font-size:11px; letter-spacing:-1px; color:#E3D9C9; white-space:nowrap; }
+  .stars i{ font-style:normal; } .stars i.on{ color:#FFB800; }
+  .gauge{ display:flex; gap:3px; margin-top:3px; }
+  .gauge i{ flex:1; height:9px; border-radius:5px; background:#EEE6DA; transition:background .4s; }
+  .gauge i.on{ background:var(--pc); }
+  .gauge.max i{ background:#FFC93C; }
+  .qcard{ width:100%; flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:12px; padding:14px 4px; min-height:150px; }
+  .qlv{ font-size:14px; color:var(--sub); }
+  .qtext{ font-size:24px; font-weight:bold; line-height:1.65; text-align:center; word-break:keep-all; overflow-wrap:anywhere; }
+  .hint{ display:none; background:var(--hint); border-radius:16px; padding:10px 14px; font-size:18px; line-height:1.5; text-align:center; }
+  .hint.on{ display:block; animation:pop .3s; }
+  @keyframes pop{ 0%{ transform:scale(.7); opacity:0 } 100%{ transform:scale(1); opacity:1 } }
+  .choices{ width:100%; display:flex; flex-direction:column; gap:10px; flex:none; }
+  .choice{ min-height:58px; border-radius:18px; background:#fff; border:3px solid var(--line); box-shadow:0 4px 0 var(--line);
+    font-size:22px; font-weight:bold; padding:8px 12px; line-height:1.3; }
+  .choice:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--line); }
+  .choice.ng{ background:#F2F0F4; color:#B7B0C0; border-color:#E5E1EA; box-shadow:none; text-decoration:line-through; }
+  .choice.ok{ background:#E2F8EC; border-color:var(--ok); color:#1E8A50; box-shadow:0 4px 0 #A8E5C3; }
+  .choice:disabled{ pointer-events:none; }
+
+  /* けっか */
+  .sheet{ position:fixed; left:0; right:0; bottom:0; z-index:20; background:#fff; border-radius:28px 28px 0 0;
+    padding:20px calc(var(--right) + 18px) calc(var(--bot) + 18px) calc(var(--left) + 18px);
+    box-shadow:0 -6px 30px rgba(60,40,90,.18); transform:translateY(110%); transition:transform .35s cubic-bezier(.2,1.2,.4,1); }
+  .sheet.on{ transform:translateY(0); }
+  .sheet .in{ max-width:520px; margin:0 auto; display:flex; flex-direction:column; gap:10px; text-align:center; }
+  .sheet .big{ font-size:34px; font-weight:900; }
+  .sheet .big small{ display:block; font-size:18px; }
+  .sheet .big.ok{ color:var(--ok); } .sheet .big.ng{ color:var(--ng); }
+  .sheet .why{ font-size:18px; line-height:1.6; background:var(--bg); border-radius:14px; padding:10px; }
+  .sheet .gain{ font-size:18px; font-weight:bold; }
+  .sheet .gain .mon{ width:56px; height:56px; display:inline-block; vertical-align:middle; }
+
+  /* ===== しんか ===== */
+  #evolve{ background:radial-gradient(circle at 50% 45%, #fff 0, #FFF2C9 40%, #FFD98A 100%); justify-content:center; }
+  #evolve .wrap{ align-items:center; justify-content:center; text-align:center; gap:16px; }
+  .stage{ position:relative; width:min(72vw,300px); aspect-ratio:1; }
+  .stage .mon{ position:absolute; inset:0; transition:opacity .08s; }
+  .stage .mon.sil svg{ filter:brightness(0) invert(1) drop-shadow(0 0 12px #FFE680); }
+  .stage .mon.hide{ opacity:0; }
+  .stage.shake .mon{ animation:shake .45s ease-in-out 3; }
+  @keyframes shake{ 0%,100%{ transform:rotate(0) } 25%{ transform:rotate(-10deg) } 75%{ transform:rotate(10deg) } }
+  .stage.reveal .mon:not(.hide){ animation:boing .6s; }
+  @keyframes boing{ 0%{ transform:scale(.6) } 60%{ transform:scale(1.12) } 100%{ transform:scale(1) } }
+  .flash{ position:fixed; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:30; }
+  .flash.go{ animation:flash .7s; }
+  @keyframes flash{ 0%{ opacity:0 } 20%{ opacity:1 } 100%{ opacity:0 } }
+  #evoMsg{ font-size:24px; font-weight:900; line-height:1.6; min-height:2.6em; }
+  #evoMsg small{ display:block; font-size:16px; color:var(--sub); font-weight:bold; }
+  #evolve .btn{ width:min(100%,320px); visibility:hidden; }
+  #evolve .btn.on{ visibility:visible; animation:pop .3s; }
+  .spark{ position:fixed; z-index:25; pointer-events:none; font-size:26px; animation:spark 1.2s ease-out forwards; }
+  @keyframes spark{ 0%{ transform:translate(0,0) scale(.4); opacity:1 } 100%{ transform:translate(var(--dx),var(--dy)) scale(1.1); opacity:0 } }
+
+  /* ===== なまえ ===== */
+  #name .wrap{ align-items:center; justify-content:center; gap:14px; text-align:center; }
+  #name .mon{ width:min(50vw,200px); aspect-ratio:1; }
+  #nameInput{ width:min(100%,320px); height:64px; border-radius:18px; border:4px solid var(--pc); text-align:center; font-size:28px; font-weight:bold; color:var(--ink); background:#fff; outline:none; }
+  #name .btn{ width:min(100%,320px); }
+
+  /* ===== クリア ===== */
+  #clear{ background:linear-gradient(#FFF3D6,#FFE0F0); }
+  #clear .wrap{ align-items:center; justify-content:center; gap:12px; text-align:center; }
+  #clear h2{ font-size:34px; color:var(--accent); text-shadow:3px 3px 0 #fff; }
+  .duo{ display:flex; gap:10px; width:100%; justify-content:center; }
+  .duo > div{ flex:1; max-width:220px; }
+  .duo .mon{ width:100%; aspect-ratio:1; animation:hop 1.4s ease-in-out infinite; }
+  .duo > div:nth-child(2) .mon{ animation-delay:.4s; }
+  .duo .nm{ font-size:18px; font-weight:bold; }
+  .duo .sp{ font-size:14px; color:var(--sub); }
+  #clear .btn{ width:min(100%,320px); }
+  .confetti{ position:fixed; top:-30px; z-index:5; pointer-events:none; width:10px; height:16px; border-radius:3px; animation:fall linear forwards; }
+  @keyframes fall{ to{ transform:translateY(110vh) rotate(720deg); } }
+
+  /* ===== ずかん ===== */
+  .zk-count{ font-size:16px; color:var(--sub); text-align:center; margin:2px 0 10px; }
+  .zk-row{ background:#fff; border-radius:18px; padding:8px; margin-bottom:10px; }
+  .zk-row h3{ font-size:16px; margin:0 0 4px 4px; }
+  .zk-cells{ display:grid; grid-template-columns:repeat(5,1fr); gap:4px; }
+  .zk-cells button{ aspect-ratio:1; border-radius:12px; background:var(--bg); padding:2px; position:relative; }
+  .zk-cells button.no svg{ filter:brightness(0); opacity:.14; }
+  .zk-cells button.no::after{ content:'?'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:900; color:#B9AFC6; }
+  .zk-hist h3{ font-size:18px; margin:12px 0 8px; }
+  .zk-hist .item{ display:flex; align-items:center; gap:10px; background:#fff; border-radius:16px; padding:6px 12px 6px 6px; margin-bottom:8px; }
+  .zk-hist .item .mon{ width:56px; height:56px; flex:none; }
+  .zk-hist .item b{ font-size:18px; display:block; }
+  .zk-hist .item span{ font-size:13px; color:var(--sub); }
+
+  /* ===== ダイアログ ===== */
+  .modal{ position:fixed; inset:0; z-index:40; background:rgba(40,30,60,.45); display:none; align-items:center; justify-content:center; padding:20px; }
+  .modal.on{ display:flex; }
+  .modal .box{ background:#fff; border-radius:26px; padding:20px; width:min(100%,380px); display:flex; flex-direction:column; gap:12px; text-align:center; animation:pop .25s; }
+  .modal .box .mon{ width:min(60vw,220px); aspect-ratio:1; margin:0 auto; }
+  .modal h3{ font-size:24px; }
+  .modal p{ font-size:17px; line-height:1.6; }
+</style>
+</head>
+<body>
+
+<!-- ホーム -->
+<section class="screen on" id="home">
+  <div class="top"><button class="icon-btn" id="homeSound" aria-label="おと"></button></div>
+  <div class="wrap">
+    <div class="logo">なぞモン</div>
+    <div class="logo-sub">なぞなぞで モンスターを そだてよう</div>
+    <div class="parade" id="parade"></div>
+    <button class="btn" id="btnPlay">▶ あそぶ</button>
+    <button class="btn sub" id="btnResume" hidden>⏯ つづきから</button>
+    <button class="btn sub" id="btnZukan">📖 ずかん</button>
+  </div>
+</section>
+
+<!-- むずかしさ -->
+<section class="screen" id="level">
+  <div class="wrap">
+    <div class="bar"><button class="icon-btn" data-go="home" aria-label="もどる">←</button><h2>むずかしさを えらぼう</h2><span class="sp"></span></div>
+    <div class="lv-card p0"><h3>1P</h3><div class="lv-row" data-p="0"></div></div>
+    <div class="lv-card p1"><h3>2P</h3><div class="lv-row" data-p="1"></div></div>
+    <div class="grow"></div>
+    <button class="btn" id="btnLvOk" disabled>けってい!</button>
+  </div>
+</section>
+
+<!-- たまご -->
+<section class="screen" id="eggs">
+  <div class="wrap">
+    <div class="grow"></div>
+    <div class="lead">ふたりに たまごが とどいたよ!<br>なにが うまれるかな?</div>
+    <div class="eggs" id="eggPair"></div>
+    <p class="note">なぞなぞに せいかいすると たまごが そだつよ</p>
+    <div class="grow"></div>
+    <button class="btn" id="btnStart">はじめる!</button>
+  </div>
+</section>
+
+<!-- こうたい -->
+<section class="screen" id="turn">
+  <div class="wrap">
+    <div class="mon" id="turnMon"></div>
+    <div class="who" id="turnWho"></div>
+    <div class="cheer" id="turnCheer" hidden></div>
+    <button class="btn" id="btnTurn">もんだいを みる</button>
+  </div>
+</section>
+
+<!-- もんだい -->
+<section class="screen" id="quiz">
+  <div class="wrap">
+    <div class="bar" style="min-height:0;margin-bottom:6px">
+      <div class="status" id="status"></div>
+      <button class="icon-btn" id="btnPause" aria-label="メニュー">⏸</button>
+    </div>
+    <div class="qcard">
+      <div class="qlv" id="qlv"></div>
+      <div class="qtext" id="qtext"></div>
+      <div class="hint" id="hint"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+  </div>
+</section>
+<div class="sheet" id="sheet"><div class="in">
+  <div class="big" id="shBig"></div>
+  <div class="gain" id="shGain"></div>
+  <div class="why" id="shWhy"></div>
+  <button class="btn" id="btnNext">つぎへ</button>
+</div></div>
+
+<!-- しんか -->
+<section class="screen" id="evolve">
+  <div class="wrap">
+    <div class="stage" id="evoStage"><div class="mon" id="evoA"></div><div class="mon hide" id="evoB"></div></div>
+    <div id="evoMsg"></div>
+    <button class="btn" id="btnEvoOk">やったー!</button>
+  </div>
+</section>
+
+<!-- なまえ -->
+<section class="screen" id="name">
+  <div class="wrap">
+    <div class="lead"><b id="nameWho"></b><br>なまえを つけてあげよう!</div>
+    <div class="mon" id="nameMon"></div>
+    <input id="nameInput" maxlength="6" autocomplete="off" enterkeyhint="done">
+    <p class="note">ひらがなで 6もじ まで</p>
+    <button class="btn" id="btnNameOk">けってい</button>
+    <button class="btn sub" id="btnNameAuto">おまかせ</button>
+  </div>
+</section>
+
+<!-- クリア -->
+<section class="screen" id="clear">
+  <div class="wrap">
+    <h2>ふたりとも クリア!</h2>
+    <p class="lead" style="margin:0">さいごまで そだてたね!<br>ずかんに のったよ</p>
+    <div class="duo" id="duo"></div>
+    <button class="btn" id="btnAgain">もういっかい あそぶ</button>
+    <button class="btn sub" id="btnClearZukan">📖 ずかんを みる</button>
+    <button class="btn sub" data-go="home">🏠 ホーム</button>
+  </div>
+</section>
+
+<!-- ずかん -->
+<section class="screen" id="zukan">
+  <div class="wrap">
+    <div class="bar"><button class="icon-btn" data-go="home" aria-label="もどる">←</button><h2>ずかん</h2><span class="sp"></span></div>
+    <div class="zk-count" id="zkCount"></div>
+    <div id="zkRows"></div>
+    <div class="zk-hist" id="zkHist"></div>
+  </div>
+</section>
+
+<!-- ダイアログ -->
+<div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
+<div class="flash" id="flash"></div>
+
+<script src="monsters.js"></script>
+<script src="quiz.js"></script>
+<script src="app.js"></script>
+<script>
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+</script>
+</body>
+</html>

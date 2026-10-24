@@ -23,6 +23,7 @@
 (じしゅ学習ナビは `https://wsdgg266-lgtm.github.io/my-game/jishu/`)
 (四神まなびバトルは `https://wsdgg266-lgtm.github.io/my-game/shishin/`)
 (いろいろぬりえは `https://wsdgg266-lgtm.github.io/my-game/nurie/`)
+(なぞモンは `https://wsdgg266-lgtm.github.io/my-game/nazomon/`)
 
 ## Vercel で公開する
 
@@ -45,6 +46,7 @@
    - おてつだいバンク: `https://<プロジェクト名>.vercel.app/points/`
    - シールアルバム: `https://<プロジェクト名>.vercel.app/seal/`
    - いろいろぬりえ: `https://<プロジェクト名>.vercel.app/nurie/`
+   - なぞモン: `https://<プロジェクト名>.vercel.app/nazomon/`
    - じしゅ学習ナビ: `https://<プロジェクト名>.vercel.app/jishu/`
 
 以降はデフォルトブランチ(`claude/shopping-reminder-app-7xpyg5`)への push のたびに
@@ -154,6 +156,14 @@ B.LEAGUE・NBA・バスケットボール日本代表の試合日程、結果、
 色を指でぐるぐる混ぜて自分の色を作れます。撮った写真をイラスト風や線画にして塗ることもでき、
 下絵は 4 ジャンル 32 枚入りです。写真は端末の外に一切送信しません。詳しくは
 [nurie/README.md](nurie/README.md)、仕様は [docs/SPEC-nurie.md](docs/SPEC-nurie.md) を見てください。
+
+## 👾 同居アプリ: なぞモン
+
+小学2〜4年生向けの2人用なぞなぞアプリ「なぞモン」も入っています(`nazomon/` フォルダ)。
+1台のスマホを交代で使い、なぞなぞに正解するとたまごから生まれたモンスターが5段階に進化します。
+勝ち負けはなく、2人とも最終形態まで育てたらクリア。なぞなぞは3つのむずかしさで150問、
+モンスターは6系統30体で、ずかんに集められます。詳しくは
+[nazomon/README.md](nazomon/README.md)、仕様は [docs/SPEC-nazomon.md](docs/SPEC-nazomon.md) を見てください。
 
 ## 技術構成
 
