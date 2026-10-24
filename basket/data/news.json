@@ -1,69 +1,125 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": "2026-10-23T21:35:24.937Z",
+  "updatedAt": "2026-10-24T21:06:12.719Z",
   "items": [
     {
-      "title": "【NBA】ウォリアーズが直面する厳しい現実、ステフィン・カリー「チームの未来を見通すのは難しい」(BASKET COUNT)",
-      "url": "https://news.yahoo.co.jp/articles/5eda65af07381bca550c620f1df786c5d2774483",
-      "ts": 1792789312000,
+      "title": "『NBA on Prime』グローバルプレゼンテーション開催…初年度米国以外の視聴者が28％増と報告",
+      "url": "https://basketballking.jp/news/world/20261024/639506.html",
+      "ts": 1792842123000,
       "date": "2026-10-24",
-      "source": "Yahoo!ニュース(スポーツ)"
-    },
-    {
-      "title": "【日程と結果】八村塁 所属 NBAロサンゼルス・クリッパーズ 2026-27シーズン試合予定・スタッツ・ハイライト・中継情報一覧",
-      "url": "https://basketballking.jp/news/world/fixed/638120.html",
-      "ts": 1792749621000,
-      "date": "2026-10-23",
       "source": "バスケットボールキング"
     },
     {
-      "title": "苦境の大阪、新たに負傷離脱者が発生し8名欠場…東京SR戦は7人で戦う緊急事態に",
-      "url": "https://basketballking.jp/news/japan/20261023/639371.html",
-      "ts": 1792749227000,
-      "date": "2026-10-23",
+      "title": "47年ぶり…カンファレンス王者のニックスとスパーズが翌シーズンにそろって開幕2連敗",
+      "url": "https://basketballking.jp/news/world/20261024/639428.html",
+      "ts": 1792841878000,
+      "date": "2026-10-24",
       "source": "バスケットボールキング"
     },
     {
-      "title": "クリッパーズのルーHC、開幕戦勝利をオーナーに捧げる「今も彼のために戦っている」",
-      "url": "https://basketballking.jp/news/world/20261023/639362.html",
-      "ts": 1792746270000,
-      "date": "2026-10-23",
+      "title": "ロケッツが開幕2連勝…アメン・トンプソンが終盤にウェンバンヤマのショットを阻止",
+      "url": "https://basketballking.jp/news/world/20261024/639423.html",
+      "ts": 1792838585000,
+      "date": "2026-10-24",
       "source": "バスケットボールキング"
     },
     {
-      "title": "FE名古屋の月岡熙が「左大腿直筋筋肉離れ」で全治約6週間…日体大出身の23歳メインPGが離脱",
-      "url": "https://basketballking.jp/news/japan/20261023/639348.html",
-      "ts": 1792746166000,
-      "date": "2026-10-23",
+      "title": "【男子出場校 予選結果一覧】SoftBank ウインターカップ2026 令和8年度 第79回全国高等学校バスケットボール選手権大会",
+      "url": "https://basketballking.jp/news/japan/fixed/635987.html",
+      "ts": 1792837830000,
+      "date": "2026-10-24",
       "source": "バスケットボールキング"
     },
     {
-      "title": "「当時は『なにくそ』だった」東京SR・野﨑零也のタフな原点…愛する息子の誇りとなり、Bプレミアの頂めざす【TOBI»RUSH】",
-      "url": "https://basketballking.jp/news/tobirush/20261023/639015.html",
-      "ts": 1792746016000,
-      "date": "2026-10-23",
+      "title": "北海道が広島との熱戦を制す…ボールデンの逆転バスカンで大接戦に終止符",
+      "url": "https://basketballking.jp/news/japan/20261024/639495.html",
+      "ts": 1792837088000,
+      "date": "2026-10-24",
       "source": "バスケットボールキング"
     },
     {
-      "title": "「NBA Rising Stars Invitational」日本予選が2年連続開催決定…ウインター杯上位校が出場",
-      "url": "https://basketballking.jp/news/japan/20261023/639349.html",
-      "ts": 1792745724000,
-      "date": "2026-10-23",
+      "title": "タワリー海「学年なんか関係ありません」東北学院（宮城県）",
+      "url": "https://basket-count.com/article/detail/277504",
+      "ts": 1792835121000,
+      "date": "2026-10-24",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "東地区1位のA東京に三河が快勝…エース西田優大が第4Qに3P量産で勝利に貢献",
+      "url": "https://basketballking.jp/news/japan/20261024/639487.html",
+      "ts": 1792832879000,
+      "date": "2026-10-24",
       "source": "バスケットボールキング"
     },
     {
-      "title": "「恥さらし」国歌斉唱中の行動をめぐりトランプ大統領がレブロンを批判…本人も反応",
-      "url": "https://basketballking.jp/news/world/20261023/639345.html",
-      "ts": 1792745139000,
-      "date": "2026-10-23",
+      "title": "【女子出場校 予選結果一覧】SoftBank ウインターカップ2026 令和8年度 第79回全国高等学校バスケットボール選手権大会",
+      "url": "https://basketballking.jp/news/japan/fixed/635994.html",
+      "ts": 1792828839000,
+      "date": "2026-10-24",
       "source": "バスケットボールキング"
     },
     {
-      "title": "「Bリーグドラフト2027」東京成徳大の櫻井と日体大の塚本がエントリー…志望選手は44名に",
-      "url": "https://basketballking.jp/news/japan/20261023/639341.html",
-      "ts": 1792744324000,
-      "date": "2026-10-23",
+      "title": "NBA八村塁 古巣相手に16得点 チームは敗れる",
+      "url": "https://news.web.nhk/newsweb/na/nd-20261024de64828",
+      "ts": 1792828380000,
+      "date": "2026-10-24",
+      "source": "NHKニュース(スポーツ)"
+    },
+    {
+      "title": "「完全にリスペクトを失った」…ウォリアーズ新人レンデボーグ、“泣き言”ばかりのドンチッチを痛烈批判",
+      "url": "https://basketballking.jp/news/world/20261024/639207.html",
+      "ts": 1792826183000,
+      "date": "2026-10-24",
       "source": "バスケットボールキング"
+    },
+    {
+      "title": "連続20得点超え試合数の記録が途絶えたSGA「別に世界の終わりってわけじゃない」",
+      "url": "https://basketballking.jp/news/world/20261024/639389.html",
+      "ts": 1792825960000,
+      "date": "2026-10-24",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【NBA】八村塁が古巣レイカーズを相手に16得点と奮闘、クリッパーズは25ターンオーバーが響いて8点差の敗戦",
+      "url": "https://basket-count.com/article/detail/277496",
+      "ts": 1792818874000,
+      "date": "2026-10-24",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "レイカーズからカットされていたダルトン・コネクトがニックスとの2ウェイ契約に合意",
+      "url": "https://basketballking.jp/news/world/20261024/639391.html",
+      "ts": 1792817323000,
+      "date": "2026-10-24",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "『U18日清食品トップリーグ2026 ディビジョン2』の競技日程が変更、2試合がWリーグとBリーグの前・後座試合に",
+      "url": "https://basket-count.com/article/detail/277490",
+      "ts": 1792812640000,
+      "date": "2026-10-24",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "調子を上げる琉球ゴールデンキングス、指揮官アンソニー・マクヘンリーの手応え「私たちはフィジカルで多様性のあるチーム」",
+      "url": "https://basket-count.com/article/detail/277482",
+      "ts": 1792810818000,
+      "date": "2026-10-24",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【NBA】開幕直前にレイカーズを解雇されたダルトン・コネクトが昨シーズン王者のニックスと2ウェイ契約を結ぶ",
+      "url": "https://basket-count.com/article/detail/277478",
+      "ts": 1792806204000,
+      "date": "2026-10-24",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【NBA】ウォリアーズが直面する厳しい現実、ステフィン・カリー「チームの未来を見通すのは難しい」",
+      "url": "https://basket-count.com/article/detail/277452",
+      "ts": 1792789200000,
+      "date": "2026-10-24",
+      "source": "バスケットカウント"
     },
     {
       "title": "ケガ人多数で苦境に立たされる大阪エヴェッサ、ハードワークを惜しまず戦い続ける植松義也「ケガ人や身長差を言い訳にせず勝利を」",
@@ -71,20 +127,6 @@
       "ts": 1792742400000,
       "date": "2026-10-23",
       "source": "バスケットカウント"
-    },
-    {
-      "title": "【更新中】一覧「Bリーグドラフト2027」志望届提出選手リスト…指名候補選手のポジション・身長・出身校",
-      "url": "https://basketballking.jp/news/japan/fixed/634331.html",
-      "ts": 1792741532000,
-      "date": "2026-10-23",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "リラード×ティソの特別コラボモデル腕時計が発売「デイム・タイム」を表現したPRX新作",
-      "url": "https://basketballking.jp/news/release/20261023/639260.html",
-      "ts": 1792740951000,
-      "date": "2026-10-23",
-      "source": "バスケットボールキング"
     },
     {
       "title": "開幕無敗の名古屋Dと広島は本物か。対戦相手の成績まで織り込んだレーティングで序盤戦を読む【PR】Promoted by スポーツくじWINNER",
@@ -108,46 +150,11 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "琉球ゴールデンキングスの新たな司令塔、大浦颯太が語る手応え「いろいろな変化をつけられるのはすごく良いこと」",
-      "url": "https://basket-count.com/article/detail/277392",
-      "ts": 1792727240000,
-      "date": "2026-10-23",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【NBA】タイリース・ハリバートンが右アキレス腱断裂からの復帰戦でペイサーズを逆転勝利へ導く「まさに『ゼロからのスタート』だ」",
-      "url": "https://basket-count.com/article/detail/277366",
-      "ts": 1792725300000,
-      "date": "2026-10-23",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "苦戦のアルティーリ千葉、安藤誓哉が語る巻き返しのカギ「オフェンスでいろいろなことをできる強みを出していきたい」",
-      "url": "https://basket-count.com/article/detail/277348",
-      "ts": 1792722600000,
-      "date": "2026-10-23",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "白木颯大「1分ずつ、1秒ずつを大事に」高岡第一（富山県）",
-      "url": "https://basket-count.com/article/detail/277357",
-      "ts": 1792715407000,
-      "date": "2026-10-23",
-      "source": "バスケットカウント"
-    },
-    {
       "title": "NBA 八村塁 新天地での開幕戦で10得点 チームは快勝",
       "url": "https://news.web.nhk/newsweb/na/nd-20261022de63658",
       "ts": 1792659480000,
       "date": "2026-10-22",
       "source": "NHKニュース(スポーツ)"
-    },
-    {
-      "title": "課題の3ポイントシュートで進歩を見せる琉球ゴールデンキングスの脇真大「メンタル面をしっかり整えてプレーできている」",
-      "url": "https://basket-count.com/article/detail/277297",
-      "ts": 1792657538000,
-      "date": "2026-10-22",
-      "source": "バスケットカウント"
     }
   ],
   "note": "",
