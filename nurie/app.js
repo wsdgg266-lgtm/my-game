@@ -416,10 +416,11 @@ const Paint = {
     this.setup(S, S, p.name);
     this.setLines(await this.templateLines(p, S));
   },
-  openPhoto(lineImg) {
+  openPhoto(lineImg, fillImg) {   // fillImg: イラストふうの 色(なければ まっしろ)
     this.work = { id: 'w' + Date.now(), kind: 'photo', created: Date.now() };
     this.setup(lineImg.width, lineImg.height, 'しゃしん');
     this.lctx.putImageData(lineImg, 0, 0);
+    if (fillImg) this.fctx.putImageData(fillImg, 0, 0);
     this.wall = buildWall(lineImg, this.W, this.H);
   },
   async openWork(rec) {
@@ -996,22 +997,155 @@ function removeSmall(m, W, H, min) {
     if (comp.length < min) for (const j of comp) m[j] = 0;
   }
 }
+// 線のマスク → 線のレイヤー(外わくを付けて、ふちを なめらかに)
+function lineImage(m, W, H) {
+  const F = 6;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (x < F || y < F || x >= W - F || y >= H - F) m[y * W + x] = 1;
+  const img = new ImageData(W, H), d = img.data;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    let s = 0, n = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const xx = x + dx, yy = y + dy;
+      if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
+      s += m[yy * W + xx] * (dx || dy ? 1 : 4); n += dx || dy ? 1 : 4;
+    }
+    const j = (y * W + x) * 4;
+    d[j] = 40; d[j + 1] = 34; d[j + 2] = 30; d[j + 3] = Math.round(s / n * 255);
+  }
+  return img;
+}
+
+/* ---------- イラストふう ----------
+ * 写真の色を k 色に まとめて(k-means)、小さな かけらは まわりに すいこませ、
+ * 色の さかいめに 線を ひく。面ごとに バケツで ぬりかえられる。 */
+// k: 色の数 / s: ぼかし / min: これより小さい面(画面に対する わりあい)は まわりに まぜる / thick: 線の太さ
+const ILLUST = [
+  { k: 6, s: 2.6, min: 0.004, thick: 2 },
+  { k: 9, s: 1.9, min: 0.0015, thick: 1 },
+  { k: 13, s: 1.3, min: 0.0006, thick: 1 },
+];
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function illustrate(rgb, W, H, L) {
+  const n = W * H;
+  const ch = [new Float32Array(n), new Float32Array(n), new Float32Array(n)];
+  for (let i = 0; i < n; i++) { ch[0][i] = rgb[i * 4]; ch[1][i] = rgb[i * 4 + 1]; ch[2][i] = rgb[i * 4 + 2]; }
+  const [R, G, B] = ch.map(c => gaussBlur(c, W, H, L.s));
+  // 色の くらべかた: あかるさ を すこし おもく
+  const feat = i => [0.3 * R[i] + 0.59 * G[i] + 0.11 * B[i], (R[i] - G[i]) * 0.8, ((R[i] + G[i]) / 2 - B[i]) * 0.8];
+  const samp = [];
+  for (let i = 0; i < n; i += 5) samp.push(feat(i));
+  const rand = rng(12345), K = L.k, cen = [samp[Math.floor(rand() * samp.length)]];
+  const d2 = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2;
+  const best = new Float32Array(samp.length).fill(Infinity);
+  while (cen.length < K) {   // k-means++ で はじめの色を えらぶ
+    let sum = 0;
+    const c = cen[cen.length - 1];
+    for (let j = 0; j < samp.length; j++) { best[j] = Math.min(best[j], d2(samp[j], c)); sum += best[j]; }
+    let r = rand() * sum, j = 0;
+    while (j < samp.length - 1 && (r -= best[j]) > 0) j++;
+    cen.push(samp[j].slice());
+  }
+  const near = f => { let bi = 0, bd = Infinity; for (let k = 0; k < K; k++) { const d = d2(f, cen[k]); if (d < bd) { bd = d; bi = k; } } return bi; };
+  for (let it = 0; it < 10; it++) {
+    const acc = Array.from({ length: K }, () => [0, 0, 0, 0]);
+    for (const f of samp) { const a = acc[near(f)]; a[0] += f[0]; a[1] += f[1]; a[2] += f[2]; a[3]++; }
+    for (let k = 0; k < K; k++) if (acc[k][3]) cen[k] = [acc[k][0] / acc[k][3], acc[k][1] / acc[k][3], acc[k][2] / acc[k][3]];
+  }
+  let lab = new Uint8Array(n);
+  for (let i = 0; i < n; i++) lab[i] = near(feat(i));
+  // ギザギザを ならす(まわり 5x5 で いちばん多い色に)
+  for (let pass = 0; pass < 2; pass++) {
+    const out = new Uint8Array(n), cnt = new Uint16Array(K);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      cnt.fill(0);
+      for (let dy = -2; dy <= 2; dy++) { const yy = y + dy; if (yy < 0 || yy >= H) continue; for (let dx = -2; dx <= 2; dx++) { const xx = x + dx; if (xx >= 0 && xx < W) cnt[lab[yy * W + xx]]++; } }
+      let bk = lab[y * W + x];
+      for (let k = 0; k < K; k++) if (cnt[k] > cnt[bk]) bk = k;
+      out[y * W + x] = bk;
+    }
+    lab = out;
+  }
+  // 小さな面を となりの面に すいこませる
+  const minA = Math.max(30, Math.round(n * L.min));
+  for (let pass = 0; pass < 3; pass++) {
+    const comp = new Int32Array(n).fill(-1), stack = [];
+    let changed = 0;
+    for (let s0 = 0; s0 < n; s0++) {
+      if (comp[s0] >= 0) continue;
+      const my = lab[s0], cells = [], nb = new Uint32Array(K);
+      comp[s0] = s0; stack.push(s0);
+      while (stack.length) {
+        const j = stack.pop(); cells.push(j);
+        const x = j % W;
+        for (const k of [x > 0 ? j - 1 : -1, x < W - 1 ? j + 1 : -1, j - W, j + W]) {
+          if (k < 0 || k >= n) continue;
+          if (lab[k] === my) { if (comp[k] < 0) { comp[k] = s0; stack.push(k); } }
+          else nb[lab[k]]++;
+        }
+      }
+      if (cells.length < minA) {
+        let bk = -1;
+        for (let k = 0; k < K; k++) if (nb[k] && (bk < 0 || nb[k] > nb[bk])) bk = k;
+        // 目や はな のような 小さくても こい所は のこす
+        const keep = bk >= 0 && cells.length >= minA / 12 && Math.abs(cen[my][0] - cen[bk][0]) > 60;
+        if (bk >= 0 && !keep) { for (const j of cells) lab[j] = bk; changed++; }
+      }
+    }
+    if (!changed) break;
+  }
+  // 面の色 = もとの色の へいきん を、すこし あざやかに
+  const sum = Array.from({ length: K }, () => [0, 0, 0, 0]);
+  for (let i = 0; i < n; i++) { const a = sum[lab[i]]; a[0] += R[i]; a[1] += G[i]; a[2] += B[i]; a[3]++; }
+  const cols = sum.map(a => a[3] ? cartoonColor(a[0] / a[3], a[1] / a[3], a[2] / a[3]) : [255, 255, 255]);
+  const fill = new ImageData(W, H), fd = fill.data;
+  let lines = new Uint8Array(n);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x, c = cols[lab[i]];
+    fd[i * 4] = c[0]; fd[i * 4 + 1] = c[1]; fd[i * 4 + 2] = c[2]; fd[i * 4 + 3] = 255;
+    if ((x < W - 1 && lab[i + 1] !== lab[i]) || (y < H - 1 && lab[i + W] !== lab[i])) lines[i] = 1;
+  }
+  lines = dilate(lines, W, H, L.thick);
+  return { fill, lines };
+}
+function cartoonColor(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+  let h = 0, s = 0, l = (mx + mn) / 2;
+  if (mx !== mn) {
+    const d = mx - mn;
+    s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+    h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    h /= 6;
+  }
+  s = Math.min(1, s * 1.35 + 0.04); l = 0.14 + l * 0.8;
+  const f = t => {
+    t = (t + 1) % 1;
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
+    return t < 1 / 6 ? p + (q - p) * 6 * t : t < 1 / 2 ? q : t < 2 / 3 ? p + (q - p) * (2 / 3 - t) * 6 : p;
+  };
+  return [f(h + 1 / 3), f(h), f(h - 1 / 3)].map(v => Math.round(v * 255));
+}
+
 const Photo = {
-  gray: null, W: 0, H: 0, lv: 1, result: null,
+  gray: null, W: 0, H: 0, lv: 1, result: null, mode: store.get('photoMode', 'illust'),
   init() {
     $('#camBtn').onclick = () => $('#camIn').click();
     $('#albumBtn').onclick = () => $('#albumIn').click();
     for (const id of ['#camIn', '#albumIn']) $(id).onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) this.load(f); };
     $$('#levels button').forEach(b => b.onclick = () => { this.lv = +b.dataset.lv; this.syncLv(); this.convert(); });
+    $$('#modes button').forEach(b => b.onclick = () => { this.mode = b.dataset.mode; store.set('photoMode', this.mode); this.syncLv(); this.convert(); });
     $('#photoRetry').onclick = () => this.reset();
-    $('#photoGo').onclick = () => { if (this.result) { Paint.openPhoto(this.result); this.reset(); } };
+    $('#photoGo').onclick = () => { if (this.result) { Paint.openPhoto(this.result.lines, this.result.fill); this.reset(); } };
   },
   open() { this.reset(); show('photo'); },
   reset() {
     this.gray = null; this.result = null;
     $('#photoStart').style.display = ''; $('#photoEdit').classList.remove('on'); $('#photoBusy').classList.remove('on');
   },
-  syncLv() { $$('#levels button').forEach(b => b.classList.toggle('on', +b.dataset.lv === this.lv)); },
+  syncLv() {
+    $$('#levels button').forEach(b => b.classList.toggle('on', +b.dataset.lv === this.lv));
+    $$('#modes button').forEach(b => b.classList.toggle('on', b.dataset.mode === this.mode));
+  },
   async load(file) {
     $('#photoStart').style.display = 'none'; $('#photoBusy').classList.add('on');
     try {
@@ -1039,7 +1173,7 @@ const Photo = {
       for (let v = 255; v >= 0; v--) { acc += hist[v]; if (acc > W * H * 0.02) { hi = v; break; } }
       const span = Math.max(30, hi - lo);
       for (let i = 0; i < g.length; i++) g[i] = Math.max(0, Math.min(255, (g[i] - lo) / span * 255));
-      this.gray = g; this.chans = [g, rg, yb]; this.W = W; this.H = H;
+      this.gray = g; this.chans = [g, rg, yb]; this.rgb = d; this.W = W; this.H = H;
       await this.convert();
     } catch (e) {
       console.warn(e);
@@ -1051,30 +1185,25 @@ const Photo = {
     if (!this.gray) return;
     $('#photoBusy').classList.add('on'); $('#photoEdit').classList.remove('on');
     await new Promise(r => setTimeout(r, 30));   // 「かいているよ」を先に出す
-    const { W, H } = this, L = LEVELS[this.lv];
-    let m = edgeLines(this.chans, W, H, L);
-    removeSmall(m, W, H, L.min);
-    if (L.thick) m = dilate(m, W, H, L.thick);
-    // わく
-    const F = 6;
-    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (x < F || y < F || x >= W - F || y >= H - F) m[y * W + x] = 1;
-    // ふちを なめらかに
-    const img = new ImageData(W, H), d = img.data;
-    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-      let s = 0, n = 0;
-      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
-        const xx = x + dx, yy = y + dy;
-        if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
-        s += m[yy * W + xx] * (dx || dy ? 1 : 4); n += dx || dy ? 1 : 4;
-      }
-      const j = (y * W + x) * 4;
-      d[j] = 40; d[j + 1] = 34; d[j + 2] = 30; d[j + 3] = Math.round(s / n * 255);
+    const { W, H } = this;
+    let fill = null, m;
+    if (this.mode === 'illust') {
+      const r = illustrate(this.rgb, W, H, ILLUST[this.lv]);
+      m = r.lines; fill = r.fill;
+    } else {
+      const L = LEVELS[this.lv];
+      m = edgeLines(this.chans, W, H, L);
+      removeSmall(m, W, H, L.min);
+      if (L.thick) m = dilate(m, W, H, L.thick);
     }
-    this.result = img;
+    const img = lineImage(m, W, H);
+    this.result = { lines: img, fill };
     const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
     const x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
-    const lc = document.createElement('canvas'); lc.width = W; lc.height = H; lc.getContext('2d').putImageData(img, 0, 0);
-    x.drawImage(lc, 0, 0);
+    const tmp = document.createElement('canvas'); tmp.width = W; tmp.height = H;
+    const tx = tmp.getContext('2d');
+    if (fill) { tx.putImageData(fill, 0, 0); x.drawImage(tmp, 0, 0); }
+    tx.putImageData(img, 0, 0); x.drawImage(tmp, 0, 0);
     $('#photoPrev').src = cv.toDataURL('image/jpeg', 0.85);
     $('#photoBusy').classList.remove('on'); $('#photoEdit').classList.add('on');
     this.syncLv();
