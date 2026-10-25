@@ -15,6 +15,12 @@
   /* ---------- ほぞん ---------- */
   let S = { sound: true, seen: {}, hist: [], seenQ: [], game: null };
   try { Object.assign(S, JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) {}
+  // モンスターの しゅるいが かわった ときは、しらない けいとうの きろくを すてる
+  {
+    const known = id => LINES.some(l => l.id === id);
+    S.hist = (S.hist || []).filter(h => known(h.line));
+    if (S.game && !S.game.players.every(p => known(p.line))) S.game = null;
+  }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
   const lineOf = id => LINES.find(l => l.id === id);
   const species = p => lineOf(p.line).names[p.stage];
@@ -71,7 +77,7 @@
   function renderHome() {
     $('homeSound').textContent = S.sound ? '🔊' : '🔇';
     $('btnResume').hidden = !S.game;
-    const picks = [['fire', 2], ['water', 3], ['elec', 2], ['star', 4]];
+    const picks = LINES.slice().sort(() => Math.random() - 0.5).slice(0, 4).map((l, i) => [l.id, [2, 3, 4, 3][i]]);
     $('parade').innerHTML = picks.map(([l, s]) => monEl(l, s)).join('');
   }
   $('homeSound').onclick = () => { S.sound = !S.sound; save(); renderHome(); };

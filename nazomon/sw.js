@@ -1,10 +1,11 @@
 // なぞモン Service Worker
 // なぞなぞも モンスターの絵も ファイルに 入っているので、キャッシュすれば オフラインで あそべる
-const CACHE = 'nazomon-shell-v2';
+const CACHE = 'nazomon-shell-v3';
 const SHELL = [
   './',
   './index.html',
   './app.js',
+  './monsters-parts.js',
   './monsters.js',
   './quiz.js',
   './manifest.webmanifest',
