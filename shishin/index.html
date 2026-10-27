@@ -1286,7 +1286,7 @@ const shuffle = a => { const b = a.slice(); for (let i=b.length-1;i>0;i--){ cons
 const rint = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 function uniq4(ans, cands){
-  const out = [ans];
+  const out = [String(ans)];
   cands.forEach(c => { if (out.length < 4 && c !== undefined && c !== null && String(c) !== '' && !out.includes(String(c))) out.push(String(c)); });
   let k = 1;
   while (out.length < 4){ const c = String(ans) + '・' + k++; if (!out.includes(c)) out.push(c); }
@@ -1337,7 +1337,7 @@ const GEN = {
     make(d){ if (d === 1){ const a = rint(1,7); return [0, a, rint(1, 9-a)]; } if (d === 2){ return [1, rint(11,49), rint(11,49)]; } const n = rint(4,9), a = rint(1, n-2); return [2, n, a, rint(1, n-a)]; },
     build(p){
       if (p[0] === 0){ const [,a,b] = p; return { text: '0.' + a + ' ＋ 0.' + b + ' = ？', choices: uniq4('0.' + (a+b), ['0.' + a + b, String(a+b), '0.' + (a+b+1), '1.' + (a+b)]), exp: '0.1が ' + a + 'こと ' + b + 'こで ' + (a+b) + 'こ → 0.' + (a+b) }; }
-      if (p[0] === 1){ const [,a,b] = p, x = a + b, f = v => (Math.floor(v/10) + '.' + v%10); return { text: f(a) + ' ＋ ' + f(b) + ' = ？', choices: uniq4(f(x), [f(x+10), f(x-1), f(x+1), String(x)]), exp: '0.1が ' + a + 'こと ' + b + 'こで ' + x + 'こ → ' + f(x) }; }
+      if (p[0] === 1){ const [,a,b] = p, x = a + b, f = v => (v % 10 ? Math.floor(v/10) + '.' + v%10 : String(v/10)); return { text: f(a) + ' ＋ ' + f(b) + ' = ？', choices: uniq4(f(x), [f(x+10), f(x-1), f(x+1), String(x)]), exp: '0.1が ' + a + 'こと ' + b + 'こで ' + x + 'こ → ' + f(x) }; }
       const [,n,a,b] = p, s = a + b, f = v => (v === n ? '1' : n + '分の' + v);
       return { text: n + '分の' + a + ' ＋ ' + n + '分の' + b + ' = ？', choices: uniq4(f(s), [(n*2) + '分の' + s, n + '分の' + (s+1), (n+n) + '分の' + (a*b), n + '分の' + Math.max(1, s-1)]), exp: n + '分の1が ' + a + 'こと ' + b + 'こで ' + s + 'こ → ' + f(s) }; } },
   // ---- 国語 ----
@@ -1713,12 +1713,21 @@ function persist(){
 }
 let S = (window.claude && window.claude.hot && window.claude.hot.data && window.claude.hot.data.S) || load();
 // 旧「覚醒」（コインで強化）からの 引っこし：動物カードは 1段階 進化した あつかいに
-setTimeout(() => {
+function migrateEvo(){
   let changed = false;
   Object.keys(S.cards).forEach(k => { const id = +k, st = S.cards[id]; if (st && st.ev && EVO[id]){ st.ev = false; st.lv = Math.max(st.lv, EVO[id][1]); changed = true; } });
   Object.keys(S.cards).forEach(k => { const r = evoCheck(+k); if (r.length){ EVO_Q.push(...r); changed = true; } });
-  if (changed){ persist(); render(); }
-}, 0);
+  // 進化後の すがたを 持っていれば、進化前の すがたも 図鑑に 「見た」と して のこす
+  Object.keys(S.cards).forEach(k => { for (let p = EVO_FROM[+k]; p; p = EVO_FROM[p]){ if (!(S.dex || []).includes(p)){ markSeen(p); changed = true; } } });
+  fillDeck();
+  return changed;
+}
+// デッキが 3人より 少なくなったら（進化で 2枚が 1枚に まとまった など）持っている カードで うめる
+function fillDeck(){
+  S.deck = (S.deck || []).filter((id, i, arr) => S.cards[id] && arr.indexOf(id) === i).slice(0, 3);
+  if (S.deck.length < 3) Object.keys(S.cards).map(Number).sort((a, b) => S.cards[b].lv - S.cards[a].lv).forEach(id => { if (S.deck.length < 3 && !S.deck.includes(id)) S.deck.push(id); });
+}
+setTimeout(() => { if (migrateEvo()){ persist(); render(); } }, 0);
 if (window.claude && window.claude.hot && window.claude.hot.snapshot) {
   try { window.claude.hot.snapshot(() => ({ S })); } catch(e){}
 }
@@ -1814,7 +1823,7 @@ function evoCheck(id){
       if (S.cards[to]){ const t = S.cards[to]; if (st.lv > t.lv || (st.lv === t.lv && st.exp > t.exp)){ t.lv = st.lv; t.exp = st.exp; } }
       else S.cards[to] = {lv:st.lv, exp:st.exp, ev:false};
       delete S.cards[id]; markSeen(id); markSeen(to);
-      S.deck = S.deck.map(x => x === id ? to : x).filter((x, i, arr) => arr.indexOf(x) === i);
+      S.deck = S.deck.map(x => x === id ? to : x).filter((x, i, arr) => arr.indexOf(x) === i); fillDeck();
       out.push({from:id, to, before, after:stats(to)});
       id = to; continue;
     }
@@ -1829,7 +1838,7 @@ function evoCheck(id){
 // 進化の演出（結果画面などの上に 重ねて 見せる）
 let evoShowing = false;
 function playEvo(){
-  if (evoShowing || !EVO_Q.length || document.querySelector('.opening')) return;
+  if (evoShowing || !EVO_Q.length || document.querySelector('.opening:not(.out)')) return;
   const v = cur(); if (B || v.v === 'battle' || (v.v === 'box' && boxState)) return;
   const r = EVO_Q.shift(); evoShowing = true;
   const fd = cardDef(r.from), td = cardDef(r.to);
@@ -1910,7 +1919,7 @@ const cur = () => nav.stack[nav.stack.length-1];
 function go(v, p){ nav.stack.push(Object.assign({v}, p||{})); render(true); }
 function replace(v, p){ nav.stack[nav.stack.length-1] = Object.assign({v}, p||{}); render(true); }
 function back(){ if (nav.stack.length > 1) nav.stack.pop(); render(true); }
-function tab(t){ nav.tab = t; nav.stack = [{v:t}]; render(true); }
+function tab(t){ boxState = null; nav.tab = t; nav.stack = [{v:t}]; render(true); }
 
 // ---------- 画面部品 ----------
 function top(title, opts){
@@ -2095,7 +2104,7 @@ function nextQ(){
   const g = (B.queue[0] && B.retry === B.queue[0]) ? null : drawQ(B.st.s);
   B.q = g || getQ(B.queue.shift());
   B.choices = shuffle(B.q.choices);
-  B.picked = null; B.phase = 'ask'; B.n++; B.hidden = [];
+  B.picked = null; B.phase = 'ask'; B.n++; B.hidden = []; B.booked = false;
   applyHint();
 }
 // とくせい
@@ -2110,8 +2119,10 @@ function useItem(k){
   if (!B || B.phase !== 'ask' || !(S.items[k] > 0)) return;
   const c = stats(activeId());
   if (k === 'book'){
-    if (B.hidden.length){ toast('この問題では もう 使ったよ'); return; }
-    B.hidden = shuffle(B.choices.map((x,i) => i).filter(i => B.choices[i] !== B.q.answer)).slice(0,2);
+    if (B.booked){ toast('この問題では もう 使ったよ'); return; }
+    const left = B.choices.map((x,i) => i).filter(i => B.choices[i] !== B.q.answer && !B.hidden.includes(i));
+    if (!left.length || B.hidden.length >= 2){ toast('もう 答えは しぼれているよ'); return; }
+    B.hidden = B.hidden.concat(shuffle(left).slice(0, 2 - B.hidden.length)); B.booked = true;
     S.items[k]--; B.tray = false; sfx('box'); toast('📖 学習の書：答えを 2つに しぼった！'); persist(); render(); return;
   }
   if (k === 'potion'){
@@ -2224,7 +2235,7 @@ function endBattle(won){
   }
   res.pexp = B.correct*10 + (won && B.wrong === 0 && B.correct > 0 ? 20 : 0);
   addPlayerExp(res.pexp);
-  Object.keys(B.cardExp).forEach(k => { const id = +k; const r = addCardExp(id, B.cardExp[id]); res.cards.push({id, ...r}); });
+  Object.keys(B.cardExp).forEach(k => { const id = +k; const r = addCardExp(id, B.cardExp[id]); res.cards.push({...r, id: r.evo || id}); });
   persist();
   B = null;
   nav.stack.pop(); // battle
@@ -2243,7 +2254,7 @@ function vBattle(){
     '<section class="qbox">';
   if (B.phase === 'wrong'){
     h += '<div class="qtext small">' + ruby(B.q.text) + '</div>' +
-      '<div class="explain"><span class="label" style="color:#ff9aa4">まちがい… 敵の はんげき！ ❤️−' + fx.dmg + '</span><span class="ans">正解は <em>' + ruby(B.q.answer) + '</em></span><span>' + ruby(B.q.exp) + '</span></div>' +
+      '<div class="explain"><span class="label" style="color:#ff9aa4">まちがい… ' + (fx.ab ? '🛡️ ' + esc(fx.ab) : '敵の はんげき！ ❤️−' + fx.dmg) + '</span><span class="ans">正解は <em>' + ruby(B.q.answer) + '</em></span><span>' + ruby(B.q.exp) + '</span></div>' +
       '<button class="cta" data-act="bnext">' + (B.hp <= 0 ? 'けっかを 見る' : 'わかった！ つぎへ') + '</button>';
   } else {
     h += '<div class="qtext"><span class="qunit">' + esc(B.q.unit) + '</span>' + ruby(B.q.text) + '</div>' +
@@ -2420,7 +2431,7 @@ function drawOne(){
   let pick = Math.random() * pool.reduce((a,c) => a + BOX_W[c.r], 0), got = pool[0];
   for (const c of pool){ pick -= BOX_W[c.r]; if (pick <= 0){ got = c; break; } }
   const own = lineOwner(got.id);
-  if (own){ const exp = 40 + got.r*10; const r = addCardExp(own, exp); return {id:S.cards[own] ? own : (r.evo || own), dup:true, exp, lvup: r.to > r.from}; }
+  if (own){ const exp = 40 + got.r*10; const r = addCardExp(own, exp); return {id:S.cards[own] ? own : (r.evo || own), dup:true, exp, lvup: r.to > r.from, max: !!r.max}; }
   S.cards[got.id] = {lv:1, exp:0, ev:false}; return {id:got.id, dup:false};
 }
 function circle(cls){
@@ -2442,7 +2453,7 @@ function vBox(){
       '<div class="gc-count">' + (st.results.length > 1 ? (st.idx + 1) + ' / ' + st.results.length : '') + '</div>' +
       '<div class="gc-flip"><div class="gc-inner"><div class="gc-face gc-backface"><img src="' + ART.back + '" alt=""></div><div class="gc-face gc-front">' + cardFace(r.id, 'lg') + '</div></div></div>' +
       '<div class="gc-rar r-' + tag + '">' + tag + (tag === 'SSR' ? '!!' : tag === 'SR' ? '!' : '') + '</div>' +
-      '<div class="gc-result">' + (r.dup ? '<b>✨ カードEXP +' + r.exp + '</b><span>' + (r.lvup ? 'レベルアップ！' : 'もう持っているので 育てたよ') + '</span>' : '<b class="new">NEW!</b><span>' + esc(d.name) + ' が なかまに なった！</span>') + '</div>' +
+      '<div class="gc-result">' + (r.dup ? (r.max ? '<b>👑 レベル MAX！</b><span>もう これ以上 育たないよ</span>' : '<b>✨ カードEXP +' + r.exp + '</b><span>' + (r.lvup ? 'レベルアップ！' : 'もう持っているので 育てたよ') + '</span>') : '<b class="new">NEW!</b><span>' + esc(d.name) + ' が なかまに なった！</span>') + '</div>' +
       '<button class="cta gc-next" data-act="boxnext">' + (more ? 'つぎへ ▶' : st.results.length > 1 ? 'まとめを 見る' : 'OK') + '</button></div>';
   }
   // まとめ（複数回）
@@ -2488,6 +2499,7 @@ function openBox(n){
   if (S.tickets < n || (boxState && boxState.phase && boxState.phase !== 'rates')) return;
   S.tickets -= n;
   const results = []; for (let k = 0; k < n; k++) results.push(drawOne());
+  results.forEach(r => { if (!S.cards[r.id]) r.id = lineOwner(r.id) || r.id; });  // あとの 引きで 進化した カードは 進化後の すがたで 見せる
   persist();
   const best = results.reduce((a,r) => Math.max(a, TAG_RANK[cardTag(cardDef(r.id))]), 0);
   const tags = ['N','R','SR','SSR'];
@@ -2580,10 +2592,10 @@ function finishPractice(){
   if (P.review){
     // 復習は 教科ごとに 育てる
     const per = {}; P.qs.forEach(q => per[q.s] = (per[q.s]||0) + 10);
-    Object.keys(per).forEach(s => { const id = subjectCardFor(s); if (id) res.cards.push({id, ...addCardExp(id, per[s])}); });
+    Object.keys(per).forEach(s => { const id = subjectCardFor(s); if (id){ const r = addCardExp(id, per[s]); res.cards.push({...r, id: r.evo || id}); } });
   } else {
     const id = subjectCardFor(P.s);
-    if (id && P.correct) res.cards.push({id, ...addCardExp(id, P.correct*10)});
+    if (id && P.correct){ const r = addCardExp(id, P.correct*10); res.cards.push({...r, id: r.evo || id}); }
   }
   persist(); sfx(acc >= 80 ? 'win' : 'tap');
   P = null;
@@ -2920,9 +2932,9 @@ try { document.fonts.ready.then(fitHome); } catch(e){}
 window.addEventListener('load', fitHome);
 
 // ---------- 連続ログイン（7日ごとに 人間の なかまを プレゼント） ----------
-let loginChecked = false;
+let loginChecked = 0;
 function checkLogin(){
-  if (loginChecked || document.querySelector('.opening')) return; loginChecked = true;
+  if (loginChecked === dayKey() || document.querySelector('.opening:not(.out)')) return; loginChecked = dayKey();
   const today = dayKey(), L = S.login || (S.login = {last:0, streak:0});
   if (L.last === today) return;
   const y = new Date(); y.setDate(y.getDate() - 1);
@@ -3025,7 +3037,7 @@ $app.addEventListener('click', e => {
       const t = document.getElementById('bktext');
       try { bkPending = readBackup(t && t.value); bkMsg = ''; } catch(e){ bkMsg = '❌ コードが 正しく ありません。もう一度 コピーしてください。'; }
       render(); break; }
-    case 'bkyes': S = Object.assign(freshSave(), bkPending); bkPending = null; bkPaste = false; persist(); bkMsg = '✅ 記録を もどしました'; toast('記録を もどしました'); render(); break;
+    case 'bkyes': try { localStorage.setItem(SAVE_KEY, JSON.stringify(bkPending)); S = load(); } catch(e){ S = Object.assign(freshSave(), bkPending); } migrateEvo(); bkPending = null; bkPaste = false; persist(); bkMsg = '✅ 記録を もどしました'; toast('記録を もどしました'); render(); break;
     case 'bkno': bkPending = null; render(); break;
     case 'resetno': resetAsk = false; render(); break;
     case 'resetyes': S = freshSave(); persist(); resetAsk = false; toast('記録を リセットしました'); tab('home'); break;
@@ -3196,9 +3208,10 @@ function OpeningMusic(){
     at(12.8, t => swell(t, .8, m));
     for (let q = 0; q < 12; q++) at(13.0 + q*.05, t => taiko(t, .45 + q*.07, m));
   }
+  let hitBus = null;
   function playHit(t){
     if (hitDone) return; hitDone = true;
-    const m = bus();
+    const m = hitBus = bus();
     boom(t, 1.3, m); taiko(t, 1.4, m); taiko(t + .03, 1.2, m); crash(t, m); crash(t + .01, m);
     brass(t, [N.D3, N.A3, N.D4, N.Fs4, N.A4, N.D5], 3.4, 1.4, m);
     choir(t, [N.D4, N.Fs4, N.A4, N.D5], 4.2, 1.3, m);
@@ -3220,6 +3233,7 @@ function OpeningMusic(){
     skipToHit(){
       if (hitDone && ctx.currentTime >= s0 + HIT - .05) return;
       main.gain.setTargetAtTime(0, ctx.currentTime, .03); setTimeout(() => { try { main.disconnect(); } catch(e){} }, 300);
+      if (hitBus){ try { hitBus.disconnect(); } catch(e){} }
       hitDone = false; clearTimeout(loopTimer); playHit(ctx.currentTime + .05);
     },
     stop(){ stopped = true; clearTimeout(loopTimer); out.gain.setTargetAtTime(0, ctx.currentTime, .15); setTimeout(() => { try { out.disconnect(); } catch(e){} }, 900); },
@@ -3350,7 +3364,7 @@ function OpeningMusic(){
 })();
 
 // テスト用フック
-window.__shishin = { BGM, get S(){ return S; }, get B(){ return B; }, get P(){ return P; }, stats, matchup, OpeningMusic };
+window.__shishin = { BGM, get S(){ return S; }, get B(){ return B; }, get P(){ return P; }, stats, matchup, OpeningMusic, drawOne, EVO_Q, evoCheck, addCardExp, cardDef, render };
 })();
 
 </script>
