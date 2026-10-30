@@ -1,69 +1,132 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": "2026-10-29T22:55:42.529Z",
+  "updatedAt": "2026-10-30T22:35:44.197Z",
   "items": [
     {
-      "title": "【Bプレミア】西田優大が担うエースの責任　シーホース三河の「時代に抗う」バスケットの中で高みを目指す(スポーティングニュース日本版)",
-      "url": "https://news.yahoo.co.jp/articles/b937263e3e420db3513eb9e558693f30c1ff58a3",
-      "ts": 1793311848000,
-      "date": "2026-10-30",
+      "title": "【NBA】グリズリーズのキャメロン・ブーザーが史上2番目の若さでトリプル・ダブルを達成「ファンが応援できるプレーを見せ続けたい」(BASKET COUNT)",
+      "url": "https://news.yahoo.co.jp/articles/fb3e3e69c3437b24866229915286e12737e3b1a4",
+      "ts": 1793397726000,
+      "date": "2026-10-31",
       "source": "Yahoo!ニュース(スポーツ)"
     },
     {
-      "title": "名物番組の司会者が今季限りで卒業へ…37年間の功績にNBAコミッショナーらが敬意",
-      "url": "https://basketballking.jp/news/world/20261029/640551.html",
-      "ts": 1793282683000,
-      "date": "2026-10-29",
+      "title": "【Bリーグ】46歳・五十嵐圭が挑む新リーグ「自分を信じて」　成し遂げたことのない“リーグ優勝”へ選手獲得にも奔走!新潟アルビレックスBB(FNNプライムオンライン)",
+      "url": "https://news.yahoo.co.jp/articles/bd3cde5df952be9c59e66a6e8959ab9354a6c8e4",
+      "ts": 1793397647000,
+      "date": "2026-10-31",
+      "source": "Yahoo!ニュース(スポーツ)"
+    },
+    {
+      "title": "キャリア438試合目で初の3ポイント成功…ギャフォードの“進化”を指揮官が称賛",
+      "url": "https://basketballking.jp/news/world/20261030/640732.html",
+      "ts": 1793358017000,
+      "date": "2026-10-30",
       "source": "バスケットボールキング"
     },
     {
-      "title": "「すべて順調」開幕3連勝のブレイザーズ、ジャ・モラントが新天地での充実ぶりを語る",
-      "url": "https://basketballking.jp/news/world/20261029/640547.html",
-      "ts": 1793281276000,
-      "date": "2026-10-29",
+      "title": "「俺たちに借りがあるだろ」試合終盤に躍動したマクシー、逆転勝利の舞台裏を語る",
+      "url": "https://basketballking.jp/news/world/20261030/640727.html",
+      "ts": 1793357158000,
+      "date": "2026-10-30",
       "source": "バスケットボールキング"
     },
     {
-      "title": "八村塁所属クリッパーズ戦の無料PVが渋谷で開催…「NBA docomo DAY」でNBA5試合の無料配信も",
-      "url": "https://basketballking.jp/news/release/20261029/640544.html",
-      "ts": 1793272831000,
-      "date": "2026-10-29",
+      "title": "平均年齢が最も高いのはウォリアーズの平均29.4歳／開幕ロスターの分析結果（チーム編）",
+      "url": "https://basketballking.jp/news/world/20261030/640137.html",
+      "ts": 1793355901000,
+      "date": "2026-10-30",
       "source": "バスケットボールキング"
     },
     {
-      "title": "大阪エヴェッサが判定結果受け記者会見…Bワン参入申請へ、アリーナ基準再クリア目指す",
-      "url": "https://basketballking.jp/news/japan/20261029/640535.html",
-      "ts": 1793270397000,
-      "date": "2026-10-29",
+      "title": "【10月30日の契約情報】神戸が元NBA選手と契約解除…負傷者が相次ぐ大阪は2選手が新たに加入",
+      "url": "https://basketballking.jp/news/japan/20261030/640702.html",
+      "ts": 1793355495000,
+      "date": "2026-10-30",
       "source": "バスケットボールキング"
     },
     {
-      "title": "NBA史上2人目の快挙…ニコラ・ヨキッチがシーズン通算200回目のトリプルダブル",
-      "url": "https://basketballking.jp/news/world/20261029/640392.html",
-      "ts": 1793269204000,
-      "date": "2026-10-29",
+      "title": "グリズリーズが開幕5連勝…キャメロン・ブーザーがNBA史上2番目の若さでトリプルダブル",
+      "url": "https://basketballking.jp/news/world/20261030/640619.html",
+      "ts": 1793351613000,
+      "date": "2026-10-30",
       "source": "バスケットボールキング"
     },
     {
-      "title": "「言葉にするのは難しいね」…ヒートのバム・アデバヨが通算リバウンド数で球団トップに",
-      "url": "https://basketballking.jp/news/world/20261029/640390.html",
-      "ts": 1793265839000,
-      "date": "2026-10-29",
+      "title": "銀メダル獲得のアジア大会をはじめ日本代表を経験…日立ハイテクの樋口鈴乃が初のプレミアへ参戦",
+      "url": "https://basketballking.jp/news/japan/20261030/640692.html",
+      "ts": 1793351431000,
+      "date": "2026-10-30",
       "source": "バスケットボールキング"
     },
     {
-      "title": "Bリーグが秋田に制裁金100万円、マーフィージュニアにけん責処分…運転資格ないまま自動車運転",
-      "url": "https://basketballking.jp/news/japan/20261029/640518.html",
-      "ts": 1793264099000,
-      "date": "2026-10-29",
+      "title": "練習生から“3度目の昇格”…洛南黄金期のキャプテン田村晋が越谷と選手契約",
+      "url": "https://basketballking.jp/news/japan/20261030/640681.html",
+      "ts": 1793349276000,
+      "date": "2026-10-30",
       "source": "バスケットボールキング"
     },
     {
-      "title": "ヒートで初勝利を飾ったヤニス・アデトクンボが現役3人目のスタッツラインをクリア",
-      "url": "https://basketballking.jp/news/world/20261029/640385.html",
-      "ts": 1793263262000,
-      "date": "2026-10-29",
+      "title": "直近40年で3人目…ダリアス・エイカフJr.がキャリア最初の5戦で複数回の30得点超え",
+      "url": "https://basketballking.jp/news/world/20261030/640589.html",
+      "ts": 1793348288000,
+      "date": "2026-10-30",
       "source": "バスケットボールキング"
+    },
+    {
+      "title": "神戸がジェイレン・マクダニエルズとの契約解除を発表…本人からの申し出で双方合意",
+      "url": "https://basketballking.jp/news/japan/20261030/640633.html",
+      "ts": 1793346257000,
+      "date": "2026-10-30",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "大阪エヴェッサがBリーグでプレー経験のある外国籍選手2名と新たに契約を締結、セバスチャン・サイズはインジュアリーリストに登録へ",
+      "url": "https://basket-count.com/article/detail/278142",
+      "ts": 1793344592000,
+      "date": "2026-10-30",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "負傷者続出に苦しむ大阪がスミスとマドゥアバムを獲得…緊急補強で連敗ストップへ",
+      "url": "https://basketballking.jp/news/japan/20261030/640624.html",
+      "ts": 1793342974000,
+      "date": "2026-10-30",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "神戸ストークスがジェイレン・マクダニエルズとの契約解除に合意「たくさんの愛情と温かさは決して忘れません」",
+      "url": "https://basket-count.com/article/detail/278121",
+      "ts": 1793341254000,
+      "date": "2026-10-30",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "富樫勇樹が15万票で暫定全体1位！『Bリーグオールスターゲームウィークエンド2027 in AICHI-NAGOYA』のファン投票中間結果を発表",
+      "url": "https://basket-count.com/article/detail/278105",
+      "ts": 1793336381000,
+      "date": "2026-10-30",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "Bリーグオールスターの公式観戦ツアー『B.旅 ALL-STAR』が販売開始、選手との面会イベントに参加できる特別プランも用意",
+      "url": "https://basket-count.com/article/detail/278097",
+      "ts": 1793333683000,
+      "date": "2026-10-30",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "大阪エヴェッサがダモンテ・ドッドとの契約を解除、途中加入したビッグマン「怪我をしてしまったことは悔しく残念でなりません」",
+      "url": "https://basket-count.com/article/detail/278087",
+      "ts": 1793330575000,
+      "date": "2026-10-30",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "高校からB.LEAGUEへ、最短距離を選んだ6人と、ドラフトから駆け上がる1人【PR】Promoted by バスケットLIVE",
+      "url": "https://basket-count.com/article/detail/278015",
+      "ts": 1793329231000,
+      "date": "2026-10-30",
+      "source": "バスケットカウント"
     },
     {
       "title": "【NBA】トレイルブレイザーズのジャ・モラント、初の古巣との対決に思いを馳せる「メンフィスでの時間は本当に素晴らしかった」",
@@ -80,20 +143,6 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "FE名古屋が平寿哉の加入を発表…元三河の20歳PG「活躍している姿を」恩返し誓う",
-      "url": "https://basketballking.jp/news/japan/20261029/640459.html",
-      "ts": 1793257314000,
-      "date": "2026-10-29",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "「西田のきゅうり」プロジェクトを始動…三河の西田優大と佐古社長が約100株を定植",
-      "url": "https://basketballking.jp/news/japan/20261029/640460.html",
-      "ts": 1793257063000,
-      "date": "2026-10-29",
-      "source": "バスケットボールキング"
-    },
-    {
       "title": "藤井美友「気持ちを一つに」県立広島皆実（広島県）",
       "url": "https://basket-count.com/article/detail/277929",
       "ts": 1793253617000,
@@ -101,66 +150,10 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "4連敗の横浜ビー・コルセアーズ、指揮官ラッシ・トゥオビの提言「シンプルにすることは、やるべきことへの自信を与えてくれる」",
-      "url": "https://basket-count.com/article/detail/277956",
-      "ts": 1793248512000,
-      "date": "2026-10-29",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【NBA】アルペレン・シェングン離脱の不利を感じさせないロケッツ、バックスに32点差の快勝で開幕5連勝を達成",
-      "url": "https://basket-count.com/article/detail/277936",
-      "ts": 1793248061000,
-      "date": "2026-10-29",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "阿部まりん「楽しみながら、笑顔で戦いたい」鳥取城北（鳥取県）",
-      "url": "https://basket-count.com/article/detail/277922",
-      "ts": 1793234261000,
-      "date": "2026-10-29",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【EASL】長崎ヴェルカがマカオ・ホウチョンを97-76で破って初勝利！森川正明が3ポイントシュート5本を含む22得点の活躍",
-      "url": "https://basket-count.com/article/detail/277876",
-      "ts": 1793232000000,
-      "date": "2026-10-29",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【EASL】琉球ゴールデンキングスが効果的に長距離砲を決め続け、桃園パウイアン・パイロッツとの激戦を制す",
-      "url": "https://basket-count.com/article/detail/277912",
-      "ts": 1793221251000,
-      "date": "2026-10-29",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "FIBAワールドカップ2027の公式マスコット『スハイル』が誕生、砂漠と航海を導いてきた「道標の星」がカタールのコートを照らす！",
-      "url": "https://basket-count.com/article/detail/277865",
-      "ts": 1793174424000,
-      "date": "2026-10-28",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "川崎でプレーしていた岡田大河がモンゴルのカーン・ファルコンズと契約を締結「自分の価値を高めることが必要」",
-      "url": "https://basket-count.com/article/detail/277846",
-      "ts": 1793173800000,
-      "date": "2026-10-28",
-      "source": "バスケットカウント"
-    },
-    {
       "title": "NBA八村塁 5得点にとどまる クリッパーズ競り負け",
       "url": "https://news.web.nhk/newsweb/na/nd-20261026de65656",
       "ts": 1792990394000,
       "date": "2026-10-26",
-      "source": "NHKニュース(スポーツ)"
-    },
-    {
-      "title": "NBA八村塁 古巣相手に16得点 チームは敗れる",
-      "url": "https://news.web.nhk/newsweb/na/nd-20261024de64828",
-      "ts": 1792828380000,
-      "date": "2026-10-24",
       "source": "NHKニュース(スポーツ)"
     }
   ],
