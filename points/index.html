@@ -30,6 +30,9 @@
     --ok: #2bb673;
     --ok-soft: #e3f7ee;
     --ng: #e8564f;
+    --hd1: #ffc65c;
+    --hd2: #f5a524;
+    --hd-ink: #4a3208;
     --radius: 18px;
     --shadow: 0 2px 8px rgba(80, 60, 20, .07);
   }
@@ -51,23 +54,40 @@
 
   /* ===== ヘッダー ===== */
   header {
-    background: linear-gradient(160deg, #ffc65c, #f5a524);
+    background: linear-gradient(160deg, var(--hd1), var(--hd2));
     padding: calc(env(safe-area-inset-top) + 12px) 0 16px;
-    color: #4a3208;
+    color: var(--hd-ink);
+    transition: background .25s;
   }
   .app-title { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 800; letter-spacing: .02em; }
   .app-title small { font-size: 11px; font-weight: 600; opacity: .75; letter-spacing: 0; }
   .kids { display: flex; gap: 8px; overflow-x: auto; padding: 12px 0 2px; scrollbar-width: none; }
   .kids::-webkit-scrollbar { display: none; }
   .kid-chip {
-    flex: 0 0 auto; display: flex; align-items: center; gap: 6px;
-    background: rgba(255,255,255,.55); border-radius: 999px; padding: 7px 14px 7px 9px;
-    font-size: 14px; font-weight: 700; color: #6b4a10; border: 2px solid transparent;
+    flex: 0 0 auto; display: flex; align-items: center; gap: 7px; position: relative;
+    background: rgba(255,255,255,.5); border-radius: 999px; padding: 7px 15px 7px 10px;
+    font-size: 14px; font-weight: 700; color: var(--hd-ink); border: 2px solid transparent;
+    opacity: .8;
   }
-  .kid-chip .em { font-size: 18px; }
-  .kid-chip.on { background: #fff; border-color: #fff; color: var(--text); box-shadow: 0 2px 6px rgba(120,80,0,.18); }
-  .kid-chip .p { font-size: 11px; font-weight: 700; color: var(--ac-deep); }
-  .kid-chip.add { background: rgba(255,255,255,.35); padding: 7px 14px; }
+  .kid-chip .em { font-size: 19px; }
+  .kid-chip.on { background: #fff; color: var(--text); opacity: 1; box-shadow: 0 2px 8px rgba(80,50,0,.2); }
+  .kid-chip.on .dot { width: 8px; height: 8px; }
+  .kid-chip .dot {
+    width: 0; height: 0; border-radius: 50%; background: var(--kidc, var(--ac));
+    transition: width .15s, height .15s;
+  }
+  .kid-chip .p { font-size: 11px; font-weight: 700; color: var(--kidc, var(--ac-deep)); }
+  .kid-chip .wait {
+    position: absolute; top: -3px; right: -3px; background: var(--ng); color: #fff;
+    font-size: 10px; font-weight: 800; min-width: 17px; height: 17px; border-radius: 9px;
+    padding: 0 4px; display: flex; align-items: center; justify-content: center;
+  }
+  .swatches { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .swatches button {
+    width: 38px; height: 38px; border-radius: 50%; border: 3px solid transparent;
+    box-shadow: 0 0 0 1px var(--line) inset;
+  }
+  .swatches button.on { border-color: var(--text); }
 
   .balance {
     background: #fff; border-radius: var(--radius); margin-top: 12px; padding: 16px 18px;
@@ -460,6 +480,30 @@
 /* ===================== データ ===================== */
 var KEY = 'otetsudai-bank-v1';
 var KID_EMOJI = ['🦖','🐰','🐱','🐶','🦊','🐼','🦄','🐯','🐧','🐨','🐵','🌟'];
+/* 子どもごとのテーマ色。どっちの画面か ひと目でわかるようにする */
+var KID_COLORS = [
+  { id: 'amber',  base: '#f5a524', deep: '#de8b00', soft: '#fff1d6', g1: '#ffc65c', g2: '#f5a524', ink: '#4a3208' },
+  { id: 'pink',   base: '#f2679b', deep: '#d94a80', soft: '#ffe9f1', g1: '#ffa0c3', g2: '#f2679b', ink: '#5c1230' },
+  { id: 'blue',   base: '#4c9be8', deep: '#2f7fcc', soft: '#e7f2fd', g1: '#90c9f5', g2: '#4c9be8', ink: '#0f3a60' },
+  { id: 'green',  base: '#2bb39a', deep: '#199680', soft: '#e0f6f1', g1: '#74dcc7', g2: '#2bb39a', ink: '#0b3f36' },
+  { id: 'purple', base: '#9b7cf0', deep: '#7f5de0', soft: '#f0eaff', g1: '#c3aef8', g2: '#9b7cf0', ink: '#331a66' },
+  { id: 'orange', base: '#ff8c42', deep: '#e9701f', soft: '#ffeee2', g1: '#ffb57f', g2: '#ff8c42', ink: '#5a2708' }
+];
+function kidColor(kid) {
+  var want = kid && kid.color;
+  for (var i = 0; i < KID_COLORS.length; i++) if (KID_COLORS[i].id === want) return KID_COLORS[i];
+  return KID_COLORS[0];
+}
+/* 選んでいる子の色をアプリ全体に反映する */
+function applyKidTheme(kid) {
+  var c = kidColor(kid), r = document.documentElement.style;
+  r.setProperty('--ac', c.base);
+  r.setProperty('--ac-deep', c.deep);
+  r.setProperty('--ac-soft', c.soft);
+  r.setProperty('--hd1', c.g1);
+  r.setProperty('--hd2', c.g2);
+  r.setProperty('--hd-ink', c.ink);
+}
 /* こうかんしたお金の つかいみち */
 var USE_KINDS = [
   { id: 'okashi', em: '🍭', name: 'おかし・ジュース' },
@@ -503,7 +547,7 @@ function seed() {
     version: 1,
     pin: null,
     settings: { yenPerPoint: 1, requireApproval: true },
-    kids: [{ id: uid(), name: 'わたし', emoji: '🦖' }],
+    kids: [{ id: uid(), name: 'わたし', emoji: '🦖', color: KID_COLORS[0].id }],
     tasks: DEFAULT_TASKS.map(function (t) {
       return { id: uid(), emoji: t[0], title: t[1], points: t[2], category: t[3], repeat: 'daily', kidIds: null, archived: false };
     }),
@@ -529,6 +573,8 @@ function load() {
       S.logs = S.logs || [];
       S.cashouts = S.cashouts || [];
       if (!S.kids.length) S.kids = seed().kids;
+      /* 以前のデータには色がないので、登録順にわりあてる */
+      S.kids.forEach(function (k, i) { if (!k.color) k.color = KID_COLORS[i % KID_COLORS.length].id; });
     }
   } catch (e) { /* 壊れていたら初期状態のまま使う */ }
 }
@@ -652,12 +698,21 @@ function renderAll() {
 
 function renderKids() {
   var kid = currentKid(), h = '';
+  applyKidTheme(kid);
   S.kids.forEach(function (k) {
-    var c = calc(k.id);
-    h += '<button class="kid-chip' + (kid && k.id === kid.id ? ' on' : '') + '" data-kid="' + k.id + '">' +
+    var c = calc(k.id), col = kidColor(k);
+    var wait = S.logs.filter(function (l) { return l.kidId === k.id && l.status === 'pending'; }).length;
+    h += '<button class="kid-chip' + (kid && k.id === kid.id ? ' on' : '') + '" data-kid="' + k.id +
+      '" style="--kidc:' + col.deep + '">' +
+      '<span class="dot"></span>' +
       '<span class="em">' + esc(k.emoji) + '</span><span>' + esc(k.name) +
-      '<br><span class="p">' + c.balance + 'P</span></span></button>';
+      '<br><span class="p">' + c.balance + 'P</span></span>' +
+      (wait ? '<span class="wait">' + wait + '</span>' : '') + '</button>';
   });
+  if (S.kids.length === 1) {
+    h += '<button class="kid-chip" data-addkid="1" style="opacity:.75"><span class="em">＋</span>' +
+      '<span>きょうだいを<br><span class="p">ふやす</span></span></button>';
+  }
   $('kids').innerHTML = h;
 }
 
@@ -1076,11 +1131,23 @@ function renderParent() {
   }).join('') : '<div class="empty">おねがいは ありません<br><span style="font-size:11px">お金を渡してから「わたした」を押すと、ポイントがへります</span></div>';
 
   /* --- 子ども --- */
+  var wk = weekKey(Date.now());
   $('parent-kids').innerHTML = S.kids.map(function (k) {
-    var c = calc(k.id);
-    return '<div class="row"><span class="em">' + esc(k.emoji) + '</span><div class="body">' +
-      '<div class="t">' + esc(k.name) + '</div><div class="d">' + c.balance + 'P（' + yenStr(c.balance) + '） ・ 累計 ' + c.earned + 'P</div></div>' +
-      '<button class="btn sm gray" data-editkid="' + k.id + '">編集</button></div>';
+    var c = calc(k.id), col = kidColor(k), week = 0, wait = 0;
+    S.logs.forEach(function (l) {
+      if (l.kidId !== k.id) return;
+      if (l.status === 'approved' && weekKey(l.createdAt) === wk) week += l.points;
+      if (l.status === 'pending') wait++;
+    });
+    var gi = goalInfo(k);
+    return '<div class="row"><span class="em" style="border-left:4px solid ' + col.base +
+      ';padding-left:7px;border-radius:2px">' + esc(k.emoji) + '</span><div class="body">' +
+      '<div class="t">' + esc(k.name) + '</div>' +
+      '<div class="d">残高 ' + c.balance + 'P（' + yenStr(c.balance) + '） ・ 今週 ' + week + 'P' +
+      (wait ? ' ・ <b style="color:var(--ng)">承認まち ' + wait + '件</b>' : '') + '</div>' +
+      (gi ? '<div class="d">🎯 ' + esc(gi.g.title) + '：' + gi.pct + '%' +
+        (gi.done ? '（たまった）' : '（あと ' + gi.rest.toLocaleString('ja-JP') + '円）') + '</div>' : '') +
+      '</div><button class="btn sm gray" data-editkid="' + k.id + '">編集</button></div>';
   }).join('');
 
   /* --- タスク --- */
@@ -1266,13 +1333,21 @@ var editingKid = null;
 function openKidSheet(kidId) {
   var k = null;
   S.kids.forEach(function (x) { if (x.id === kidId) k = x; });
-  editingKid = k ? JSON.parse(JSON.stringify(k)) : { id: null, name: '', emoji: KID_EMOJI[S.kids.length % KID_EMOJI.length] };
+  var usedColors = S.kids.map(function (x) { return x.color; });
+  var freeColor = KID_COLORS.filter(function (c) { return usedColors.indexOf(c.id) === -1; })[0] || KID_COLORS[0];
+  editingKid = k ? JSON.parse(JSON.stringify(k))
+    : { id: null, name: '', emoji: KID_EMOJI[S.kids.length % KID_EMOJI.length], color: freeColor.id };
+  if (!editingKid.color) editingKid.color = KID_COLORS[0].id;
   var c = k ? calc(k.id) : null;
   openSheet(
     '<h2>' + (k ? '子どもの設定' : '子どもをふやす') + '</h2>' +
-    '<p class="lead">名前とアイコンを決めてください。</p>' +
+    '<p class="lead">名前・アイコン・色を決めてください。<br>色は、その子を選んでいる間のアプリ全体の色になります(兄妹の取りちがえ防止)。</p>' +
     emojiPick(KID_EMOJI, editingKid.emoji) +
     '<input class="in" id="k-name" type="text" maxlength="12" placeholder="なまえ" value="' + esc(editingKid.name) + '">' +
+    '<div class="swatches">' + KID_COLORS.map(function (c) {
+      return '<button type="button" data-kidcolor="' + c.id + '"' + (c.id === editingKid.color ? ' class="on"' : '') +
+        ' style="background:linear-gradient(145deg,' + c.g1 + ',' + c.base + ')" aria-label="' + c.id + '"></button>';
+    }).join('') + '</div>' +
     (k ? '<div class="card" style="padding:12px 14px;margin:6px 0 12px">' +
       '<div style="font-size:12px;font-weight:800;margin-bottom:8px">ポイントを手であげる/引く</div>' +
       '<div style="font-size:11px;color:var(--sub);margin-bottom:8px">いまの残高 ' + c.balance + 'P（' + yenStr(c.balance) + '）</div>' +
@@ -1480,6 +1555,18 @@ document.addEventListener('click', function (e) {
     return;
   }
 
+  /* きょうだいを ふやす(ヘッダーの＋から) */
+  el = e.target.closest('[data-addkid]');
+  if (el) {
+    if (parentUnlocked()) { openKidSheet(null); }
+    else {
+      ui.afterUnlock = function () { openKidSheet(null); };
+      setView('parent');
+      toast(S.pin ? 'おうちの人に PINを 入れてもらってね' : 'まず PINを きめてね');
+    }
+    return;
+  }
+
   /* タスクをふやす(きょうの画面から) */
   el = e.target.closest('[data-addtask]');
   if (el) {
@@ -1573,6 +1660,14 @@ document.addEventListener('click', function (e) {
     if (editingKid && $('k-name')) editingKid.emoji = el.dataset.emoji;
     if (editingTask && $('t-title')) editingTask.emoji = el.dataset.emoji;
     if (editingGoal && $('g-title')) editingGoal.emoji = el.dataset.emoji;
+    return;
+  }
+  el = e.target.closest('[data-kidcolor]');
+  if (el) {
+    editingKid.color = el.dataset.kidcolor;
+    var sw = el.parentNode.querySelectorAll('button');
+    for (var si = 0; si < sw.length; si++) sw[si].classList.remove('on');
+    el.classList.add('on');
     return;
   }
   el = e.target.closest('[data-adjkid]');
