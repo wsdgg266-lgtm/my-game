@@ -1,6 +1,6 @@
 {
   "_readme": "B.LEAGUE の日程・結果・順位表。scripts/import-basket.mjs が GitHub Actions で毎日更新します。手で直しても構いませんが、次の自動更新で上書きされます。",
-  "updatedAt": "2026-11-05T23:47:15.574Z",
+  "updatedAt": "2026-11-06T23:24:48.123Z",
   "season": "2026-2027",
   "leagueName": "Japanese B1 League",
   "leagueId": "4977",
@@ -201,29 +201,29 @@
       "label": ""
     },
     {
-      "id": "b2587047",
-      "ts": 1793527500000,
-      "dateJst": "2026-11-01",
-      "timeJst": "19:05",
-      "home": "Kawasaki Brave Thunders",
-      "away": "Yokohama B-Corsairs",
-      "hs": 66,
-      "as": 77,
-      "status": "post",
-      "venue": "Todoroki Arena",
-      "label": ""
-    },
-    {
-      "id": "b2587048",
+      "id": "b2589531",
       "ts": 1793959500000,
       "dateJst": "2026-11-06",
       "timeJst": "19:05",
-      "home": "Chiba Jets Funabashi",
-      "away": "Altiri Chiba",
+      "home": "Levanga Hokkaido",
+      "away": "Akita Northern Happinets",
+      "hs": 123,
+      "as": 118,
+      "status": "post",
+      "venue": "",
+      "label": ""
+    },
+    {
+      "id": "b2587053",
+      "ts": 1794031500000,
+      "dateJst": "2026-11-07",
+      "timeJst": "15:05",
+      "home": "Toyama Grouses",
+      "away": "Nagoya Diamond Dolphins",
       "hs": null,
       "as": null,
       "status": "pre",
-      "venue": "Chiba Port Arena",
+      "venue": "Toyama City Gymnasium",
       "label": ""
     }
   ],
