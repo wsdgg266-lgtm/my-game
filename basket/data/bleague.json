@@ -1,6 +1,6 @@
 {
   "_readme": "B.LEAGUE の日程・結果・順位表。scripts/import-basket.mjs が GitHub Actions で毎日更新します。手で直しても構いませんが、次の自動更新で上書きされます。",
-  "updatedAt": "2026-11-10T01:43:14.611Z",
+  "updatedAt": "2026-11-10T23:38:33.493Z",
   "season": "2026-2027",
   "leagueName": "Japanese B1 League",
   "leagueId": "4977",
@@ -201,29 +201,29 @@
       "label": ""
     },
     {
-      "id": "b2589534",
-      "ts": 1794219300000,
-      "dateJst": "2026-11-09",
-      "timeJst": "19:15",
-      "home": "Kyoto Hannaryz",
-      "away": "Levanga Hokkaido",
-      "hs": 79,
-      "as": 85,
-      "status": "post",
-      "venue": "Hannaryz Arena",
-      "label": ""
-    },
-    {
-      "id": "b2587065",
+      "id": "b2589535",
       "ts": 1794305100000,
       "dateJst": "2026-11-10",
       "timeJst": "19:05",
-      "home": "SeaHorses Mikawa",
-      "away": "Shinshu Brave Warriors",
+      "home": "Kobe Storks",
+      "away": "Tokyo SunRockers",
+      "hs": 87,
+      "as": 108,
+      "status": "post",
+      "venue": "Glion Arena Kobe",
+      "label": ""
+    },
+    {
+      "id": "b2587067",
+      "ts": 1794391500000,
+      "dateJst": "2026-11-11",
+      "timeJst": "19:05",
+      "home": "Akita Northern Happinets",
+      "away": "Ibaraki Robots",
       "hs": null,
       "as": null,
       "status": "pre",
-      "venue": "Wing Arena Kariya",
+      "venue": "CNA Arena Akita",
       "label": ""
     }
   ],
