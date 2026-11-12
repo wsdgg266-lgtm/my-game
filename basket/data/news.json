@@ -1,83 +1,139 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": "2026-11-10T23:39:06.529Z",
+  "updatedAt": "2026-11-12T00:56:38.938Z",
   "items": [
     {
-      "title": "バスケのマスコットが“ブチギレ”「喧嘩になった」　面接官に蹴り入れる事態に笑撃「手間が掛かったコント」(THE ANSWER)",
-      "url": "https://news.yahoo.co.jp/articles/0deef6a1632b1ab5a5ac640e7178ec5ed9d88a08",
-      "ts": 1794352380000,
+      "title": "イヒョンジュンが4本の3Pで12得点…Gリーグ2戦連続で先発、7リバウンド3アシストも記録",
+      "url": "https://basketballking.jp/news/world/20261112/642926.html",
+      "ts": 1794441667000,
+      "date": "2026-11-12",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "Bプレミア所属5選手がフィリピン代表メンバー入り…北海道のラモスやA千葉のソットら、中立地開催のW杯予選へ",
+      "url": "https://basketballking.jp/news/japan/20261111/642912.html",
+      "ts": 1794400022000,
       "date": "2026-11-11",
-      "source": "Yahoo!ニュース(スポーツ)"
-    },
-    {
-      "title": "【一覧】アルバルク東京 所属選手の契約期間と報酬総額（Bプレミア2026ｰ27シーズン）",
-      "url": "https://basketballking.jp/news/japan/fixed/642576.html",
-      "ts": 1794311455000,
-      "date": "2026-11-10",
       "source": "バスケットボールキング"
     },
     {
-      "title": "【一覧】神戸ストークス 所属選手の契約期間と報酬総額（Bプレミア2026ｰ27シーズン）",
-      "url": "https://basketballking.jp/news/japan/fixed/642616.html",
-      "ts": 1794311452000,
-      "date": "2026-11-10",
+      "title": "レブロン・ジェームズがシーズン通算アシスト数で歴代3位へ肉薄…キッド超えまであと11本",
+      "url": "https://basketballking.jp/news/world/20261111/642700.html",
+      "ts": 1794397554000,
+      "date": "2026-11-11",
       "source": "バスケットボールキング"
     },
     {
-      "title": "【一覧】滋賀レイクス 所属選手の契約期間と報酬総額（Bプレミア2026ｰ27シーズン）",
-      "url": "https://basketballking.jp/news/japan/fixed/642613.html",
-      "ts": 1794311451000,
-      "date": "2026-11-10",
+      "title": "富山がブラウン通訳兼サポートコーチと契約解除「大学で選手として…」米帰国し再始動",
+      "url": "https://basketballking.jp/news/japan/20261111/642913.html",
+      "ts": 1794395412000,
+      "date": "2026-11-11",
       "source": "バスケットボールキング"
     },
     {
-      "title": "【一覧】茨城ロボッツ 所属選手の契約期間と報酬総額（Bプレミア2026ｰ27シーズン）",
-      "url": "https://basketballking.jp/news/japan/fixed/642475.html",
-      "ts": 1794311451000,
-      "date": "2026-11-10",
+      "title": "ジャバー、“提督”に次ぐ快記録…ビクター・ウェンバンヤマが驚異のスタッツライン",
+      "url": "https://basketballking.jp/news/world/20261111/642704.html",
+      "ts": 1794391695000,
+      "date": "2026-11-11",
       "source": "バスケットボールキング"
     },
     {
-      "title": "【一覧】アルティーリ千葉 所属選手の契約期間と報酬総額（Bプレミア2026ｰ27シーズン）",
-      "url": "https://basketballking.jp/news/japan/fixed/642541.html",
-      "ts": 1794311450000,
-      "date": "2026-11-10",
+      "title": "【NBA】ジェイレン・ブラウンとジェイソン・テイタムの関係性は冷え切ったまま？ 握手を交わさず「ただ集中しているだけ」",
+      "url": "https://basket-count.com/article/detail/279173",
+      "ts": 1794389351000,
+      "date": "2026-11-11",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "三河のガードナーが前人未到の通算1万2000得点達成…信州戦で逆転勝ちに貢献",
+      "url": "https://basketballking.jp/news/japan/20261111/642783.html",
+      "ts": 1794386387000,
+      "date": "2026-11-11",
       "source": "バスケットボールキング"
     },
     {
-      "title": "【一覧】仙台89ERS 所属選手の契約期間と報酬総額（Bプレミア2026ｰ27シーズン）",
-      "url": "https://basketballking.jp/news/japan/fixed/642413.html",
-      "ts": 1794311450000,
-      "date": "2026-11-10",
+      "title": "【写真ギャラリー】2026.11.10 広島ドラゴンフライズ 80－73 長崎ヴェルカ",
+      "url": "https://basketballking.jp/news/japan/20261111/642829.html",
+      "ts": 1794384226000,
+      "date": "2026-11-11",
       "source": "バスケットボールキング"
     },
     {
-      "title": "【一覧】川崎ブレイブサンダース 所属選手の契約期間と報酬総額（Bプレミア2026ｰ27シーズン）",
-      "url": "https://basketballking.jp/news/japan/fixed/642586.html",
-      "ts": 1794311443000,
-      "date": "2026-11-10",
+      "title": "【ワールドカップ2027アジア予選】Window5に挑む男子フィリピン代表にBリーガー5名が選出、先日復帰したカイ・ソットも名を連ねる",
+      "url": "https://basket-count.com/article/detail/279192",
+      "ts": 1794381923000,
+      "date": "2026-11-11",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "NBA クリッパーズ八村塁13得点も チームは敗れる",
+      "url": "https://news.web.nhk/newsweb/na/nd-20261111de74154",
+      "ts": 1794379440000,
+      "date": "2026-11-11",
+      "source": "NHKニュース(スポーツ)"
+    },
+    {
+      "title": "Bリーグドラフト志望届58人目の提出…専修大の山口隼がエントリー、PG登録は30人に",
+      "url": "https://basketballking.jp/news/japan/20261111/642774.html",
+      "ts": 1794378795000,
+      "date": "2026-11-11",
       "source": "バスケットボールキング"
     },
     {
-      "title": "【一覧】広島ドラゴンフライズ 所属選手の契約期間と報酬総額（Bプレミア2026ｰ27シーズン）",
-      "url": "https://basketballking.jp/news/japan/fixed/642622.html",
-      "ts": 1794311442000,
-      "date": "2026-11-10",
+      "title": "佐賀バルーナーズの内尾聡理が全治4カ月の負傷…開幕戦でアキレス腱断裂から復帰も再離脱",
+      "url": "https://basketballking.jp/news/japan/20261111/642770.html",
+      "ts": 1794378488000,
+      "date": "2026-11-11",
       "source": "バスケットボールキング"
     },
     {
-      "title": "【一覧】大阪エヴェッサ 所属選手の契約期間と報酬総額（Bプレミア2026ｰ27シーズン）",
-      "url": "https://basketballking.jp/news/japan/fixed/642615.html",
-      "ts": 1794311437000,
-      "date": "2026-11-10",
+      "title": "【更新中】一覧「Bリーグドラフト2027」志望届提出選手リスト…指名候補選手のポジション・身長・出身校・成績",
+      "url": "https://basketballking.jp/news/japan/fixed/634331.html",
+      "ts": 1794378032000,
+      "date": "2026-11-11",
       "source": "バスケットボールキング"
     },
     {
-      "title": "【一覧】千葉ジェッツ 所属選手の契約期間と報酬総額（Bプレミア2026ｰ27シーズン）",
-      "url": "https://basketballking.jp/news/japan/fixed/642573.html",
-      "ts": 1794311437000,
-      "date": "2026-11-10",
-      "source": "バスケットボールキング"
+      "title": "佐賀バルーナーズの内尾聡理が左肘関節脱臼で4カ月の離脱、今シーズンにアキレス腱断裂の大ケガから復帰も試練が続く",
+      "url": "https://basket-count.com/article/detail/279183",
+      "ts": 1794377864000,
+      "date": "2026-11-11",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "引退表明している、宇都宮ブレックスのギャビン・エドワーズが持つこだわり「エナジー溢れるプレーをしていた印象でコートを去りたい」",
+      "url": "https://basket-count.com/article/detail/279148",
+      "ts": 1794372997000,
+      "date": "2026-11-11",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "離脱中のジミー・バトラーがコーチングスタッフに転向⁉︎ルーキーのヤクセル・レンデボーグ「彼から何も学べなかったよ（笑）」",
+      "url": "https://basket-count.com/article/detail/279122",
+      "ts": 1794368523000,
+      "date": "2026-11-11",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【NBA】アンストッパブルな活躍を続けるビクター・ウェンバンヤマが25分で40得点＆9ブロック、スパーズが破竹の9連勝",
+      "url": "https://basket-count.com/article/detail/279126",
+      "ts": 1794366649000,
+      "date": "2026-11-11",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "無敗を支えたチームの要、順位を押し上げた原動力。BPMで読む序盤戦の主役たち【PR】Promoted by スポーツくじWINNER",
+      "url": "https://basket-count.com/article/detail/279081",
+      "ts": 1794366000000,
+      "date": "2026-11-11",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "BワンとBネクストで『留学生実績枠』を2027-28シーズンから新設、島田慎二コミッショナー「機会創出という観点から意義がある」",
+      "url": "https://basket-count.com/article/detail/279105",
+      "ts": 1794364399000,
+      "date": "2026-11-11",
+      "source": "バスケットカウント"
     },
     {
       "title": "Bプレミアの報酬レンジ別の選手人数分布を公開、島田慎二コミッショナー「日本人選手の1億円超えはもっと増やしたい」",
@@ -94,55 +150,6 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "東山からアメリカに留学した佐藤凪、渡米1カ月半で得た濃密な経験と自信と喜び（後編）「良い結果に繋がると信じてやるしかない」",
-      "url": "https://basket-count.com/article/detail/276815",
-      "ts": 1794297600000,
-      "date": "2026-11-10",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "Bリーグが開幕時点での各クラブサラリー総額を発表、トップは8億2000万円のアルティーリ千葉、最も低いのは5億円の滋賀レイクス",
-      "url": "https://basket-count.com/article/detail/279024",
-      "ts": 1794295696000,
-      "date": "2026-11-10",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "苦境の琉球ゴールデンキングス、ジャック・クーリーの危機感「キングスは言い訳をする組織ではない、どんな状況でも勝ちたい」",
-      "url": "https://basket-count.com/article/detail/279000",
-      "ts": 1794285111000,
-      "date": "2026-11-10",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "東山からアメリカに留学した佐藤凪、渡米1カ月半で得た濃密な経験と自信と喜び（前編）「信頼を勝ち取るまでの過程を楽しめた」",
-      "url": "https://basket-count.com/article/detail/276776",
-      "ts": 1794281407000,
-      "date": "2026-11-10",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "『FIBA女子バスケットボールワールドカップ2030』トークイベントに山本麻衣と後藤音羽が登場、11月14日に代々木第一体育館で開催",
-      "url": "https://basket-count.com/article/detail/278971",
-      "ts": 1794277533000,
-      "date": "2026-11-10",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "角谷光煌斗「アウェーでも力を発揮できるように」八戸学院光星（青森県）",
-      "url": "https://basket-count.com/article/detail/278962",
-      "ts": 1794274544000,
-      "date": "2026-11-10",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【NBA】ドック・リバース元ヘッドコーチがヤニス・アデトクンボへの発言を釈明「誤解を生んでしまい非常に反省している」と直接謝罪",
-      "url": "https://basket-count.com/article/detail/278957",
-      "ts": 1794271185000,
-      "date": "2026-11-10",
-      "source": "バスケットカウント"
-    },
-    {
       "title": "NBA 八村塁が14得点 クリッパーズ 連敗7で止める ペリカンズ戦",
       "url": "https://news.web.nhk/newsweb/na/nd-20261109de73059",
       "ts": 1794219427000,
@@ -150,24 +157,10 @@
       "source": "NHKニュース(スポーツ)"
     },
     {
-      "title": "アルバルク東京の安藤周人が語るライアン・リッチマンヘッドコーチへの信頼「シュートに関してグリーンライトを与えてもらっている」",
-      "url": "https://basket-count.com/article/detail/278948",
-      "ts": 1794215694000,
-      "date": "2026-11-09",
-      "source": "バスケットカウント"
-    },
-    {
       "title": "バスケ 河村勇輝 下部のGリーグ初戦で存在感示すも右足負傷",
       "url": "https://news.web.nhk/newsweb/na/nd-20261107de72143",
       "ts": 1794039413000,
       "date": "2026-11-07",
-      "source": "NHKニュース(スポーツ)"
-    },
-    {
-      "title": "NBAクリッパーズ 八村 21得点の活躍もチームは延長で敗れ7連敗",
-      "url": "https://news.web.nhk/newsweb/na/nd-20261105de71212",
-      "ts": 1793874480000,
-      "date": "2026-11-05",
       "source": "NHKニュース(スポーツ)"
     }
   ],
