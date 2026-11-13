@@ -267,6 +267,43 @@
   .badge.locked { opacity: .45; }
   .badge.locked .be { filter: grayscale(1); }
 
+  /* ===== ずかん ===== */
+  .zk-chars { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .zk-char { background: #fff; border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; text-align: left; padding: 0; }
+  .zk-char:active { transform: scale(.98); }
+  .zk-char img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; object-position: 50% 22%; display: block; }
+  .zk-char .zc-body { display: block; padding: 9px 10px 11px; }
+  .zk-char .zc-n { display: block; font-size: 16px; font-weight: 800; }
+  .zk-char .zc-n small { font-size: 10px; font-weight: 700; color: var(--sub); margin-left: 4px; }
+  .zk-char .zc-d { display: block; font-size: 10.5px; color: var(--sub); font-weight: 700; }
+  .zk-char .zc-s { display: block; font-size: 11px; font-weight: 800; margin-top: 5px; }
+  .zk-char .zc-b { display: block; font-size: 10px; font-weight: 700; color: var(--sub); margin-top: 3px; }
+  .zk-boss { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 16px; box-shadow: var(--shadow); padding: 12px; margin-bottom: 10px; }
+  .zk-boss.locked { opacity: .5; }
+  .zk-boss .zb-em { width: 46px; height: 46px; border-radius: 14px; background: var(--ac-soft); display: flex; align-items: center; justify-content: center; font-size: 25px; flex: 0 0 auto; }
+  .zk-boss .zb-b { flex: 1; min-width: 0; }
+  .zk-boss .zb-n { font-size: 14.5px; font-weight: 800; }
+  .zk-boss .zb-d { font-size: 11px; color: var(--sub); font-weight: 600; }
+  .zk-boss .zb-s { font-size: 13px; color: var(--gold); letter-spacing: 1px; flex: 0 0 auto; text-align: right; }
+  .zk-boss .zb-s .off { color: var(--line2); }
+  .zk-boss .zb-s .yet { font-size: 10.5px; font-weight: 800; color: var(--sub); letter-spacing: 0; }
+
+  /* キャラの くわしい ページ */
+  .char-hero { position: relative; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 14px; background: #fff; }
+  .char-hero img { width: 100%; display: block; }
+  .char-hero .ch-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 14px 12px; color: #fff;
+    background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.72)); }
+  .char-hero .ch-n { font-size: 26px; font-weight: 800; letter-spacing: .04em; }
+  .char-hero .ch-n small { font-size: 12px; font-weight: 700; opacity: .85; margin-left: 6px; }
+  .char-hero .ch-d { font-size: 12px; font-weight: 700; opacity: .9; }
+  .char-word { font-size: 15px; font-weight: 800; text-align: center; line-height: 1.6; padding: 4px 0 2px; }
+  .char-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .char-row:last-child { border-bottom: none; }
+  .char-row .cr-i { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex: 0 0 auto; }
+  .char-row .cr-t { font-size: 13px; font-weight: 800; }
+  .char-row .cr-d { font-size: 11.5px; color: var(--sub); font-weight: 600; }
+  .char-row .cr-v { margin-left: auto; font-size: 15px; font-weight: 800; flex: 0 0 auto; }
+
   /* ===== おうちのひと ===== */
   .field { margin-bottom: 12px; }
   .field > label { display: block; font-size: 12px; font-weight: 800; color: var(--sub); margin-bottom: 6px; }
@@ -463,17 +500,31 @@
     </div>
   </section>
 
-  <!-- ===== バッジ ===== -->
-  <section id="view-badge" class="view hidden">
+  <!-- ===== ずかん ===== -->
+  <section id="view-zukan" class="view hidden">
     <div class="wrap">
-      <div class="stat-grid" style="margin-bottom:14px">
+      <div class="stat-grid" style="margin-bottom:12px">
         <div class="stat"><div class="sv" id="bgLv">1</div><div class="sl">レベル</div></div>
         <div class="stat"><div class="sv" id="bgQ">0</div><div class="sl">といた もんだい</div></div>
         <div class="stat"><div class="sv" id="bgStar">0</div><div class="sl">あつめた ★</div></div>
       </div>
-      <div class="card">
-        <div class="sec-title">🏅 バッジ <span class="note" id="badgeCount"></span></div>
-        <div class="badges" id="badgeList"></div>
+      <div class="subtabs" id="zukanTabs">
+        <button class="subtab" data-z="char">🐉 四神</button>
+        <button class="subtab" data-z="boss">👾 ボス</button>
+        <button class="subtab" data-z="badge">🏅 バッジ</button>
+      </div>
+      <div id="zukanBody"></div>
+      <div style="height:10px"></div>
+    </div>
+  </section>
+
+  <!-- ===== キャラの くわしい ページ ===== -->
+  <section id="view-char" class="view hidden">
+    <div class="wrap">
+      <div id="charBody"></div>
+      <div class="row" style="margin-bottom:14px">
+        <button class="btn sub" id="btnCharBack">ずかんへ</button>
+        <button class="btn" id="btnCharBattle">この子と バトル</button>
       </div>
       <div style="height:10px"></div>
     </div>
@@ -630,7 +681,7 @@
 <nav class="tabbar">
   <button data-tab="map" class="on"><span class="ti">🗺️</span><span class="tt">ぼうけん</span></button>
   <button data-tab="record"><span class="ti">📊</span><span class="tt">きろく</span></button>
-  <button data-tab="badge"><span class="ti">🏅</span><span class="tt">バッジ</span></button>
+  <button data-tab="zukan"><span class="ti">📖</span><span class="tt">ずかん</span></button>
   <button data-tab="parent"><span class="ti">👪</span><span class="tt">おうちのひと</span></button>
 </nav>
 
@@ -1229,7 +1280,7 @@ function beep(kind) {
   } catch (e) { /* 音が出せない端末では 何もしない */ }
 }
 
-const VIEWS = ['map', 'record', 'badge', 'parent', 'result', 'battle'];
+const VIEWS = ['map', 'record', 'zukan', 'parent', 'result', 'battle', 'char'];
 let currentTab = 'map';
 function showView(name) {
   VIEWS.forEach(v => $('view-' + v).classList.toggle('hidden', v !== name));
@@ -1242,7 +1293,7 @@ function switchTab(tab) {
   showView(tab);
   if (tab === 'map') renderMap();
   if (tab === 'record') renderRecord();
-  if (tab === 'badge') renderBadges();
+  if (tab === 'zukan') renderZukan();
   if (tab === 'parent') openParent();
 }
 
@@ -1846,20 +1897,114 @@ function rateRow(name, c, t, color) {
 }
 
 /* =========================================================
-   バッジ
+   ずかん(四神・ボス・バッジ)
    ========================================================= */
-function renderBadges() {
+let zukanTab = 'char';
+function renderZukan() {
   const t = totals();
+  const stageStars = Object.values(S.stars).reduce((a, b) => a + b, 0);
+  const bossStars = Object.values(S.battle.cleared).reduce((a, b) => a + b, 0);
   $('bgLv').textContent = levelOf(S.profile.xp).lv;
   $('bgQ').textContent = t.q;
-  $('bgStar').textContent = Object.values(S.stars).reduce((a, b) => a + b, 0);
-  $('badgeCount').textContent = `${S.badges.length} / ${BADGES.length}`;
-  $('badgeList').innerHTML = BADGES.map(b => {
+  $('bgStar').textContent = stageStars + bossStars;
+  $('zukanTabs').querySelectorAll('.subtab').forEach(b => {
+    const on = b.dataset.z === zukanTab;
+    b.classList.toggle('on', on);
+    b.style.background = on ? 'var(--ac)' : '';
+    b.style.color = on ? '#fff' : '';
+    b.onclick = () => { zukanTab = b.dataset.z; renderZukan(); };
+  });
+  if (zukanTab === 'boss') renderZukanBosses();
+  else if (zukanTab === 'badge') renderZukanBadges();
+  else renderZukanChars();
+  renderHeader();
+}
+function renderZukanChars() {
+  $('zukanBody').innerHTML = '<div class="zk-chars">' + GUARDIANS.map(g => {
+    const lv = bondLv(g.id), w = (S.battle.winBy || {})[g.id] || 0;
+    return `<button class="zk-char" data-g="${g.id}">
+      <img src="${g.img}" alt="${esc(g.name)}">
+      <span class="zc-body">
+        <span class="zc-n" style="color:${g.color}">${esc(g.name)}<small>${esc(g.yomi)}</small></span>
+        <span class="zc-d">${esc(g.dir)}</span>
+        <span class="zc-s" style="color:${g.color}">✨ ${esc(g.skill)}</span>
+        <span class="zc-b">きずな Lv.${lv} ・ しょうり ${w}回</span>
+      </span>
+    </button>`;
+  }).join('') + '</div>';
+  $('zukanBody').querySelectorAll('.zk-char').forEach(b => b.onclick = () => openChar(b.dataset.g));
+}
+function renderZukanBosses() {
+  const cleared = Object.keys(S.battle.cleared).length;
+  $('zukanBody').innerHTML = `<div class="sec-title">👾 たおした ボス <span class="note">${cleared} / ${BOSSES.length}</span></div>` +
+    BOSSES.map((b, i) => {
+      const st = S.battle.cleared[b.id] || 0, unlocked = bossOpen(i);
+      return `<div class="zk-boss ${unlocked ? '' : 'locked'}">
+        <div class="zb-em">${unlocked ? b.em : '🔒'}</div>
+        <div class="zb-b">
+          <div class="zb-n">${unlocked ? esc(b.name) : '???'}</div>
+          <div class="zb-d">${unlocked ? `${esc(b.d)} ・ HP ${b.hp}` : 'まえの ボスを たおすと あらわれる'}</div>
+        </div>
+        <div class="zb-s">${st ? '★'.repeat(st) + `<span class="off">${'★'.repeat(3 - st)}</span>`
+          : unlocked ? '<span class="yet">まだ</span>' : ''}</div>
+      </div>`;
+    }).join('');
+}
+function renderZukanBadges() {
+  $('zukanBody').innerHTML = `<div class="card">
+      <div class="sec-title">🏅 バッジ <span class="note">${S.badges.length} / ${BADGES.length}</span></div>
+      <div class="badges">` + BADGES.map(b => {
     const got = S.badges.includes(b.id);
     return `<div class="badge ${got ? '' : 'locked'}"><div class="be">${got ? b.e : '🔒'}</div>
       <div class="bt">${esc(b.t)}</div><div class="bd">${esc(b.d)}</div></div>`;
-  }).join('');
-  renderHeader();
+  }).join('') + '</div></div>';
+}
+
+/* キャラ1人の くわしい ページ */
+let charOpen = null;
+function openChar(id) {
+  const g = G[id];
+  if (!g) return;
+  charOpen = id;
+  const lv = bondLv(id), next = bondNext(id), bp = S.battle.bond[id] || 0;
+  const wins = (S.battle.winBy || {})[id] || 0;
+  $('charBody').innerHTML = `
+    <div class="char-hero">
+      <img src="${g.img}" alt="${esc(g.name)}">
+      <div class="ch-cap">
+        <div class="ch-n">${esc(g.name)}<small>${esc(g.yomi)}</small></div>
+        <div class="ch-d">${esc(g.dir)}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="char-word" style="color:${g.color}">「${esc(g.word)}」</div>
+    </div>
+    <div class="card">
+      <div class="char-row">
+        <div class="cr-i" style="background:var(--ac-soft)">✨</div>
+        <div><div class="cr-t">${esc(g.skill)}</div><div class="cr-d">${esc(g.sdesc)}</div></div>
+      </div>
+      <div class="char-row">
+        <div class="cr-i" style="background:#fff2d6">⚡</div>
+        <div><div class="cr-t">ひっさつ技: ${esc(g.hissatsu)}</div>
+        <div class="cr-d">れんぞく正解で ゲージが たまると ダメージ3倍</div></div>
+      </div>
+      <div class="char-row">
+        <div class="cr-i" style="background:${g.color}22">💞</div>
+        <div style="flex:1;min-width:0">
+          <div class="cr-t">きずな レベル ${lv}${lv >= 10 ? ' (MAX)' : ''}</div>
+          <div class="cr-d">こうげき +${lv * 5}%${lv >= 10 ? '' : ` ・ あと ${next}もん 正解で レベルアップ`}</div>
+          <div class="bond-bar"><i style="width:${lv >= 10 ? 100 : (10 - next) * 10}%;background:${g.color}"></i></div>
+        </div>
+      </div>
+      <div class="char-row">
+        <div class="cr-i" style="background:var(--ok-soft)">🏆</div>
+        <div><div class="cr-t">この子との せんせき</div>
+        <div class="cr-d">バトルで せいかい ${bp}もん</div></div>
+        <div class="cr-v" style="color:${g.color}">${wins}<span style="font-size:11px">しょうり</span></div>
+      </div>
+    </div>`;
+  showView('char');
 }
 
 /* =========================================================
@@ -1951,6 +2096,11 @@ function segSet(id, val) {
    ========================================================= */
 document.querySelectorAll('nav.tabbar button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
 $('btnBattle').onclick = openBattle;
+$('btnCharBack').onclick = () => switchTab('zukan');
+$('btnCharBattle').onclick = () => {
+  if (charOpen) { S.battle.partner = charOpen; save(); }
+  openBattle();
+};
 $('btnBattleBack').onclick = () => switchTab('map');
 $('btnReview').onclick = startReview;
 $('btnChallenge').onclick = startChallenge;
