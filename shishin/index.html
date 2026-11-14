@@ -1197,6 +1197,19 @@ rt{font-size:.5em;font-weight:500;color:var(--mute)}
 .tc-art.flat .tc-fit{transform:translateY(-58%) scale(2.05);-webkit-mask-image:radial-gradient(ellipse 48% 50% at 50% 50%,#000 70%,transparent 100%);mask-image:radial-gradient(ellipse 48% 50% at 50% 50%,#000 70%,transparent 100%)}
 
 </style>
+<style>
+/* ===== v19：カード画面を 軽く（iPhone/iPadで 開けなくなる 問題の 対策） ===== */
+.tc-art.flat{background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--c) 45%,#0a0f28),#05071a 80%)}
+.tc-art.flat>img{object-fit:cover;object-position:50% 45%}
+.dexgrid .tc.locked{filter:none}
+.dexgrid .tc.locked .tc-art>img{opacity:.12}
+.dexgrid .tc.locked .tc-rib,.dexgrid .tc.locked .tc-desc,.dexgrid .tc.locked .tc-stats{opacity:.35}
+.dexbtn.seen .tc{filter:none;opacity:.72}
+.tc,.tc.ev{box-shadow:0 0 6px color-mix(in srgb,var(--c) 60%,transparent)}
+.tc.ev{box-shadow:0 0 8px rgba(255,200,61,.8)}
+.dexgrid .tc,.pickgrid .tc{box-shadow:none}
+</style>
+
 </head>
 <body>
 <div id="app"></div>
@@ -1727,7 +1740,7 @@ function fillDeck(){
   S.deck = (S.deck || []).filter((id, i, arr) => S.cards[id] && arr.indexOf(id) === i).slice(0, 3);
   if (S.deck.length < 3) Object.keys(S.cards).map(Number).sort((a, b) => S.cards[b].lv - S.cards[a].lv).forEach(id => { if (S.deck.length < 3 && !S.deck.includes(id)) S.deck.push(id); });
 }
-setTimeout(() => { if (migrateEvo()){ persist(); render(); } }, 0);
+setTimeout(() => { try { repairSave(); } catch(e){} if (migrateEvo()){ persist(); render(); } }, 0);
 if (window.claude && window.claude.hot && window.claude.hot.snapshot) {
   try { window.claude.hot.snapshot(() => ({ S })); } catch(e){}
 }
@@ -1958,7 +1971,8 @@ function cardFace(id, size, opt){
   const arStyle = '', src = d.img ? ART[c.img || d.img] : '', flat = d.img && (ART_AR[d.img] || 0) > 1.3;
   const kind = !d.img ? '' : flat ? ' flat' : isHuman(id) ? ' person' : '';
   let art;
-  if (d.img) art = flat ? '<img class="tc-blur" src="' + src + '" alt=""><img class="tc-fit" src="' + src + '" alt="' + esc(d.name) + '">' : '<img src="' + src + '" alt="' + esc(d.name) + '">';
+  // 軽さ優先：ぼかし・拡大・マスクは 使わず 1枚の 絵だけ（iPhone/iPadで たくさん 並べても 重くならないように）
+  if (d.img) art = '<img src="' + src + '" alt="' + esc(d.name) + '" loading="lazy" decoding="async">';
   else art = '<div class="tc-fb"><img src="' + ART['boss_' + (d.s === 'all' ? 'math' : d.s)] + '" alt=""><span class="emo">' + d.e + '</span></div><span class="tc-badge">' + BADGE[d.s] + '</span><span class="tc-tag">' + cardTag(d) + '</span>';
   if (!d.boss) art += '<div class="tc-name">' + (opt.locked ? '？？？' : esc(c.title)) + '</div>';
 
@@ -1975,7 +1989,7 @@ function unlocked(st){ return st.id === 1 || S.cleared.includes(st.id - 1); }
 // ---------- 共通：キャラの絵 ----------
 function artBox(id, cls){
   const d = owned(id) ? stats(id) : cardDef(id);
-  if (d.img) return '<div class="' + cls + ' s-' + d.s + '"><img src="' + ART[d.img] + '" alt=""></div>';
+  if (d.img) return '<div class="' + cls + ' s-' + d.s + '"><img src="' + ART[d.img] + '" alt="" decoding="async"></div>';
   return '<div class="' + cls + ' s-' + d.s + ' fb"><img src="' + ART['boss_' + (d.s === 'all' ? 'math' : d.s)] + '" alt=""><span>' + d.e + '</span></div>';
 }
 const SUBJ_KANA = {math:'さんすう', japanese:'こくご', science:'りか', social:'しゃかい', all:'ぜんぶの きょうか'};
@@ -2868,11 +2882,22 @@ function furigana(root){
     n.replaceWith(...span.childNodes);
   });
 }
+// 記録の おかしな ところを なおす（知らない カード・数字でない ID・デッキの 空き など）
+function repairSave(){
+  Object.keys(S.cards || {}).forEach(k => { if (!cardDef(+k) || !S.cards[k] || typeof S.cards[k] !== 'object') delete S.cards[k]; else { const c = S.cards[k]; c.lv = Math.max(1, Math.min(MAX_LV, +c.lv || 1)); c.exp = +c.exp || 0; } });
+  if (!Object.keys(S.cards).length) STARTER_CARDS.forEach(id => S.cards[id] = {lv:1, exp:0, ev:false});
+  S.deck = (Array.isArray(S.deck) ? S.deck : []).map(Number);
+  if (!Array.isArray(S.dex)) S.dex = [];
+  fillDeck(); if (!S.deck.length) S.deck = Object.keys(S.cards).map(Number).slice(0, 3);
+  try { persist(); } catch(e){}
+}
 function render(scrollTop){
   const v = cur();
   try { BGM.play(bgmFor(v)); } catch(e){}
   let html = '';
   const full = v.v === 'battle' || (v.v === 'box' && boxState && (boxState.phase === 'charge' || boxState.phase === 'reveal'));
+  // 画面を 作る とちゅうで エラーが 出ても 固まらないように：記録を 整えて もう一度、それでも だめなら お知らせ画面
+  const build = () => { let html = '';
   switch (v.v){
     case 'home': html = vHome(); break;
     case 'map': html = vMap(v); break;
@@ -2891,6 +2916,12 @@ function render(scrollTop){
     case 'mistakes': html = vMistakes(); break;
     case 'rules': html = vRules(); break;
     case 'report': html = vReport(); break;
+  }
+  return html; };
+  try { html = build(); }
+  catch(e1){
+    try { repairSave(); html = build(); }
+    catch(e2){ html = top('ごめんね') + '<main class="scroll"><div class="panel"><b>この画面を ひらけませんでした</b><p class="muted" style="font-size:12px;word-break:break-all">' + esc(String(e2 && e2.message || e2)) + '</p></div><button class="cta" data-act="tab" data-k="home">ホームへ もどる</button></main>'; }
   }
   const oldScroll = document.querySelector('.scroll');
   const keep = !scrollTop && oldScroll ? oldScroll.scrollTop : 0;
