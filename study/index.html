@@ -49,7 +49,7 @@
   }
   body.quiz-mode { padding-bottom: 0; overflow: hidden; }
   button, input, select, textarea { font-family: inherit; font-size: 16px; color: inherit; }
-  button { background: none; border: none; cursor: pointer; }
+  button { background: none; border: none; cursor: pointer; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
   .wrap { max-width: 560px; margin: 0 auto; padding: 0 14px; }
   .hidden { display: none !important; }
 
@@ -151,7 +151,12 @@
   #view-quiz { position: fixed; inset: 0; background: var(--bg); z-index: 50; display: flex; flex-direction: column; }
   .q-top { padding: calc(env(safe-area-inset-top) + 10px) 14px 10px; background: #fff; box-shadow: var(--shadow); }
   .q-top-row { display: flex; align-items: center; gap: 10px; max-width: 560px; margin: 0 auto; }
-  .q-close { font-size: 20px; color: var(--sub); padding: 2px 6px; }
+  .q-close {
+    display: flex; align-items: center; gap: 3px; font-size: 16px; font-weight: 800; color: var(--sub);
+    padding: 9px 12px; margin: -4px 0 -4px -6px; min-width: 44px; min-height: 44px; border-radius: 12px;
+  }
+  .q-close small { font-size: 11px; font-weight: 800; }
+  .q-close:active { background: var(--line); }
   .q-name { font-size: 13px; font-weight: 800; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .q-count { font-size: 13px; font-weight: 800; color: var(--sub); }
   .q-combo { font-size: 12px; font-weight: 800; color: var(--gold); }
@@ -392,9 +397,13 @@
   nav.tabbar {
     position: fixed; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,.96);
     backdrop-filter: blur(8px); border-top: 1px solid var(--line);
-    padding: 6px 0 calc(6px + env(safe-area-inset-bottom)); display: flex; z-index: 40;
+    padding: 6px 0 calc(8px + env(safe-area-inset-bottom)); display: flex; z-index: 40;
   }
-  nav.tabbar button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0; color: var(--sub); }
+  nav.tabbar button {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px; padding: 6px 0; min-height: 52px; color: var(--sub);
+  }
+  nav.tabbar button:active { background: var(--ac-soft); }
   nav.tabbar button .ti { font-size: 21px; }
   nav.tabbar button .tt { font-size: 10.5px; font-weight: 800; }
   nav.tabbar button.on { color: var(--ac); }
@@ -646,7 +655,7 @@
 <section id="view-quiz" class="hidden">
   <div class="q-top">
     <div class="q-top-row">
-      <button class="q-close" id="qClose">✕</button>
+      <button class="q-close" id="qClose">✕<small>やめる</small></button>
       <div class="q-name" id="qName"></div>
       <div class="q-combo" id="qCombo"></div>
       <div class="q-count" id="qCount"></div>
@@ -1282,10 +1291,19 @@ function beep(kind) {
 
 const VIEWS = ['map', 'record', 'zukan', 'parent', 'result', 'battle', 'char'];
 let currentTab = 'map';
+let navLock = false;
+function openView() {
+  if (!$('view-quiz').classList.contains('hidden')) return 'quiz';
+  return VIEWS.find(v => !$('view-' + v).classList.contains('hidden')) || 'map';
+}
+/* スマホの「もどる」で 1つ前に もどれるように、マップ以外を ひらいたら 履歴を 1つ積む */
+function pushNav(name) { if (navLock) return; try { history.pushState({ mq: name }, ''); } catch (e) { /* 使えない環境では なにもしない */ } }
 function showView(name) {
+  const before = openView();
   VIEWS.forEach(v => $('view-' + v).classList.toggle('hidden', v !== name));
   $('appHeader').classList.toggle('hidden', false);
   window.scrollTo(0, 0);
+  if (name !== 'map' && name !== before) pushNav(name);
 }
 function switchTab(tab) {
   currentTab = tab;
@@ -1399,6 +1417,7 @@ function startChallenge() {
   enterQuiz();
 }
 function enterQuiz() {
+  pushNav('quiz');
   document.body.classList.add('quiz-mode');
   $('view-quiz').classList.remove('hidden');
   $('qName').textContent = `${Q.em} ${Q.name}`;
@@ -1406,10 +1425,12 @@ function enterQuiz() {
 }
 function exitQuiz() {
   stopTick();
+  const wasBattle = Q && Q.mode === 'battle';
   document.body.classList.remove('quiz-mode');
   $('view-quiz').classList.add('hidden');
   Q = null;
-  switchTab('map');
+  if (wasBattle) openBattle();   // バトルを やめたら ボスえらびに もどる
+  else switchTab('map');
 }
 function currentQ() {
   if (Q.mode === 'challenge' || Q.mode === 'battle') {
@@ -1746,7 +1767,7 @@ function battlePool(boss) {
   const any = UNITS.filter(u => S.settings.subjects[u.s] !== false);
   return any.length ? any : UNITS;
 }
-function openBattle() { showView('battle'); renderBattle(); }
+function openBattle() { pushNav('battle'); showView('battle'); renderBattle(); }
 function renderBattle() {
   /* あいぼう */
   $('partyList').innerHTML = GUARDIANS.map(g => {
@@ -1966,6 +1987,7 @@ function openChar(id) {
   const g = G[id];
   if (!g) return;
   charOpen = id;
+  pushNav('char');
   const lv = bondLv(id), next = bondNext(id), bp = S.battle.bond[id] || 0;
   const wins = (S.battle.winBy || {})[id] || 0;
   $('charBody').innerHTML = `
@@ -2179,6 +2201,24 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'Tab' && q.type === 'num2') { e.preventDefault(); setActive(numActive === 0 ? 1 : 0); }
 });
 document.addEventListener('click', () => { if (currentTab === 'parent' && parentUnlocked) resetLockTimer(); });
+
+/* スマホの「もどる」ボタン・スワイプで 1つ前の画面に もどる
+   (クイズ中は 下メニューが かくれるので、ここから ぬけられるようにしておく) */
+window.addEventListener('popstate', () => {
+  navLock = true;
+  try {
+    const v = openView();
+    if (v === 'quiz') {
+      if (Q && !Q.done && Q.results.filter(r => r !== undefined).length > 0) finish();
+      else exitQuiz();
+    } else if (v === 'char') switchTab('zukan');
+    else if (v === 'battle' || v === 'result') switchTab('map');
+    else if (currentTab !== 'map') switchTab('map');
+  } finally { navLock = false; }
+  /* まだ マップ以外に いるなら、つぎの「もどる」も 受け取れるようにしておく */
+  const after = openView();
+  if (after !== 'map') pushNav(after);
+});
 
 /* 日付が かわったら 見た目を 更新する */
 let lastDay = todayKey();
