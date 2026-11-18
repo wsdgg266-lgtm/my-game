@@ -1,83 +1,125 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": "2026-11-17T01:58:51.320Z",
+  "updatedAt": "2026-11-18T01:11:58.443Z",
   "items": [
+    {
+      "title": "【NBA】ホークスに痛手、ベテランのCJ・マッカラムが左ふくらはぎの肉離れで最低4週間の離脱へ(BASKET COUNT)",
+      "url": "https://news.yahoo.co.jp/articles/52d3aa394732fd4ea081593c89efbc514dcf3eb2",
+      "ts": 1794963144000,
+      "date": "2026-11-18",
+      "source": "Yahoo!ニュース(スポーツ)"
+    },
+    {
+      "title": "「今年は自分が」東山の佐藤久遠…“リミッターを外した”点取り屋が見据える司令塔への進化",
+      "url": "https://basketballking.jp/news/japan/20261117/643878.html",
+      "ts": 1794916839000,
+      "date": "2026-11-17",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "“元バスケ部主将”aoen 颯太「誰かが困った時に支えられる人でありたい」NBAがアーティスト活動にも刺激",
+      "url": "https://basketballking.jp/news/world/20261117/643689.html",
+      "ts": 1794913224000,
+      "date": "2026-11-17",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【U18日清食品トップリーグ女子】東海大学付属福岡が全勝優勝…最終順位と個人賞が決定",
+      "url": "https://basketballking.jp/news/japan/20261117/643854.html",
+      "ts": 1794911180000,
+      "date": "2026-11-17",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "テリー・ロジアー賭博疑惑に新展開…検察が「NBA調査で嘘」と主張、裁判で証拠化へ",
+      "url": "https://basketballking.jp/news/world/20261117/643540.html",
+      "ts": 1794909562000,
+      "date": "2026-11-17",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【U18日清食品トップリーグ2026男子】最終順位と個人賞を発表…優勝した福大大濠から2名がBEST5入り",
+      "url": "https://basketballking.jp/news/japan/20261117/643783.html",
+      "ts": 1794907340000,
+      "date": "2026-11-17",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "連勝も安堵することない川崎ブレイブサンダースの長谷川技、勝利を知るベテランが語る現在地「今は納得できる勝ち方ができていない」",
+      "url": "https://basket-count.com/article/detail/279672",
+      "ts": 1794907184000,
+      "date": "2026-11-17",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "ウインターカップ2026の組み合わせ抽選会をライブ配信…男女全120校の対戦カード決定",
+      "url": "https://basketballking.jp/news/japan/20261117/643840.html",
+      "ts": 1794904889000,
+      "date": "2026-11-17",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "新城れいみ「私のプレーは私にしかできない」鶴鳴（長崎県）",
+      "url": "https://basket-count.com/article/detail/279662",
+      "ts": 1794900010000,
+      "date": "2026-11-17",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "W杯アジア地区予選Window5…日本代表vsレバノン戦をABEMAが無料ライブ配信",
+      "url": "https://basketballking.jp/news/japan/20261117/643771.html",
+      "ts": 1794898749000,
+      "date": "2026-11-17",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "ナイキがブッカーモデルの最新作「BOOK3」を発表…サンズは公式SNSで着用シーンを投稿",
+      "url": "https://basketballking.jp/news/world/20261117/643687.html",
+      "ts": 1794897333000,
+      "date": "2026-11-17",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "44歳のアイラ・ブラウンがキャリア続行…短期契約で福島ファイヤーボンズへ加入",
+      "url": "https://basketballking.jp/news/japan/20261117/643772.html",
+      "ts": 1794896842000,
+      "date": "2026-11-17",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "【更新中】一覧「Bリーグドラフト2027」志望届提出選手リスト…指名候補選手のポジション・身長・出身校・成績",
+      "url": "https://basketballking.jp/news/japan/fixed/634331.html",
+      "ts": 1794895832000,
+      "date": "2026-11-17",
+      "source": "バスケットボールキング"
+    },
+    {
+      "title": "苦境の横浜ビー・コルセアーズ、マイク・コッツァーの決意「横浜の人々の優しさにすべてのポゼッションで恩返しを」",
+      "url": "https://basket-count.com/article/detail/279647",
+      "ts": 1794895200000,
+      "date": "2026-11-17",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【NBA】シェイ・ギルジャス・アレクサンダーが続ける試合前の意外なルーティン「試合前は音楽を聴かないようにしている」",
+      "url": "https://basket-count.com/article/detail/279607",
+      "ts": 1794888041000,
+      "date": "2026-11-17",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "女子U18日本代表の竹内みや、大槻佳子らが世界6大陸の高校世代トップ有望選手に選出！NBAやWNBAが主催するキャンプに参加が決定",
+      "url": "https://basket-count.com/article/detail/279608",
+      "ts": 1794883665000,
+      "date": "2026-11-17",
+      "source": "バスケットカウント"
+    },
     {
       "title": "アルティーリ千葉に大打撃、D.J・ニュービルが右膝前十字靭帯断裂と内側半月板を損傷、11月14日に行われた三遠戦で負傷",
       "url": "https://basket-count.com/article/detail/279598",
       "ts": 1794875726000,
       "date": "2026-11-17",
       "source": "バスケットカウント"
-    },
-    {
-      "title": "「WEEKLY NBA docomo #5」無料公開中…Ballin’ with Bambaの新企画が始動、初回はアービング特集",
-      "url": "https://basketballking.jp/news/world/20261116/643561.html",
-      "ts": 1794825039000,
-      "date": "2026-11-16",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "戦線離脱のA千葉・ニュービルがファンへ感謝「逆境はつきもの」…復帰へ強い決意",
-      "url": "https://basketballking.jp/news/japan/20261116/643654.html",
-      "ts": 1794825022000,
-      "date": "2026-11-16",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "MVPランキングでドンチッチが首位をキープ…開幕12戦で計468得点は過去50年で最多",
-      "url": "https://basketballking.jp/news/world/20261116/643530.html",
-      "ts": 1794824112000,
-      "date": "2026-11-16",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "東京Zがトーマスとの契約満了を発表…加入から約1カ月で退団、GM感謝「大きな力となりました」",
-      "url": "https://basketballking.jp/news/japan/20261116/643655.html",
-      "ts": 1794824103000,
-      "date": "2026-11-16",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "【最新】Bリーグ「平均来場者数」まとめ…全55クラブの2026－27シーズン数値まとめ",
-      "url": "https://basketballking.jp/news/japan/fixed/634999.html",
-      "ts": 1794823225000,
-      "date": "2026-11-16",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "福島のアズバヤルがモンゴル代表に選出…今季Bワン13試合出場、アジアカップ2029予備予選に出場へ",
-      "url": "https://basketballking.jp/news/japan/20261116/643648.html",
-      "ts": 1794822783000,
-      "date": "2026-11-16",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "「想像もしていなかった」…レブロン・ジェームズがシーズン通算アシスト数で歴代3位に",
-      "url": "https://basketballking.jp/news/world/20261116/643524.html",
-      "ts": 1794820073000,
-      "date": "2026-11-16",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "「娘のお手本になりたい」…ブライソン・ウィリアムズが恩師の言葉を胸に誓う“全力の毎日”【TOBI»RUSH】",
-      "url": "https://basketballking.jp/news/tobirush/20261116/643122.html",
-      "ts": 1794819622000,
-      "date": "2026-11-16",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "【U18日清食品トップリーグ男子スタッツ】柳ヶ浦のママドゥが2冠…福大大濠勢も存在感",
-      "url": "https://basketballking.jp/news/japan/20261116/643560.html",
-      "ts": 1794818606000,
-      "date": "2026-11-16",
-      "source": "バスケットボールキング"
-    },
-    {
-      "title": "アルティーリ千葉に大打撃…D.J・ニュービルが負傷、右膝前十字靭帯断裂などで全治未定",
-      "url": "https://basketballking.jp/news/japan/20261116/643631.html",
-      "ts": 1794818394000,
-      "date": "2026-11-16",
-      "source": "バスケットボールキング"
     },
     {
       "title": "【NBA】レブロン・ジェームズがジェイソン・キッドを抜いてアシスト通算歴代3位に浮上、「素晴らしいチームメートに恵まれた」",
@@ -101,27 +143,6 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "富山グラウジーズのダビー・ゴメスヘッドコーチとブライアン・アンゴラが規約・規定違反により罰金15万円の懲罰",
-      "url": "https://basket-count.com/article/detail/279569",
-      "ts": 1794811237000,
-      "date": "2026-11-16",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "『U18日清食品トップリーグ2026 ディビジョン1』男子は福岡大学附属大濠が大会3連覇達成！9000人を超える観客の前で優勝を決める",
-      "url": "https://basket-count.com/article/detail/279512",
-      "ts": 1794798691000,
-      "date": "2026-11-16",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【第8週試合結果】西地区首位の名古屋Dは群馬に敗れて今季初黒星、東地区最下位の大阪は千葉J、秋田に奮戦も2勝目届かず",
-      "url": "https://basket-count.com/article/detail/279509",
-      "ts": 1794796816000,
-      "date": "2026-11-16",
-      "source": "バスケットカウント"
-    },
-    {
       "title": "NBA 八村塁 4得点にとどまるもチームは今季初の連勝",
       "url": "https://news.web.nhk/newsweb/na/nd-20261116de76392",
       "ts": 1794796080000,
@@ -129,38 +150,10 @@
       "source": "NHKニュース(スポーツ)"
     },
     {
-      "title": "【NBA】カリー代役の重責を担うもフィールドゴール13本中1本成功に終わり大敗、ウォリアーズのレンデボーグ「100点差で負けた気分」",
-      "url": "https://basket-count.com/article/detail/279502",
-      "ts": 1794724627000,
-      "date": "2026-11-15",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "【NBA】ヤニス＆アデバヨが揃って37得点の計74得点と大爆発、ヒートがキャブズを撃破し優勝候補の潜在能力を証明",
-      "url": "https://basket-count.com/article/detail/279495",
-      "ts": 1794717770000,
-      "date": "2026-11-15",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "川崎ブレイブサンダースのアレックス・カーク、クラブや代表への深い忠誠心と愛情「日本がより良くなって成功を収める貢献がしたい」",
-      "url": "https://basket-count.com/article/detail/279489",
-      "ts": 1794716312000,
-      "date": "2026-11-15",
-      "source": "バスケットカウント"
-    },
-    {
       "title": "NBA 八村塁が7得点11リバウンド チームも勝利",
       "url": "https://news.web.nhk/newsweb/na/nd-20261114de75917",
       "ts": 1794643440000,
       "date": "2026-11-14",
-      "source": "NHKニュース(スポーツ)"
-    },
-    {
-      "title": "NBA クリッパーズ八村塁13得点も チームは敗れる",
-      "url": "https://news.web.nhk/newsweb/na/nd-20261111de74154",
-      "ts": 1794379440000,
-      "date": "2026-11-11",
       "source": "NHKニュース(スポーツ)"
     }
   ],
