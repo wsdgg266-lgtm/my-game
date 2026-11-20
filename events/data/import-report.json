@@ -1,5 +1,5 @@
 {
-  "ranAt": "2026-11-18T23:45:02.188Z",
+  "ranAt": "2026-11-20T00:05:28.672Z",
   "imported": 0,
   "changed": false,
   "log": [
@@ -7,6 +7,11 @@
       "source": "BODIK(全国横断カタログ)",
       "level": "info",
       "msg": "データセット 40件"
+    },
+    {
+      "source": "BODIK(全国横断カタログ)",
+      "level": "warn",
+      "msg": "イベント一覧: 読めませんでした (fetch failed)"
     },
     {
       "source": "京都府・市町村オープンデータポータル",
