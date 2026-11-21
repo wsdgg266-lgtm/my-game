@@ -1,76 +1,125 @@
 {
   "_readme": "日本のバスケットボール関連ニュース。scripts/import-basket.mjs が news-sources.json のRSSから毎日集めます。",
-  "updatedAt": "2026-11-20T00:49:58.971Z",
+  "updatedAt": "2026-11-21T00:07:41.509Z",
   "items": [
     {
-      "title": "主力3選手不在のシクサーズが敵地でマジックに勝利…今季クラッチゲームで無敗をキープ",
-      "url": "https://basketballking.jp/news/world/20261119/644069.html",
-      "ts": 1795092594000,
-      "date": "2026-11-19",
+      "title": "Bリーグ 当日中止の信州対茨城戦 茨城の不戦敗に決定",
+      "url": "https://news.web.nhk/newsweb/na/nd-20261120de79406",
+      "ts": 1795177775000,
+      "date": "2026-11-20",
+      "source": "NHKニュース(スポーツ)"
+    },
+    {
+      "title": "ジョーダンブランドが八村塁の最新PEを発表…ウインターカップ向けアパレルも展開",
+      "url": "https://basketballking.jp/news/world/20261120/644443.html",
+      "ts": 1795172299000,
+      "date": "2026-11-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "レイカーズのルカ・ドンチッチがカリーに次ぐ試合数で通算3ポイント成功数1700本超え",
-      "url": "https://basketballking.jp/news/world/20261119/644073.html",
-      "ts": 1795089463000,
-      "date": "2026-11-19",
+      "title": "ハリバートンのシグネチャーモデル第2弾「HALI 2」が登場…12月4日から販売開始",
+      "url": "https://basketballking.jp/news/world/20261120/644416.html",
+      "ts": 1795169102000,
+      "date": "2026-11-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "「誰も恐れていない」スパーズの12連勝を止めたカニングハム…指揮官も守備を絶賛",
-      "url": "https://basketballking.jp/news/world/20261119/644204.html",
-      "ts": 1795089340000,
-      "date": "2026-11-19",
+      "title": "Bリーグドラフト志望選手リスト更新…明治大の塚田大聖と星槎道都大の緒方耀太が公示",
+      "url": "https://basketballking.jp/news/japan/20261120/644414.html",
+      "ts": 1795166785000,
+      "date": "2026-11-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "47得点のグライムズを支えたドンチッチ…レイカーズ指揮官が明かす試合中の好判断",
-      "url": "https://basketballking.jp/news/world/20261119/644202.html",
-      "ts": 1795088620000,
-      "date": "2026-11-19",
+      "title": "苦戦の琉球ゴールデンキングス、指揮官アンソニー・マクヘンリーの揺るぎない信頼「選手たちは求めることをすべてやってくれている」",
+      "url": "https://basket-count.com/article/detail/279924",
+      "ts": 1795165265000,
+      "date": "2026-11-20",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "「全員止める」の原点は高校2年の毎日…東京サンロッカーズ・ジャン・ローレンス・ハーパージュニアが語るキオクとミライ【TOBI»RUSH】",
+      "url": "https://basketballking.jp/news/tobirush/20261120/644177.html",
+      "ts": 1795165213000,
+      "date": "2026-11-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "ヤニスが古巣バックス相手にトリプルダブル級の活躍…ヒートが6連勝をマーク",
-      "url": "https://basketballking.jp/news/world/20261119/644062.html",
-      "ts": 1795087317000,
-      "date": "2026-11-19",
+      "title": "NBA 八村塁 17得点もチームは2連敗",
+      "url": "https://news.web.nhk/newsweb/na/nd-20261120de79161",
+      "ts": 1795164664000,
+      "date": "2026-11-20",
+      "source": "NHKニュース(スポーツ)"
+    },
+    {
+      "title": "Bリーグが当該試合の取り扱いを発表…中止となった信州対茨城は0－20で信州の不戦勝に",
+      "url": "https://basketballking.jp/news/japan/20261120/644409.html",
+      "ts": 1795163771000,
+      "date": "2026-11-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "「あまりにも無秩序」ウルブズ、ブレイザーズに劇的逆転勝利も指揮官は内容を問題視",
-      "url": "https://basketballking.jp/news/world/20261119/644206.html",
-      "ts": 1795086525000,
-      "date": "2026-11-19",
+      "title": "中止となった信州ブレイブウォリアーズvs茨城ロボッツは信州の不戦勝に、再試合は行われず消滅",
+      "url": "https://basket-count.com/article/detail/279935",
+      "ts": 1795161600000,
+      "date": "2026-11-20",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "渡邊雄太プロデュースブランド「NAVI」グッズ第2弾が予約開始…ニューエラとのコラボキャップも",
+      "url": "https://basketballking.jp/news/japan/20261120/644348.html",
+      "ts": 1795159824000,
+      "date": "2026-11-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "川崎のアブドゥル-ラフマンがサウジアラビア代表選出…W杯アジア最終予選Window5で中国、韓国と対戦へ",
-      "url": "https://basketballking.jp/news/japan/20261119/644214.html",
-      "ts": 1795086430000,
-      "date": "2026-11-19",
+      "title": "3x3男子日本代表強化合宿に仲西や井後らが参加…Team TOKYOにはBリーガー3名",
+      "url": "https://basketballking.jp/news/japan/20261120/644342.html",
+      "ts": 1795158380000,
+      "date": "2026-11-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "「もっと賢くプレーすべきだった」連勝ストップのスパーズ、ウェンバンヤマが語る敗因",
-      "url": "https://basketballking.jp/news/world/20261119/644209.html",
-      "ts": 1795085597000,
-      "date": "2026-11-19",
+      "title": "スポルディングが収納式メッシュボールバッグ搭載の新作バックパック「FOSTER 30」を発売",
+      "url": "https://basketballking.jp/news/japan/20261120/644330.html",
+      "ts": 1795154702000,
+      "date": "2026-11-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "2026－27シーズンの新人ランキング第四弾が公開…キングスのエイカフJr.が高得点を連発",
-      "url": "https://basketballking.jp/news/world/20261119/644064.html",
-      "ts": 1795084527000,
-      "date": "2026-11-19",
+      "title": "【NBA】クリッパーズの八村塁はスパーズ相手に17得点7リバウンド、チームは112-124で敗れてアウェーゲーム6連敗",
+      "url": "https://basket-count.com/article/detail/279907",
+      "ts": 1795151795000,
+      "date": "2026-11-20",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "Bリーグオールスターで社会貢献活動「B Hope」を実施…職業体験やリサイクル運動などを企画",
+      "url": "https://basketballking.jp/news/japan/20261120/644310.html",
+      "ts": 1795148749000,
+      "date": "2026-11-20",
       "source": "バスケットボールキング"
     },
     {
-      "title": "佐賀の内尾聡理が無事に手術完了…左肘関節脱臼で全治4カ月、ショップでは寄せ書きの復帰応援コーナーも設置",
-      "url": "https://basketballking.jp/news/japan/20261119/644208.html",
-      "ts": 1795084101000,
-      "date": "2026-11-19",
+      "title": "安間志織が「プロジェクトB」参戦へ…元チームメートの山本麻衣と再び共闘",
+      "url": "https://basketballking.jp/news/world/20261120/644317.html",
+      "ts": 1795146511000,
+      "date": "2026-11-20",
       "source": "バスケットボールキング"
+    },
+    {
+      "title": "【NBA】スパーズのディラン・ハーパーが左股関節外旋筋の肉離れで最大3週間の離脱へ、ジョンソンHC「離脱にはなるが最良のシナリオ」",
+      "url": "https://basket-count.com/article/detail/279887",
+      "ts": 1795146078000,
+      "date": "2026-11-20",
+      "source": "バスケットカウント"
+    },
+    {
+      "title": "【NBA】球団のレジェンドが集う試合で30点差の惨敗を喫したネッツ、ジュリアス・ランドル「リーグにいる13年で最悪の試合の一つだ」",
+      "url": "https://basket-count.com/article/detail/279867",
+      "ts": 1795138028000,
+      "date": "2026-11-20",
+      "source": "バスケットカウント"
     },
     {
       "title": "名古屋ダイヤモンドドルフィンズの快進撃を牽引、スコット・エサトンと齋藤拓実のリーグ最強デュオが唯一無二な理由とは？",
@@ -108,20 +157,6 @@
       "source": "バスケットカウント"
     },
     {
-      "title": "第七回データで読むWINNER〜第7週振り返り〜【PR】Promoted by スポーツくじWINNER",
-      "url": "https://basket-count.com/article/detail/279760",
-      "ts": 1795057200000,
-      "date": "2026-11-19",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "オールスターファン投票は千葉ジェッツの富樫勇樹が全体1位で11大会連続の出場を決める！ B.BLACKの先発は全員が日本代表選手に",
-      "url": "https://basket-count.com/article/detail/279744",
-      "ts": 1795055400000,
-      "date": "2026-11-19",
-      "source": "バスケットカウント"
-    },
-    {
       "title": "NBA八村塁 3試合ぶり2桁20得点もクリッパーズ敗れる ジャズ戦",
       "url": "https://news.web.nhk/newsweb/na/nd-20261118de77842",
       "ts": 1794995261000,
@@ -129,38 +164,10 @@
       "source": "NHKニュース(スポーツ)"
     },
     {
-      "title": "琉球ゴールデンキングスの得点頭、デイビッド・ヌワバが全治4週間の両側大腿直筋肉離れにより離脱",
-      "url": "https://basket-count.com/article/detail/279740",
-      "ts": 1794994889000,
-      "date": "2026-11-18",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "茨城ロボッツの大黒柱、ヴィック・ローが左手舟状骨骨折のためインジュアリーリスト入り",
-      "url": "https://basket-count.com/article/detail/279735",
-      "ts": 1794983150000,
-      "date": "2026-11-18",
-      "source": "バスケットカウント"
-    },
-    {
-      "title": "『ウインターカップ2026』の組み合わせ抽選会のライブ中継が決定、11月24日の16時から特別番組として放送",
-      "url": "https://basket-count.com/article/detail/279729",
-      "ts": 1794980200000,
-      "date": "2026-11-18",
-      "source": "バスケットカウント"
-    },
-    {
       "title": "NBA 八村塁 4得点にとどまるもチームは今季初の連勝",
       "url": "https://news.web.nhk/newsweb/na/nd-20261116de76392",
       "ts": 1794796080000,
       "date": "2026-11-16",
-      "source": "NHKニュース(スポーツ)"
-    },
-    {
-      "title": "NBA 八村塁が7得点11リバウンド チームも勝利",
-      "url": "https://news.web.nhk/newsweb/na/nd-20261114de75917",
-      "ts": 1794643440000,
-      "date": "2026-11-14",
       "source": "NHKニュース(スポーツ)"
     }
   ],
